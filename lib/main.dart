@@ -1,6 +1,6 @@
 // import 'package:countdown_progress_indicator/countdown_progress_indicator.dart';
-// import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:hiit.time/countdown_progress_indicator.dart';
+import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:hiit.time/Config/settings.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +23,27 @@ class _MyAppState extends State<MyApp> {
   var _stringModValue = setTimeModifyValue.toString();
 
   @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  // Vibration related settings
+  bool _canVibrate = false;
+  final Iterable<Duration> pauses = [
+    const Duration(milliseconds: 150),
+  ];
+
+  Future<void> _init() async {
+    bool canVibrate = await Vibrate.canVibrate;
+    setState(() {
+      _canVibrate = canVibrate;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _init();
     return MaterialApp(
       color: Colors.transparent,
       home: Scaffold(
@@ -33,7 +53,6 @@ class _MyAppState extends State<MyApp> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-
                 // Enables animation on clicks
                 Ink(
                   height: 300,
@@ -44,17 +63,18 @@ class _MyAppState extends State<MyApp> {
                     highlightColor: _isRunning ? Colors.pink : Colors.blue,
                     customBorder: const CircleBorder(),
                     onTap: () {
+                      if (_canVibrate) {
+                        Vibrate.feedback(FeedbackType.light);
+                      }
                       setState(() {
                         if (_isRunning) {
                           _controller.pause();
                         } else {
                           _controller.resume();
                         }
-
                         _isRunning = !_isRunning; // Flip isRunning state
                       });
                     },
-
                     ///////////
                     // Timer //
                     ///////////
@@ -63,16 +83,18 @@ class _MyAppState extends State<MyApp> {
                       strokeWidth: 18,
                       autostart: false,
                       valueColor: Colors.red,
-                      backgroundColor:
-                          _isRunning ? Colors.lightGreenAccent.shade700 : Colors.blue,
+                      backgroundColor: _isRunning
+                          ? Colors.lightGreenAccent.shade700
+                          : Colors.blue,
                       initialPosition: 0,
                       duration: _duration,
                       text: 'seconds',
                       onComplete: () {
                         // Code to be executed when the countdown completes
                         setState(() {
-                          print('Timer Complete!');
-                          // print(_duration);
+                          if (_canVibrate) {
+                            Vibrate.vibrateWithPauses(pauses);
+                          }
                         });
                       },
                     ),
@@ -81,12 +103,10 @@ class _MyAppState extends State<MyApp> {
 
                 // Spacer between timer and buttons
                 const SizedBox(height: 25),
-
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-
                     //////////////////////////
                     // Subtract Time Button //
                     //////////////////////////
@@ -95,28 +115,29 @@ class _MyAppState extends State<MyApp> {
                       height: 70,
                       child: ElevatedButton(
                         onPressed: () => setState(() {
-                          var desiredTime = _controller.setDuration(_duration, (-1 * _timerModifierValue.ceil()));
+                          if (_canVibrate) {
+                            Vibrate.feedback(FeedbackType.light);
+                          }
+                          var desiredTime = _controller.setDuration(
+                              _duration, (-1 * _timerModifierValue.ceil()));
                           _duration = desiredTime;
 
                           if (_isRunning) {
-                            _controller.restart(duration: _duration, initialPosition: 0);
+                            _controller.restart(
+                                duration: _duration, initialPosition: 0);
                             _controller.resume();
                           } else {
-                            _controller.restart(duration: _duration, initialPosition: 0);
+                            _controller.restart(
+                                duration: _duration, initialPosition: 0);
                           }
-
                         }),
                         style: ElevatedButton.styleFrom(
                           shape: CircleBorder(),
                           padding: EdgeInsets.all(5),
                           backgroundColor: Colors.black,
                         ),
-                        child: Text(
-                            '-$_stringModValue',
-                            style: const TextStyle(
-                                fontSize: 20
-                            )
-                        ),
+                        child: Text('-$_stringModValue',
+                            style: const TextStyle(fontSize: 20)),
                       ),
                     ),
 
@@ -130,28 +151,30 @@ class _MyAppState extends State<MyApp> {
                       height: 70,
                       child: ElevatedButton(
                         onPressed: () => setState(() {
-                          var desiredTime = _controller.setDuration(_duration, _timerModifierValue).ceil();
+                          if (_canVibrate) {
+                            Vibrate.feedback(FeedbackType.light);
+                          }
+                          var desiredTime = _controller
+                              .setDuration(_duration, _timerModifierValue)
+                              .ceil();
                           _duration = desiredTime;
 
                           if (_isRunning) {
-                            _controller.restart(duration: _duration, initialPosition: 0);
+                            _controller.restart(
+                                duration: _duration, initialPosition: 0);
                             _controller.resume();
                           } else {
-                            _controller.restart(duration: _duration, initialPosition: 0);
+                            _controller.restart(
+                                duration: _duration, initialPosition: 0);
                           }
-
                         }),
                         style: ElevatedButton.styleFrom(
                           shape: CircleBorder(),
                           padding: EdgeInsets.all(5),
                           backgroundColor: Colors.black,
                         ),
-                        child: Text(
-                            '+$_stringModValue',
-                          style: const TextStyle(
-                            fontSize: 20
-                          )
-                        ),
+                        child: Text('+$_stringModValue',
+                            style: const TextStyle(fontSize: 20)),
                       ),
                     ),
                   ],
@@ -162,9 +185,13 @@ class _MyAppState extends State<MyApp> {
                 //////////////////////
                 ElevatedButton(
                   onPressed: () => setState(() {
+                    if (_canVibrate) {
+                      Vibrate.feedback(FeedbackType.heavy);
+                    }
                     _duration = setStartTime;
                     _isRunning = false;
-                    _controller.restart(duration: _duration, initialPosition: 0);
+                    _controller.restart(
+                        duration: _duration, initialPosition: 0);
                   }),
                   style: ElevatedButton.styleFrom(
                     shape: CircleBorder(),
@@ -172,7 +199,6 @@ class _MyAppState extends State<MyApp> {
                   ),
                   child: const Text('Restart'),
                 ),
-
               ],
             ),
           ),
