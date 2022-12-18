@@ -1,7 +1,7 @@
 // import 'package:countdown_progress_indicator/countdown_progress_indicator.dart';
 // import 'package:flutter_vibrate/flutter_vibrate.dart';
-import 'package:gym_bro/countdown_progress_indicator.dart';
-import 'package:gym_bro/Config/settings.dart';
+import 'package:hiit.time/countdown_progress_indicator.dart';
+import 'package:hiit.time/Config/settings.dart';
 import 'package:flutter/material.dart';
 
 void main() {
