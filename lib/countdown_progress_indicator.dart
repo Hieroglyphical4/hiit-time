@@ -106,6 +106,8 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     _animationController.addListener(() {
       _currentDuration = (widget.duration - _animation.value).toInt();
       if (_animation.value == 0.0) {
+        // This indicates the duration change was a result of a button press
+        // We should have the desired time calculated from the button press
         _currentDuration = _desiredTime;
       }
       setState(() {
@@ -224,8 +226,8 @@ class CountDownController {
       desiredTime = 1;
     }
     // Prevent errors from numbers above 99:99
-    if (desiredTime > 6039) {
-      desiredTime = 6039;
+    if (desiredTime > 5999) {
+      desiredTime = 5999;
     }
 
     _state._animationController.duration = Duration(seconds: desiredTime);
