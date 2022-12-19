@@ -63,12 +63,21 @@ class CountDownProgressIndicator extends StatefulWidget {
         super(key: key);
 
   @override
-  _CountDownProgressIndicatorState createState() => _CountDownProgressIndicatorState();
+  _CountDownProgressIndicatorState createState() =>
+      _CountDownProgressIndicatorState();
 }
 
-class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator> with TickerProviderStateMixin {
+class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
+    with TickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
+  late String? timerText = widget.text;
+  var _currentDuration;
+  var _desiredTime = 30;
+  var _secondTimerSize = 130.0;
+  var _minuteTimerSize = 100.0;
+  late var timerSize =
+      widget.duration > 59 ? _minuteTimerSize : _secondTimerSize;
 
   @override
   void dispose() {
@@ -95,7 +104,19 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     });
 
     _animationController.addListener(() {
+      _currentDuration = (widget.duration - _animation.value).toInt();
+      if (_animation.value == 0.0) {
+        _currentDuration = _desiredTime;
+      }
       setState(() {
+        if (_currentDuration > 59) {
+          timerText = 'minutes';
+          timerSize = _minuteTimerSize;
+        }
+        if (_currentDuration < 59) {
+          timerText = 'seconds';
+          timerSize = _secondTimerSize;
+        }
       });
     });
 
@@ -145,25 +166,37 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    widget.timeFormatter?.call((widget.duration - _animation.value).ceil()) ??
-                        (widget.duration - _animation.value).toStringAsFixed(0),
-
-              style: widget.timeTextStyle ??
-                        Theme.of(context)
-                            .textTheme
-                            .bodyText1!
-                            .copyWith(color: Colors.white, fontSize: 90, fontWeight: FontWeight.w600),
-                  ),
-                  if (widget.text != null)
+                  timerText == 'seconds'
+                      ? Text(
+                          (widget.duration - _animation.value)
+                              .toStringAsFixed(0),
+                          style: widget.timeTextStyle ??
+                              Theme.of(context).textTheme.bodyText1!.copyWith(
+                                  color: Colors.white,
+                                  fontSize: timerSize,
+                                  fontWeight: FontWeight.w600),
+                        )
+                      : Text(
+                          widget.timeFormatter?.call(
+                                  (widget.duration - _animation.value)
+                                      .ceil()) ??
+                              (widget.duration - _animation.value)
+                                  .toStringAsFixed(0),
+                          style: widget.timeTextStyle ??
+                              Theme.of(context).textTheme.bodyText1!.copyWith(
+                                  color: Colors.white,
+                                  fontSize: timerSize,
+                                  fontWeight: FontWeight.w600),
+                        ),
+                  if (timerText != null)
                     Text(
-                      widget.text!,
+                      timerText!,
                       style: widget.labelTextStyle ??
                           Theme.of(context).textTheme.bodyText1!.copyWith(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              ),
                     ),
                 ],
               ),
@@ -184,10 +217,15 @@ class CountDownController {
   setDuration(int currentDuration, int timeModification) {
     var currentTime = (currentDuration - _state._animation.value);
     var desiredTime = (currentTime + timeModification).toInt();
+    _state._desiredTime = desiredTime;
 
     // Prevent errors from negative numbers
     if (desiredTime < 1) {
       desiredTime = 1;
+    }
+    // Prevent errors from numbers above 99:99
+    if (desiredTime > 6039) {
+      desiredTime = 6039;
     }
 
     _state._animationController.duration = Duration(seconds: desiredTime);
@@ -208,7 +246,8 @@ class CountDownController {
   /// This method works when [autostart] is false
   void start() {
     if (!_state.widget.autostart) {
-      _state._animationController.forward(from: _state.widget.initialPosition.toDouble());
+      _state._animationController
+          .forward(from: _state.widget.initialPosition.toDouble());
     }
   }
 

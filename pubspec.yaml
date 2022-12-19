@@ -36,8 +36,11 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+
+  ## Plugins I added
   countdown_progress_indicator: ^0.1.2
   flutter_vibrate: ^1.3.0
+  flutter_background: ^1.1.0
 
 dev_dependencies:
   flutter_test:

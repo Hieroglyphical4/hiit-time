@@ -1,5 +1,6 @@
 // import 'package:countdown_progress_indicator/countdown_progress_indicator.dart';
 import 'package:hiit.time/countdown_progress_indicator.dart';
+import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:hiit.time/Config/settings.dart';
 import 'package:flutter/material.dart';
@@ -19,8 +20,9 @@ class _MyAppState extends State<MyApp> {
   bool _isRunning = false;
   final _controller = CountDownController();
   var _duration = setStartTime;
-  var _timerModifierValue = setTimeModifyValue;
-  var _stringModValue = setTimeModifyValue.toString();
+  var _timerLabel = 'seconds';
+  final _timerModifierValue = setTimeModifyValue;
+  final _stringModValue = setTimeModifyValue.toString();
 
   @override
   void initState() {
@@ -35,10 +37,33 @@ class _MyAppState extends State<MyApp> {
   ];
 
   Future<void> _init() async {
-    bool canVibrate = await Vibrate.canVibrate;
-    setState(() {
-      _canVibrate = canVibrate;
-    });
+    try {
+      bool canVibrate = await Vibrate.canVibrate;
+      setState(() async {
+        _canVibrate = canVibrate;
+
+        // TODO Get this background guy working
+        const androidConfig = FlutterBackgroundAndroidConfig(
+          notificationTitle: "flutter_background example app",
+          notificationText:
+              "Background notification for keeping the example app running in the background",
+          notificationImportance: AndroidNotificationImportance.Default,
+          notificationIcon: AndroidResource(
+              name: 'background_icon',
+              defType: 'drawable'), // Default is ic_launcher from folder mipmap
+        );
+        bool success =
+            await FlutterBackground.initialize(androidConfig: androidConfig);
+        bool hasPermissions = await FlutterBackground.hasPermissions;
+        FlutterBackground.initialize(); // TODO Is this right???????
+        bool enableBackgroundSuccess =
+            await FlutterBackground.enableBackgroundExecution();
+        // await FlutterBackground.disableBackgroundExecution(); // Keeping command around for reference
+        // bool enabled = FlutterBackground.isBackgroundExecutionEnabled; // To check if its enabled
+      });
+    } catch (e) {
+      print('Error checking if device can vibrate: $e');
+    }
   }
 
   @override
@@ -88,7 +113,21 @@ class _MyAppState extends State<MyApp> {
                           : Colors.blue,
                       initialPosition: 0,
                       duration: _duration,
-                      text: 'seconds',
+                      text: _timerLabel,
+                      timeFormatter: _duration > 59
+                          ? (seconds) {
+                              // When the duration is above 59 seconds,
+                              // this will create a mm:ss format
+                              var Dur = Duration(seconds: seconds);
+                              String twoDigits(int n) =>
+                                  n.toString().padLeft(2, "0");
+                              String twoDigitMinutes =
+                                  twoDigits(Dur.inMinutes.remainder(60));
+                              String twoDigitSeconds =
+                                  twoDigits(Dur.inSeconds.remainder(60));
+                              return "$twoDigitMinutes:$twoDigitSeconds";
+                            }
+                          : null,
                       onComplete: () {
                         // Code to be executed when the countdown completes
                         setState(() {
