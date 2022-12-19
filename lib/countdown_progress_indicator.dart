@@ -169,7 +169,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  timerText == 'seconds' || timerText == 'second'
+                  timerText == 'seconds'
                       ? Text(
                           (widget.duration - _animation.value)
                               .toStringAsFixed(0),
