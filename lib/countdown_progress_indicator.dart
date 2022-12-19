@@ -14,7 +14,7 @@ class CountDownProgressIndicator extends StatefulWidget {
   /// This controller is used to restart, stop or resume the countdown
   final CountDownController? controller;
 
-  /// This call callback will be excuted when the Countdown ends.
+  /// This call callback will be executed when the Countdown ends.
   final Function? onComplete;
 
   /// Stroke width, the default is 10
@@ -240,7 +240,8 @@ class CountDownController {
     if (desiredTime < 60) {
       _state.timerText = 'seconds';
     }
-    desiredTime == 1 ? _state.timerText = 'second' : null;
+    // Animation listener cant keep up accurately, lets not address via buttons
+    // desiredTime == 1 ? _state.timerText = 'second' : null;
 
     _state._desiredTime = desiredTime;
     _state._animationController.duration = Duration(seconds: desiredTime);
@@ -288,6 +289,7 @@ class CountDownController {
     if (duration! < 60) {
       _state.timerText = 'seconds';
     }
-    duration == 1 ? _state.timerText = 'second' : null;
+    // Animation listener cant keep up accurately, lets not address via buttons either
+    // duration == 1 ? _state.timerText = 'second' : null;
   }
 }
