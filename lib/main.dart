@@ -1,8 +1,8 @@
 // import 'package:countdown_progress_indicator/countdown_progress_indicator.dart';
 import 'package:hiit.time/countdown_progress_indicator.dart';
-import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:hiit.time/Config/settings.dart';
+import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -20,9 +20,10 @@ class _MyAppState extends State<MyApp> {
   bool _isRunning = false;
   final _controller = CountDownController();
   var _duration = setStartTime;
-  var _timerLabel = 'seconds';
+  var _timerLabel = setTimerLabel;
   final _timerModifierValue = setTimeModifyValue;
   final _stringModValue = setTimeModifyValue.toString();
+  var _timerButtonRestart = false;
 
   @override
   void initState() {
@@ -41,25 +42,6 @@ class _MyAppState extends State<MyApp> {
       bool canVibrate = await Vibrate.canVibrate;
       setState(() async {
         _canVibrate = canVibrate;
-
-        // TODO Get this background guy working
-        const androidConfig = FlutterBackgroundAndroidConfig(
-          notificationTitle: "flutter_background example app",
-          notificationText:
-              "Background notification for keeping the example app running in the background",
-          notificationImportance: AndroidNotificationImportance.Default,
-          notificationIcon: AndroidResource(
-              name: 'background_icon',
-              defType: 'drawable'), // Default is ic_launcher from folder mipmap
-        );
-        bool success =
-            await FlutterBackground.initialize(androidConfig: androidConfig);
-        bool hasPermissions = await FlutterBackground.hasPermissions;
-        FlutterBackground.initialize(); // TODO Is this right???????
-        bool enableBackgroundSuccess =
-            await FlutterBackground.enableBackgroundExecution();
-        // await FlutterBackground.disableBackgroundExecution(); // Keeping command around for reference
-        // bool enabled = FlutterBackground.isBackgroundExecutionEnabled; // To check if its enabled
       });
     } catch (e) {
       print('Error checking if device can vibrate: $e');
@@ -91,11 +73,24 @@ class _MyAppState extends State<MyApp> {
                       if (_canVibrate) {
                         Vibrate.feedback(FeedbackType.light);
                       }
+
+                      // Check if the user is pressing the timer after it finished.
+                      // If so, restart timer to initial state
+                      if (_timerButtonRestart) {
+                        _duration = setStartTime;
+                        _controller.restart(duration: _duration, initialPosition: 0);
+                        _timerButtonRestart = false;
+                      }
+
                       setState(() {
                         if (_isRunning) {
+                          // Timer was running, going into pause mode
                           _controller.pause();
+                          Wakelock.disable();
                         } else {
+                          // Timer was paused, turning on
                           _controller.resume();
+                          Wakelock.enable();
                         }
                         _isRunning = !_isRunning; // Flip isRunning state
                       });
@@ -134,6 +129,11 @@ class _MyAppState extends State<MyApp> {
                           if (_canVibrate) {
                             Vibrate.vibrateWithPauses(pauses);
                           }
+                          // Upon completion, Enable the next press on the timer button to restart the timer
+                          _timerButtonRestart = true;
+
+                          // Disable keeping the phone awake
+                          Wakelock.disable();
                         });
                       },
                     ),
@@ -157,6 +157,10 @@ class _MyAppState extends State<MyApp> {
                           if (_canVibrate) {
                             Vibrate.feedback(FeedbackType.light);
                           }
+                          // If the user is manually changing the time, we shouldn't
+                          // set the timer up to restart on the next press
+                          _timerButtonRestart = false;
+
                           var desiredTime = _controller.setDuration(
                               _duration, (-1 * _timerModifierValue.ceil()));
                           _duration = desiredTime;
@@ -193,6 +197,10 @@ class _MyAppState extends State<MyApp> {
                           if (_canVibrate) {
                             Vibrate.feedback(FeedbackType.light);
                           }
+                          // If the user is manually changing the time, we shouldn't
+                          // set the timer up to restart on the next press
+                          _timerButtonRestart = false;
+
                           var desiredTime = _controller
                               .setDuration(_duration, _timerModifierValue)
                               .ceil();

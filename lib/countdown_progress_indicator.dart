@@ -105,6 +105,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
 
     _animationController.addListener(() {
       _currentDuration = (widget.duration - _animation.value).toInt();
+      // print(_currentDuration);
       if (_animation.value == 0.0) {
         // This indicates the duration change was a result of a button press
         // We should have the desired time calculated from the button press
@@ -112,10 +113,10 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
       }
       setState(() {
         if (_currentDuration > 59) {
-          timerText = 'minutes';
+          _currentDuration >= 119 ? timerText = 'minutes' : timerText = 'minute';
           timerSize = _minuteTimerSize;
         }
-        if (_currentDuration < 59) {
+        if (_currentDuration < 60) {
           timerText = 'seconds';
           timerSize = _secondTimerSize;
         }
@@ -168,7 +169,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  timerText == 'seconds'
+                  timerText == 'seconds' || timerText == 'second'
                       ? Text(
                           (widget.duration - _animation.value)
                               .toStringAsFixed(0),
@@ -214,22 +215,34 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
 class CountDownController {
   late _CountDownProgressIndicatorState _state;
 
-  // Update the timers remaining duration
+  // Update the timers remaining duration using +/- buttons
   // _state._animation.value = How many secs have passed
   setDuration(int currentDuration, int timeModification) {
     var currentTime = (currentDuration - _state._animation.value);
     var desiredTime = (currentTime + timeModification).toInt();
-    _state._desiredTime = desiredTime;
 
     // Prevent errors from negative numbers
     if (desiredTime < 1) {
       desiredTime = 1;
     }
     // Prevent errors from numbers above 99:99
-    if (desiredTime > 5999) {
-      desiredTime = 5999;
+    if (desiredTime > 3599) {
+      desiredTime = 3599;
     }
 
+    // Set timer text to match the new desired Duration
+    if (desiredTime > 59) {
+      _state.timerText = 'minute';
+    }
+    if (desiredTime > 119) {
+      _state.timerText = 'minutes';
+    }
+    if (desiredTime < 60) {
+      _state.timerText = 'seconds';
+    }
+    desiredTime == 1 ? _state.timerText = 'second' : null;
+
+    _state._desiredTime = desiredTime;
     _state._animationController.duration = Duration(seconds: desiredTime);
     return desiredTime;
   }
@@ -265,5 +278,16 @@ class CountDownController {
 
     _state._animationController.forward(from: initialPosition);
     _state._animationController.stop(canceled: false);
+
+    if (duration! > 59) {
+      _state.timerText = 'minute';
+    }
+    if (duration! > 119) {
+      _state.timerText = 'minutes';
+    }
+    if (duration! < 60) {
+      _state.timerText = 'seconds';
+    }
+    duration == 1 ? _state.timerText = 'second' : null;
   }
 }
