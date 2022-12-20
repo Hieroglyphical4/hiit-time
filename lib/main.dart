@@ -98,7 +98,7 @@ class _MyAppState extends State<MyApp> {
                       });
                     },
                     child: const Text('HIIT Time',
-                        style: TextStyle(fontFamily: 'SuezOne', fontSize: 60, height: 1.1),
+                        style: TextStyle(fontFamily: 'SuezOne', fontSize: 44, height: 1.1),
                         textAlign: TextAlign.center
                     ),
                   ),
@@ -150,7 +150,7 @@ class _MyAppState extends State<MyApp> {
                       controller: _controller,
                       strokeWidth: 18,
                       autostart: false,
-                      valueColor: Colors.red,
+                      valueColor: Colors.blueGrey.shade700,
                       backgroundColor: _isRunning
                           ? Colors.lightGreenAccent.shade700
                           : Colors.blue,
@@ -226,7 +226,7 @@ class _MyAppState extends State<MyApp> {
                         style: ElevatedButton.styleFrom(
                           shape: CircleBorder(),
                           padding: EdgeInsets.all(5),
-                          backgroundColor: Colors.black,
+                          backgroundColor: Colors.blueGrey.shade700,
                         ),
                         child: Text('-$_stringModValue',
                             style: const TextStyle(fontSize: 20)),
@@ -267,7 +267,7 @@ class _MyAppState extends State<MyApp> {
                         style: ElevatedButton.styleFrom(
                           shape: CircleBorder(),
                           padding: EdgeInsets.all(5),
-                          backgroundColor: Colors.black,
+                          backgroundColor: Colors.blueGrey.shade700,
                         ),
                         child: Text('+$_stringModValue',
                             style: const TextStyle(fontSize: 20)),
