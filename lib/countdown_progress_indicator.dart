@@ -37,11 +37,13 @@ class CountDownProgressIndicator extends StatefulWidget {
   final TextStyle? labelTextStyle;
 
   /// This text will be shown with the time indicator
-  final String? text;
+  // final String? text;
 
   /// true by default, this value indicates that the timer
   /// will start automatically
   final bool autostart;
+
+  final appInIntervalMode;
 
   // ignore: public_member_api_docs
   const CountDownProgressIndicator({
@@ -56,7 +58,8 @@ class CountDownProgressIndicator extends StatefulWidget {
     this.timeFormatter,
     this.labelTextStyle,
     this.strokeWidth = 22,
-    this.text,
+    this.appInIntervalMode,
+    // this.text,
     this.autostart = false,
   })  : assert(duration > 0),
         assert(initialPosition < duration),
@@ -71,13 +74,16 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     with TickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
-  late String? timerText = widget.text;
+  // late String? timerText = widget.text;
   var _currentDuration;
   var _desiredTime = 30;
   var _secondTimerSize = 130.0;
   var _minuteTimerSize = 100.0;
   late var timerSize =
       widget.duration > 59 ? _minuteTimerSize : _secondTimerSize;
+  var timerText;
+
+
 
   @override
   void dispose() {
@@ -88,6 +94,15 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   @override
   void initState() {
     super.initState();
+
+    // Set Timer text
+    if (widget.appInIntervalMode) {
+      timerText = 'Interval Mode';
+    }
+    if (!widget.appInIntervalMode) {
+      timerText = 'Timer Mode';
+    }
+
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(
@@ -113,12 +128,17 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
       }
       setState(() {
         if (_currentDuration > 59) {
-          _currentDuration >= 119 ? timerText = 'minutes' : timerText = 'minute';
           timerSize = _minuteTimerSize;
         }
         if (_currentDuration < 60) {
-          timerText = 'seconds';
           timerSize = _secondTimerSize;
+        }
+
+        if (widget.appInIntervalMode) {
+          timerText = 'Interval Mode';
+        }
+        if (!widget.appInIntervalMode) {
+          timerText = 'Timer Mode';
         }
       });
     });
@@ -169,7 +189,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  timerText == 'seconds'
+                    (widget.duration - _animation.value).toInt() < 60
                       ? Text(
                           (widget.duration - _animation.value)
                               .toStringAsFixed(0),
@@ -215,6 +235,11 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
 class CountDownController {
   late _CountDownProgressIndicatorState _state;
 
+  // Switch between Interval and Timer mode when animation is paused
+  updateWorkoutMode(bool inIntervalMode){
+    inIntervalMode ? _state.timerText = 'Interval Mode' : _state.timerText = 'Timer Mode';
+  }
+
   // Update the timers remaining duration using +/- buttons
   // _state._animation.value = How many secs have passed
   setDuration(int currentDuration, int timeModification) {
@@ -229,19 +254,6 @@ class CountDownController {
     if (desiredTime > 3599) {
       desiredTime = 3599;
     }
-
-    // Set timer text to match the new desired Duration
-    if (desiredTime > 59) {
-      _state.timerText = 'minute';
-    }
-    if (desiredTime > 119) {
-      _state.timerText = 'minutes';
-    }
-    if (desiredTime < 60) {
-      _state.timerText = 'seconds';
-    }
-    // Animation listener cant keep up accurately, lets not address via buttons
-    // desiredTime == 1 ? _state.timerText = 'second' : null;
 
     _state._desiredTime = desiredTime;
     _state._animationController.duration = Duration(seconds: desiredTime);
@@ -279,17 +291,5 @@ class CountDownController {
 
     _state._animationController.forward(from: initialPosition);
     _state._animationController.stop(canceled: false);
-
-    if (duration! > 59) {
-      _state.timerText = 'minute';
-    }
-    if (duration! > 119) {
-      _state.timerText = 'minutes';
-    }
-    if (duration! < 60) {
-      _state.timerText = 'seconds';
-    }
-    // Animation listener cant keep up accurately, lets not address via buttons either
-    // duration == 1 ? _state.timerText = 'second' : null;
   }
 }

@@ -5,6 +5,8 @@ import 'package:hiit.time/Config/settings.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
 
+import 'hiit_time_button.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -24,6 +26,7 @@ class _MyAppState extends State<MyApp> {
   final _timerModifierValue = setTimeModifyValue;
   final _stringModValue = setTimeModifyValue.toString();
   var _timerButtonRestart = false;
+  var _appInIntervalMode = false;
 
   @override
   void initState() {
@@ -60,12 +63,56 @@ class _MyAppState extends State<MyApp> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                ///////////////////////
+                //  HIIT Time Header //
+                ///////////////////////
+                Container(
+                  width: 333,
+                  height: 75,
+                  child: HiitTimeButton(
+                    selected: _appInIntervalMode,
+                    style: ButtonStyle(
+                      foregroundColor:
+                          MaterialStateProperty.resolveWith<Color?>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.selected)) {
+                            return Colors.white;
+                          }
+                          return null; // defer to the defaults
+                        },
+                      ),
+                      backgroundColor:
+                          MaterialStateProperty.resolveWith<Color?>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.selected)) {
+                            return Colors.transparent;
+                          }
+                          return null; // defer to the defaults
+                        },
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _appInIntervalMode = !_appInIntervalMode;
+                        _controller.updateWorkoutMode(_appInIntervalMode);
+                      });
+                    },
+                    child: const Text('HIIT Time',
+                        style: TextStyle(fontFamily: 'SuezOne', fontSize: 60, height: 1.1),
+                        textAlign: TextAlign.center
+                    ),
+                  ),
+                ),
+
+                // Spacer between Header and Timer
+                const SizedBox(height: 30),
+
                 // Enables animation on clicks
                 Ink(
                   height: 300,
                   width: 300,
                   child: InkWell(
-                    focusColor: Colors.green,
+                    // focusColor: Colors.green,
                     splashColor: Colors.white,
                     highlightColor: _isRunning ? Colors.pink : Colors.blue,
                     customBorder: const CircleBorder(),
@@ -78,7 +125,8 @@ class _MyAppState extends State<MyApp> {
                       // If so, restart timer to initial state
                       if (_timerButtonRestart) {
                         _duration = setStartTime;
-                        _controller.restart(duration: _duration, initialPosition: 0);
+                        _controller.restart(
+                            duration: _duration, initialPosition: 0);
                         _timerButtonRestart = false;
                       }
 
@@ -108,7 +156,8 @@ class _MyAppState extends State<MyApp> {
                           : Colors.blue,
                       initialPosition: 0,
                       duration: _duration,
-                      text: _timerLabel,
+                      appInIntervalMode: _appInIntervalMode,
+                      // text: _timerLabel,
                       timeFormatter: _duration > 59
                           ? (seconds) {
                               // When the duration is above 59 seconds,
@@ -246,6 +295,9 @@ class _MyAppState extends State<MyApp> {
                   ),
                   child: const Text('Restart'),
                 ),
+
+                // Bottom Spacing
+                const SizedBox(height: 50),
               ],
             ),
           ),
