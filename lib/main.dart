@@ -107,7 +107,9 @@ class _MyAppState extends State<MyApp> {
                 // Spacer between Header and Timer
                 const SizedBox(height: 30),
 
-                // Enables animation on clicks
+                ///////////
+                // Timer //
+                ///////////
                 Ink(
                   height: 333,
                   width: 333,
@@ -116,6 +118,13 @@ class _MyAppState extends State<MyApp> {
                     splashColor: Colors.white,
                     highlightColor: _isRunning ? Colors.pink : Colors.blue,
                     customBorder: const CircleBorder(),
+                    // Long press will allow the user to change the duration
+                    onLongPress: () {
+                      // TODO Get a popup appearing here
+                      // showIndicator();
+                      // _changeDurationMenu(context);
+                      // _showIndicator;
+                    },
                     onTap: () {
                       if (_canVibrate) {
                         Vibrate.feedback(FeedbackType.light);
@@ -191,6 +200,8 @@ class _MyAppState extends State<MyApp> {
 
                 // Spacer between timer and buttons
                 const SizedBox(height: 25),
+
+                // +/- Time Buttons
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -285,9 +296,10 @@ class _MyAppState extends State<MyApp> {
                       Vibrate.feedback(FeedbackType.heavy);
                     }
                     _duration = setStartTime;
-                    _isRunning = false;
                     _controller.restart(
                         duration: _duration, initialPosition: 0);
+                    _isRunning = false;
+                    Wakelock.disable();
                   }),
                   style: ElevatedButton.styleFrom(
                     shape: CircleBorder(),
