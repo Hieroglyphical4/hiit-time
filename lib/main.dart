@@ -22,11 +22,11 @@ class _MyAppState extends State<MyApp> {
   bool _isRunning = false;
   final _controller = CountDownController();
   var _duration = setStartTime;
-  var _timerLabel = setTimerLabel;
   final _timerModifierValue = setTimeModifyValue;
   final _stringModValue = setTimeModifyValue.toString();
   var _timerButtonRestart = false;
-  var _appInIntervalMode = false;
+  var _appInTimerMode = true;
+  var _restDuration = setRestDuration;
 
   @override
   void initState() {
@@ -70,7 +70,7 @@ class _MyAppState extends State<MyApp> {
                   width: 333,
                   height: 75,
                   child: HiitTimeButton(
-                    selected: _appInIntervalMode,
+                    selected: _appInTimerMode,
                     style: ButtonStyle(
                       foregroundColor:
                           MaterialStateProperty.resolveWith<Color?>(
@@ -93,14 +93,14 @@ class _MyAppState extends State<MyApp> {
                     ),
                     onPressed: () {
                       setState(() {
-                        _appInIntervalMode = !_appInIntervalMode;
-                        _controller.updateWorkoutMode(_appInIntervalMode);
+                        _appInTimerMode = !_appInTimerMode;
+                        _controller.updateWorkoutMode(_appInTimerMode);
                       });
                     },
                     child: const Text('HIIT Time',
-                        style: TextStyle(fontFamily: 'SuezOne', fontSize: 44, height: 1.1),
-                        textAlign: TextAlign.center
-                    ),
+                        style: TextStyle(
+                            fontFamily: 'SuezOne', fontSize: 44, height: 1.1),
+                        textAlign: TextAlign.center),
                   ),
                 ),
 
@@ -109,8 +109,8 @@ class _MyAppState extends State<MyApp> {
 
                 // Enables animation on clicks
                 Ink(
-                  height: 300,
-                  width: 300,
+                  height: 333,
+                  width: 333,
                   child: InkWell(
                     // focusColor: Colors.green,
                     splashColor: Colors.white,
@@ -156,8 +156,8 @@ class _MyAppState extends State<MyApp> {
                           : Colors.blue,
                       initialPosition: 0,
                       duration: _duration,
-                      appInIntervalMode: _appInIntervalMode,
-                      // text: _timerLabel,
+                      restDuration: _restDuration,
+                      appInTimerMode: _appInTimerMode,
                       timeFormatter: _duration > 59
                           ? (seconds) {
                               // When the duration is above 59 seconds,
