@@ -2,13 +2,17 @@
 import 'package:hiit.time/countdown_progress_indicator.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:hiit.time/Config/settings.dart';
+import 'package:hiit.time/duration_menu.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
-
 import 'hiit_time_button.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const MaterialApp(
+      home: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -23,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   final _controller = CountDownController();
   var _duration = setStartTime;
   final _timerModifierValue = setTimeModifyValue;
-  final _stringModValue = setTimeModifyValue.toString();
+  final _stringModValue = (setTimeModifyValue.toString()) + setTimeModifierLabel;
   var _timerButtonRestart = false;
   var _appInTimerMode = true;
   var _restDuration = setRestDuration;
@@ -57,6 +61,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       color: Colors.transparent,
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Container(
           color: Colors.black.withOpacity(0.85),
           child: Center(
@@ -120,10 +125,7 @@ class _MyAppState extends State<MyApp> {
                     customBorder: const CircleBorder(),
                     // Long press will allow the user to change the duration
                     onLongPress: () {
-                      // TODO Get a popup appearing here
-                      // showIndicator();
-                      // _changeDurationMenu(context);
-                      // _showIndicator;
+                      // TODO Engage Count in mode
                     },
                     onTap: () {
                       if (_canVibrate) {
@@ -199,9 +201,9 @@ class _MyAppState extends State<MyApp> {
                 ),
 
                 // Spacer between timer and buttons
-                const SizedBox(height: 25),
+                const SizedBox(height: 15),
 
-                // +/- Time Buttons
+                // +/- Time Buttons and Settings
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -244,7 +246,37 @@ class _MyAppState extends State<MyApp> {
                       ),
                     ),
 
-                    const SizedBox(width: 150),
+                    const SizedBox(width: 50),
+
+                    ////////////////////
+                    // Config Button ///
+                    ////////////////////
+                    Container(
+                      child: IconButton(
+                        icon: const Icon(Icons.settings),
+                        color: Colors.white,
+                        onPressed: () {
+
+                          // Launch settings menu
+                          showGeneralDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+                            barrierColor: Colors.black45,
+                            transitionDuration: const Duration(milliseconds: 200),
+
+                            // ANY Widget can be passed here
+                            pageBuilder: (BuildContext buildContext, Animation animation, Animation secondaryAnimation) {
+                              return Center(
+                                child: DurationMenu(key: UniqueKey(),),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(width: 50),
 
                     /////////////////////
                     // Add time Button
@@ -286,6 +318,8 @@ class _MyAppState extends State<MyApp> {
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 20),
 
                 //////////////////////
                 // Restart Button  ///
