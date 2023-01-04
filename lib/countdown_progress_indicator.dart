@@ -128,7 +128,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         if (_currentDuration > 59) {
           _timerSize = _minuteTimerSize;
         }
-        if (_currentDuration < 60) {
+        if (_currentDuration < 59) {
           _timerSize = _secondTimerSize;
         }
 
@@ -207,7 +207,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                         ])
                       : SizedBox(height: 30), // Spacer for Timer Mode
 
-                  (widget.duration - _animation.value).toInt() < 60
+                  (widget.duration - _animation.value).toInt() < 59
                       ? Text(
                           ///////////////
                           // Second mode:

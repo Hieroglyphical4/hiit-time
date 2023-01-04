@@ -125,7 +125,7 @@ class _MyAppState extends State<MyApp> {
                     customBorder: const CircleBorder(),
                     // Long press will allow the user to change the duration
                     onLongPress: () {
-                      // TODO Engage Count in mode
+                      // TODO Engage Count-in mode
                     },
                     onTap: () {
                       if (_canVibrate) {
@@ -268,7 +268,7 @@ class _MyAppState extends State<MyApp> {
                             // ANY Widget can be passed here
                             pageBuilder: (BuildContext buildContext, Animation animation, Animation secondaryAnimation) {
                               return Center(
-                                child: DurationMenu(key: UniqueKey(),),
+                                child: DurationMenu(key: UniqueKey()),
                               );
                             },
                           );

@@ -69,7 +69,7 @@ class DurationMenu extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 75),
+                  // const SizedBox(height: 75),
                   ////////////////////////////////
                   // Quick Settings Text Header  /
                   ////////////////////////////////
