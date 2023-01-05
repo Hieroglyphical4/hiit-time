@@ -66,10 +66,10 @@ class _DurationMenuState extends State<DurationMenu> {
   final _formKey = GlobalKey<FormState>();
 
   // textformfield variables
-  late String _desiredRestTimeDuration;
+  String _desiredRestTimeDuration = '';
   String _desiredWorkTimeDuration = '';
-  late String _desiredSubTimeMod;
-  late String _desiredAddTimeMod;
+  String _desiredSubTimeMod = '';
+  String _desiredAddTimeMod = '';
 
   Widget build(BuildContext context) {
     return Scaffold(
