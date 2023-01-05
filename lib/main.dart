@@ -65,7 +65,8 @@ class _MyAppState extends State<MyApp> {
         body: Container(
           color: Colors.black.withOpacity(0.85),
           child: Center(
-            child: Column(
+            // child: SingleChildScrollView(
+              child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 ///////////////////////
@@ -133,7 +134,7 @@ class _MyAppState extends State<MyApp> {
                       }
 
                       // Check if the user is pressing the timer after it finished.
-                      // If so, restart timer to initial state
+                      // If so, restart timer to initial state (reset)
                       if (_timerButtonRestart) {
                         _duration = setStartTime;
                         _controller.restart(
@@ -346,6 +347,7 @@ class _MyAppState extends State<MyApp> {
                 const SizedBox(height: 50),
               ],
             ),
+            // ) // ScrollView...
           ),
         ),
       ),
