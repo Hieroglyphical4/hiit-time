@@ -26,11 +26,13 @@ class _MyAppState extends State<MyApp> {
   bool _isRunning = false;
   final _controller = CountDownController();
   var _duration = setStartTime;
-  final _timerModifierValue = setTimeModifyValue;
-  final _stringModValue = (setTimeModifyValue.toString()) + setTimeModifierLabel;
+  var _restDuration = setRestDuration;
+  var _timerModifierValueAdd = setTimeModifyValueAdd;
+  var _stringModValueAdd = (setTimeModifyValueAdd.toString()) + setTimeModifierLabelAdd;
+  var _timerModifierValueSub = setTimeModifyValueSub;
+  var _stringModValueSub = (setTimeModifyValueSub.toString()) + setTimeModifierLabelSub;
   var _timerButtonRestart = false;
   var _appInTimerMode = true;
-  var _restDuration = setRestDuration;
 
   @override
   void initState() {
@@ -137,8 +139,19 @@ class _MyAppState extends State<MyApp> {
                       // If so, restart timer to initial state (reset)
                       if (_timerButtonRestart) {
                         _duration = setStartTime;
+                        _restDuration = setRestDuration;
+                        // Add time button vars
+                        _timerModifierValueAdd = setTimeModifyValueAdd;
+                        _stringModValueAdd = (setTimeModifyValueAdd.toString()) + setTimeModifierLabelAdd;
+                        // Sub time button vars
+                        _timerModifierValueSub = setTimeModifyValueSub;
+                        _stringModValueSub = (setTimeModifyValueSub.toString()) + setTimeModifierLabelSub;
+                        // Reset timer
                         _controller.restart(
-                            duration: _duration, initialPosition: 0);
+                            duration: _duration,
+                            initialPosition: 0,
+                            restDuration: _restDuration
+                        );
                         _timerButtonRestart = false;
                       }
 
@@ -225,7 +238,7 @@ class _MyAppState extends State<MyApp> {
                           _timerButtonRestart = false;
 
                           var desiredTime = _controller.setDuration(
-                              _duration, (-1 * _timerModifierValue.ceil()));
+                              _duration, (-1 * _timerModifierValueSub.ceil()));
                           _duration = desiredTime;
 
                           if (_isRunning) {
@@ -242,7 +255,7 @@ class _MyAppState extends State<MyApp> {
                           padding: EdgeInsets.all(5),
                           backgroundColor: Colors.blueGrey.shade700,
                         ),
-                        child: Text('-$_stringModValue',
+                        child: Text('-$_stringModValueSub',
                             style: const TextStyle(fontSize: 20)),
                       ),
                     ),
@@ -295,7 +308,7 @@ class _MyAppState extends State<MyApp> {
                           _timerButtonRestart = false;
 
                           var desiredTime = _controller
-                              .setDuration(_duration, _timerModifierValue)
+                              .setDuration(_duration, _timerModifierValueAdd)
                               .ceil();
                           _duration = desiredTime;
 
@@ -313,7 +326,7 @@ class _MyAppState extends State<MyApp> {
                           padding: EdgeInsets.all(5),
                           backgroundColor: Colors.blueGrey.shade700,
                         ),
-                        child: Text('+$_stringModValue',
+                        child: Text('+$_stringModValueAdd',
                             style: const TextStyle(fontSize: 20)),
                       ),
                     ),
@@ -331,8 +344,19 @@ class _MyAppState extends State<MyApp> {
                       Vibrate.feedback(FeedbackType.heavy);
                     }
                     _duration = setStartTime;
+                    _restDuration = setRestDuration;
+                    // Add time button vars
+                    _timerModifierValueAdd = setTimeModifyValueAdd;
+                    _stringModValueAdd = (setTimeModifyValueAdd.toString()) + setTimeModifierLabelAdd;
+                    // Sub time button vars
+                    _timerModifierValueSub = setTimeModifyValueSub;
+                    _stringModValueSub = (setTimeModifyValueSub.toString()) + setTimeModifierLabelSub;
+                    // Reset timer
                     _controller.restart(
-                        duration: _duration, initialPosition: 0);
+                        duration: _duration,
+                        initialPosition: 0,
+                        restDuration: _restDuration,
+                    );
                     _isRunning = false;
                     Wakelock.disable();
                   }),
@@ -347,7 +371,7 @@ class _MyAppState extends State<MyApp> {
                 const SizedBox(height: 50),
               ],
             ),
-            // ) // ScrollView...
+            // ) // ScrollView... disabled for now
           ),
         ),
       ),

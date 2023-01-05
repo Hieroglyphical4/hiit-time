@@ -45,10 +45,10 @@ class CountDownProgressIndicator extends StatefulWidget {
 
   final appInTimerMode;
 
-  final restDuration;
+  var restDuration;
 
   // ignore: public_member_api_docs
-  const CountDownProgressIndicator({
+  CountDownProgressIndicator({
     Key? key,
     required this.duration,
     this.restDuration,
@@ -335,9 +335,12 @@ class CountDownController {
   /// * [duration] is an optional value, if this value is null,
   /// the duration will use the previous one defined in the widget
   /// * Use [initialPosition] if you want the original position
-  void restart({int? duration, required double initialPosition}) {
+  void restart({int? duration, required double initialPosition, int? restDuration}) {
     if (duration != null) {
       _state._animationController.duration = Duration(seconds: duration);
+    }
+    if (restDuration != null) {
+      _state.widget.restDuration = restDuration;
     }
 
     _state._animationController.forward(from: initialPosition);

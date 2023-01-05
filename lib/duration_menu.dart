@@ -236,7 +236,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                             _desiredSubTimeMod = value;
                                           },
                                           decoration: InputDecoration(
-                                            hintText: '-$setTimeModifyValue',
+                                            hintText: '-$setTimeModifyValueSub',
                                             hintStyle: const TextStyle(
                                                 fontSize: 20, color: Colors.white),
                                             fillColor: Colors.blueGrey,
@@ -270,16 +270,16 @@ class _DurationMenuState extends State<DurationMenu> {
 
                                             // Check if changes were made to any Time settings
                                             if (_desiredRestTimeDuration != '') {
-                                              print("Change is coming");
+                                              setRestDuration = int.parse(_desiredRestTimeDuration);
                                             }
                                             if (_desiredWorkTimeDuration != '') {
-                                              print("Change is coming");
+                                              setStartTime = int.parse(_desiredWorkTimeDuration);
                                             }
                                             if (_desiredSubTimeMod != '') {
-                                              print("Change is coming");
+                                              setTimeModifyValueSub = int.parse(_desiredSubTimeMod);
                                             }
                                             if (_desiredAddTimeMod != '') {
-                                              print("Change is coming");
+                                              setTimeModifyValueAdd = int.parse(_desiredAddTimeMod);
                                             }
 
                                             Navigator.pop(context);
@@ -304,7 +304,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                             _desiredAddTimeMod = value;
                                           },
                                           decoration: InputDecoration(
-                                            hintText: '+$setTimeModifyValue',
+                                            hintText: '+$setTimeModifyValueAdd',
                                             hintStyle: const TextStyle(
                                                 fontSize: 20, color: Colors.white),
                                             iconColor: Colors.white,
