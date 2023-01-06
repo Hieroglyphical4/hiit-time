@@ -165,6 +165,17 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     _animationController.forward(from: 0);
   }
 
+  // To go from seconds to mm:ss
+  String changeDurationFromSecondsToMinutes(int totalSeconds) {
+    final duration = Duration(seconds: totalSeconds);
+    final minutes = duration.inMinutes;
+    final seconds = totalSeconds % 60;
+
+    final minutesString = '$minutes'.padLeft(2, '0');
+    final secondsString = '$seconds'.padLeft(2, '0');
+    return '$minutesString:$secondsString';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -194,7 +205,11 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                             ////////////////////////////
                             // Interval Mode: Duration
                             /////////////////////////////
-                            widget.restDuration.toString()!,
+                            // widget.restDuration.toString()!,
+                            widget.restDuration > 59
+                                ? changeDurationFromSecondsToMinutes(widget.restDuration)
+                                : widget.restDuration.toString(),
+
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
                                     color: Colors.blue.shade300,

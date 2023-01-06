@@ -90,7 +90,7 @@ class _DurationMenuState extends State<DurationMenu> {
     return duration.inSeconds;
   }
 
-  // To go from seconds to mm:ss
+  // Convert from seconds to mm:ss
   String changeDurationFromSecondsToMinutes(int totalSeconds) {
     final duration = Duration(seconds: totalSeconds);
     final minutes = duration.inMinutes;
@@ -162,7 +162,9 @@ class _DurationMenuState extends State<DurationMenu> {
                                     _desiredRestTimeDuration = value;
                                   },
                                   decoration: InputDecoration(
-                                    hintText: setRestDuration.toString(),
+                                    hintText: setRestDuration > 59
+                                        ? changeDurationFromSecondsToMinutes(setRestDuration)
+                                        : setRestDuration.toString(),
                                     hintStyle: const TextStyle(
                                         fontSize: 20, color: Colors.white),
                                     enabledBorder: OutlineInputBorder(
@@ -274,7 +276,11 @@ class _DurationMenuState extends State<DurationMenu> {
                                         _desiredSubTimeMod = value;
                                       },
                                       decoration: InputDecoration(
-                                        hintText: '-$setTimeModifyValueSub',
+                                        // hintText: '-$setTimeModifyValueSub',
+                                        hintText: setTimeModifyValueSub > 59
+                                            ? changeDurationFromSecondsToMinutes(setTimeModifyValueSub)
+                                            : setTimeModifyValueSub.toString(),
+
                                         hintStyle: const TextStyle(
                                             fontSize: 20, color: Colors.white),
                                         fillColor: Colors.blueGrey,
@@ -303,37 +309,68 @@ class _DurationMenuState extends State<DurationMenu> {
                                     height: 80,
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        // TODO Update variables here!
-                                        print("\n\nSave button pressed! \n");
-
+                                        ///////////////////////////////////////////////////
                                         // Check if changes were made to any Time settings
+                                        ///////////////////////////////////////////////////
+                                        // Check for Changes to Rest Time
                                         if (_desiredRestTimeDuration != '') {
-                                          setRestDuration = int.parse(
-                                              _desiredRestTimeDuration);
+                                          setRestDuration = int.parse(_desiredRestTimeDuration);
+                                          // Prevent errors from numbers above 59:59
+                                          if (setRestDuration > 5959) {
+                                            setRestDuration = 5959;
+                                          }
+                                          if (_desiredRestTimeDuration.length > 2) {
+                                            var timeFormatted = formatDuration(setRestDuration.toString());
+                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
+                                            setRestDuration = timeInSeconds;
+                                          }
                                         }
+
+                                        // Check for Changes to Work Time
                                         if (_desiredWorkTimeDuration != '') {
-                                          // TODO Get work time showing correctly
+                                          // Prevent errors from negative numbers
                                           setStartTime = int.parse(_desiredWorkTimeDuration); // works if <2
+                                          if (setStartTime < 1) {
+                                            setStartTime = 1;
+                                          }
+                                          // Prevent errors from numbers above 59:59
+                                          if (setStartTime > 5959) {
+                                            setStartTime = 5959;
+                                          }
                                           if (_desiredWorkTimeDuration.length > 2) {
-                                            var timeFormatted = formatDuration(_desiredWorkTimeDuration);
+                                            var timeFormatted = formatDuration(setStartTime.toString());
                                             var timeInSeconds = convertMinutesToSeconds(timeFormatted);
                                             setStartTime = timeInSeconds;
                                           }
                                         }
+
+                                        // Check for Changes to Subtract Modifier
                                         if (_desiredSubTimeMod != '') {
-                                          setTimeModifyValueSub =
-                                              int.parse(_desiredSubTimeMod);
-                                          // TODO Get times converted into seconds?
-                                          // setTimeModifierLabelSub = setTimeModifyValueSub > 59 ? 'm' : 's';
-                                        }
-                                        if (_desiredAddTimeMod != '') {
-                                          setTimeModifyValueAdd =
-                                              int.parse(_desiredAddTimeMod);
-                                          // TODO Get times converted into seconds?
-                                          // setTimeModifierLabelAdd = setTimeModifyValueAdd > 59 ? 'm' : 's';
+                                          setTimeModifyValueSub = int.parse(_desiredSubTimeMod);
+                                          if (setTimeModifyValueSub > 5959) {
+                                            setTimeModifyValueSub = 5959;
+                                          }
+                                          if (_desiredSubTimeMod.length > 2) {
+                                            var timeFormatted = formatDuration(setTimeModifyValueSub.toString());
+                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
+                                            setTimeModifyValueSub = timeInSeconds;
+                                          }
                                         }
 
-                                        Navigator.pop(context);
+                                        // Check for Changes to Addition Modifier
+                                        if (_desiredAddTimeMod != '') {
+                                          setTimeModifyValueAdd = int.parse(_desiredAddTimeMod);
+                                          if (setTimeModifyValueAdd > 5959) {
+                                            setTimeModifyValueAdd = 5959;
+                                          }
+                                          if (_desiredAddTimeMod.length > 2) {
+                                            var timeFormatted = formatDuration(setTimeModifyValueAdd.toString());
+                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
+                                            setTimeModifyValueAdd = timeInSeconds;
+                                          }
+                                        }
+
+                                        Navigator.pop(context); // Close Settings menu
                                       },
                                       child: Text('Save'),
                                     ),
@@ -355,7 +392,12 @@ class _DurationMenuState extends State<DurationMenu> {
                                         _desiredAddTimeMod = value;
                                       },
                                       decoration: InputDecoration(
-                                        hintText: '+$setTimeModifyValueAdd',
+                                        // hintText: '+$setTimeModifyValueAdd',
+
+                                        hintText: setTimeModifyValueAdd > 59
+                                            ? changeDurationFromSecondsToMinutes(setTimeModifyValueAdd)
+                                            : setTimeModifyValueAdd.toString(),
+
                                         hintStyle: const TextStyle(
                                             fontSize: 20, color: Colors.white),
                                         iconColor: Colors.white,

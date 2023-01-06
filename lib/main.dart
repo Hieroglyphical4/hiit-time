@@ -57,6 +57,17 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  // Convert from seconds to mm:ss
+  String changeDurationFromSecondsToMinutes(int totalSeconds) {
+    final duration = Duration(seconds: totalSeconds);
+    final minutes = duration.inMinutes;
+    final seconds = totalSeconds % 60;
+
+    final minutesString = '$minutes'.padLeft(2, '0');
+    final secondsString = '$seconds'.padLeft(2, '0');
+    return '$minutesString:$secondsString';
+  }
+
   @override
   Widget build(BuildContext context) {
     _init();
@@ -226,8 +237,8 @@ class _MyAppState extends State<MyApp> {
                     // Subtract Time Button //
                     //////////////////////////
                     Container(
-                      width: 70,
-                      height: 70,
+                      width: 75,
+                      height: 75,
                       child: ElevatedButton(
                         onPressed: () => setState(() {
                           if (_canVibrate) {
@@ -296,8 +307,8 @@ class _MyAppState extends State<MyApp> {
                     // Add time Button
                     ////////////////////
                     Container(
-                      width: 70,
-                      height: 70,
+                      width: 75,
+                      height: 75,
                       child: ElevatedButton(
                         onPressed: () => setState(() {
                           if (_canVibrate) {
@@ -347,10 +358,16 @@ class _MyAppState extends State<MyApp> {
                     _restDuration = setRestDuration;
                     // Add time button vars
                     _timerModifierValueAdd = setTimeModifyValueAdd;
-                    _stringModValueAdd = (setTimeModifyValueAdd.toString()) + setTimeModifierLabelAdd;
+                    _stringModValueAdd = setTimeModifyValueAdd > 59
+                        ? changeDurationFromSecondsToMinutes(setTimeModifyValueAdd)
+                        : setTimeModifyValueAdd.toString();
+
                     // Sub time button vars
                     _timerModifierValueSub = setTimeModifyValueSub;
-                    _stringModValueSub = (setTimeModifyValueSub.toString()) + setTimeModifierLabelSub;
+                    _stringModValueSub = setTimeModifyValueSub > 59
+                        ? changeDurationFromSecondsToMinutes(setTimeModifyValueSub)
+                        : setTimeModifyValueSub.toString();
+
                     // Reset timer
                     _controller.restart(
                         duration: _duration,
