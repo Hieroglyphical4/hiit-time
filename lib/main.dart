@@ -28,9 +28,9 @@ class _MyAppState extends State<MyApp> {
   var _duration = setStartTime;
   var _restDuration = setRestDuration;
   var _timerModifierValueAdd = setTimeModifyValueAdd;
-  var _stringModValueAdd = (setTimeModifyValueAdd.toString()) + setTimeModifierLabelAdd;
+  var _stringModValueAdd = setTimeModifyValueAdd.toString();
   var _timerModifierValueSub = setTimeModifyValueSub;
-  var _stringModValueSub = (setTimeModifyValueSub.toString()) + setTimeModifierLabelSub;
+  var _stringModValueSub = setTimeModifyValueSub.toString();
   var _timerButtonRestart = false;
   var _appInTimerMode = true;
 
@@ -153,10 +153,10 @@ class _MyAppState extends State<MyApp> {
                         _restDuration = setRestDuration;
                         // Add time button vars
                         _timerModifierValueAdd = setTimeModifyValueAdd;
-                        _stringModValueAdd = (setTimeModifyValueAdd.toString()) + setTimeModifierLabelAdd;
+                        _stringModValueAdd = setTimeModifyValueAdd.toString();
                         // Sub time button vars
                         _timerModifierValueSub = setTimeModifyValueSub;
-                        _stringModValueSub = (setTimeModifyValueSub.toString()) + setTimeModifierLabelSub;
+                        _stringModValueSub = setTimeModifyValueSub.toString();
                         // Reset timer
                         _controller.restart(
                             duration: _duration,
