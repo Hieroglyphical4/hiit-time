@@ -1,4 +1,5 @@
 // import 'package:countdown_progress_indicator/countdown_progress_indicator.dart';
+import 'package:flutter/services.dart';
 import 'package:hiit.time/countdown_progress_indicator.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:hiit.time/Config/settings.dart';
@@ -30,7 +31,6 @@ class _MyAppState extends State<MyApp> {
   var _timerModifierValueAdd = setTimeModifyValueAdd;
   var _timerModifierValueSub = setTimeModifyValueSub;
   var _timerButtonRestart = false;
-  // var _appInTimerMode = appInTimerMode;
   var _timerInRestMode = false;
 
   var _changesMade = false; // todo update changes on save
@@ -38,24 +38,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _init();
-  }
-
-  // Vibration related settings
-  bool _canVibrate = false;
-  final Iterable<Duration> pauses = [
-    const Duration(milliseconds: 150),
-  ];
-
-  Future<void> _init() async {
-    try {
-      bool canVibrate = await Vibrate.canVibrate;
-      setState(() async {
-        _canVibrate = canVibrate;
-      });
-    } catch (e) {
-      print('Error checking if device can vibrate: $e');
-    }
   }
 
   resetTimer() {
@@ -106,7 +88,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    _init();
     return MaterialApp(
       color: Colors.transparent,
       home: Scaffold(
@@ -140,6 +121,8 @@ class _MyAppState extends State<MyApp> {
                       ),
                     ),
                     onPressed: () {
+                      HapticFeedback.mediumImpact();
+
                       setState(() {
                         appInTimerMode = !appInTimerMode;
                         _controller.updateWorkoutMode(appInTimerMode);
@@ -171,9 +154,7 @@ class _MyAppState extends State<MyApp> {
                       // TODO Engage Count-in mode
                     },
                     onTap: () {
-                      if (_canVibrate) {
-                        Vibrate.feedback(FeedbackType.light);
-                      }
+                      HapticFeedback.lightImpact();
 
                       // Check if the user is pressing the timer after it finished.
                       // If so, restart timer to initial state (reset)
@@ -228,9 +209,7 @@ class _MyAppState extends State<MyApp> {
                       onComplete: () {
                         // Code to be executed when the countdown completes
                         setState(() {
-                          if (_canVibrate) {
-                            Vibrate.vibrateWithPauses(pauses);
-                          }
+                          HapticFeedback.vibrate();
                           if (appInTimerMode == false) {
                             // App is in Interval mode and needs to repeat
                             if (_timerInRestMode == false) {
@@ -273,9 +252,7 @@ class _MyAppState extends State<MyApp> {
                       height: 75,
                       child: ElevatedButton(
                         onPressed: () => setState(() {
-                          if (_canVibrate) {
-                            Vibrate.feedback(FeedbackType.light);
-                          }
+                          HapticFeedback.mediumImpact();
                           // If the user is manually changing the time, we shouldn't
                           // set the timer up to restart on the next press
                           _timerButtonRestart = false;
@@ -318,9 +295,7 @@ class _MyAppState extends State<MyApp> {
                       color: Colors.white,
                       icon: const Icon(Icons.settings),
                       onPressed: () {
-                        if (_canVibrate) {
-                          Vibrate.feedback(FeedbackType.light);
-                        }
+                        HapticFeedback.mediumImpact();
 
                         // Launch settings menu
                         showGeneralDialog(
@@ -362,9 +337,7 @@ class _MyAppState extends State<MyApp> {
                       height: 75,
                       child: ElevatedButton(
                         onPressed: () => setState(() {
-                          if (_canVibrate) {
-                            Vibrate.feedback(FeedbackType.light);
-                          }
+                          HapticFeedback.mediumImpact();
                           // If the user is manually changing the time, we shouldn't
                           // set the timer up to restart on the next press
                           _timerButtonRestart = false;
@@ -410,9 +383,7 @@ class _MyAppState extends State<MyApp> {
                   width: 90,
                   child: ElevatedButton(
                       onPressed: () => setState(() {
-                            if (_canVibrate) {
-                              Vibrate.feedback(FeedbackType.heavy);
-                            }
+                        HapticFeedback.lightImpact();
                             resetTimer();
                           }),
                       style: ElevatedButton.styleFrom(

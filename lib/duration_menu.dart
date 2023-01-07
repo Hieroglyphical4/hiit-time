@@ -76,23 +76,6 @@ class _DurationMenuState extends State<DurationMenu> {
     });
   }
 
-  // Vibration related settings
-  bool _canVibrate = false;
-  final Iterable<Duration> pauses = [
-    const Duration(milliseconds: 150),
-  ];
-
-  Future<void> _init() async {
-    try {
-      bool canVibrate = await Vibrate.canVibrate;
-      setState(() async {
-        _canVibrate = canVibrate;
-      });
-    } catch (e) {
-      print('Error checking if device can vibrate: $e');
-    }
-  }
-
   String formatDuration(String minutesRaw) {
     var string = minutesRaw;
     final insertIndex = string.length == 3 ? 1 : 2;
@@ -146,7 +129,6 @@ class _DurationMenuState extends State<DurationMenu> {
   String _desiredSubTimeMod = '';
   String _desiredAddTimeMod = '';
   bool _changesRequiringRestartOccured = false;
-
 
   Widget build(BuildContext context) {
     _init();
@@ -303,14 +285,12 @@ class _DurationMenuState extends State<DurationMenu> {
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-
                         children: [
                           Text(
                             'Timer Mode',
                             style: TextStyle(
-                              color: appInTimerMode
-                              ? Colors.white
-                              : Colors.grey,
+                              color:
+                                  appInTimerMode ? Colors.white : Colors.grey,
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
@@ -327,9 +307,7 @@ class _DurationMenuState extends State<DurationMenu> {
                           Text(
                             'Interval Mode',
                             style: TextStyle(
-                              color: appInTimerMode
-                              ? Colors.grey
-                              : Colors.blue,
+                              color: appInTimerMode ? Colors.grey : Colors.blue,
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
@@ -405,10 +383,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                     color: Colors.red,
                                     icon: const Icon(Icons.block),
                                     onPressed: () {
-                                      if (_canVibrate) {
-                                        Vibrate.feedback(FeedbackType.light);
-                                      }
-
+                                      HapticFeedback.mediumImpact();
                                       Navigator.pop(context);
                                     },
                                   ),
@@ -499,9 +474,7 @@ class _DurationMenuState extends State<DurationMenu> {
                               onPressed: _settingsChanged
                                   ? () {
                                       // Check if settings have changed
-                                      if (_canVibrate) {
-                                        Vibrate.feedback(FeedbackType.light);
-                                      }
+                                      HapticFeedback.mediumImpact();
 
                                       ///////////////////////////////////////////////////
                                       // Check if changes were made to any Time settings
@@ -586,7 +559,8 @@ class _DurationMenuState extends State<DurationMenu> {
                                         }
                                       }
 
-                                      Navigator.pop(context, _changesRequiringRestartOccured); // Close Settings menu
+                                      Navigator.pop(context,
+                                          _changesRequiringRestartOccured); // Close Settings menu
                                     }
                                   : null, // If settings haven't changed, Disable Save Button
                             ),
