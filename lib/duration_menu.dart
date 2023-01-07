@@ -59,7 +59,6 @@ class _TextInputFormatter extends TextInputFormatter {
 class DurationMenu extends StatefulWidget {
   DurationMenu({
     required Key key,
-    onSettingsChange,
   }) : super(key: key);
 
   @override
@@ -112,7 +111,6 @@ class _DurationMenuState extends State<DurationMenu> {
     return '$minutesString:$secondsString';
   }
 
-  // TODO Get this working
   void _onChanged(bool value) {
     setState(() {
       if (appInTimerMode) {
@@ -315,8 +313,6 @@ class _DurationMenuState extends State<DurationMenu> {
                       ),
                       const SizedBox(height: 40),
 
-                      // TODO Add toggle here indicating what mode the app is in
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -481,8 +477,6 @@ class _DurationMenuState extends State<DurationMenu> {
                                       // Check for Changes to Rest Time
                                       if (_desiredRestTimeDuration != '') {
                                         _changesRequiringRestartOccured = true;
-                                        // TODO Force updates to Animations on save
-                                        // onSettingsChange();
                                         setRestDuration =
                                             int.parse(_desiredRestTimeDuration);
                                         // Prevent errors from numbers above 59:59

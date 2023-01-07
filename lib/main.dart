@@ -33,8 +33,6 @@ class _MyAppState extends State<MyApp> {
   var _timerButtonRestart = false;
   var _timerInRestMode = false;
 
-  var _changesMade = false; // todo update changes on save
-
   @override
   void initState() {
     super.initState();
@@ -313,7 +311,7 @@ class _MyAppState extends State<MyApp> {
                             return Center(
                               child: DurationMenu(
                                   key: UniqueKey(),
-                                  onSettingsChange: onSettingsChange),
+                                  ),
                             );
                           },
                         ).then((restartRequired) {
