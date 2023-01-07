@@ -35,6 +35,8 @@ class _MyAppState extends State<MyApp> {
   var _appInTimerMode = true;
   var _timerInRestMode = false;
 
+  var _changesMade = false;
+
   @override
   void initState() {
     super.initState();
@@ -105,6 +107,10 @@ class _MyAppState extends State<MyApp> {
     final minutesString = '$minutes'.padLeft(2, '0');
     final secondsString = '$seconds'.padLeft(2, '0');
     return '$minutesString:$secondsString';
+  }
+
+  onSettingsChange() {
+    print('Settings Changed TriggereD!!');
   }
 
   @override
@@ -196,6 +202,8 @@ class _MyAppState extends State<MyApp> {
                         if (_isRunning) {
                           // Timer was running, going into pause mode
                           _controller.pause();
+                          // Update timer text
+                          _controller.updateWorkoutMode(_appInTimerMode);
                           Wakelock.disable();
                         } else {
                           // Timer was paused, turning on
@@ -333,10 +341,11 @@ class _MyAppState extends State<MyApp> {
                             // ANY Widget can be passed here
                             pageBuilder: (BuildContext buildContext, Animation animation, Animation secondaryAnimation) {
                               return Center(
-                                child: DurationMenu(key: UniqueKey()),
+                                child: DurationMenu(key: UniqueKey(), onSettingsChange: onSettingsChange),
                               );
                             },
                           );
+
                         },
                       ),
                     ),

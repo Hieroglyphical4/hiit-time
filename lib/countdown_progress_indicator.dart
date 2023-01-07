@@ -78,7 +78,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     with TickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
-  var timerText;
+  var _timerText = '';
   var _currentDuration;
   var _desiredTime = 30;
   var _secondTimerSize = 120.0;
@@ -96,14 +96,6 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   @override
   void initState() {
     super.initState();
-
-    // Set Timer text
-    if (widget.appInTimerMode) {
-      timerText = 'Timer Mode';
-    }
-    if (!widget.appInTimerMode) {
-      timerText = 'Interval Mode';
-    }
 
     _animationController = AnimationController(
       vsync: this,
@@ -138,10 +130,18 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         }
 
         if (widget.appInTimerMode) {
-          timerText = 'Timer Mode';
+          _timerText = 'Timer Mode';
         }
         if (!widget.appInTimerMode) {
-          timerText = 'Interval Mode';
+          _timerText = 'Interval Mode';
+
+          if (widget.isRunning) {
+            _timerText = 'Work';
+            if (widget.timerInRestMode) {
+              _timerText = 'Rest';
+            }
+          }
+
         }
       });
     });
@@ -226,10 +226,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
 
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
-                                    color: Colors.blue.shade300,
-                                    // widget.timerInRestMode
-                                    //     ? Colors.white
-                                    //     : Colors.blue.shade300,
+                                    color: widget.timerInRestMode
+                                        ? Colors.white
+                                        : Colors.blue.shade300,
                                     fontSize: 20,
                                     height: .1
                                     // fontWeight: FontWeight.w600,
@@ -249,10 +248,8 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                               .toStringAsFixed(0),
                           style: widget.timeTextStyle ??
                               Theme.of(context).textTheme.bodyText1!.copyWith(
-                                  color:
-                                  // Colors.white,
-                                  widget.timerInRestMode
-                                      ? Colors.blueGrey
+                                  color: widget.timerInRestMode
+                                      ? Colors.blue.shade300
                                       : Colors.white,
                                   fontSize: _timerSize,
                                   fontWeight: FontWeight.w600),
@@ -285,7 +282,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                             ///////////////////
                             // In "Timer Mode"
                             ///////////////////
-                            timerText!,
+                            _timerText,
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
                                       color: Colors.white,
@@ -300,10 +297,14 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                             ////////////////////////
                             // In: "Interval Mode"
                             ////////////////////////
-                            timerText!,
+                            _timerText,
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
-                                      color: Colors.blue.shade300,
+                                      color: !widget.isRunning
+                                      ? Colors.blue
+                                      : widget.timerInRestMode
+                                        ? Colors.blue.shade300
+                                        : Colors.white,
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -326,8 +327,8 @@ class CountDownController {
   // Switch between Interval and Timer mode when animation is paused
   updateWorkoutMode(bool inTimerMode) {
     inTimerMode
-        ? _state.timerText = 'Timer Mode'
-        : _state.timerText = 'Interval Mode';
+        ? _state._timerText = 'Timer Mode'
+        : _state._timerText = 'Interval Mode';
   }
 
   // Update the timers remaining duration using +/- buttons

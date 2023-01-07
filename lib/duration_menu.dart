@@ -56,7 +56,7 @@ class _TextInputFormatter extends TextInputFormatter {
 }
 
 class DurationMenu extends StatefulWidget {
-  DurationMenu({required Key key}) : super(key: key);
+  DurationMenu({required Key key, onSettingsChange}) : super(key: key);
 
   @override
   _DurationMenuState createState() => _DurationMenuState();
@@ -307,6 +307,8 @@ class _DurationMenuState extends State<DurationMenu> {
                                   Container(
                                     width: 100,
                                     height: 80,
+                                    // TODO change design based on if changes have been made
+                                    // TODO Confirm back if changes not saved
                                     child: ElevatedButton(
                                       onPressed: () {
                                         ///////////////////////////////////////////////////
@@ -314,6 +316,8 @@ class _DurationMenuState extends State<DurationMenu> {
                                         ///////////////////////////////////////////////////
                                         // Check for Changes to Rest Time
                                         if (_desiredRestTimeDuration != '') {
+                                          // TODO Force updates to Animations on save
+                                          // onSettingsChange();
                                           setRestDuration = int.parse(_desiredRestTimeDuration);
                                           // Prevent errors from numbers above 59:59
                                           if (setRestDuration > 5959) {
