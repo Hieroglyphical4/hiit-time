@@ -1,3 +1,4 @@
+import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Config/settings.dart';
@@ -56,7 +57,10 @@ class _TextInputFormatter extends TextInputFormatter {
 }
 
 class DurationMenu extends StatefulWidget {
-  DurationMenu({required Key key, onSettingsChange}) : super(key: key);
+  DurationMenu({
+    required Key key, 
+    onSettingsChange,
+  }) : super(key: key);
 
   @override
   _DurationMenuState createState() => _DurationMenuState();
@@ -64,6 +68,30 @@ class DurationMenu extends StatefulWidget {
 
 class _DurationMenuState extends State<DurationMenu> {
   final _formKey = GlobalKey<FormState>();
+  bool _settingsChanged = false;
+
+  void recordSettingsChanged() {
+    setState(() {
+      _settingsChanged = true;
+    });
+  }
+
+  // Vibration related settings
+  bool _canVibrate = false;
+  final Iterable<Duration> pauses = [
+    const Duration(milliseconds: 150),
+  ];
+
+  Future<void> _init() async {
+    try {
+      bool canVibrate = await Vibrate.canVibrate;
+      setState(() async {
+        _canVibrate = canVibrate;
+      });
+    } catch (e) {
+      print('Error checking if device can vibrate: $e');
+    }
+  }
 
   String formatDuration(String minutesRaw) {
     var string = minutesRaw;
@@ -108,6 +136,7 @@ class _DurationMenuState extends State<DurationMenu> {
   String _desiredAddTimeMod = '';
 
   Widget build(BuildContext context) {
+    _init();
     return Scaffold(
       backgroundColor: Colors.blueGrey,
       resizeToAvoidBottomInset: true,
@@ -154,12 +183,15 @@ class _DurationMenuState extends State<DurationMenu> {
                               SizedBox(
                                 width: 80,
                                 child: (TextFormField(
-                                  focusNode: FocusNode(),
                                   textAlign: TextAlign.center,
                                   textDirection: TextDirection.rtl,
                                   keyboardType: TextInputType.number,
                                   onChanged: (value) {
                                     _desiredRestTimeDuration = value;
+                                    recordSettingsChanged();
+                                  },
+                                  onFieldSubmitted: (value) {
+                                    FocusManager.instance.primaryFocus?.unfocus();
                                   },
                                   decoration: InputDecoration(
                                     hintText: setRestDuration > 59
@@ -203,12 +235,15 @@ class _DurationMenuState extends State<DurationMenu> {
                               SizedBox(
                                 width: 115,
                                 child: (TextFormField(
-                                  focusNode: FocusNode(),
                                   textAlign: TextAlign.center,
                                   textDirection: TextDirection.rtl,
                                   keyboardType: TextInputType.number,
                                   onChanged: (value) {
                                     _desiredWorkTimeDuration = value;
+                                    recordSettingsChanged();
+                                  },
+                                  onFieldSubmitted: (value) {
+                                    FocusManager.instance.primaryFocus?.unfocus();
                                   },
                                   decoration: InputDecoration(
                                     hintText: setStartTime > 59
@@ -268,15 +303,17 @@ class _DurationMenuState extends State<DurationMenu> {
                                   SizedBox(
                                     width: 100,
                                     child: (TextFormField(
-                                      focusNode: FocusNode(),
                                       textAlign: TextAlign.center,
                                       textDirection: TextDirection.rtl,
                                       keyboardType: TextInputType.number,
                                       onChanged: (value) {
+                                        recordSettingsChanged();
                                         _desiredSubTimeMod = value;
                                       },
+                                      onFieldSubmitted: (value) {
+                                        FocusManager.instance.primaryFocus?.unfocus();
+                                      },
                                       decoration: InputDecoration(
-                                        // hintText: '-$setTimeModifyValueSub',
                                         hintText: setTimeModifyValueSub > 59
                                             ? changeDurationFromSecondsToMinutes(setTimeModifyValueSub)
                                             : setTimeModifyValueSub.toString(),
@@ -307,10 +344,13 @@ class _DurationMenuState extends State<DurationMenu> {
                                   Container(
                                     width: 100,
                                     height: 80,
-                                    // TODO change design based on if changes have been made
                                     // TODO Confirm back if changes not saved
                                     child: ElevatedButton(
-                                      onPressed: () {
+                                      onPressed: _settingsChanged ? () { // Check if settings have changed
+                                        if (_canVibrate) {
+                                          Vibrate.feedback(FeedbackType.light);
+                                        }
+
                                         ///////////////////////////////////////////////////
                                         // Check if changes were made to any Time settings
                                         ///////////////////////////////////////////////////
@@ -375,7 +415,8 @@ class _DurationMenuState extends State<DurationMenu> {
                                         }
 
                                         Navigator.pop(context); // Close Settings menu
-                                      },
+                                      }
+                                      : null, // If settings haven't changed, do nothing
                                       child: Text('Save'),
                                     ),
                                   ),
@@ -388,12 +429,15 @@ class _DurationMenuState extends State<DurationMenu> {
                                   SizedBox(
                                     width: 100,
                                     child: (TextFormField(
-                                      focusNode: FocusNode(),
                                       textAlign: TextAlign.center,
                                       textDirection: TextDirection.rtl,
                                       keyboardType: TextInputType.number,
                                       onChanged: (value) {
                                         _desiredAddTimeMod = value;
+                                        recordSettingsChanged();
+                                      },
+                                      onFieldSubmitted: (value) {
+                                        FocusManager.instance.primaryFocus?.unfocus();
                                       },
                                       decoration: InputDecoration(
                                         // hintText: '+$setTimeModifyValueAdd',
@@ -456,6 +500,10 @@ class _DurationMenuState extends State<DurationMenu> {
                                   backgroundColor: Colors.red,
                                 ),
                                 onPressed: () {
+                                  if (_canVibrate) {
+                                    Vibrate.feedback(FeedbackType.light);
+                                  }
+
                                   Navigator.pop(context);
                                 },
                                 child: Text('Cancel'),

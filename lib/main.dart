@@ -35,7 +35,7 @@ class _MyAppState extends State<MyApp> {
   var _appInTimerMode = true;
   var _timerInRestMode = false;
 
-  var _changesMade = false;
+  var _changesMade = false; // todo update changes on save
 
   @override
   void initState() {
@@ -329,6 +329,9 @@ class _MyAppState extends State<MyApp> {
                         icon: const Icon(Icons.settings),
                         color: Colors.white,
                         onPressed: () {
+                          if (_canVibrate) {
+                            Vibrate.feedback(FeedbackType.light);
+                          }
 
                           // Launch settings menu
                           showGeneralDialog(
