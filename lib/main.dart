@@ -158,6 +158,7 @@ class _MyAppState extends State<MyApp> {
                       // If so, restart timer to initial state (reset)
                       if (_timerButtonRestart) {
                         resetTimer();
+                        _isRunning = true; // Used to get into the upcoming pause block
                         _timerButtonRestart = false;
                       }
 
@@ -215,7 +216,7 @@ class _MyAppState extends State<MyApp> {
                               // TODO set timer off in reverse
                               flipIntervalTimer();
                             } else {
-                              resetTimer();
+                              flipIntervalTimer();
                               _timerInRestMode = false;
                               _controller.resume();
                             }

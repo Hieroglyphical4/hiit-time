@@ -78,12 +78,12 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     with TickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
-  var _timerText = '';
+  var _timerText = 'Press Here to Start Timer';
   var _currentDuration;
   var _desiredTime = 30;
   var _secondTimerSize = 120.0;
   var _minuteTimerSize = 105.0;
-  late var _timerSize = widget.duration > 59
+  late var _timerSize = widget.duration > 60
       ? _minuteTimerSize
       : _secondTimerSize;
 
@@ -122,7 +122,8 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         _currentDuration = _desiredTime;
       }
       setState(() {
-        if (_currentDuration > 59) {
+        _timerText = 'Timer Mode';
+        if (_currentDuration > 60) {
           _timerSize = _minuteTimerSize;
         }
         if (_currentDuration < 59) {
