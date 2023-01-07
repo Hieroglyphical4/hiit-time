@@ -131,7 +131,6 @@ class _DurationMenuState extends State<DurationMenu> {
   bool _changesRequiringRestartOccured = false;
 
   Widget build(BuildContext context) {
-    _init();
     return Scaffold(
       backgroundColor: Colors.blueGrey,
       resizeToAvoidBottomInset: true,
