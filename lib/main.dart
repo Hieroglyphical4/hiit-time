@@ -28,9 +28,7 @@ class _MyAppState extends State<MyApp> {
   var _duration = setStartTime;
   var _restDuration = setRestDuration;
   var _timerModifierValueAdd = setTimeModifyValueAdd;
-  var _stringModValueAdd = setTimeModifyValueAdd.toString();
   var _timerModifierValueSub = setTimeModifyValueSub;
-  var _stringModValueSub = setTimeModifyValueSub.toString();
   var _timerButtonRestart = false;
   var _appInTimerMode = true;
   var _timerInRestMode = false;
@@ -63,17 +61,8 @@ class _MyAppState extends State<MyApp> {
   resetTimer() {
     _duration = setStartTime;
     _restDuration = setRestDuration;
-    // Add time button vars
     _timerModifierValueAdd = setTimeModifyValueAdd;
-    _stringModValueAdd = setTimeModifyValueAdd > 59
-        ? changeDurationFromSecondsToMinutes(setTimeModifyValueAdd)
-        : '${setTimeModifyValueAdd}s';
-
-    // Sub time button vars
     _timerModifierValueSub = setTimeModifyValueSub;
-    _stringModValueSub = setTimeModifyValueSub > 59
-        ? changeDurationFromSecondsToMinutes(setTimeModifyValueSub)
-        : '${setTimeModifyValueSub}s';
 
     // Reset timer
     _controller.restart(
@@ -314,8 +303,11 @@ class _MyAppState extends State<MyApp> {
                           padding: EdgeInsets.all(5),
                           backgroundColor: Colors.blueGrey.shade700,
                         ),
-                        child: Text('-$_stringModValueSub',
-                            style: const TextStyle(fontSize: 20)),
+                        child: Text(setTimeModifyValueSub > 59
+                            ? '-${changeDurationFromSecondsToMinutes(setTimeModifyValueSub)}'
+                            : '-${setTimeModifyValueSub}s',
+                            style: const TextStyle(fontSize: 20)
+                        ),
                       ),
                     ),
 
@@ -389,8 +381,11 @@ class _MyAppState extends State<MyApp> {
                           padding: EdgeInsets.all(5),
                           backgroundColor: Colors.blueGrey.shade700,
                         ),
-                        child: Text('+$_stringModValueAdd',
-                            style: const TextStyle(fontSize: 20)),
+                            child: Text(setTimeModifyValueAdd > 59
+                                ? '+${changeDurationFromSecondsToMinutes(setTimeModifyValueAdd)}'
+                                : '+${setTimeModifyValueAdd}s',
+                            style: const TextStyle(fontSize: 20)
+                            ),
                       ),
                     ),
                   ],
