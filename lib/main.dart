@@ -33,6 +33,7 @@ class _MyAppState extends State<MyApp> {
   var _stringModValueSub = setTimeModifyValueSub.toString();
   var _timerButtonRestart = false;
   var _appInTimerMode = true;
+  var _timerInRestMode = false;
 
   @override
   void initState() {
@@ -78,7 +79,21 @@ class _MyAppState extends State<MyApp> {
       initialPosition: 0,
       restDuration: _restDuration,
     );
+    _timerInRestMode = false;
     Wakelock.disable();
+  }
+
+  flipIntervalTimer() {
+    _duration = setRestDuration;
+    _restDuration = setStartTime;
+
+    // Reset timer
+    _controller.restart(
+      duration: _duration,
+      initialPosition: 0,
+      restDuration: _restDuration,
+    );
+    _controller.flip();
   }
 
   // Convert from seconds to mm:ss
@@ -198,13 +213,12 @@ class _MyAppState extends State<MyApp> {
                       strokeWidth: 18,
                       autostart: false,
                       valueColor: Colors.blueGrey.shade700,
-                      backgroundColor: _isRunning
-                          ? Colors.lightGreenAccent.shade700
-                          : Colors.blue,
                       initialPosition: 0,
+                      isRunning: _isRunning,
                       duration: _duration,
                       restDuration: _restDuration,
                       appInTimerMode: _appInTimerMode,
+                      timerInRestMode: _timerInRestMode,
                       timeFormatter: _duration > 59
                           ? (seconds) {
                               // When the duration is above 59 seconds,
@@ -225,11 +239,26 @@ class _MyAppState extends State<MyApp> {
                           if (_canVibrate) {
                             Vibrate.vibrateWithPauses(pauses);
                           }
-                          // Upon completion, Enable the next press on the timer button to restart the timer
-                          _timerButtonRestart = true;
+                          if (_appInTimerMode == false) {
+                            // App is in Interval mode and needs to repeat
+                            if (_timerInRestMode == false) {
+                              _timerInRestMode = true;
+                              // TODO set timer off in reverse
+                              flipIntervalTimer();
+                            } else {
+                              resetTimer();
+                              _timerInRestMode = false;
+                              _controller.resume();
+                            }
+                          }
+                          if (_appInTimerMode == true) {
+                            // Upon completion in Timer mode,
+                            // Enable the next press on the timer button to restart the timer
+                            _timerButtonRestart = true;
 
-                          // Disable keeping the phone awake
-                          Wakelock.disable();
+                            // Disable keeping the phone awake
+                            Wakelock.disable();
+                          }
                         });
                       },
                     ),

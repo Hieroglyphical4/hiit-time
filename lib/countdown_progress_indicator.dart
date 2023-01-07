@@ -5,9 +5,6 @@ class CountDownProgressIndicator extends StatefulWidget {
   /// Timer duration in seconds
   final int duration;
 
-  /// Default Background color
-  final Color backgroundColor;
-
   /// Filling color
   final Color valueColor;
 
@@ -47,15 +44,20 @@ class CountDownProgressIndicator extends StatefulWidget {
 
   var restDuration;
 
+  var timerInRestMode;
+
+  var isRunning;
+
   // ignore: public_member_api_docs
   CountDownProgressIndicator({
     Key? key,
     required this.duration,
     this.restDuration,
     this.initialPosition = 0,
-    required this.backgroundColor,
     required this.valueColor,
+    this.timerInRestMode,
     this.controller,
+    this.isRunning,
     this.onComplete,
     this.timeTextStyle,
     this.timeFormatter,
@@ -81,8 +83,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   var _desiredTime = 30;
   var _secondTimerSize = 120.0;
   var _minuteTimerSize = 105.0;
-  late var _timerSize =
-      widget.duration > 59 ? _minuteTimerSize : _secondTimerSize;
+  late var _timerSize = widget.duration > 59
+      ? _minuteTimerSize
+      : _secondTimerSize;
 
   @override
   void dispose() {
@@ -114,7 +117,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     ).animate(_animationController);
 
     _animationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) widget.onComplete?.call();
+      if (status == AnimationStatus.completed) {
+        widget.onComplete?.call();
+      }
     });
 
     _animationController.addListener(() {
@@ -187,7 +192,15 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
             width: double.infinity,
             child: CircularProgressIndicator(
               strokeWidth: widget.strokeWidth,
-              backgroundColor: widget.backgroundColor,
+              backgroundColor: widget.timerInRestMode
+              // Rest Mode:
+              ? widget.isRunning
+                  ? Colors.white
+                  : Colors.blue
+              // Work Mode:
+              : widget.isRunning
+                ? Colors.lightGreenAccent.shade700
+                : Colors.blue,
               valueColor: AlwaysStoppedAnimation<Color>(widget.valueColor),
               value: _animation.value / widget.duration,
             ),
@@ -199,13 +212,14 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+
+                  // For when the App is in INTERVAL Mode
                   (!widget.appInTimerMode)
                       ? Column(children: [
                           Text(
-                            ////////////////////////////
-                            // Interval Mode: Duration
-                            /////////////////////////////
-                            // widget.restDuration.toString()!,
+                            //////////////////////////////////////////
+                            // Secondary Number (top most): Duration
+                            /////////////////////////////////////////
                             widget.restDuration > 59
                                 ? changeDurationFromSecondsToMinutes(widget.restDuration)
                                 : widget.restDuration.toString(),
@@ -213,6 +227,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
                                     color: Colors.blue.shade300,
+                                    // widget.timerInRestMode
+                                    //     ? Colors.white
+                                    //     : Colors.blue.shade300,
                                     fontSize: 20,
                                     height: .1
                                     // fontWeight: FontWeight.w600,
@@ -222,6 +239,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                         ])
                       : SizedBox(height: 30), // Spacer for Timer Mode
 
+                  // Check if remaining duration should be displayed as Minute or Second
                   (widget.duration - _animation.value).toInt() < 59
                       ? Text(
                           ///////////////
@@ -231,7 +249,11 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                               .toStringAsFixed(0),
                           style: widget.timeTextStyle ??
                               Theme.of(context).textTheme.bodyText1!.copyWith(
-                                  color: Colors.white,
+                                  color:
+                                  // Colors.white,
+                                  widget.timerInRestMode
+                                      ? Colors.blueGrey
+                                      : Colors.white,
                                   fontSize: _timerSize,
                                   fontWeight: FontWeight.w600),
                         )
@@ -246,21 +268,23 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                   .toStringAsFixed(0),
                           style: widget.timeTextStyle ??
                               Theme.of(context).textTheme.bodyText1!.copyWith(
-                                  color: Colors.white,
+                                  color: widget.timerInRestMode
+                                      ? Colors.blueGrey
+                                      : Colors.white,
                                   fontSize: _timerSize,
                                   fontWeight: FontWeight.w600),
                         ),
-                  // (widget.duration - _animation.value).toInt() > 60
-                  //     ? SizedBox(height: 40)
-                  //     : Container(),
 
+                  ///////////////////////////
+                  // Clock Mode Description
+                  ///////////////////////////
                   (widget.appInTimerMode)
                       ? Column(children: [
                           SizedBox(height: 27),
                           Text(
-                            //////////////////////
-                            // Timer Mode Text
-                            //////////////////////
+                            ///////////////////
+                            // In "Timer Mode"
+                            ///////////////////
                             timerText!,
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
@@ -273,9 +297,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                       : Column(children: [
                           SizedBox(height: 27),
                           Text(
-                            //////////////////////
-                            // Interval Mode Text
-                            //////////////////////
+                            ////////////////////////
+                            // In: "Interval Mode"
+                            ////////////////////////
                             timerText!,
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
@@ -343,6 +367,11 @@ class CountDownController {
       _state._animationController
           .forward(from: _state.widget.initialPosition.toDouble());
     }
+  }
+
+  void flip() {
+    _state._animationController.forward();
+    // _state._animationController.reverse(); // TODO Get Working
   }
 
   /// Restarts countdown timer.
