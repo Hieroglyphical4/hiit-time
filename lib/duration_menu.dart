@@ -131,14 +131,11 @@ class _DurationMenuState extends State<DurationMenu> {
 
   // TODO Get this working
   void _onChanged(bool value) {
-    recordSettingsChanged();
     setState(() {
       if (appInTimerMode) {
         appInTimerMode = false;
-        _changesRequiringRestartOccured = true;
       } else {
         appInTimerMode = true;
-        _changesRequiringRestartOccured = true;
       }
     });
   }
