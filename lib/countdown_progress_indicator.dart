@@ -40,7 +40,7 @@ class CountDownProgressIndicator extends StatefulWidget {
   /// will start automatically
   final bool autostart;
 
-  final appInTimerMode;
+  var appInTimerMode;
 
   var restDuration;
 
@@ -224,8 +224,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                 ? changeDurationFromSecondsToMinutes(widget.restDuration)
                                 : widget.restDuration.toString(),
 
-                            style: widget.labelTextStyle ??
-                                Theme.of(context).textTheme.bodyText1!.copyWith(
+                            style: Theme.of(context).textTheme.bodyText1!.copyWith(
                                     color: widget.timerInRestMode
                                         ? Colors.white
                                         : Colors.blue.shade300,
@@ -326,9 +325,13 @@ class CountDownController {
 
   // Switch between Interval and Timer mode when animation is paused
   updateWorkoutMode(bool inTimerMode) {
-    inTimerMode
-        ? _state._timerText = 'Timer Mode'
-        : _state._timerText = 'Interval Mode';
+    if (inTimerMode) {
+      _state._timerText = 'Timer Mode';
+      _state.widget.appInTimerMode = true;
+    } else {
+      _state._timerText = 'Interval Mode';
+      _state.widget.appInTimerMode = false;
+    }
   }
 
   // Update the timers remaining duration using +/- buttons

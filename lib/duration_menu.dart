@@ -58,7 +58,7 @@ class _TextInputFormatter extends TextInputFormatter {
 
 class DurationMenu extends StatefulWidget {
   DurationMenu({
-    required Key key, 
+    required Key key,
     onSettingsChange,
   }) : super(key: key);
 
@@ -129,11 +129,27 @@ class _DurationMenuState extends State<DurationMenu> {
     return '$minutesString:$secondsString';
   }
 
+  // TODO Get this working
+  void _onChanged(bool value) {
+    recordSettingsChanged();
+    setState(() {
+      if (appInTimerMode) {
+        appInTimerMode = false;
+        _changesRequiringRestartOccured = true;
+      } else {
+        appInTimerMode = true;
+        _changesRequiringRestartOccured = true;
+      }
+    });
+  }
+
   // textformfield variables
   String _desiredRestTimeDuration = '';
   String _desiredWorkTimeDuration = '';
   String _desiredSubTimeMod = '';
   String _desiredAddTimeMod = '';
+  bool _changesRequiringRestartOccured = false;
+
 
   Widget build(BuildContext context) {
     _init();
@@ -151,7 +167,7 @@ class _DurationMenuState extends State<DurationMenu> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 45),
                       ////////////////////////////////
                       // Quick Settings Text Header  /
                       ////////////////////////////////
@@ -169,7 +185,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                 ),
                               ))),
 
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 65),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -191,11 +207,13 @@ class _DurationMenuState extends State<DurationMenu> {
                                     recordSettingsChanged();
                                   },
                                   onFieldSubmitted: (value) {
-                                    FocusManager.instance.primaryFocus?.unfocus();
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
                                   },
                                   decoration: InputDecoration(
                                     hintText: setRestDuration > 59
-                                        ? changeDurationFromSecondsToMinutes(setRestDuration)
+                                        ? changeDurationFromSecondsToMinutes(
+                                            setRestDuration)
                                         : setRestDuration.toString(),
                                     hintStyle: const TextStyle(
                                         fontSize: 20, color: Colors.white),
@@ -243,11 +261,13 @@ class _DurationMenuState extends State<DurationMenu> {
                                     recordSettingsChanged();
                                   },
                                   onFieldSubmitted: (value) {
-                                    FocusManager.instance.primaryFocus?.unfocus();
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
                                   },
                                   decoration: InputDecoration(
                                     hintText: setStartTime > 59
-                                        ? changeDurationFromSecondsToMinutes(setStartTime)
+                                        ? changeDurationFromSecondsToMinutes(
+                                            setStartTime)
                                         : setStartTime.toString(),
                                     hintStyle: const TextStyle(
                                         fontSize: 30, color: Colors.white),
@@ -281,9 +301,49 @@ class _DurationMenuState extends State<DurationMenu> {
                       ),
 
                       ////////////////////////////////
-                      // Spacer between Save button and timer settings
+                      // Spacer between Cancel/-time/+time button and timer settings
                       ////////////////////////////////
-                      const SizedBox(height: 80),
+                      const SizedBox(height: 40),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+
+                        children: [
+                          Text(
+                            'Timer Mode',
+                            style: TextStyle(
+                              color: appInTimerMode
+                              ? Colors.white
+                              : Colors.grey,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          ////////////////////////////////////
+                          // Switch/Toggle Between App Modes
+                          ////////////////////////////////////
+                          Switch(
+                            value: !appInTimerMode,
+                            onChanged: _onChanged,
+                          ),
+                          const SizedBox(width: 20),
+                          Text(
+                            'Interval Mode',
+                            style: TextStyle(
+                              color: appInTimerMode
+                              ? Colors.grey
+                              : Colors.blue,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 40),
+
+                      // TODO Add toggle here indicating what mode the app is in
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -311,13 +371,14 @@ class _DurationMenuState extends State<DurationMenu> {
                                         _desiredSubTimeMod = value;
                                       },
                                       onFieldSubmitted: (value) {
-                                        FocusManager.instance.primaryFocus?.unfocus();
+                                        FocusManager.instance.primaryFocus
+                                            ?.unfocus();
                                       },
                                       decoration: InputDecoration(
                                         hintText: setTimeModifyValueSub > 59
-                                            ? changeDurationFromSecondsToMinutes(setTimeModifyValueSub)
+                                            ? changeDurationFromSecondsToMinutes(
+                                                setTimeModifyValueSub)
                                             : setTimeModifyValueSub.toString(),
-
                                         hintStyle: const TextStyle(
                                             fontSize: 20, color: Colors.white),
                                         fillColor: Colors.blueGrey,
@@ -341,84 +402,20 @@ class _DurationMenuState extends State<DurationMenu> {
 
                                   SizedBox(width: 25),
 
-                                  Container(
-                                    width: 100,
-                                    height: 80,
-                                    // TODO Confirm back if changes not saved
-                                    child: ElevatedButton(
-                                      onPressed: _settingsChanged ? () { // Check if settings have changed
-                                        if (_canVibrate) {
-                                          Vibrate.feedback(FeedbackType.light);
-                                        }
-
-                                        ///////////////////////////////////////////////////
-                                        // Check if changes were made to any Time settings
-                                        ///////////////////////////////////////////////////
-                                        // Check for Changes to Rest Time
-                                        if (_desiredRestTimeDuration != '') {
-                                          // TODO Force updates to Animations on save
-                                          // onSettingsChange();
-                                          setRestDuration = int.parse(_desiredRestTimeDuration);
-                                          // Prevent errors from numbers above 59:59
-                                          if (setRestDuration > 5959) {
-                                            setRestDuration = 5959;
-                                          }
-                                          if (_desiredRestTimeDuration.length > 2) {
-                                            var timeFormatted = formatDuration(setRestDuration.toString());
-                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
-                                            setRestDuration = timeInSeconds;
-                                          }
-                                        }
-
-                                        // Check for Changes to Work Time
-                                        if (_desiredWorkTimeDuration != '') {
-                                          // Prevent errors from negative numbers
-                                          setStartTime = int.parse(_desiredWorkTimeDuration); // works if <2
-                                          if (setStartTime < 1) {
-                                            setStartTime = 1;
-                                          }
-                                          // Prevent errors from numbers above 59:59
-                                          if (setStartTime > 5959) {
-                                            setStartTime = 5959;
-                                          }
-                                          if (_desiredWorkTimeDuration.length > 2) {
-                                            var timeFormatted = formatDuration(setStartTime.toString());
-                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
-                                            setStartTime = timeInSeconds;
-                                          }
-                                        }
-
-                                        // Check for Changes to Subtract Modifier
-                                        if (_desiredSubTimeMod != '') {
-                                          setTimeModifyValueSub = int.parse(_desiredSubTimeMod);
-                                          if (setTimeModifyValueSub > 5959) {
-                                            setTimeModifyValueSub = 5959;
-                                          }
-                                          if (_desiredSubTimeMod.length > 2) {
-                                            var timeFormatted = formatDuration(setTimeModifyValueSub.toString());
-                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
-                                            setTimeModifyValueSub = timeInSeconds;
-                                          }
-                                        }
-
-                                        // Check for Changes to Addition Modifier
-                                        if (_desiredAddTimeMod != '') {
-                                          setTimeModifyValueAdd = int.parse(_desiredAddTimeMod);
-                                          if (setTimeModifyValueAdd > 5959) {
-                                            setTimeModifyValueAdd = 5959;
-                                          }
-                                          if (_desiredAddTimeMod.length > 2) {
-                                            var timeFormatted = formatDuration(setTimeModifyValueAdd.toString());
-                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
-                                            setTimeModifyValueAdd = timeInSeconds;
-                                          }
-                                        }
-
-                                        Navigator.pop(context); // Close Settings menu
+                                  //////////////////
+                                  // Cancel Button
+                                  //////////////////
+                                  IconButton(
+                                    iconSize: 75,
+                                    color: Colors.red,
+                                    icon: const Icon(Icons.block),
+                                    onPressed: () {
+                                      if (_canVibrate) {
+                                        Vibrate.feedback(FeedbackType.light);
                                       }
-                                      : null, // If settings haven't changed, do nothing
-                                      child: Text('Save'),
-                                    ),
+
+                                      Navigator.pop(context);
+                                    },
                                   ),
 
                                   SizedBox(width: 25),
@@ -437,13 +434,15 @@ class _DurationMenuState extends State<DurationMenu> {
                                         recordSettingsChanged();
                                       },
                                       onFieldSubmitted: (value) {
-                                        FocusManager.instance.primaryFocus?.unfocus();
+                                        FocusManager.instance.primaryFocus
+                                            ?.unfocus();
                                       },
                                       decoration: InputDecoration(
                                         // hintText: '+$setTimeModifyValueAdd',
 
                                         hintText: setTimeModifyValueAdd > 59
-                                            ? changeDurationFromSecondsToMinutes(setTimeModifyValueAdd)
+                                            ? changeDurationFromSecondsToMinutes(
+                                                setTimeModifyValueAdd)
                                             : setTimeModifyValueAdd.toString(),
 
                                         hintStyle: const TextStyle(
@@ -492,24 +491,112 @@ class _DurationMenuState extends State<DurationMenu> {
                                     ),
                                   ),
                                 ]),
-                            const SizedBox(height: 30),
-                            Container(
-                              width: 115,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                ),
-                                onPressed: () {
-                                  if (_canVibrate) {
-                                    Vibrate.feedback(FeedbackType.light);
-                                  }
 
-                                  Navigator.pop(context);
-                                },
-                                child: Text('Cancel'),
-                              ),
+                            const SizedBox(height: 10),
+
+                            /////////////////
+                            // Save Button
+                            /////////////////
+                            IconButton(
+                              iconSize: 75,
+                              color: Colors.blue,
+                              icon: const Icon(Icons.save),
+                              onPressed: _settingsChanged
+                                  ? () {
+                                      // Check if settings have changed
+                                      if (_canVibrate) {
+                                        Vibrate.feedback(FeedbackType.light);
+                                      }
+
+                                      ///////////////////////////////////////////////////
+                                      // Check if changes were made to any Time settings
+                                      ///////////////////////////////////////////////////
+                                      // Check for Changes to Rest Time
+                                      if (_desiredRestTimeDuration != '') {
+                                        _changesRequiringRestartOccured = true;
+                                        // TODO Force updates to Animations on save
+                                        // onSettingsChange();
+                                        setRestDuration =
+                                            int.parse(_desiredRestTimeDuration);
+                                        // Prevent errors from numbers above 59:59
+                                        if (setRestDuration > 5959) {
+                                          setRestDuration = 5959;
+                                        }
+                                        if (_desiredRestTimeDuration.length >
+                                            2) {
+                                          var timeFormatted = formatDuration(
+                                              setRestDuration.toString());
+                                          var timeInSeconds =
+                                              convertMinutesToSeconds(
+                                                  timeFormatted);
+                                          setRestDuration = timeInSeconds;
+                                        }
+                                      }
+
+                                      // Check for Changes to Work Time
+                                      if (_desiredWorkTimeDuration != '') {
+                                        _changesRequiringRestartOccured = true;
+                                        // Prevent errors from negative numbers
+                                        setStartTime = int.parse(
+                                            _desiredWorkTimeDuration); // works if <2
+                                        if (setStartTime < 1) {
+                                          setStartTime = 1;
+                                        }
+                                        // Prevent errors from numbers above 59:59
+                                        if (setStartTime > 5959) {
+                                          setStartTime = 5959;
+                                        }
+                                        if (_desiredWorkTimeDuration.length >
+                                            2) {
+                                          var timeFormatted = formatDuration(
+                                              setStartTime.toString());
+                                          var timeInSeconds =
+                                              convertMinutesToSeconds(
+                                                  timeFormatted);
+                                          setStartTime = timeInSeconds;
+                                        }
+                                      }
+
+                                      // Check for Changes to Subtract Modifier
+                                      if (_desiredSubTimeMod != '') {
+                                        setTimeModifyValueSub =
+                                            int.parse(_desiredSubTimeMod);
+                                        if (setTimeModifyValueSub > 5959) {
+                                          setTimeModifyValueSub = 5959;
+                                        }
+                                        if (_desiredSubTimeMod.length > 2) {
+                                          var timeFormatted = formatDuration(
+                                              setTimeModifyValueSub.toString());
+                                          var timeInSeconds =
+                                              convertMinutesToSeconds(
+                                                  timeFormatted);
+                                          setTimeModifyValueSub = timeInSeconds;
+                                        }
+                                      }
+
+                                      // Check for Changes to Addition Modifier
+                                      if (_desiredAddTimeMod != '') {
+                                        setTimeModifyValueAdd =
+                                            int.parse(_desiredAddTimeMod);
+                                        if (setTimeModifyValueAdd > 5959) {
+                                          setTimeModifyValueAdd = 5959;
+                                        }
+                                        if (_desiredAddTimeMod.length > 2) {
+                                          var timeFormatted = formatDuration(
+                                              setTimeModifyValueAdd.toString());
+                                          var timeInSeconds =
+                                              convertMinutesToSeconds(
+                                                  timeFormatted);
+                                          setTimeModifyValueAdd = timeInSeconds;
+                                        }
+                                      }
+
+                                      Navigator.pop(context, _changesRequiringRestartOccured); // Close Settings menu
+                                    }
+                                  : null, // If settings haven't changed, Disable Save Button
                             ),
-                            const SizedBox(height: 50),
+
+                            const SizedBox(height: 75),
                           ]),
                     ],
                   ),

@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
   var _timerModifierValueAdd = setTimeModifyValueAdd;
   var _timerModifierValueSub = setTimeModifyValueSub;
   var _timerButtonRestart = false;
-  var _appInTimerMode = true;
+  // var _appInTimerMode = appInTimerMode;
   var _timerInRestMode = false;
 
   var _changesMade = false; // todo update changes on save
@@ -59,6 +59,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   resetTimer() {
+    _isRunning = false;
     _duration = setStartTime;
     _restDuration = setRestDuration;
     _timerModifierValueAdd = setTimeModifyValueAdd;
@@ -71,6 +72,7 @@ class _MyAppState extends State<MyApp> {
       restDuration: _restDuration,
     );
     _timerInRestMode = false;
+    _controller.updateWorkoutMode(appInTimerMode);
     Wakelock.disable();
   }
 
@@ -113,7 +115,7 @@ class _MyAppState extends State<MyApp> {
           color: Colors.black.withOpacity(0.85),
           child: Center(
             // child: SingleChildScrollView(
-              child: Column(
+            child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 ///////////////////////
@@ -122,32 +124,25 @@ class _MyAppState extends State<MyApp> {
                 Container(
                   width: 333,
                   height: 75,
-                  child: HiitTimeButton(
-                    selected: _appInTimerMode,
+                  child: TextButton(
                     style: ButtonStyle(
                       foregroundColor:
                           MaterialStateProperty.resolveWith<Color?>(
                         (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.selected)) {
+                          if (appInTimerMode) {
                             return Colors.white;
                           }
-                          return null; // defer to the defaults
-                        },
-                      ),
-                      backgroundColor:
-                          MaterialStateProperty.resolveWith<Color?>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.selected)) {
-                            return Colors.transparent;
-                          }
+                          // if (appInTimerMode) {
+                          //   return Colors.white;
+                          // }
                           return null; // defer to the defaults
                         },
                       ),
                     ),
                     onPressed: () {
                       setState(() {
-                        _appInTimerMode = !_appInTimerMode;
-                        _controller.updateWorkoutMode(_appInTimerMode);
+                        appInTimerMode = !appInTimerMode;
+                        _controller.updateWorkoutMode(appInTimerMode);
                       });
                     },
                     child: const Text('HIIT Time',
@@ -192,7 +187,7 @@ class _MyAppState extends State<MyApp> {
                           // Timer was running, going into pause mode
                           _controller.pause();
                           // Update timer text
-                          _controller.updateWorkoutMode(_appInTimerMode);
+                          _controller.updateWorkoutMode(appInTimerMode);
                           Wakelock.disable();
                         } else {
                           // Timer was paused, turning on
@@ -214,7 +209,7 @@ class _MyAppState extends State<MyApp> {
                       isRunning: _isRunning,
                       duration: _duration,
                       restDuration: _restDuration,
-                      appInTimerMode: _appInTimerMode,
+                      appInTimerMode: appInTimerMode,
                       timerInRestMode: _timerInRestMode,
                       timeFormatter: _duration > 59
                           ? (seconds) {
@@ -236,7 +231,7 @@ class _MyAppState extends State<MyApp> {
                           if (_canVibrate) {
                             Vibrate.vibrateWithPauses(pauses);
                           }
-                          if (_appInTimerMode == false) {
+                          if (appInTimerMode == false) {
                             // App is in Interval mode and needs to repeat
                             if (_timerInRestMode == false) {
                               _timerInRestMode = true;
@@ -248,7 +243,7 @@ class _MyAppState extends State<MyApp> {
                               _controller.resume();
                             }
                           }
-                          if (_appInTimerMode == true) {
+                          if (appInTimerMode == true) {
                             // Upon completion in Timer mode,
                             // Enable the next press on the timer button to restart the timer
                             _timerButtonRestart = true;
@@ -263,7 +258,7 @@ class _MyAppState extends State<MyApp> {
                 ),
 
                 // Spacer between timer and buttons
-                const SizedBox(height: 15),
+                const SizedBox(height: 25),
 
                 // +/- Time Buttons and Settings
                 Row(
@@ -284,6 +279,8 @@ class _MyAppState extends State<MyApp> {
                           // If the user is manually changing the time, we shouldn't
                           // set the timer up to restart on the next press
                           _timerButtonRestart = false;
+                          // Reassign value in-case setting were saved
+                          _timerModifierValueSub = setTimeModifyValueSub;
 
                           var desiredTime = _controller.setDuration(
                               _duration, (-1 * _timerModifierValueSub.ceil()));
@@ -303,49 +300,59 @@ class _MyAppState extends State<MyApp> {
                           padding: EdgeInsets.all(5),
                           backgroundColor: Colors.blueGrey.shade700,
                         ),
-                        child: Text(setTimeModifyValueSub > 59
-                            ? '-${changeDurationFromSecondsToMinutes(setTimeModifyValueSub)}'
-                            : '-${setTimeModifyValueSub}s',
-                            style: const TextStyle(fontSize: 20)
-                        ),
+                        child: Text(
+                            setTimeModifyValueSub > 59
+                                ? '-${changeDurationFromSecondsToMinutes(setTimeModifyValueSub)}'
+                                : '-${setTimeModifyValueSub}s',
+                            style: const TextStyle(fontSize: 20)),
                       ),
                     ),
 
-                    const SizedBox(width: 50),
+                    const SizedBox(width: 45),
 
                     ////////////////////
                     // Config Button ///
                     ////////////////////
-                    Container(
-                      child: IconButton(
-                        icon: const Icon(Icons.settings),
-                        color: Colors.white,
-                        onPressed: () {
-                          if (_canVibrate) {
-                            Vibrate.feedback(FeedbackType.light);
+                    IconButton(
+                      iconSize: 45,
+                      color: Colors.white,
+                      icon: const Icon(Icons.settings),
+                      onPressed: () {
+                        if (_canVibrate) {
+                          Vibrate.feedback(FeedbackType.light);
+                        }
+
+                        // Launch settings menu
+                        showGeneralDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          barrierLabel: MaterialLocalizations.of(context)
+                              .modalBarrierDismissLabel,
+                          barrierColor: Colors.black45,
+                          transitionDuration: const Duration(milliseconds: 200),
+
+                          // ANY Widget can be passed here
+                          pageBuilder: (BuildContext buildContext,
+                              Animation animation,
+                              Animation secondaryAnimation) {
+                            return Center(
+                              child: DurationMenu(
+                                  key: UniqueKey(),
+                                  onSettingsChange: onSettingsChange),
+                            );
+                          },
+                        ).then((restartRequired) {
+                          if (restartRequired == true) {
+                            resetTimer();
                           }
-
-                          // Launch settings menu
-                          showGeneralDialog(
-                            context: context,
-                            barrierDismissible: true,
-                            barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-                            barrierColor: Colors.black45,
-                            transitionDuration: const Duration(milliseconds: 200),
-
-                            // ANY Widget can be passed here
-                            pageBuilder: (BuildContext buildContext, Animation animation, Animation secondaryAnimation) {
-                              return Center(
-                                child: DurationMenu(key: UniqueKey(), onSettingsChange: onSettingsChange),
-                              );
-                            },
-                          );
-
-                        },
-                      ),
+                          setState(() {
+                            _controller.updateWorkoutMode(appInTimerMode);
+                          });
+                        });
+                      },
                     ),
 
-                    const SizedBox(width: 50),
+                    const SizedBox(width: 45),
 
                     /////////////////////
                     // Add time Button
@@ -361,6 +368,8 @@ class _MyAppState extends State<MyApp> {
                           // If the user is manually changing the time, we shouldn't
                           // set the timer up to restart on the next press
                           _timerButtonRestart = false;
+                          // Reassign value in-case setting were saved
+                          _timerModifierValueAdd = setTimeModifyValueAdd;
 
                           var desiredTime = _controller
                               .setDuration(_duration, _timerModifierValueAdd)
@@ -381,38 +390,41 @@ class _MyAppState extends State<MyApp> {
                           padding: EdgeInsets.all(5),
                           backgroundColor: Colors.blueGrey.shade700,
                         ),
-                            child: Text(setTimeModifyValueAdd > 59
+                        child: Text(
+                            setTimeModifyValueAdd > 59
                                 ? '+${changeDurationFromSecondsToMinutes(setTimeModifyValueAdd)}'
                                 : '+${setTimeModifyValueAdd}s',
-                            style: const TextStyle(fontSize: 20)
-                            ),
+                            style: const TextStyle(fontSize: 20)),
                       ),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 25),
 
                 //////////////////////
                 // Restart Button  ///
                 //////////////////////
-                ElevatedButton(
-                  onPressed: () => setState(() {
-                    if (_canVibrate) {
-                      Vibrate.feedback(FeedbackType.heavy);
-                    }
-                    resetTimer();
-                    _isRunning = false;
-                  }),
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(40),
-                  ),
-                  child: const Text('Restart'),
+                SizedBox(
+                  height: 90,
+                  width: 90,
+                  child: ElevatedButton(
+                      onPressed: () => setState(() {
+                            if (_canVibrate) {
+                              Vibrate.feedback(FeedbackType.heavy);
+                            }
+                            resetTimer();
+                          }),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        shape: CircleBorder(),
+                        padding: EdgeInsets.all(4),
+                      ),
+                      child: const Icon(Icons.autorenew, size: 75)),
                 ),
 
                 // Bottom Spacing
-                const SizedBox(height: 50),
+                const SizedBox(height: 30),
               ],
             ),
             // ) // ScrollView... disabled for now
