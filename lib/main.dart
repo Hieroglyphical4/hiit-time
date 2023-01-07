@@ -67,13 +67,13 @@ class _MyAppState extends State<MyApp> {
     _timerModifierValueAdd = setTimeModifyValueAdd;
     _stringModValueAdd = setTimeModifyValueAdd > 59
         ? changeDurationFromSecondsToMinutes(setTimeModifyValueAdd)
-        : setTimeModifyValueAdd.toString();
+        : '${setTimeModifyValueAdd}s';
 
     // Sub time button vars
     _timerModifierValueSub = setTimeModifyValueSub;
     _stringModValueSub = setTimeModifyValueSub > 59
         ? changeDurationFromSecondsToMinutes(setTimeModifyValueSub)
-        : setTimeModifyValueSub.toString();
+        : '${setTimeModifyValueSub}s';
 
     // Reset timer
     _controller.restart(

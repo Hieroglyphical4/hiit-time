@@ -266,7 +266,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                           style: widget.timeTextStyle ??
                               Theme.of(context).textTheme.bodyText1!.copyWith(
                                   color: widget.timerInRestMode
-                                      ? Colors.blueGrey
+                                      ? Colors.blue.shade300
                                       : Colors.white,
                                   fontSize: _timerSize,
                                   fontWeight: FontWeight.w600),
