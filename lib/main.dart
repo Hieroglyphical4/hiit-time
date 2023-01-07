@@ -57,6 +57,30 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  resetTimer() {
+    _duration = setStartTime;
+    _restDuration = setRestDuration;
+    // Add time button vars
+    _timerModifierValueAdd = setTimeModifyValueAdd;
+    _stringModValueAdd = setTimeModifyValueAdd > 59
+        ? changeDurationFromSecondsToMinutes(setTimeModifyValueAdd)
+        : setTimeModifyValueAdd.toString();
+
+    // Sub time button vars
+    _timerModifierValueSub = setTimeModifyValueSub;
+    _stringModValueSub = setTimeModifyValueSub > 59
+        ? changeDurationFromSecondsToMinutes(setTimeModifyValueSub)
+        : setTimeModifyValueSub.toString();
+
+    // Reset timer
+    _controller.restart(
+      duration: _duration,
+      initialPosition: 0,
+      restDuration: _restDuration,
+    );
+    Wakelock.disable();
+  }
+
   // Convert from seconds to mm:ss
   String changeDurationFromSecondsToMinutes(int totalSeconds) {
     final duration = Duration(seconds: totalSeconds);
@@ -149,20 +173,7 @@ class _MyAppState extends State<MyApp> {
                       // Check if the user is pressing the timer after it finished.
                       // If so, restart timer to initial state (reset)
                       if (_timerButtonRestart) {
-                        _duration = setStartTime;
-                        _restDuration = setRestDuration;
-                        // Add time button vars
-                        _timerModifierValueAdd = setTimeModifyValueAdd;
-                        _stringModValueAdd = setTimeModifyValueAdd.toString();
-                        // Sub time button vars
-                        _timerModifierValueSub = setTimeModifyValueSub;
-                        _stringModValueSub = setTimeModifyValueSub.toString();
-                        // Reset timer
-                        _controller.restart(
-                            duration: _duration,
-                            initialPosition: 0,
-                            restDuration: _restDuration
-                        );
+                        resetTimer();
                         _timerButtonRestart = false;
                       }
 
@@ -354,28 +365,8 @@ class _MyAppState extends State<MyApp> {
                     if (_canVibrate) {
                       Vibrate.feedback(FeedbackType.heavy);
                     }
-                    _duration = setStartTime;
-                    _restDuration = setRestDuration;
-                    // Add time button vars
-                    _timerModifierValueAdd = setTimeModifyValueAdd;
-                    _stringModValueAdd = setTimeModifyValueAdd > 59
-                        ? changeDurationFromSecondsToMinutes(setTimeModifyValueAdd)
-                        : setTimeModifyValueAdd.toString();
-
-                    // Sub time button vars
-                    _timerModifierValueSub = setTimeModifyValueSub;
-                    _stringModValueSub = setTimeModifyValueSub > 59
-                        ? changeDurationFromSecondsToMinutes(setTimeModifyValueSub)
-                        : setTimeModifyValueSub.toString();
-
-                    // Reset timer
-                    _controller.restart(
-                        duration: _duration,
-                        initialPosition: 0,
-                        restDuration: _restDuration,
-                    );
+                    resetTimer();
                     _isRunning = false;
-                    Wakelock.disable();
                   }),
                   style: ElevatedButton.styleFrom(
                     shape: CircleBorder(),
