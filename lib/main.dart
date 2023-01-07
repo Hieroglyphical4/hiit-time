@@ -56,9 +56,15 @@ class _MyAppState extends State<MyApp> {
     Wakelock.disable();
   }
 
-  flipIntervalTimer() {
-    _duration = setRestDuration;
-    _restDuration = setStartTime;
+  flipIntervalTimer(bool restFlip) {
+    // Rest Flip indicates the duration needs to be set to Rest Duration
+    if (restFlip) {
+      _duration = setRestDuration;
+      _restDuration = setStartTime;
+    } else {
+      _duration = setStartTime;
+      _restDuration = setRestDuration;
+    }
 
     // Reset timer
     _controller.restart(
@@ -213,11 +219,11 @@ class _MyAppState extends State<MyApp> {
                             // App is in Interval mode and needs to repeat
                             if (_timerInRestMode == false) {
                               _timerInRestMode = true;
+                              flipIntervalTimer(_timerInRestMode);
                               // TODO set timer off in reverse
-                              flipIntervalTimer();
                             } else {
-                              flipIntervalTimer();
                               _timerInRestMode = false;
+                              flipIntervalTimer(_timerInRestMode);
                               _controller.resume();
                             }
                           }
