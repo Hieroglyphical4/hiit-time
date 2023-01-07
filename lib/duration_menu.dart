@@ -242,7 +242,7 @@ class _DurationMenuState extends State<DurationMenu> {
                               ////////////////////////////////
                               // Spacer between Rest and Work
                               ////////////////////////////////
-                              const SizedBox(height: 50),
+                              const SizedBox(height: 30),
 
                               ///////////////////////
                               // Work input Field  //
@@ -300,8 +300,7 @@ class _DurationMenuState extends State<DurationMenu> {
                       ////////////////////////////////
                       // Spacer between Cancel/-time/+time button and timer settings
                       ////////////////////////////////
-                      const SizedBox(height: 40),
-
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
 
@@ -337,7 +336,6 @@ class _DurationMenuState extends State<DurationMenu> {
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 40),
 
                       // TODO Add toggle here indicating what mode the app is in
