@@ -158,7 +158,7 @@ class _MyAppState extends State<MyApp> {
                       });
                     },
                     child: const Text('HIIT Time',
-                        style: TextStyle(fontFamily: 'SuezOne', fontSize: 40, height: 1.1),
+                        style: TextStyle(fontFamily: 'AstroSpace', fontSize: 40, height: 1.1),
                         textAlign: TextAlign.center),
                   ),
                 ),

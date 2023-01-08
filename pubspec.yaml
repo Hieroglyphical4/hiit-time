@@ -84,6 +84,9 @@ flutter:
     - family: SuezOne
       fonts:
         - asset: assets/fonts/SuezOne-Regular.ttf
+    - family: AstroSpace
+      fonts:
+       - asset: assets/fonts/AstroSpace.ttf
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

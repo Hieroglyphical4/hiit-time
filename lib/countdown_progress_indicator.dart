@@ -229,6 +229,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                     color: widget.timerInRestMode
                                         ? Colors.white
                                         : Colors.blue.shade300,
+                                    fontFamily: 'AstroSpace',
                                     fontSize: 20,
                                     height: .1
                                     // fontWeight: FontWeight.w600,
@@ -286,6 +287,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
                                       color: Colors.white,
+                                      fontFamily: 'AstroSpace',
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -305,6 +307,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                       : widget.timerInRestMode
                                         ? Colors.blue.shade300
                                         : Colors.white,
+                                      fontFamily: 'AstroSpace',
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                     ),
