@@ -154,12 +154,11 @@ class _DurationMenuState extends State<DurationMenu> {
                               padding: EdgeInsets.only(top: 10),
                               child: Text(
                                 'Quick Settings',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ))),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                      fontFamily: 'SuezOne', fontSize: 40, height: 1.1),
+                                  textAlign: TextAlign.center),
+                              )),
 
                       const SizedBox(height: 65),
 
@@ -173,7 +172,7 @@ class _DurationMenuState extends State<DurationMenu> {
                               ////////////////////////
 
                               SizedBox(
-                                width: 80,
+                                width: 115,
                                 child: (TextFormField(
                                   textAlign: TextAlign.center,
                                   textDirection: TextDirection.rtl,
@@ -192,7 +191,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                             setRestDuration)
                                         : setRestDuration.toString(),
                                     hintStyle: const TextStyle(
-                                        fontSize: 20, color: Colors.white),
+                                        fontSize: 30, color: Colors.white),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15.0),
                                       borderSide: const BorderSide(
@@ -311,12 +310,12 @@ class _DurationMenuState extends State<DurationMenu> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 20),
 
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(width: 50),
+                        children: const [
+                          SizedBox(width: 50),
                         ],
                       ),
                       Column(
@@ -371,16 +370,121 @@ class _DurationMenuState extends State<DurationMenu> {
                                   SizedBox(width: 25),
 
                                   //////////////////
-                                  // Cancel Button
+                                  // Save Button
                                   //////////////////
                                   IconButton(
                                     iconSize: 75,
-                                    color: Colors.red,
-                                    icon: const Icon(Icons.block),
-                                    onPressed: () {
-                                      HapticFeedback.mediumImpact();
-                                      Navigator.pop(context);
-                                    },
+                                    color: Colors.blue,
+                                    icon: const Icon(Icons.check_circle),
+                                    onPressed: _settingsChanged
+                                        ? () {
+                                            // Check if settings have changed
+                                            HapticFeedback.mediumImpact();
+
+                                            ///////////////////////////////////////////////////
+                                            // Check if changes were made to any Time settings
+                                            ///////////////////////////////////////////////////
+                                            // Check for Changes to Rest Time
+                                            if (_desiredRestTimeDuration !=
+                                                '') {
+                                              _changesRequiringRestartOccured =
+                                                  true;
+                                              setRestDuration = int.parse(
+                                                  _desiredRestTimeDuration);
+                                              // Prevent errors from numbers above 59:59
+                                              if (setRestDuration > 5959) {
+                                                setRestDuration = 5959;
+                                              }
+                                              if (_desiredRestTimeDuration
+                                                      .length >
+                                                  2) {
+                                                var timeFormatted =
+                                                    formatDuration(
+                                                        setRestDuration
+                                                            .toString());
+                                                var timeInSeconds =
+                                                    convertMinutesToSeconds(
+                                                        timeFormatted);
+                                                setRestDuration = timeInSeconds;
+                                              }
+                                            }
+
+                                            // Check for Changes to Work Time
+                                            if (_desiredWorkTimeDuration !=
+                                                '') {
+                                              _changesRequiringRestartOccured =
+                                                  true;
+                                              // Prevent errors from negative numbers
+                                              setStartTime = int.parse(
+                                                  _desiredWorkTimeDuration); // works if <2
+                                              if (setStartTime < 1) {
+                                                setStartTime = 1;
+                                              }
+                                              // Prevent errors from numbers above 59:59
+                                              if (setStartTime > 5959) {
+                                                setStartTime = 5959;
+                                              }
+                                              if (_desiredWorkTimeDuration
+                                                      .length >
+                                                  2) {
+                                                var timeFormatted =
+                                                    formatDuration(setStartTime
+                                                        .toString());
+                                                var timeInSeconds =
+                                                    convertMinutesToSeconds(
+                                                        timeFormatted);
+                                                setStartTime = timeInSeconds;
+                                              }
+                                            }
+
+                                            // Check for Changes to Subtract Modifier
+                                            if (_desiredSubTimeMod != '') {
+                                              setTimeModifyValueSub =
+                                                  int.parse(_desiredSubTimeMod);
+                                              if (setTimeModifyValueSub >
+                                                  5959) {
+                                                setTimeModifyValueSub = 5959;
+                                              }
+                                              if (_desiredSubTimeMod.length >
+                                                  2) {
+                                                var timeFormatted =
+                                                    formatDuration(
+                                                        setTimeModifyValueSub
+                                                            .toString());
+                                                var timeInSeconds =
+                                                    convertMinutesToSeconds(
+                                                        timeFormatted);
+                                                setTimeModifyValueSub =
+                                                    timeInSeconds;
+                                              }
+                                            }
+
+                                            // Check for Changes to Addition Modifier
+                                            if (_desiredAddTimeMod != '') {
+                                              setTimeModifyValueAdd =
+                                                  int.parse(_desiredAddTimeMod);
+                                              if (setTimeModifyValueAdd >
+                                                  5959) {
+                                                setTimeModifyValueAdd = 5959;
+                                              }
+                                              if (_desiredAddTimeMod.length >
+                                                  2) {
+                                                var timeFormatted =
+                                                    formatDuration(
+                                                        setTimeModifyValueAdd
+                                                            .toString());
+                                                var timeInSeconds =
+                                                    convertMinutesToSeconds(
+                                                        timeFormatted);
+                                                setTimeModifyValueAdd =
+                                                    timeInSeconds;
+                                              }
+                                            }
+
+                                            Navigator.pop(context,
+                                                _changesRequiringRestartOccured); // Close Settings menu
+                                          }
+                                        : null, // If settings haven't changed, Disable Save Button
                                   ),
 
                                   SizedBox(width: 25),
@@ -437,18 +541,29 @@ class _DurationMenuState extends State<DurationMenu> {
                             //////////////////////////////////////
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Text(
-                                    '- Time',
+                                children: [
+                                  const Text(
+                                    '-Time',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  SizedBox(width: 170),
+                                  const SizedBox(width: 80),
                                   Text(
-                                    '+ Time',
+                                    'Save',
+                                    style: TextStyle(
+                                      color: _settingsChanged
+                                      ? Colors.blue
+                                      : Colors.grey,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 80),
+                                  const Text(
+                                    '+Time',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 20,
@@ -457,105 +572,19 @@ class _DurationMenuState extends State<DurationMenu> {
                                   ),
                                 ]),
 
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 20),
 
                             /////////////////
-                            // Save Button
+                            // Cancel Button
                             /////////////////
                             IconButton(
-                              iconSize: 75,
-                              color: Colors.blue,
-                              icon: const Icon(Icons.save),
-                              onPressed: _settingsChanged
-                                  ? () {
-                                      // Check if settings have changed
-                                      HapticFeedback.mediumImpact();
-
-                                      ///////////////////////////////////////////////////
-                                      // Check if changes were made to any Time settings
-                                      ///////////////////////////////////////////////////
-                                      // Check for Changes to Rest Time
-                                      if (_desiredRestTimeDuration != '') {
-                                        _changesRequiringRestartOccured = true;
-                                        setRestDuration =
-                                            int.parse(_desiredRestTimeDuration);
-                                        // Prevent errors from numbers above 59:59
-                                        if (setRestDuration > 5959) {
-                                          setRestDuration = 5959;
-                                        }
-                                        if (_desiredRestTimeDuration.length >
-                                            2) {
-                                          var timeFormatted = formatDuration(
-                                              setRestDuration.toString());
-                                          var timeInSeconds =
-                                              convertMinutesToSeconds(
-                                                  timeFormatted);
-                                          setRestDuration = timeInSeconds;
-                                        }
-                                      }
-
-                                      // Check for Changes to Work Time
-                                      if (_desiredWorkTimeDuration != '') {
-                                        _changesRequiringRestartOccured = true;
-                                        // Prevent errors from negative numbers
-                                        setStartTime = int.parse(
-                                            _desiredWorkTimeDuration); // works if <2
-                                        if (setStartTime < 1) {
-                                          setStartTime = 1;
-                                        }
-                                        // Prevent errors from numbers above 59:59
-                                        if (setStartTime > 5959) {
-                                          setStartTime = 5959;
-                                        }
-                                        if (_desiredWorkTimeDuration.length >
-                                            2) {
-                                          var timeFormatted = formatDuration(
-                                              setStartTime.toString());
-                                          var timeInSeconds =
-                                              convertMinutesToSeconds(
-                                                  timeFormatted);
-                                          setStartTime = timeInSeconds;
-                                        }
-                                      }
-
-                                      // Check for Changes to Subtract Modifier
-                                      if (_desiredSubTimeMod != '') {
-                                        setTimeModifyValueSub =
-                                            int.parse(_desiredSubTimeMod);
-                                        if (setTimeModifyValueSub > 5959) {
-                                          setTimeModifyValueSub = 5959;
-                                        }
-                                        if (_desiredSubTimeMod.length > 2) {
-                                          var timeFormatted = formatDuration(
-                                              setTimeModifyValueSub.toString());
-                                          var timeInSeconds =
-                                              convertMinutesToSeconds(
-                                                  timeFormatted);
-                                          setTimeModifyValueSub = timeInSeconds;
-                                        }
-                                      }
-
-                                      // Check for Changes to Addition Modifier
-                                      if (_desiredAddTimeMod != '') {
-                                        setTimeModifyValueAdd =
-                                            int.parse(_desiredAddTimeMod);
-                                        if (setTimeModifyValueAdd > 5959) {
-                                          setTimeModifyValueAdd = 5959;
-                                        }
-                                        if (_desiredAddTimeMod.length > 2) {
-                                          var timeFormatted = formatDuration(
-                                              setTimeModifyValueAdd.toString());
-                                          var timeInSeconds =
-                                              convertMinutesToSeconds(
-                                                  timeFormatted);
-                                          setTimeModifyValueAdd = timeInSeconds;
-                                        }
-                                      }
-
-                                      Navigator.pop(context,
-                                          _changesRequiringRestartOccured); // Close Settings menu
-                                    }
-                                  : null, // If settings haven't changed, Disable Save Button
+                              iconSize: 45,
+                              color: Colors.white,
+                              icon: const Icon(Icons.highlight_off),
+                              onPressed: () {
+                                HapticFeedback.mediumImpact();
+                                Navigator.pop(context);
+                              },
                             ),
 
                             const SizedBox(height: 75),

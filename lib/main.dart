@@ -159,13 +159,13 @@ class _MyAppState extends State<MyApp> {
                     },
                     child: const Text('HIIT Time',
                         style: TextStyle(
-                            fontFamily: 'SuezOne', fontSize: 44, height: 1.1),
+                            fontFamily: 'SuezOne', fontSize: 40, height: 1.1),
                         textAlign: TextAlign.center),
                   ),
                 ),
 
                 // Spacer between Header and Timer
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
 
                 ///////////
                 // Timer //
