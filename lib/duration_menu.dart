@@ -564,6 +564,18 @@ class _DurationMenuState extends State<DurationMenu> {
                                   Navigator.pop(context);
                                 },
                               ),
+
+                              // Close/Cancel Text Description
+                              Text(
+                                _settingsChanged ? 'Cancel' : 'Close',
+                                style: TextStyle(
+                                  fontFamily: 'AstroSpace',
+                                  color: _settingsChanged
+                                      ? Colors.red
+                                      : Colors.white,
+                                  fontSize: 20,
+                                ),
+                              ),
                             ]),
 
                             SizedBox(width: 25),
