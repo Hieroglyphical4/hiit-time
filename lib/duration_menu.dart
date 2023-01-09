@@ -69,9 +69,25 @@ class _DurationMenuState extends State<DurationMenu> {
   final _formKey = GlobalKey<FormState>();
   bool _settingsChanged = false;
 
-  void recordSettingsChanged() {
+  bool _restSettingChanged = false;
+  bool _workSettingChanged = false;
+  bool _subTimeSettingChanged = false;
+  bool _addTimeSettingChanged = false;
+
+
+  void recordSettingsChanged(String setting) {
     setState(() {
       _settingsChanged = true;
+      setting == 'rest' ? _restSettingChanged = true : null;
+      setting == 'work' ? _workSettingChanged = true : null;
+      setting == 'subTime' ? _subTimeSettingChanged = true : null;
+      setting == 'addTime' ? _addTimeSettingChanged = true : null;
+    });
+  }
+
+  void clearSettingsChanged() {
+    setState(() {
+      _settingsChanged = false;
     });
   }
 
@@ -170,16 +186,24 @@ class _DurationMenuState extends State<DurationMenu> {
                         children: [
                           ////////////////////////
                           // Rest Input field  ///
-                          ////////////////////////
+                          ////////////////////////inp
                           SizedBox(
                             width: 115,
                             child: (TextFormField(
+                              style: TextStyle(color: Colors.blue, fontSize: 30),
                               textAlign: TextAlign.center,
                               textDirection: TextDirection.rtl,
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
+                                if (value != '') {
+                                  // Dont record changes if filtered (leading 0)
+                                  recordSettingsChanged('rest');
+                                }
+                                if (value == '') {
+                                  // Useful if the text field was added to and deleted
+                                  clearSettingsChanged();
+                                }
                                 _desiredRestTimeDuration = value;
-                                recordSettingsChanged();
                               },
                               onFieldSubmitted: (value) {
                                 FocusManager.instance.primaryFocus?.unfocus();
@@ -189,12 +213,14 @@ class _DurationMenuState extends State<DurationMenu> {
                                     ? changeDurationFromSecondsToMinutes(
                                         setRestDuration)
                                     : setRestDuration.toString(),
-                                hintStyle: const TextStyle(
-                                    fontSize: 30, color: Colors.white),
+                                hintStyle: TextStyle(
+                                    fontSize: 30,
+                                    color: appInTimerMode ? Colors.grey : Colors.white,
+                                ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
+                                  borderSide: BorderSide(
+                                    color: _restSettingChanged ? Colors.blue : appInTimerMode ? Colors.grey : Colors.white,
                                     width: 3,
                                   ),
                                   gapPadding: 1.0,
@@ -202,6 +228,7 @@ class _DurationMenuState extends State<DurationMenu> {
                               ),
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.digitsOnly,
+                                FilteringTextInputFormatter.deny(RegExp('^0+')),
                                 LengthLimitingTextInputFormatter(4),
                                 _TextInputFormatter(),
                               ], // Only numbers can be entered
@@ -211,10 +238,10 @@ class _DurationMenuState extends State<DurationMenu> {
                           const SizedBox(height: 4),
 
                           // Rest Text Description
-                          const Text(
+                          Text(
                             'Rest Time',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: appInTimerMode ? Colors.grey : Colors.white,
                               fontSize: 18,
                               fontFamily: 'AstroSpace',
                             ),
@@ -231,12 +258,20 @@ class _DurationMenuState extends State<DurationMenu> {
                           SizedBox(
                             width: 115,
                             child: (TextFormField(
+                              style: TextStyle(color: Colors.blue, fontSize: 30),
                               textAlign: TextAlign.center,
                               textDirection: TextDirection.rtl,
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
+                                if (value != '') {
+                                  // Dont record changes if filtered (leading 0)
+                                  recordSettingsChanged('work');
+                                }
+                                if (value == '') {
+                                  // Useful if the text field was added to and deleted
+                                  clearSettingsChanged();
+                                }
                                 _desiredWorkTimeDuration = value;
-                                recordSettingsChanged();
                               },
                               onFieldSubmitted: (value) {
                                 FocusManager.instance.primaryFocus?.unfocus();
@@ -250,8 +285,8 @@ class _DurationMenuState extends State<DurationMenu> {
                                     fontSize: 30, color: Colors.white),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
+                                  borderSide: BorderSide(
+                                    color: _workSettingChanged ? Colors.blue : Colors.white,
                                     width: 3,
                                   ),
                                   gapPadding: 1.0,
@@ -259,6 +294,7 @@ class _DurationMenuState extends State<DurationMenu> {
                               ),
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.digitsOnly,
+                                FilteringTextInputFormatter.deny(RegExp('^0+')),
                                 LengthLimitingTextInputFormatter(4),
                                 _TextInputFormatter(),
                               ], // Only numbers can be entered
@@ -335,11 +371,19 @@ class _DurationMenuState extends State<DurationMenu> {
                                   SizedBox(
                                     width: 100,
                                     child: (TextFormField(
+                                      style: TextStyle(color: Colors.blue, fontSize: 20),
                                       textAlign: TextAlign.center,
                                       textDirection: TextDirection.rtl,
                                       keyboardType: TextInputType.number,
                                       onChanged: (value) {
-                                        recordSettingsChanged();
+                                        if (value != '') {
+                                          // Dont record changes if filtered (leading 0)
+                                          recordSettingsChanged('subTime');
+                                        }
+                                        if (value == '') {
+                                          // Useful if the text field was added to and deleted
+                                          clearSettingsChanged();
+                                        }
                                         _desiredSubTimeMod = value;
                                       },
                                       onFieldSubmitted: (value) {
@@ -357,8 +401,8 @@ class _DurationMenuState extends State<DurationMenu> {
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(15.0),
-                                          borderSide: const BorderSide(
-                                            color: Colors.white,
+                                          borderSide: BorderSide(
+                                            color: _subTimeSettingChanged ? Colors.blue : Colors.white,
                                             width: 3,
                                           ),
                                           gapPadding: 1.0,
@@ -366,6 +410,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                       ),
                                       inputFormatters: <TextInputFormatter>[
                                         FilteringTextInputFormatter.digitsOnly,
+                                        FilteringTextInputFormatter.deny(RegExp('^0+')),
                                         LengthLimitingTextInputFormatter(4),
                                         _TextInputFormatter(),
                                       ], // Only numbers can be entered
@@ -512,7 +557,7 @@ class _DurationMenuState extends State<DurationMenu> {
                               // Cancel Button
                               IconButton(
                                 iconSize: 45,
-                                color: Colors.white,
+                                color: _settingsChanged ? Colors.red : Colors.white,
                                 icon: const Icon(Icons.highlight_off),
                                 onPressed: () {
                                   HapticFeedback.mediumImpact();
@@ -531,12 +576,20 @@ class _DurationMenuState extends State<DurationMenu> {
                               SizedBox(
                                 width: 100,
                                 child: (TextFormField(
+                                  style: TextStyle(color: Colors.blue, fontSize: 20),
                                   textAlign: TextAlign.center,
                                   textDirection: TextDirection.rtl,
                                   keyboardType: TextInputType.number,
                                   onChanged: (value) {
+                                    if (value != '') {
+                                      // Dont record changes if filtered (leading 0)
+                                      recordSettingsChanged('addTime');
+                                    }
+                                    if (value == '') {
+                                      // Useful if the text field was added to and deleted
+                                      clearSettingsChanged();
+                                    }
                                     _desiredAddTimeMod = value;
-                                    recordSettingsChanged();
                                   },
                                   onFieldSubmitted: (value) {
                                     FocusManager.instance.primaryFocus
@@ -555,8 +608,8 @@ class _DurationMenuState extends State<DurationMenu> {
                                     iconColor: Colors.white,
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15.0),
-                                      borderSide: const BorderSide(
-                                        color: Colors.white,
+                                      borderSide: BorderSide(
+                                        color: _addTimeSettingChanged ? Colors.blue : Colors.white,
                                         width: 3,
                                       ),
                                       gapPadding: 1.0,
@@ -564,6 +617,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                   ),
                                   inputFormatters: <TextInputFormatter>[
                                     FilteringTextInputFormatter.digitsOnly,
+                                    FilteringTextInputFormatter.deny(RegExp('^0+')),
                                     LengthLimitingTextInputFormatter(4),
                                     _TextInputFormatter(),
                                   ], // Only numbers can be entered
