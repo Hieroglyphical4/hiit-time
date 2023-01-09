@@ -85,9 +85,13 @@ class _DurationMenuState extends State<DurationMenu> {
     });
   }
 
-  void clearSettingsChanged() {
+  void clearSettingsChanged(String setting) {
     setState(() {
       _settingsChanged = false;
+      setting == 'rest' ? _restSettingChanged = false : null;
+      setting == 'work' ? _workSettingChanged = false : null;
+      setting == 'subTime' ? _subTimeSettingChanged = false : null;
+      setting == 'addTime' ? _addTimeSettingChanged = false : null;
     });
   }
 
@@ -214,7 +218,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                 }
                                 if (value == '') {
                                   // Useful if the text field was added to and deleted
-                                  clearSettingsChanged();
+                                  clearSettingsChanged('rest');
                                 }
                                 _desiredRestTimeDuration = value;
                               },
@@ -287,7 +291,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                 }
                                 if (value == '') {
                                   // Useful if the text field was added to and deleted
-                                  clearSettingsChanged();
+                                  clearSettingsChanged('work');
                                 }
                                 _desiredWorkTimeDuration = value;
                               },
@@ -405,7 +409,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                         }
                                         if (value == '') {
                                           // Useful if the text field was added to and deleted
-                                          clearSettingsChanged();
+                                          clearSettingsChanged('subTime');
                                         }
                                         _desiredSubTimeMod = value;
                                       },
@@ -604,7 +608,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                     }
                                     if (value == '') {
                                       // Useful if the text field was added to and deleted
-                                      clearSettingsChanged();
+                                      clearSettingsChanged('addTime');
                                     }
                                     _desiredAddTimeMod = value;
                                   },
@@ -613,13 +617,9 @@ class _DurationMenuState extends State<DurationMenu> {
                                         ?.unfocus();
                                   },
                                   decoration: InputDecoration(
-                                    // hintText: '+$setTimeModifyValueAdd',
-
                                     hintText: setTimeModifyValueAdd > 59
-                                        ? changeDurationFromSecondsToMinutes(
-                                            setTimeModifyValueAdd)
+                                        ? changeDurationFromSecondsToMinutes(setTimeModifyValueAdd)
                                         : setTimeModifyValueAdd.toString(),
-
                                     hintStyle: const TextStyle(
                                         fontSize: 20, color: Colors.white),
                                     iconColor: Colors.white,
