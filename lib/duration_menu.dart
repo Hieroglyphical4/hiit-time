@@ -91,6 +91,8 @@ class _DurationMenuState extends State<DurationMenu> {
     });
   }
 
+  // If a string is longer than 3 chars, we assume were in Minutes
+  // Convert given string to reflect that
   String formatDuration(String minutesRaw) {
     var string = minutesRaw;
     final insertIndex = string.length == 3 ? 1 : 2;
@@ -144,6 +146,12 @@ class _DurationMenuState extends State<DurationMenu> {
   String _desiredAddTimeMod = '';
   bool _changesRequiringRestartOccured = false;
 
+  final restTextEditController = TextEditingController();
+  final workTextEditController = TextEditingController();
+  final subTimetextEditController = TextEditingController();
+  final addTimeTextEditController = TextEditingController();
+
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blueGrey,
@@ -190,14 +198,19 @@ class _DurationMenuState extends State<DurationMenu> {
                           SizedBox(
                             width: 115,
                             child: (TextFormField(
+                              controller: restTextEditController,
                               style: TextStyle(color: Colors.blue, fontSize: 30),
                               textAlign: TextAlign.center,
                               textDirection: TextDirection.rtl,
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
                                 if (value != '') {
-                                  // Dont record changes if filtered (leading 0)
+                                  // Only record changes if not filtered (leading 0)
                                   recordSettingsChanged('rest');
+                                  if (value.length > 2) {
+                                    restTextEditController.text = formatDuration(value);
+                                    restTextEditController.selection = TextSelection.collapsed(offset: restTextEditController.text.length);
+                                  }
                                 }
                                 if (value == '') {
                                   // Useful if the text field was added to and deleted
@@ -227,11 +240,11 @@ class _DurationMenuState extends State<DurationMenu> {
                                 ),
                               ),
                               inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly,
-                                FilteringTextInputFormatter.deny(RegExp('^0+')),
-                                LengthLimitingTextInputFormatter(4),
-                                _TextInputFormatter(),
-                              ], // Only numbers can be entered
+                                FilteringTextInputFormatter.digitsOnly,  // Only numbers can be entered
+                                FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
+                                LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                _TextInputFormatter(), // WIP: Formatting in the form of a custom function
+                              ],
                             )),
                           ),
 
@@ -258,14 +271,19 @@ class _DurationMenuState extends State<DurationMenu> {
                           SizedBox(
                             width: 115,
                             child: (TextFormField(
+                              controller: workTextEditController,
                               style: TextStyle(color: Colors.blue, fontSize: 30),
                               textAlign: TextAlign.center,
                               textDirection: TextDirection.rtl,
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
                                 if (value != '') {
-                                  // Dont record changes if filtered (leading 0)
+                                  // Only record changes if not filtered (leading 0)
                                   recordSettingsChanged('work');
+                                  if (value.length > 2) {
+                                    workTextEditController.text = formatDuration(value);
+                                    workTextEditController.selection = TextSelection.collapsed(offset: workTextEditController.text.length);
+                                  }
                                 }
                                 if (value == '') {
                                   // Useful if the text field was added to and deleted
@@ -293,11 +311,11 @@ class _DurationMenuState extends State<DurationMenu> {
                                 ),
                               ),
                               inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly,
-                                FilteringTextInputFormatter.deny(RegExp('^0+')),
-                                LengthLimitingTextInputFormatter(4),
-                                _TextInputFormatter(),
-                              ], // Only numbers can be entered
+                                FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
+                                LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                _TextInputFormatter(), // WIP: Formatting in the form of a custom function
+                              ],
                             )),
                           ),
 
@@ -371,14 +389,19 @@ class _DurationMenuState extends State<DurationMenu> {
                                   SizedBox(
                                     width: 100,
                                     child: (TextFormField(
+                                      controller: subTimetextEditController,
                                       style: TextStyle(color: Colors.blue, fontSize: 20),
                                       textAlign: TextAlign.center,
                                       textDirection: TextDirection.rtl,
                                       keyboardType: TextInputType.number,
                                       onChanged: (value) {
                                         if (value != '') {
-                                          // Dont record changes if filtered (leading 0)
+                                          // Only record changes if not filtered (leading 0)
                                           recordSettingsChanged('subTime');
+                                          if (value.length > 2) {
+                                            subTimetextEditController.text = formatDuration(value);
+                                            subTimetextEditController.selection = TextSelection.collapsed(offset: subTimetextEditController.text.length);
+                                          }
                                         }
                                         if (value == '') {
                                           // Useful if the text field was added to and deleted
@@ -409,11 +432,11 @@ class _DurationMenuState extends State<DurationMenu> {
                                         ),
                                       ),
                                       inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.digitsOnly,
-                                        FilteringTextInputFormatter.deny(RegExp('^0+')),
-                                        LengthLimitingTextInputFormatter(4),
-                                        _TextInputFormatter(),
-                                      ], // Only numbers can be entered
+                                        FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                        FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
+                                        LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                        _TextInputFormatter(), // WIP: Formatting in the form of a custom function
+                                      ],
                                     )),
                                   ),
 
@@ -452,21 +475,15 @@ class _DurationMenuState extends State<DurationMenu> {
                                         ///////////////////////////////////////////////////
                                         // Check for Changes to Rest Time
                                         if (_desiredRestTimeDuration != '') {
-                                          _changesRequiringRestartOccured =
-                                              true;
-                                          setRestDuration = int.parse(
-                                              _desiredRestTimeDuration);
+                                          _changesRequiringRestartOccured = true;
+                                          setRestDuration = int.parse(_desiredRestTimeDuration);
                                           // Prevent errors from numbers above 59:59
                                           if (setRestDuration > 5959) {
                                             setRestDuration = 5959;
                                           }
-                                          if (_desiredRestTimeDuration.length >
-                                              2) {
-                                            var timeFormatted = formatDuration(
-                                                setRestDuration.toString());
-                                            var timeInSeconds =
-                                                convertMinutesToSeconds(
-                                                    timeFormatted);
+                                          if (_desiredRestTimeDuration.length > 2) {
+                                            var timeFormatted = formatDuration(setRestDuration.toString());
+                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
                                             setRestDuration = timeInSeconds;
                                           }
                                         }
@@ -476,8 +493,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                           _changesRequiringRestartOccured =
                                               true;
                                           // Prevent errors from negative numbers
-                                          setStartTime = int.parse(
-                                              _desiredWorkTimeDuration); // works if <2
+                                          setStartTime = int.parse(_desiredWorkTimeDuration); // works if <2
                                           if (setStartTime < 1) {
                                             setStartTime = 1;
                                           }
@@ -485,52 +501,36 @@ class _DurationMenuState extends State<DurationMenu> {
                                           if (setStartTime > 5959) {
                                             setStartTime = 5959;
                                           }
-                                          if (_desiredWorkTimeDuration.length >
-                                              2) {
-                                            var timeFormatted = formatDuration(
-                                                setStartTime.toString());
-                                            var timeInSeconds =
-                                                convertMinutesToSeconds(
-                                                    timeFormatted);
+                                          if (_desiredWorkTimeDuration.length > 2) {
+                                            var timeFormatted = formatDuration(setStartTime.toString());
+                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
                                             setStartTime = timeInSeconds;
                                           }
                                         }
 
                                         // Check for Changes to Subtract Modifier
                                         if (_desiredSubTimeMod != '') {
-                                          setTimeModifyValueSub =
-                                              int.parse(_desiredSubTimeMod);
+                                          setTimeModifyValueSub = int.parse(_desiredSubTimeMod);
                                           if (setTimeModifyValueSub > 5959) {
                                             setTimeModifyValueSub = 5959;
                                           }
                                           if (_desiredSubTimeMod.length > 2) {
-                                            var timeFormatted = formatDuration(
-                                                setTimeModifyValueSub
-                                                    .toString());
-                                            var timeInSeconds =
-                                                convertMinutesToSeconds(
-                                                    timeFormatted);
-                                            setTimeModifyValueSub =
-                                                timeInSeconds;
+                                            var timeFormatted = formatDuration(setTimeModifyValueSub.toString());
+                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
+                                            setTimeModifyValueSub = timeInSeconds;
                                           }
                                         }
 
                                         // Check for Changes to Addition Modifier
                                         if (_desiredAddTimeMod != '') {
-                                          setTimeModifyValueAdd =
-                                              int.parse(_desiredAddTimeMod);
+                                          setTimeModifyValueAdd = int.parse(_desiredAddTimeMod);
                                           if (setTimeModifyValueAdd > 5959) {
                                             setTimeModifyValueAdd = 5959;
                                           }
                                           if (_desiredAddTimeMod.length > 2) {
-                                            var timeFormatted = formatDuration(
-                                                setTimeModifyValueAdd
-                                                    .toString());
-                                            var timeInSeconds =
-                                                convertMinutesToSeconds(
-                                                    timeFormatted);
-                                            setTimeModifyValueAdd =
-                                                timeInSeconds;
+                                            var timeFormatted = formatDuration(setTimeModifyValueAdd.toString());
+                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
+                                            setTimeModifyValueAdd = timeInSeconds;
                                           }
                                         }
 
@@ -588,14 +588,19 @@ class _DurationMenuState extends State<DurationMenu> {
                               SizedBox(
                                 width: 100,
                                 child: (TextFormField(
+                                  controller: addTimeTextEditController,
                                   style: TextStyle(color: Colors.blue, fontSize: 20),
                                   textAlign: TextAlign.center,
                                   textDirection: TextDirection.rtl,
                                   keyboardType: TextInputType.number,
                                   onChanged: (value) {
                                     if (value != '') {
-                                      // Dont record changes if filtered (leading 0)
+                                      // Only record changes if not filtered (leading 0)
                                       recordSettingsChanged('addTime');
+                                      if (value.length > 2) {
+                                        addTimeTextEditController.text = formatDuration(value);
+                                        addTimeTextEditController.selection = TextSelection.collapsed(offset: addTimeTextEditController.text.length);
+                                      }
                                     }
                                     if (value == '') {
                                       // Useful if the text field was added to and deleted
@@ -628,11 +633,11 @@ class _DurationMenuState extends State<DurationMenu> {
                                     ),
                                   ),
                                   inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    FilteringTextInputFormatter.deny(RegExp('^0+')),
-                                    LengthLimitingTextInputFormatter(4),
-                                    _TextInputFormatter(),
-                                  ], // Only numbers can be entered
+                                    FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                    FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
+                                    LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                    _TextInputFormatter(), // WIP: Formatting in the form of a custom function
+                                  ],
                                 )),
                               ),
 
