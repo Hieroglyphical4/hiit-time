@@ -1,4 +1,3 @@
-import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Config/settings.dart';
@@ -10,51 +9,15 @@ void main() {
   )));
 }
 
-class _TextInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    // print('\n');
-    // print('\n');
-    // print('oldvalue');
-    // print(oldValue);
-    // print('\n');
-    //
-    // print('\n');
-    // print('\n');
-    // print('newValue');
-    // print(newValue);
-    // print('\n');
-
-    // if (newValue.text.length == 1) {
-    //   return TextEditingValue(
-    //     text: '${newValue.text}',
-    //     selection: TextSelection.collapsed(offset: 3),
-    //   );
-    // }
-    //
-    // if (newValue.text.length == 2) {
-    //   return TextEditingValue(
-    //     text: '${newValue.text}',
-    //     selection: TextSelection.collapsed(offset: 3),
-    //   );
-    // }
-    // if (newValue.text.length == 3) {
-    //   return TextEditingValue(
-    //     text: '${oldValue}${newValue.text}',
-    //     selection: TextSelection.collapsed(offset: 3),
-    //   );
-    // }
-    // if (newValue.text.length == 4) {
-    //   return TextEditingValue(
-    //     text: '${oldValue}${newValue.text}',
-    //     selection: TextSelection.collapsed(offset: 3),
-    //   );
-    // }
-
-    return newValue;
-  }
-}
+// class _TextInputFormatter extends TextInputFormatter {
+//   @override
+//   TextEditingValue formatEditUpdate(
+//       TextEditingValue oldValue, TextEditingValue newValue) {
+//     // Code here
+//
+//     return newValue;
+//   }
+// }
 
 class DurationMenu extends StatefulWidget {
   DurationMenu({
@@ -247,7 +210,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                 FilteringTextInputFormatter.digitsOnly,  // Only numbers can be entered
                                 FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
                                 LengthLimitingTextInputFormatter(4), // 4 digits at most
-                                _TextInputFormatter(), // WIP: Formatting in the form of a custom function
+                                // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
                               ],
                             )),
                           ),
@@ -318,7 +281,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                 FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
                                 FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
                                 LengthLimitingTextInputFormatter(4), // 4 digits at most
-                                _TextInputFormatter(), // WIP: Formatting in the form of a custom function
+                                // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
                               ],
                             )),
                           ),
@@ -439,7 +402,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                         FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
                                         FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
                                         LengthLimitingTextInputFormatter(4), // 4 digits at most
-                                        _TextInputFormatter(), // WIP: Formatting in the form of a custom function
+                                        // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
                                       ],
                                     )),
                                   ),
@@ -494,8 +457,7 @@ class _DurationMenuState extends State<DurationMenu> {
 
                                         // Check for Changes to Work Time
                                         if (_desiredWorkTimeDuration != '') {
-                                          _changesRequiringRestartOccured =
-                                              true;
+                                          _changesRequiringRestartOccured = true;
                                           // Prevent errors from negative numbers
                                           setStartTime = int.parse(_desiredWorkTimeDuration); // works if <2
                                           if (setStartTime < 1) {
@@ -538,8 +500,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                           }
                                         }
 
-                                        Navigator.pop(context,
-                                            _changesRequiringRestartOccured); // Close Settings menu
+                                        Navigator.pop(context, _changesRequiringRestartOccured); // Close Settings menu
                                       }
                                     : null, // If settings haven't changed, Disable Save Button
                               ),
@@ -636,7 +597,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                     FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
                                     FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
                                     LengthLimitingTextInputFormatter(4), // 4 digits at most
-                                    _TextInputFormatter(), // WIP: Formatting in the form of a custom function
+                                    // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
                                   ],
                                 )),
                               ),
