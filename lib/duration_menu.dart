@@ -134,6 +134,7 @@ class _DurationMenuState extends State<DurationMenu> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
+                      const SizedBox(height: 5),
                       ////////////////////////////////
                       // Settings Text Header      ///
                       ////////////////////////////////
@@ -151,7 +152,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                 textAlign: TextAlign.center),
                           )),
 
-                      const SizedBox(height: 45),
+                      const SizedBox(height: 30),
 
                       ///////////////////////////
                       // Rest and Work Settings
