@@ -167,7 +167,7 @@ class _DurationMenuState extends State<DurationMenu> {
                             width: 115,
                             child: (TextFormField(
                               controller: restTextEditController,
-                              style: TextStyle(color: Colors.blue, fontSize: 30),
+                              style: TextStyle(color: Colors.blue.shade400, fontSize: 30),
                               textAlign: TextAlign.center,
                               textDirection: TextDirection.rtl,
                               keyboardType: TextInputType.number,
@@ -201,7 +201,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15.0),
                                   borderSide: BorderSide(
-                                    color: _restSettingChanged ? Colors.blue : appInTimerMode ? Colors.grey : Colors.white,
+                                    color: _restSettingChanged ? Colors.blue.shade300 : appInTimerMode ? Colors.grey : Colors.white,
                                     width: 3,
                                   ),
                                   gapPadding: 1.0,
@@ -240,7 +240,7 @@ class _DurationMenuState extends State<DurationMenu> {
                             width: 115,
                             child: (TextFormField(
                               controller: workTextEditController,
-                              style: TextStyle(color: Colors.blue, fontSize: 30),
+                              style: TextStyle(color: Colors.blue.shade400, fontSize: 30),
                               textAlign: TextAlign.center,
                               textDirection: TextDirection.rtl,
                               keyboardType: TextInputType.number,
@@ -272,7 +272,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15.0),
                                   borderSide: BorderSide(
-                                    color: _workSettingChanged ? Colors.blue : Colors.white,
+                                    color: _workSettingChanged ? Colors.blue.shade300 : Colors.white,
                                     width: 3,
                                   ),
                                   gapPadding: 1.0,
@@ -331,7 +331,7 @@ class _DurationMenuState extends State<DurationMenu> {
                           Text(
                             'Interval Mode',
                             style: TextStyle(
-                              color: appInTimerMode ? Colors.grey : Colors.blue,
+                              color: appInTimerMode ? Colors.grey : Colors.blue.shade400,
                               fontSize: 18,
                               fontFamily: 'AstroSpace',
                             ),
@@ -358,7 +358,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                     width: 100,
                                     child: (TextFormField(
                                       controller: subTimetextEditController,
-                                      style: TextStyle(color: Colors.blue, fontSize: 20),
+                                      style: TextStyle(color: Colors.blue.shade400, fontSize: 20),
                                       textAlign: TextAlign.center,
                                       textDirection: TextDirection.rtl,
                                       keyboardType: TextInputType.number,
@@ -393,7 +393,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                           borderRadius:
                                               BorderRadius.circular(15.0),
                                           borderSide: BorderSide(
-                                            color: _subTimeSettingChanged ? Colors.blue : Colors.white,
+                                            color: _subTimeSettingChanged ? Colors.blue.shade300 : Colors.white,
                                             width: 3,
                                           ),
                                           gapPadding: 1.0,
@@ -431,7 +431,7 @@ class _DurationMenuState extends State<DurationMenu> {
                               // Save Button
                               IconButton(
                                 iconSize: 75,
-                                color: Colors.blue,
+                                color: Colors.blue.shade400,
                                 icon: const Icon(Icons.check_circle),
                                 onPressed: _settingsChanged
                                     ? () {
@@ -512,7 +512,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                 style: TextStyle(
                                   fontFamily: 'AstroSpace',
                                   color: _settingsChanged
-                                      ? Colors.blue
+                                      ? Colors.blue.shade400
                                       : Colors.grey,
                                   fontSize: 20,
                                 ),
@@ -523,7 +523,7 @@ class _DurationMenuState extends State<DurationMenu> {
                               // Cancel Button
                               IconButton(
                                 iconSize: 45,
-                                color: _settingsChanged ? Colors.red : Colors.white,
+                                color: _settingsChanged ? Colors.red.shade400 : Colors.white,
                                 icon: const Icon(Icons.highlight_off),
                                 onPressed: () {
                                   HapticFeedback.mediumImpact();
@@ -537,7 +537,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                 style: TextStyle(
                                   fontFamily: 'AstroSpace',
                                   color: _settingsChanged
-                                      ? Colors.red
+                                      ? Colors.red.shade400
                                       : Colors.white,
                                   fontSize: 20,
                                 ),
@@ -555,7 +555,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                 width: 100,
                                 child: (TextFormField(
                                   controller: addTimeTextEditController,
-                                  style: TextStyle(color: Colors.blue, fontSize: 20),
+                                  style: TextStyle(color: Colors.blue.shade400, fontSize: 20),
                                   textAlign: TextAlign.center,
                                   textDirection: TextDirection.rtl,
                                   keyboardType: TextInputType.number,
@@ -588,7 +588,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15.0),
                                       borderSide: BorderSide(
-                                        color: _addTimeSettingChanged ? Colors.blue : Colors.white,
+                                        color: _addTimeSettingChanged ? Colors.blue.shade300 : Colors.white,
                                         width: 3,
                                       ),
                                       gapPadding: 1.0,
