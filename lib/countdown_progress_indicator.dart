@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hiit.time/Config/settings.dart';
 
 /// Create a Circular countdown indicator
 class CountDownProgressIndicator extends StatefulWidget {
@@ -123,10 +124,10 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
       }
       setState(() {
         _timerText = 'Timer Mode';
-        if (_currentDuration > 60) {
+        if (_currentDuration > 59) {
           _timerSize = _minuteTimerSize;
         }
-        if (_currentDuration < 59) {
+        if (_currentDuration < 58) {
           _timerSize = _secondTimerSize;
         }
 
@@ -245,31 +246,29 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                           ///////////////
                           // Second mode:
                           ///////////////
-                          (widget.duration - _animation.value)
-                              .toStringAsFixed(0),
+                          (widget.duration - _animation.value).toStringAsFixed(0),
                           style: widget.timeTextStyle ??
                               Theme.of(context).textTheme.bodyText1!.copyWith(
                                   color: widget.timerInRestMode
                                       ? Colors.blue.shade300
                                       : Colors.white,
-                                  fontSize: _timerSize,
+                                  // 59 is used here to avoid a small 59
+                                  fontSize: (_currentDuration ?? setStartTime) > 59 ? _minuteTimerSize : _secondTimerSize,
                                   fontWeight: FontWeight.w600),
                         )
                       : Text(
                           ///////////////
                           // Minute mode
                           ///////////////
-                          widget.timeFormatter?.call(
-                                  (widget.duration - _animation.value)
-                                      .ceil()) ??
-                              (widget.duration - _animation.value)
-                                  .toStringAsFixed(0),
+                          widget.timeFormatter?.call((widget.duration - _animation.value).ceil()) ??
+                              (widget.duration - _animation.value).toStringAsFixed(0),
                           style: widget.timeTextStyle ??
                               Theme.of(context).textTheme.bodyText1!.copyWith(
                                   color: widget.timerInRestMode
                                       ? Colors.blue.shade300
                                       : Colors.white,
-                                  fontSize: _timerSize,
+                                  // 58 is used as a buffer, any higher and 1:00 is huge
+                                  fontSize: (_currentDuration ?? setStartTime) > 58 ? _minuteTimerSize : _secondTimerSize,
                                   fontWeight: FontWeight.w600),
                         ),
 
