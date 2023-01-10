@@ -41,13 +41,20 @@ class CountDownProgressIndicator extends StatefulWidget {
   /// will start automatically
   final bool autostart;
 
+  // Used to determine if App is in Timer Mode or Interval Mode
   var appInTimerMode;
 
+  // Time of rest
   var restDuration;
 
+  // Determine if timer is in Rest Mode vs Work Mode
   var timerInRestMode;
 
+  // Determing is Timer is currently running
   var isRunning;
+
+  // Keeps track and display current lap, resets on Timer reset
+  var intervalLap;
 
   // ignore: public_member_api_docs
   CountDownProgressIndicator({
@@ -65,6 +72,7 @@ class CountDownProgressIndicator extends StatefulWidget {
     this.labelTextStyle,
     this.strokeWidth = 22,
     this.appInTimerMode,
+    this.intervalLap,
     this.autostart = false,
   })  : assert(duration > 0),
         assert(initialPosition < duration),
@@ -82,8 +90,8 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   var _timerText = 'Tap Here to Start';
   var _currentDuration;
   var _desiredTime = 30;
-  var _secondTimerSize = 120.0;
-  var _minuteTimerSize = 105.0;
+  final _secondTimerSize = 120.0;
+  final _minuteTimerSize = 110.0;
   late var _timerSize = widget.duration > 60
       ? _minuteTimerSize
       : _secondTimerSize;
@@ -236,7 +244,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                     // fontWeight: FontWeight.w600,
                                     ),
                           ),
-                          SizedBox(height: 29),
+                          SizedBox(height: 28),
                         ])
                       : SizedBox(height: 30), // Spacer for Timer Mode
 
@@ -298,7 +306,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                             ////////////////////////
                             // In: "Interval Mode"
                             ////////////////////////
-                            _timerText,
+                            widget.isRunning
+                              ? _timerText + ": " + widget.intervalLap.toString()
+                              : _timerText,
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
                                       color: !widget.isRunning
@@ -389,6 +399,7 @@ class CountDownController {
   void restart({int? duration, required double initialPosition, int? restDuration}) {
     if (duration != null) {
       _state._animationController.duration = Duration(seconds: duration);
+      _state._desiredTime = duration;
     }
     if (restDuration != null) {
       _state.widget.restDuration = restDuration;

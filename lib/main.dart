@@ -31,6 +31,7 @@ class _MyAppState extends State<MyApp> {
   var _timerButtonRestart = false;
   var _timerInRestMode = false;
   var _orientation = 0;
+  var _intervalLap = 1;
 
   @override
   void initState() {
@@ -38,6 +39,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void resetTimer() {
+    _intervalLap = 1;
     _isRunning = false;
     _duration = setStartTime;
     _restDuration = setRestDuration;
@@ -62,6 +64,8 @@ class _MyAppState extends State<MyApp> {
     } else {
       _duration = setStartTime;
       _restDuration = setRestDuration;
+      _intervalLap++;
+      // _controller.updateIntervalLap('increase');
     }
 
     _controller.restart(
@@ -221,6 +225,7 @@ class _MyAppState extends State<MyApp> {
                         isRunning: _isRunning,
                         duration: _duration,
                         restDuration: _restDuration,
+                        intervalLap: _intervalLap,
                         appInTimerMode: appInTimerMode,
                         timerInRestMode: _timerInRestMode,
                         timeFormatter: _duration > 59
