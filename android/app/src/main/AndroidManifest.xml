@@ -2,7 +2,7 @@
     package="com.example.gym_bro">
     <uses-permission android:name="android.permission.VIBRATE"/>
    <application
-        android:label="hiit_time"
+        android:label="HIIT Time"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
