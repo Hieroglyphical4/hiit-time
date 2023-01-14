@@ -205,7 +205,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
               backgroundColor: widget.timerInRestMode
               // Rest Mode:
               ? widget.isRunning
-                  ? Colors.white
+                  ? primaryColor
                   : Colors.blue
               // Work Mode:
               : widget.isRunning
@@ -236,7 +236,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
 
                             style: Theme.of(context).textTheme.bodyText1!.copyWith(
                                     color: widget.timerInRestMode
-                                        ? Colors.white
+                                        ? primaryColor
                                         : Colors.blue.shade300,
                                     fontFamily: 'AstroSpace',
                                     fontSize: 20,
@@ -259,7 +259,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                               Theme.of(context).textTheme.bodyText1!.copyWith(
                                   color: widget.timerInRestMode
                                       ? Colors.blue.shade300
-                                      : Colors.white,
+                                      : primaryColor,
                                   // 59 is used here to avoid a small 59
                                   fontSize: (_currentDuration ?? setStartTime) > 59 ? _minuteTimerSize : _secondTimerSize,
                                   fontWeight: FontWeight.w600),
@@ -274,7 +274,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                               Theme.of(context).textTheme.bodyText1!.copyWith(
                                   color: widget.timerInRestMode
                                       ? Colors.blue.shade300
-                                      : Colors.white,
+                                      : primaryColor,
                                   // 58 is used as a buffer, any higher and 1:00 is huge
                                   fontSize: (_currentDuration ?? setStartTime) > 58 ? _minuteTimerSize : _secondTimerSize,
                                   fontWeight: FontWeight.w600),
@@ -293,7 +293,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                             _timerText,
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
-                                      color: Colors.white,
+                                      color: primaryColor,
                                       fontFamily: 'AstroSpace',
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
@@ -315,7 +315,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                       ? Colors.blue
                                       : widget.timerInRestMode
                                         ? Colors.blue.shade300
-                                        : Colors.white,
+                                        : primaryColor,
                                       fontFamily: 'AstroSpace',
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,

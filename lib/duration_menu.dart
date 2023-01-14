@@ -31,12 +31,10 @@ class DurationMenu extends StatefulWidget {
 class _DurationMenuState extends State<DurationMenu> {
   final _formKey = GlobalKey<FormState>();
   bool _settingsChanged = false;
-
   bool _restSettingChanged = false;
   bool _workSettingChanged = false;
   bool _subTimeSettingChanged = false;
   bool _addTimeSettingChanged = false;
-
 
   void recordSettingsChanged(String setting) {
     setState(() {
@@ -96,7 +94,7 @@ class _DurationMenuState extends State<DurationMenu> {
     return '$minutesString:$secondsString';
   }
 
-  void _onChanged(bool value) {
+  void _onTimerModeChanged(bool value) {
     setState(() {
       if (appInTimerMode) {
         appInTimerMode = false;
@@ -106,7 +104,25 @@ class _DurationMenuState extends State<DurationMenu> {
     });
   }
 
-  // textformfield variables
+  void _onDarkModeChanged() {
+    setState(() {
+      if (appInDarkMode) {
+        appInDarkMode = false;
+        primaryColor = Colors.black;
+        secondaryColor = Colors.white;
+        primaryAccentColor = Colors.blue.shade400;
+        secondaryAccentColor = Colors.blueGrey;
+      } else {
+        appInDarkMode = true;
+        primaryColor = Colors.white;
+        secondaryColor = Colors.grey.shade900;
+        primaryAccentColor = Colors.blue.shade400;
+        secondaryAccentColor = Colors.blueGrey;
+      }
+    });
+  }
+
+  // TextFormField Variables
   String _desiredRestTimeDuration = '';
   String _desiredWorkTimeDuration = '';
   String _desiredSubTimeMod = '';
@@ -118,10 +134,9 @@ class _DurationMenuState extends State<DurationMenu> {
   final subTimetextEditController = TextEditingController();
   final addTimeTextEditController = TextEditingController();
 
-
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey,
+      backgroundColor: secondaryColor,
       resizeToAvoidBottomInset: true,
       body: Center(
         child: Align(
@@ -134,18 +149,17 @@ class _DurationMenuState extends State<DurationMenu> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 25),
                       ////////////////////////////////
                       // Settings Text Header      ///
                       ////////////////////////////////
-                      // TODO Make clickable to access advanced settings
                       Container(
                           height: 60,
-                          child: const Padding(
+                          child: Padding(
                             padding: EdgeInsets.only(top: 10),
                             child: Text('Settings',
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: primaryColor,
                                     fontFamily: 'AstroSpace',
                                     fontSize: 40,
                                     height: 1.1),
@@ -162,76 +176,100 @@ class _DurationMenuState extends State<DurationMenu> {
                         children: [
                           ////////////////////////
                           // Rest Input field  ///
-                          ////////////////////////inp
-                          SizedBox(
-                            width: 115,
-                            child: (TextFormField(
-                              controller: restTextEditController,
-                              style: TextStyle(color: Colors.blue.shade400, fontSize: 30),
-                              textAlign: TextAlign.center,
-                              textDirection: TextDirection.rtl,
-                              keyboardType: TextInputType.number,
-                              onChanged: (value) {
-                                if (value != '') {
-                                  // Only record changes if not filtered (leading 0)
-                                  recordSettingsChanged('rest');
-                                  if (value.length > 2) {
-                                    restTextEditController.text = formatDuration(value);
-                                    restTextEditController.selection = TextSelection.collapsed(offset: restTextEditController.text.length);
-                                  }
-                                }
-                                if (value == '') {
-                                  // Useful if the text field was added to and deleted
-                                  clearSettingsChanged('rest');
-                                }
-                                _desiredRestTimeDuration = value;
-                              },
-                              onFieldSubmitted: (value) {
-                                FocusManager.instance.primaryFocus?.unfocus();
-                              },
-                              decoration: InputDecoration(
-                                hintText: setRestDuration > 59
-                                    ? changeDurationFromSecondsToMinutes(
+                          ////////////////////////
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 115,
+                                child: (TextFormField(
+                                  controller: restTextEditController,
+                                  style: TextStyle(
+                                      color: primaryAccentColor,
+                                      fontSize: 30),
+                                  textAlign: TextAlign.center,
+                                  textDirection: TextDirection.rtl,
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (value) {
+                                    if (value != '') {
+                                      // Only record changes if not filtered (leading 0)
+                                      recordSettingsChanged('rest');
+                                      if (value.length > 2) {
+                                        restTextEditController.text =
+                                            formatDuration(value);
+                                        restTextEditController.selection =
+                                            TextSelection.collapsed(
+                                                offset: restTextEditController
+                                                    .text.length);
+                                      }
+                                    }
+                                    if (value == '') {
+                                      // Useful if the text field was added to and deleted
+                                      clearSettingsChanged('rest');
+                                    }
+                                    _desiredRestTimeDuration = value;
+                                  },
+                                  onFieldSubmitted: (value) {
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: setRestDuration > 59
+                                        ? changeDurationFromSecondsToMinutes(
                                         setRestDuration)
-                                    : setRestDuration.toString(),
-                                hintStyle: TextStyle(
-                                    fontSize: 30,
-                                    color: appInTimerMode ? Colors.grey : Colors.white,
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: BorderSide(
-                                    color: _restSettingChanged ? Colors.blue.shade300 : appInTimerMode ? Colors.grey : Colors.white,
-                                    width: 3,
+                                        : setRestDuration.toString(),
+                                    hintStyle: TextStyle(
+                                      fontSize: 30,
+                                      color: appInTimerMode
+                                          ? Colors.grey
+                                          : primaryColor,
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      borderSide: BorderSide(
+                                        color: _restSettingChanged
+                                            ? primaryAccentColor
+                                            : appInTimerMode
+                                            ? Colors.grey
+                                            : primaryColor,
+                                        width: 3,
+                                      ),
+                                      gapPadding: 1.0,
+                                    ),
                                   ),
-                                  gapPadding: 1.0,
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    // Only numbers can be entered
+                                    FilteringTextInputFormatter.deny(
+                                        RegExp('^0+')),
+                                    // Filter leading 0s
+                                    LengthLimitingTextInputFormatter(4),
+                                    // 4 digits at most
+                                    // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
+                                  ],
+                                )),
+                              ),
+
+                              const SizedBox(height: 4),
+
+                              // Rest Text Description
+                              Text(
+                                'Rest Time',
+                                style: TextStyle(
+                                  color: appInTimerMode
+                                      ? Colors.grey
+                                      : primaryColor,
+                                  fontSize: 18,
+                                  fontFamily: 'AstroSpace',
                                 ),
                               ),
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly,  // Only numbers can be entered
-                                FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
-                                LengthLimitingTextInputFormatter(4), // 4 digits at most
-                                // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
-                              ],
-                            )),
-                          ),
-
-                          const SizedBox(height: 4),
-
-                          // Rest Text Description
-                          Text(
-                            'Rest Time',
-                            style: TextStyle(
-                              color: appInTimerMode ? Colors.grey : Colors.white,
-                              fontSize: 18,
-                              fontFamily: 'AstroSpace',
-                            ),
+                            ],
                           ),
 
                           ////////////////////////////////
                           // Spacer between Rest and Work
                           ////////////////////////////////
-                          const SizedBox(height: 30),
+                          const SizedBox(height: 40),
 
                           ///////////////////////
                           // Work input Field  //
@@ -240,7 +278,8 @@ class _DurationMenuState extends State<DurationMenu> {
                             width: 115,
                             child: (TextFormField(
                               controller: workTextEditController,
-                              style: TextStyle(color: Colors.blue.shade400, fontSize: 30),
+                              style: TextStyle(
+                                  color: primaryAccentColor, fontSize: 30),
                               textAlign: TextAlign.center,
                               textDirection: TextDirection.rtl,
                               keyboardType: TextInputType.number,
@@ -249,8 +288,12 @@ class _DurationMenuState extends State<DurationMenu> {
                                   // Only record changes if not filtered (leading 0)
                                   recordSettingsChanged('work');
                                   if (value.length > 2) {
-                                    workTextEditController.text = formatDuration(value);
-                                    workTextEditController.selection = TextSelection.collapsed(offset: workTextEditController.text.length);
+                                    workTextEditController.text =
+                                        formatDuration(value);
+                                    workTextEditController.selection =
+                                        TextSelection.collapsed(
+                                            offset: workTextEditController
+                                                .text.length);
                                   }
                                 }
                                 if (value == '') {
@@ -265,23 +308,28 @@ class _DurationMenuState extends State<DurationMenu> {
                               decoration: InputDecoration(
                                 hintText: setStartTime > 59
                                     ? changeDurationFromSecondsToMinutes(
-                                        setStartTime)
+                                    setStartTime)
                                     : setStartTime.toString(),
-                                hintStyle: const TextStyle(
-                                    fontSize: 30, color: Colors.white),
+                                hintStyle: TextStyle(
+                                    fontSize: 30, color: primaryColor),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15.0),
                                   borderSide: BorderSide(
-                                    color: _workSettingChanged ? Colors.blue.shade300 : Colors.white,
+                                    color: _workSettingChanged
+                                        ? primaryAccentColor
+                                        : primaryColor,
                                     width: 3,
                                   ),
                                   gapPadding: 1.0,
                                 ),
                               ),
                               inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
-                                LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                FilteringTextInputFormatter.digitsOnly,
+                                // Only numbers can be entered
+                                FilteringTextInputFormatter.deny(RegExp('^0+')),
+                                // Filter leading 0s
+                                LengthLimitingTextInputFormatter(4),
+                                // 4 digits at most
                                 // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
                               ],
                             )),
@@ -290,21 +338,22 @@ class _DurationMenuState extends State<DurationMenu> {
                           const SizedBox(height: 4),
 
                           // Work Text Description
-                          const Text(
+                          Text(
                             'Work Time',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: primaryColor,
                               fontSize: 18,
                               fontFamily: 'AstroSpace',
                             ),
                           ),
+
                         ],
                       ),
 
                       ////////////////////////////////
                       // Spacer between switch and timer settings
                       ////////////////////////////////
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 30),
 
                       //////////////////////////////
                       // Timer and Interval Switch
@@ -316,7 +365,7 @@ class _DurationMenuState extends State<DurationMenu> {
                             'Timer Mode',
                             style: TextStyle(
                               color:
-                                  appInTimerMode ? Colors.white : Colors.grey,
+                                  appInTimerMode ? primaryColor : Colors.grey,
                               fontSize: 18,
                               fontFamily: 'AstroSpace',
                             ),
@@ -326,12 +375,14 @@ class _DurationMenuState extends State<DurationMenu> {
                           ////////////////////////////////////
                           Switch(
                             value: !appInTimerMode,
-                            onChanged: _onChanged,
+                            onChanged: _onTimerModeChanged,
                           ),
                           Text(
                             'Interval Mode',
                             style: TextStyle(
-                              color: appInTimerMode ? Colors.grey : Colors.blue.shade400,
+                              color: appInTimerMode
+                                  ? Colors.grey
+                                  : primaryAccentColor,
                               fontSize: 18,
                               fontFamily: 'AstroSpace',
                             ),
@@ -339,7 +390,7 @@ class _DurationMenuState extends State<DurationMenu> {
                         ],
                       ),
 
-                      const SizedBox(height: 35),
+                      const SizedBox(height: 10),
 
                       ////////////////////
                       // Bottom Settings
@@ -347,9 +398,9 @@ class _DurationMenuState extends State<DurationMenu> {
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            ////////////////////
-                            // - Time Settings
-                            ////////////////////
+                            /////////////////////////////////////
+                            // - Time Settings and Theme Button
+                            /////////////////////////////////////
                             Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -358,7 +409,9 @@ class _DurationMenuState extends State<DurationMenu> {
                                     width: 100,
                                     child: (TextFormField(
                                       controller: subTimetextEditController,
-                                      style: TextStyle(color: Colors.blue.shade400, fontSize: 20),
+                                      style: TextStyle(
+                                          color: primaryAccentColor,
+                                          fontSize: 20),
                                       textAlign: TextAlign.center,
                                       textDirection: TextDirection.rtl,
                                       keyboardType: TextInputType.number,
@@ -367,8 +420,14 @@ class _DurationMenuState extends State<DurationMenu> {
                                           // Only record changes if not filtered (leading 0)
                                           recordSettingsChanged('subTime');
                                           if (value.length > 2) {
-                                            subTimetextEditController.text = formatDuration(value);
-                                            subTimetextEditController.selection = TextSelection.collapsed(offset: subTimetextEditController.text.length);
+                                            subTimetextEditController.text =
+                                                formatDuration(value);
+                                            subTimetextEditController
+                                                    .selection =
+                                                TextSelection.collapsed(
+                                                    offset:
+                                                        subTimetextEditController
+                                                            .text.length);
                                           }
                                         }
                                         if (value == '') {
@@ -386,23 +445,28 @@ class _DurationMenuState extends State<DurationMenu> {
                                             ? changeDurationFromSecondsToMinutes(
                                                 setTimeModifyValueSub)
                                             : setTimeModifyValueSub.toString(),
-                                        hintStyle: const TextStyle(
-                                            fontSize: 20, color: Colors.white),
-                                        fillColor: Colors.blueGrey,
+                                        hintStyle: TextStyle(
+                                            fontSize: 20, color: primaryColor),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(15.0),
                                           borderSide: BorderSide(
-                                            color: _subTimeSettingChanged ? Colors.blue.shade300 : Colors.white,
+                                            color: _subTimeSettingChanged
+                                                ? primaryAccentColor
+                                                : primaryColor,
                                             width: 3,
                                           ),
                                           gapPadding: 1.0,
                                         ),
                                       ),
                                       inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                        FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
-                                        LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        // Only numbers can be entered
+                                        FilteringTextInputFormatter.deny(
+                                            RegExp('^0+')),
+                                        // Filter leading 0s
+                                        LengthLimitingTextInputFormatter(4),
+                                        // 4 digits at most
                                         // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
                                       ],
                                     )),
@@ -411,15 +475,46 @@ class _DurationMenuState extends State<DurationMenu> {
                                   const SizedBox(height: 4),
 
                                   // - Time Text Description
-                                  const Text(
+                                  Text(
                                     '-Time',
                                     style: TextStyle(
                                       fontFamily: 'AstroSpace',
-                                      color: Colors.white,
+                                      color: primaryColor,
                                       fontSize: 18,
                                     ),
                                   ),
-                                  SizedBox(height: 100),
+
+                                  SizedBox(height: 20),
+
+                                  IconButton(
+                                    iconSize: 45,
+                                    color: primaryColor,
+                                    icon: appInDarkMode
+                                      ? Icon(Icons.dark_mode)
+                                      : Icon(Icons.light_mode),
+                                    onPressed: () {
+                                      HapticFeedback.mediumImpact();
+                                      _onDarkModeChanged();
+                                    },
+                                  ),
+
+                                  // Dark Mode/Light Mode Text Description
+                                  Text(appInDarkMode
+                                      ? 'Dark'
+                                      : 'Light',
+                                    style: TextStyle(
+                                      fontFamily: 'AstroSpace',
+                                      color: primaryColor,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  Text('Mode',
+                                    style: TextStyle(
+                                      fontFamily: 'AstroSpace',
+                                      color: primaryColor,
+                                      fontSize: 15,
+                                    ),
+                                  ),
                                 ]),
 
                             SizedBox(width: 25),
@@ -427,11 +522,13 @@ class _DurationMenuState extends State<DurationMenu> {
                             //////////////////////////////
                             // save and close buttons
                             //////////////////////////////
-                            Column(children: [
+                            Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
                               // Save Button
                               IconButton(
                                 iconSize: 75,
-                                color: Colors.blue.shade400,
+                                color: primaryAccentColor,
                                 icon: const Icon(Icons.check_circle),
                                 onPressed: _settingsChanged
                                     ? () {
@@ -443,24 +540,32 @@ class _DurationMenuState extends State<DurationMenu> {
                                         ///////////////////////////////////////////////////
                                         // Check for Changes to Rest Time
                                         if (_desiredRestTimeDuration != '') {
-                                          _changesRequiringRestartOccured = true;
-                                          setRestDuration = int.parse(_desiredRestTimeDuration);
+                                          _changesRequiringRestartOccured =
+                                              true;
+                                          setRestDuration = int.parse(
+                                              _desiredRestTimeDuration);
                                           // Prevent errors from numbers above 59:59
                                           if (setRestDuration > 5959) {
                                             setRestDuration = 5959;
                                           }
-                                          if (_desiredRestTimeDuration.length > 2) {
-                                            var timeFormatted = formatDuration(setRestDuration.toString());
-                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
+                                          if (_desiredRestTimeDuration.length >
+                                              2) {
+                                            var timeFormatted = formatDuration(
+                                                setRestDuration.toString());
+                                            var timeInSeconds =
+                                                convertMinutesToSeconds(
+                                                    timeFormatted);
                                             setRestDuration = timeInSeconds;
                                           }
                                         }
 
                                         // Check for Changes to Work Time
                                         if (_desiredWorkTimeDuration != '') {
-                                          _changesRequiringRestartOccured = true;
+                                          _changesRequiringRestartOccured =
+                                              true;
                                           // Prevent errors from negative numbers
-                                          setStartTime = int.parse(_desiredWorkTimeDuration); // works if <2
+                                          setStartTime = int.parse(
+                                              _desiredWorkTimeDuration); // works if <2
                                           if (setStartTime < 1) {
                                             setStartTime = 1;
                                           }
@@ -468,40 +573,57 @@ class _DurationMenuState extends State<DurationMenu> {
                                           if (setStartTime > 5959) {
                                             setStartTime = 5959;
                                           }
-                                          if (_desiredWorkTimeDuration.length > 2) {
-                                            var timeFormatted = formatDuration(setStartTime.toString());
-                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
+                                          if (_desiredWorkTimeDuration.length >
+                                              2) {
+                                            var timeFormatted = formatDuration(
+                                                setStartTime.toString());
+                                            var timeInSeconds =
+                                                convertMinutesToSeconds(
+                                                    timeFormatted);
                                             setStartTime = timeInSeconds;
                                           }
                                         }
 
                                         // Check for Changes to Subtract Modifier
                                         if (_desiredSubTimeMod != '') {
-                                          setTimeModifyValueSub = int.parse(_desiredSubTimeMod);
+                                          setTimeModifyValueSub =
+                                              int.parse(_desiredSubTimeMod);
                                           if (setTimeModifyValueSub > 5959) {
                                             setTimeModifyValueSub = 5959;
                                           }
                                           if (_desiredSubTimeMod.length > 2) {
-                                            var timeFormatted = formatDuration(setTimeModifyValueSub.toString());
-                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
-                                            setTimeModifyValueSub = timeInSeconds;
+                                            var timeFormatted = formatDuration(
+                                                setTimeModifyValueSub
+                                                    .toString());
+                                            var timeInSeconds =
+                                                convertMinutesToSeconds(
+                                                    timeFormatted);
+                                            setTimeModifyValueSub =
+                                                timeInSeconds;
                                           }
                                         }
 
                                         // Check for Changes to Addition Modifier
                                         if (_desiredAddTimeMod != '') {
-                                          setTimeModifyValueAdd = int.parse(_desiredAddTimeMod);
+                                          setTimeModifyValueAdd =
+                                              int.parse(_desiredAddTimeMod);
                                           if (setTimeModifyValueAdd > 5959) {
                                             setTimeModifyValueAdd = 5959;
                                           }
                                           if (_desiredAddTimeMod.length > 2) {
-                                            var timeFormatted = formatDuration(setTimeModifyValueAdd.toString());
-                                            var timeInSeconds = convertMinutesToSeconds(timeFormatted);
-                                            setTimeModifyValueAdd = timeInSeconds;
+                                            var timeFormatted = formatDuration(
+                                                setTimeModifyValueAdd
+                                                    .toString());
+                                            var timeInSeconds =
+                                                convertMinutesToSeconds(
+                                                    timeFormatted);
+                                            setTimeModifyValueAdd =
+                                                timeInSeconds;
                                           }
                                         }
 
-                                        Navigator.pop(context, _changesRequiringRestartOccured); // Close Settings menu
+                                        Navigator.pop(context,
+                                            _changesRequiringRestartOccured); // Close Settings menu
                                       }
                                     : null, // If settings haven't changed, Disable Save Button
                               ),
@@ -512,7 +634,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                 style: TextStyle(
                                   fontFamily: 'AstroSpace',
                                   color: _settingsChanged
-                                      ? Colors.blue.shade400
+                                      ? primaryAccentColor
                                       : Colors.grey,
                                   fontSize: 20,
                                 ),
@@ -523,7 +645,9 @@ class _DurationMenuState extends State<DurationMenu> {
                               // Cancel Button
                               IconButton(
                                 iconSize: 45,
-                                color: _settingsChanged ? Colors.red.shade400 : Colors.white,
+                                color: _settingsChanged
+                                    ? Colors.red.shade400
+                                    : primaryColor,
                                 icon: const Icon(Icons.highlight_off),
                                 onPressed: () {
                                   HapticFeedback.mediumImpact();
@@ -538,7 +662,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                   fontFamily: 'AstroSpace',
                                   color: _settingsChanged
                                       ? Colors.red.shade400
-                                      : Colors.white,
+                                      : primaryColor,
                                   fontSize: 20,
                                 ),
                               ),
@@ -549,13 +673,17 @@ class _DurationMenuState extends State<DurationMenu> {
                             //////////////////////
                             // + time settings
                             /////////////////////
-                            Column(children: [
+                            Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
                               // + Time Input Field
                               SizedBox(
                                 width: 100,
                                 child: (TextFormField(
                                   controller: addTimeTextEditController,
-                                  style: TextStyle(color: Colors.blue.shade400, fontSize: 20),
+                                  style: TextStyle(
+                                      color: primaryAccentColor,
+                                      fontSize: 20),
                                   textAlign: TextAlign.center,
                                   textDirection: TextDirection.rtl,
                                   keyboardType: TextInputType.number,
@@ -564,8 +692,13 @@ class _DurationMenuState extends State<DurationMenu> {
                                       // Only record changes if not filtered (leading 0)
                                       recordSettingsChanged('addTime');
                                       if (value.length > 2) {
-                                        addTimeTextEditController.text = formatDuration(value);
-                                        addTimeTextEditController.selection = TextSelection.collapsed(offset: addTimeTextEditController.text.length);
+                                        addTimeTextEditController.text =
+                                            formatDuration(value);
+                                        addTimeTextEditController.selection =
+                                            TextSelection.collapsed(
+                                                offset:
+                                                    addTimeTextEditController
+                                                        .text.length);
                                       }
                                     }
                                     if (value == '') {
@@ -580,24 +713,31 @@ class _DurationMenuState extends State<DurationMenu> {
                                   },
                                   decoration: InputDecoration(
                                     hintText: setTimeModifyValueAdd > 59
-                                        ? changeDurationFromSecondsToMinutes(setTimeModifyValueAdd)
+                                        ? changeDurationFromSecondsToMinutes(
+                                            setTimeModifyValueAdd)
                                         : setTimeModifyValueAdd.toString(),
-                                    hintStyle: const TextStyle(
-                                        fontSize: 20, color: Colors.white),
-                                    iconColor: Colors.white,
+                                    hintStyle: TextStyle(
+                                        fontSize: 20, color: primaryColor),
+                                    iconColor: primaryColor,
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15.0),
                                       borderSide: BorderSide(
-                                        color: _addTimeSettingChanged ? Colors.blue.shade300 : Colors.white,
+                                        color: _addTimeSettingChanged
+                                            ? primaryAccentColor
+                                            : primaryColor,
                                         width: 3,
                                       ),
                                       gapPadding: 1.0,
                                     ),
                                   ),
                                   inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                    FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
-                                    LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    // Only numbers can be entered
+                                    FilteringTextInputFormatter.deny(
+                                        RegExp('^0+')),
+                                    // Filter leading 0s
+                                    LengthLimitingTextInputFormatter(4),
+                                    // 4 digits at most
                                     // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
                                   ],
                                 )),
@@ -606,11 +746,11 @@ class _DurationMenuState extends State<DurationMenu> {
                               const SizedBox(height: 4),
 
                               // + Time Text Description
-                              const Text(
+                              Text(
                                 '+Time',
                                 style: TextStyle(
                                   fontFamily: 'AstroSpace',
-                                  color: Colors.white,
+                                  color: primaryColor,
                                   fontSize: 18,
                                 ),
                               ),
@@ -618,7 +758,7 @@ class _DurationMenuState extends State<DurationMenu> {
                             ]),
                           ]),
 
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 25),
                     ],
                   ),
                 ],

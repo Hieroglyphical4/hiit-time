@@ -120,7 +120,7 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         resizeToAvoidBottomInset: false,
         body: Container(
-          color: Colors.black.withOpacity(0.85),
+          color: secondaryColor,
           child: Center(
             // child: SingleChildScrollView(
             child: Column(
@@ -147,7 +147,7 @@ class _MyAppState extends State<MyApp> {
                           MaterialStateProperty.resolveWith<Color?>(
                         (Set<MaterialState> states) {
                           if (appInTimerMode) {
-                            return Colors.white;
+                            return primaryColor;
                           }
                           return null; // defer to the defaults
                         },
@@ -180,7 +180,7 @@ class _MyAppState extends State<MyApp> {
                     width: 333,
                     child: InkWell(
                       // focusColor: Colors.green,
-                      splashColor: Colors.white,
+                      splashColor: primaryColor,
                       highlightColor: _isRunning ? Colors.pink : Colors.blue,
                       customBorder: const CircleBorder(),
                       // Long press will allow the user to change the duration
@@ -220,7 +220,7 @@ class _MyAppState extends State<MyApp> {
                         controller: _controller,
                         strokeWidth: 18,
                         autostart: false,
-                        valueColor: Colors.blueGrey.shade700,
+                        valueColor: Colors.blueGrey.shade700, // Color slice showing time passed
                         initialPosition: 0,
                         isRunning: _isRunning,
                         duration: _duration,
@@ -314,7 +314,7 @@ class _MyAppState extends State<MyApp> {
                           style: ElevatedButton.styleFrom(
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(5),
-                            backgroundColor: Colors.blueGrey.shade700,
+                            backgroundColor: secondaryAccentColor,
                           ),
                           child: Text(
                               setTimeModifyValueSub > 59
@@ -332,7 +332,7 @@ class _MyAppState extends State<MyApp> {
                     ////////////////////
                     IconButton(
                       iconSize: 45,
-                      color: Colors.white,
+                      color: primaryColor,
                       icon: const Icon(Icons.settings),
                       onPressed: () {
                         HapticFeedback.mediumImpact();
@@ -403,7 +403,7 @@ class _MyAppState extends State<MyApp> {
                           style: ElevatedButton.styleFrom(
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(5),
-                            backgroundColor: Colors.blueGrey.shade700,
+                            backgroundColor: secondaryAccentColor,
                           ),
                           child: Text(
                               setTimeModifyValueAdd > 59
@@ -430,7 +430,7 @@ class _MyAppState extends State<MyApp> {
                             resetTimer();
                           }),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: primaryAccentColor,
                         shape: CircleBorder(),
                         padding: EdgeInsets.all(4),
                       ),
