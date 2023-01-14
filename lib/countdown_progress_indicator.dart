@@ -205,7 +205,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
               backgroundColor: widget.timerInRestMode
               // Rest Mode:
               ? widget.isRunning
-                  ? primaryColor
+                  ? secondaryColor
                   : Colors.blue
               // Work Mode:
               : widget.isRunning

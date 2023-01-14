@@ -220,7 +220,11 @@ class _MyAppState extends State<MyApp> {
                         controller: _controller,
                         strokeWidth: 18,
                         autostart: false,
-                        valueColor: Colors.blueGrey.shade700, // Color slice showing time passed
+                        valueColor: _timerInRestMode
+                        ? appInDarkMode // Color slice showing time passed
+                          ? primaryColor
+                          : Colors.blueGrey.shade700
+                        : Colors.blueGrey.shade700,
                         initialPosition: 0,
                         isRunning: _isRunning,
                         duration: _duration,

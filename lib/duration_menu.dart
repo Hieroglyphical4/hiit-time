@@ -159,7 +159,7 @@ class _DurationMenuState extends State<DurationMenu> {
                             padding: EdgeInsets.only(top: 10),
                             child: Text('Settings',
                                 style: TextStyle(
-                                    color: primaryColor,
+                                    color: primaryAccentColor,
                                     fontFamily: 'AstroSpace',
                                     fontSize: 40,
                                     height: 1.1),
@@ -390,7 +390,7 @@ class _DurationMenuState extends State<DurationMenu> {
                         ],
                       ),
 
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 20),
 
                       ////////////////////
                       // Bottom Settings
@@ -402,9 +402,12 @@ class _DurationMenuState extends State<DurationMenu> {
                             // - Time Settings and Theme Button
                             /////////////////////////////////////
                             Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
+                                  const SizedBox(height: 20),
+
+                                  ///////////////////////
                                   // - Time Input Field
+                                  ///////////////////////
                                   SizedBox(
                                     width: 100,
                                     child: (TextFormField(
@@ -471,9 +474,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                       ],
                                     )),
                                   ),
-
                                   const SizedBox(height: 4),
-
                                   // - Time Text Description
                                   Text(
                                     '-Time',
@@ -484,8 +485,11 @@ class _DurationMenuState extends State<DurationMenu> {
                                     ),
                                   ),
 
-                                  SizedBox(height: 20),
+                                  SizedBox(height: 30),
 
+                                  ////////////////////////////////
+                                  // Dark Mode/Light Mode Button
+                                  ////////////////////////////////
                                   IconButton(
                                     iconSize: 45,
                                     color: primaryColor,
@@ -499,7 +503,8 @@ class _DurationMenuState extends State<DurationMenu> {
                                   ),
 
                                   // Dark Mode/Light Mode Text Description
-                                  Text(appInDarkMode
+                                  Text(
+                                    appInDarkMode
                                       ? 'Dark'
                                       : 'Light',
                                     style: TextStyle(
@@ -508,7 +513,8 @@ class _DurationMenuState extends State<DurationMenu> {
                                       fontSize: 15,
                                     ),
                                   ),
-                                  Text('Mode',
+                                  Text(
+                                    'Mode',
                                     style: TextStyle(
                                       fontFamily: 'AstroSpace',
                                       color: primaryColor,
@@ -529,6 +535,7 @@ class _DurationMenuState extends State<DurationMenu> {
                               IconButton(
                                 iconSize: 75,
                                 color: primaryAccentColor,
+                                disabledColor: Colors.grey,
                                 icon: const Icon(Icons.check_circle),
                                 onPressed: _settingsChanged
                                     ? () {
@@ -640,7 +647,7 @@ class _DurationMenuState extends State<DurationMenu> {
                                 ),
                               ),
 
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 10),
 
                               // Cancel Button
                               IconButton(
