@@ -64,6 +64,16 @@ flutter:
   assets:
     - assets/sounds/alarm-standard-1.mp3
     - assets/sounds/alarm-beep-beep-1.mp3
+    - assets/sounds/ShopOpenBellv2.mp3
+    - assets/sounds/ShopCloseBell.mp3
+    - assets/sounds/Correct1.mp3
+    - assets/sounds/Woosh.mp3
+    - assets/sounds/PongUp.mp3
+    - assets/sounds/PongDown.mp3
+    - assets/sounds/Selection1.mp3
+    - assets/sounds/PianoAlarm.mp3
+    - assets/sounds/Work-Voice-salli.mp3
+    - assets/sounds/Rest-Voice-salli.mp3
 
 
   # The following line ensures that the Material Icons font is

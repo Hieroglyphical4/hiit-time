@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Config/settings.dart';
@@ -558,7 +559,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     icon: const Icon(Icons.check_circle),
                                     onPressed: _settingsChanged
                                         ? () {
-                                            // Check if settings have changed
+                                      widget.audio.setVolume(.5);
+                                      !appMuted ? widget.audio.play(AssetSource('sounds/Correct1.mp3')) : null;
+
+                                      // Check if settings have changed
                                             HapticFeedback.mediumImpact();
 
                                             ///////////////////////////////////////////////////
@@ -677,6 +681,13 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     icon: const Icon(Icons.highlight_off),
                                     onPressed: () {
                                       HapticFeedback.mediumImpact();
+                                      if (_settingsChanged) {
+                                        widget.audio.setVolume(.5);
+                                        !appMuted ? widget.audio.play(AssetSource('sounds/Woosh.mp3')) : null;
+                                      } else {
+                                        widget.audio.setVolume(.8);
+                                        !appMuted ? widget.audio.play(AssetSource('sounds/ShopCloseBell.mp3'))  : null;
+                                      }
                                       Navigator.pop(context);
                                     },
                                   ),
