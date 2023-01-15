@@ -103,10 +103,12 @@ class _SettingsMenuState extends State<SettingsMenu> {
     setState(() {
       if (appInTimerMode) {
         widget.audio.setVolume(.1);
+        widget.audio.setReleaseMode(ReleaseMode.stop);
         !appMuted ? widget.audio.play(AssetSource('sounds/SwitchAndBeep1.mp3')) : null;
         appInTimerMode = false;
       } else {
         widget.audio.setVolume(.1);
+        widget.audio.setReleaseMode(ReleaseMode.stop);
         !appMuted ? widget.audio.play(AssetSource('sounds/Switch1.mp3')) : null;
         appInTimerMode = true;
       }
@@ -564,6 +566,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     onPressed: _settingsChanged
                                         ? () {
                                       widget.audio.setVolume(.1);
+                                      widget.audio.setReleaseMode(ReleaseMode.stop);
                                       !appMuted ? widget.audio.play(AssetSource('sounds/Correct1.mp3')) : null;
 
                                       // Check if settings have changed
@@ -687,10 +690,8 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       HapticFeedback.mediumImpact();
                                       if (_settingsChanged) {
                                         widget.audio.setVolume(.1);
+                                        widget.audio.setReleaseMode(ReleaseMode.stop);
                                         !appMuted ? widget.audio.play(AssetSource('sounds/Woosh.mp3')) : null;
-                                      } else {
-                                        widget.audio.setVolume(.5);
-                                        !appMuted ? widget.audio.play(AssetSource('sounds/ShopCloseBell.mp3'))  : null;
                                       }
                                       Navigator.pop(context);
                                     },

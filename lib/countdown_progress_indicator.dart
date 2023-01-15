@@ -138,6 +138,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
           _audioPlayer.setVolume(.5);
           !appMuted ? _audioPlayer.play(AssetSource('sounds/Countdown3SalliDelayed.mp3')) : null;
         }
+        if (_currentDuration > 3) {
+          _audioPlayer.stop();
+        }
         _timerText = 'Timer Mode';
         if (_currentDuration > 59) {
           _timerSize = _minuteTimerSize;
@@ -396,6 +399,10 @@ class CountDownController {
   void flip() {
     _state._animationController.forward();
     // _state._animationController.reverse(); // TODO Get Working
+  }
+
+  void stopAudioDuringPause() {
+    _state._audioPlayer.stop();
   }
 
   /// Restarts countdown timer.

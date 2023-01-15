@@ -197,11 +197,6 @@ class _MyAppState extends State<MyApp> {
                         HapticFeedback.lightImpact();
 
                         _audioPlayer.setVolume(.5);
-                        if (_isRunning) {
-                          !appMuted ? _audioPlayer.play(AssetSource('sounds/Selection1.mp3')) : null;
-                        } else {
-                          !appMuted ? _audioPlayer.play(AssetSource('sounds/Selection1Reversed.mp3')) : null;
-                        }
                         // Check if the user is pressing the timer after it finished.
                         // If so, restart timer to initial state (reset)
                         if (_timerButtonRestart) {
@@ -216,6 +211,8 @@ class _MyAppState extends State<MyApp> {
                             _controller.pause();
                             // Update timer text
                             _controller.updateWorkoutMode(appInTimerMode);
+                            // Stop Audio Countdown
+                            _controller.stopAudioDuringPause();
                             Wakelock.disable();
                           } else {
                             // Timer was paused, turning on
@@ -315,9 +312,6 @@ class _MyAppState extends State<MyApp> {
                           onPressed: () => setState(() {
                             HapticFeedback.mediumImpact();
 
-                            _audioPlayer.setVolume(.2);
-                            _audioPlayer.setReleaseMode(ReleaseMode.stop);
-                            !appMuted ? _audioPlayer.play(AssetSource('sounds/PongDown.mp3')) : null;
                             // If the user is manually changing the time, we shouldn't
                             // set the timer up to restart on the next press
                             _timerButtonRestart = false;
@@ -362,9 +356,6 @@ class _MyAppState extends State<MyApp> {
                       color: primaryColor,
                       icon: const Icon(Icons.settings),
                       onPressed: () {
-                        _audioPlayer.setVolume(.5);
-                        _audioPlayer.setReleaseMode(ReleaseMode.stop);
-                        !appMuted ? _audioPlayer.play(AssetSource('sounds/ShopOpenBellv2.mp3')) : null;
                         HapticFeedback.mediumImpact();
 
                         // Launch settings menu
@@ -411,11 +402,6 @@ class _MyAppState extends State<MyApp> {
                         child: ElevatedButton(
                           onPressed: () => setState(() {
                             HapticFeedback.mediumImpact();
-
-                            _audioPlayer.setVolume(.2);
-                            _audioPlayer.setReleaseMode(ReleaseMode.stop);
-                            !appMuted ? _audioPlayer.play(AssetSource('sounds/PongUp.mp3')) : null;
-
                             // If the user is manually changing the time, we shouldn't
                             // set the timer up to restart on the next press
                             _timerButtonRestart = false;
@@ -463,10 +449,6 @@ class _MyAppState extends State<MyApp> {
                   child: ElevatedButton(
                       onPressed: () => setState(() {
                             HapticFeedback.lightImpact();
-
-                            _audioPlayer.setVolume(.3);
-                            !appMuted ? _audioPlayer.play(AssetSource('sounds/dooDaDoo.mp3')) : null;
-
                             resetTimer();
                           }),
                       style: ElevatedButton.styleFrom(
