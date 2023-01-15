@@ -1,14 +1,17 @@
-// import 'package:countdown_progress_indicator/countdown_progress_indicator.dart';
+import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:hiit.time/countdown_progress_indicator.dart';
-import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:hiit.time/Config/settings.dart';
+import 'package:hiit.time/duration_menu.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
-
-import 'hiit_time_button.dart';
+import 'package:flutter/services.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const MaterialApp(
+      home: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -22,178 +25,254 @@ class _MyAppState extends State<MyApp> {
   bool _isRunning = false;
   final _controller = CountDownController();
   var _duration = setStartTime;
-  final _timerModifierValue = setTimeModifyValue;
-  final _stringModValue = setTimeModifyValue.toString();
-  var _timerButtonRestart = false;
-  var _appInTimerMode = true;
   var _restDuration = setRestDuration;
+  var _timerModifierValueAdd = setTimeModifyValueAdd;
+  var _timerModifierValueSub = setTimeModifyValueSub;
+  var _timerButtonRestart = false;
+  var _timerInRestMode = false;
+  var _orientation = 0;
+  var _intervalLap = 1;
 
   @override
   void initState() {
     super.initState();
-    _init();
   }
 
-  // Vibration related settings
-  bool _canVibrate = false;
-  final Iterable<Duration> pauses = [
-    const Duration(milliseconds: 150),
-  ];
+  void resetTimer() {
+    _intervalLap = 1;
+    _isRunning = false;
+    _duration = setStartTime;
+    _restDuration = setRestDuration;
+    _timerModifierValueAdd = setTimeModifyValueAdd;
+    _timerModifierValueSub = setTimeModifyValueSub;
 
-  Future<void> _init() async {
-    try {
-      bool canVibrate = await Vibrate.canVibrate;
-      setState(() async {
-        _canVibrate = canVibrate;
-      });
-    } catch (e) {
-      print('Error checking if device can vibrate: $e');
+    _controller.restart(
+      duration: _duration,
+      initialPosition: 0,
+      restDuration: _restDuration,
+    );
+    _timerInRestMode = false;
+    _controller.updateWorkoutMode(appInTimerMode);
+    Wakelock.disable();
+  }
+
+  void flipIntervalTimer(bool restFlip) {
+    // Rest Flip indicates the duration needs to be set to Rest Duration
+    if (restFlip) {
+      _duration = setRestDuration;
+      _restDuration = setStartTime;
+    } else {
+      _duration = setStartTime;
+      _restDuration = setRestDuration;
+      _intervalLap++;
+      // _controller.updateIntervalLap('increase');
     }
+
+    _controller.restart(
+      duration: _duration,
+      initialPosition: 0,
+      restDuration: _restDuration,
+    );
+    _controller.flip();
+  }
+
+  // Convert from seconds to mm:ss
+  String changeDurationFromSecondsToMinutes(int totalSeconds) {
+    final duration = Duration(seconds: totalSeconds);
+    final minutes = duration.inMinutes;
+    final seconds = totalSeconds % 60;
+
+    final minutesString = '$minutes'.padLeft(2, '0');
+    final secondsString = '$seconds'.padLeft(2, '0');
+    return '$minutesString:$secondsString';
+  }
+
+  void setTurnsFromOrientation(NativeDeviceOrientation orientation) {
+    int turns = 0;
+    switch (orientation) {
+      case NativeDeviceOrientation.portraitUp:
+        turns = 0;
+        break;
+      case NativeDeviceOrientation.portraitDown:
+        turns = 2;
+        break;
+      case NativeDeviceOrientation.landscapeLeft:
+        turns = 1;
+        break;
+      case NativeDeviceOrientation.landscapeRight:
+        turns = 3;
+        break;
+      case NativeDeviceOrientation.unknown:
+        turns = 0;
+        break;
+    }
+    _orientation = turns;
+  }
+
+  onSettingsChange() {
+    print('Settings Changed TriggereD!!');
   }
 
   @override
   Widget build(BuildContext context) {
-    _init();
     return MaterialApp(
       color: Colors.transparent,
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Container(
-          color: Colors.black.withOpacity(0.85),
+          color: secondaryColor,
           child: Center(
+            // child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Get the orientation of the device:
+                NativeDeviceOrientedWidget(
+                    useSensor: true,
+                    fallback: (context) {
+                      var currentOrientation =
+                          NativeDeviceOrientationReader.orientation(context);
+                      setTurnsFromOrientation(currentOrientation);
+                      return Center(child: Container());
+                    }),
                 ///////////////////////
                 //  HIIT Time Header //
                 ///////////////////////
                 Container(
                   width: 333,
                   height: 75,
-                  child: HiitTimeButton(
-                    selected: _appInTimerMode,
+                  child: TextButton(
                     style: ButtonStyle(
                       foregroundColor:
                           MaterialStateProperty.resolveWith<Color?>(
                         (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.selected)) {
-                            return Colors.white;
-                          }
-                          return null; // defer to the defaults
-                        },
-                      ),
-                      backgroundColor:
-                          MaterialStateProperty.resolveWith<Color?>(
-                        (Set<MaterialState> states) {
-                          if (states.contains(MaterialState.selected)) {
-                            return Colors.transparent;
+                          if (appInTimerMode) {
+                            return primaryColor;
                           }
                           return null; // defer to the defaults
                         },
                       ),
                     ),
                     onPressed: () {
+                      HapticFeedback.mediumImpact();
+
                       setState(() {
-                        _appInTimerMode = !_appInTimerMode;
-                        _controller.updateWorkoutMode(_appInTimerMode);
+                        appInTimerMode = !appInTimerMode;
+                        _controller.updateWorkoutMode(appInTimerMode);
                       });
                     },
                     child: const Text('HIIT Time',
-                        style: TextStyle(
-                            fontFamily: 'SuezOne', fontSize: 44, height: 1.1),
+                        style: TextStyle(fontFamily: 'AstroSpace', fontSize: 40, height: 1.1),
                         textAlign: TextAlign.center),
                   ),
                 ),
 
                 // Spacer between Header and Timer
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
 
                 ///////////
                 // Timer //
                 ///////////
-                Ink(
-                  height: 333,
-                  width: 333,
-                  child: InkWell(
-                    // focusColor: Colors.green,
-                    splashColor: Colors.white,
-                    highlightColor: _isRunning ? Colors.pink : Colors.blue,
-                    customBorder: const CircleBorder(),
-                    // Long press will allow the user to change the duration
-                    onLongPress: () {
-                      // TODO Get a popup appearing here
-                      // showIndicator();
-                      // _changeDurationMenu(context);
-                      // _showIndicator;
-                    },
-                    onTap: () {
-                      if (_canVibrate) {
-                        Vibrate.feedback(FeedbackType.light);
-                      }
+                RotatedBox(
+                  quarterTurns: _orientation,
+                  child: Ink(
+                    height: 333,
+                    width: 333,
+                    child: InkWell(
+                      // focusColor: Colors.green,
+                      splashColor: primaryColor,
+                      highlightColor: _isRunning ? Colors.pink : Colors.blue,
+                      customBorder: const CircleBorder(),
+                      // Long press will allow the user to change the duration
+                      onLongPress: () {
+                        // TODO Engage Count-in mode
+                      },
+                      onTap: () {
+                        HapticFeedback.lightImpact();
 
-                      // Check if the user is pressing the timer after it finished.
-                      // If so, restart timer to initial state
-                      if (_timerButtonRestart) {
-                        _duration = setStartTime;
-                        _controller.restart(
-                            duration: _duration, initialPosition: 0);
-                        _timerButtonRestart = false;
-                      }
-
-                      setState(() {
-                        if (_isRunning) {
-                          // Timer was running, going into pause mode
-                          _controller.pause();
-                          Wakelock.disable();
-                        } else {
-                          // Timer was paused, turning on
-                          _controller.resume();
-                          Wakelock.enable();
+                        // Check if the user is pressing the timer after it finished.
+                        // If so, restart timer to initial state (reset)
+                        if (_timerButtonRestart) {
+                          resetTimer();
+                          _isRunning = true; // To get into upcoming pause block
+                          _timerButtonRestart = false;
                         }
-                        _isRunning = !_isRunning; // Flip isRunning state
-                      });
-                    },
-                    ///////////
-                    // Timer //
-                    ///////////
-                    child: CountDownProgressIndicator(
-                      controller: _controller,
-                      strokeWidth: 18,
-                      autostart: false,
-                      valueColor: Colors.blueGrey.shade700,
-                      backgroundColor: _isRunning
-                          ? Colors.lightGreenAccent.shade700
-                          : Colors.blue,
-                      initialPosition: 0,
-                      duration: _duration,
-                      restDuration: _restDuration,
-                      appInTimerMode: _appInTimerMode,
-                      timeFormatter: _duration > 59
-                          ? (seconds) {
-                              // When the duration is above 59 seconds,
-                              // this will create a mm:ss format
-                              var Dur = Duration(seconds: seconds);
-                              String twoDigits(int n) =>
-                                  n.toString().padLeft(2, "0");
-                              String twoDigitMinutes =
-                                  twoDigits(Dur.inMinutes.remainder(60));
-                              String twoDigitSeconds =
-                                  twoDigits(Dur.inSeconds.remainder(60));
-                              return "$twoDigitMinutes:$twoDigitSeconds";
-                            }
-                          : null,
-                      onComplete: () {
-                        // Code to be executed when the countdown completes
-                        setState(() {
-                          if (_canVibrate) {
-                            Vibrate.vibrateWithPauses(pauses);
-                          }
-                          // Upon completion, Enable the next press on the timer button to restart the timer
-                          _timerButtonRestart = true;
 
-                          // Disable keeping the phone awake
-                          Wakelock.disable();
+                        setState(() {
+                          if (_isRunning) {
+                            // Timer was running, going into pause mode
+                            _controller.pause();
+                            // Update timer text
+                            _controller.updateWorkoutMode(appInTimerMode);
+                            Wakelock.disable();
+                          } else {
+                            // Timer was paused, turning on
+                            _controller.resume();
+                            Wakelock.enable();
+                          }
+                          _isRunning = !_isRunning; // Flip isRunning state
                         });
                       },
+                      ///////////
+                      // Timer //
+                      ///////////
+                      child: CountDownProgressIndicator(
+                        controller: _controller,
+                        strokeWidth: 18,
+                        autostart: false,
+                        valueColor: _timerInRestMode
+                        ? appInDarkMode // Color slice showing time passed
+                          ? primaryColor
+                          : Colors.blueGrey.shade700
+                        : Colors.blueGrey.shade700,
+                        initialPosition: 0,
+                        isRunning: _isRunning,
+                        duration: _duration,
+                        restDuration: _restDuration,
+                        intervalLap: _intervalLap,
+                        appInTimerMode: appInTimerMode,
+                        timerInRestMode: _timerInRestMode,
+                        timeFormatter: _duration > 59
+                            ? (seconds) {
+                                // When the duration is above 59 seconds,
+                                // this will create a mm:ss format
+                                var Dur = Duration(seconds: seconds);
+                                String twoDigits(int n) =>
+                                    n.toString().padLeft(2, "0");
+                                String twoDigitMinutes =
+                                    twoDigits(Dur.inMinutes.remainder(60));
+                                String twoDigitSeconds =
+                                    twoDigits(Dur.inSeconds.remainder(60));
+                                return "$twoDigitMinutes:$twoDigitSeconds";
+                              }
+                            : null,
+                        onComplete: () {
+                          // Code to be executed when the countdown completes
+                          setState(() {
+                            HapticFeedback.vibrate();
+                            if (appInTimerMode == false) {
+                              // App is in Interval mode and needs to repeat
+                              if (_timerInRestMode == false) {
+                                _timerInRestMode = true;
+                                flipIntervalTimer(_timerInRestMode);
+                                // TODO set timer off in reverse
+                              } else {
+                                _timerInRestMode = false;
+                                flipIntervalTimer(_timerInRestMode);
+                                _controller.resume();
+                              }
+                            }
+                            if (appInTimerMode == true) {
+                              // Upon completion in Timer mode,
+                              // Enable the next press on the timer button to restart the timer
+                              _timerButtonRestart = true;
+
+                              // Disable keeping the phone awake
+                              Wakelock.disable();
+                            }
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -201,7 +280,7 @@ class _MyAppState extends State<MyApp> {
                 // Spacer between timer and buttons
                 const SizedBox(height: 25),
 
-                // +/- Time Buttons
+                // +/- Time Buttons and Settings
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -209,109 +288,164 @@ class _MyAppState extends State<MyApp> {
                     //////////////////////////
                     // Subtract Time Button //
                     //////////////////////////
-                    Container(
-                      width: 70,
-                      height: 70,
-                      child: ElevatedButton(
-                        onPressed: () => setState(() {
-                          if (_canVibrate) {
-                            Vibrate.feedback(FeedbackType.light);
-                          }
-                          // If the user is manually changing the time, we shouldn't
-                          // set the timer up to restart on the next press
-                          _timerButtonRestart = false;
+                    RotatedBox(
+                      quarterTurns: _orientation,
+                      child: Container(
+                        width: 75,
+                        height: 75,
+                        child: ElevatedButton(
+                          onPressed: () => setState(() {
+                            HapticFeedback.mediumImpact();
+                            // If the user is manually changing the time, we shouldn't
+                            // set the timer up to restart on the next press
+                            _timerButtonRestart = false;
+                            // Reassign value in-case setting were saved
+                            _timerModifierValueSub = setTimeModifyValueSub;
 
-                          var desiredTime = _controller.setDuration(
-                              _duration, (-1 * _timerModifierValue.ceil()));
-                          _duration = desiredTime;
+                            var desiredTime = _controller.setDuration(_duration,
+                                (-1 * _timerModifierValueSub.ceil()));
+                            _duration = desiredTime;
 
-                          if (_isRunning) {
-                            _controller.restart(
-                                duration: _duration, initialPosition: 0);
-                            _controller.resume();
-                          } else {
-                            _controller.restart(
-                                duration: _duration, initialPosition: 0);
-                          }
-                        }),
-                        style: ElevatedButton.styleFrom(
-                          shape: CircleBorder(),
-                          padding: EdgeInsets.all(5),
-                          backgroundColor: Colors.blueGrey.shade700,
+                            if (_isRunning) {
+                              _controller.restart(
+                                  duration: _duration, initialPosition: 0);
+                              _controller.resume();
+                            } else {
+                              _controller.restart(
+                                  duration: _duration, initialPosition: 0);
+                            }
+                          }),
+                          style: ElevatedButton.styleFrom(
+                            shape: CircleBorder(),
+                            padding: EdgeInsets.all(5),
+                            backgroundColor: secondaryAccentColor,
+                          ),
+                          child: Text(
+                              setTimeModifyValueSub > 59
+                                  ? '-${changeDurationFromSecondsToMinutes(setTimeModifyValueSub)}'
+                                  : '-${setTimeModifyValueSub}s',
+                              style: const TextStyle(fontSize: 20)),
                         ),
-                        child: Text('-$_stringModValue',
-                            style: const TextStyle(fontSize: 20)),
                       ),
                     ),
 
-                    const SizedBox(width: 150),
+                    const SizedBox(width: 45),
+
+                    ////////////////////
+                    // Config Button ///
+                    ////////////////////
+                    IconButton(
+                      iconSize: 45,
+                      color: primaryColor,
+                      icon: const Icon(Icons.settings),
+                      onPressed: () {
+                        HapticFeedback.mediumImpact();
+
+                        // Launch settings menu
+                        showGeneralDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          barrierLabel: MaterialLocalizations.of(context)
+                              .modalBarrierDismissLabel,
+                          barrierColor: Colors.black45,
+                          transitionDuration: const Duration(milliseconds: 200),
+
+                          // ANY Widget can be passed here
+                          pageBuilder: (BuildContext buildContext,
+                              Animation animation,
+                              Animation secondaryAnimation) {
+                            return Center(
+                              child: DurationMenu(
+                                key: UniqueKey(),
+                              ),
+                            );
+                          },
+                        ).then((restartRequired) {
+                          if (restartRequired == true) {
+                            resetTimer();
+                          }
+                          setState(() {
+                            _controller.updateWorkoutMode(appInTimerMode);
+                          });
+                        });
+                      },
+                    ),
+
+                    const SizedBox(width: 45),
 
                     /////////////////////
                     // Add time Button
                     ////////////////////
-                    Container(
-                      width: 70,
-                      height: 70,
-                      child: ElevatedButton(
-                        onPressed: () => setState(() {
-                          if (_canVibrate) {
-                            Vibrate.feedback(FeedbackType.light);
-                          }
-                          // If the user is manually changing the time, we shouldn't
-                          // set the timer up to restart on the next press
-                          _timerButtonRestart = false;
+                    RotatedBox(
+                      quarterTurns: _orientation,
+                      child: Container(
+                        width: 75,
+                        height: 75,
+                        child: ElevatedButton(
+                          onPressed: () => setState(() {
+                            HapticFeedback.mediumImpact();
+                            // If the user is manually changing the time, we shouldn't
+                            // set the timer up to restart on the next press
+                            _timerButtonRestart = false;
+                            // Reassign value in-case setting were saved
+                            _timerModifierValueAdd = setTimeModifyValueAdd;
 
-                          var desiredTime = _controller
-                              .setDuration(_duration, _timerModifierValue)
-                              .ceil();
-                          _duration = desiredTime;
+                            var desiredTime = _controller
+                                .setDuration(_duration, _timerModifierValueAdd)
+                                .ceil();
+                            _duration = desiredTime;
 
-                          if (_isRunning) {
-                            _controller.restart(
-                                duration: _duration, initialPosition: 0);
-                            _controller.resume();
-                          } else {
-                            _controller.restart(
-                                duration: _duration, initialPosition: 0);
-                          }
-                        }),
-                        style: ElevatedButton.styleFrom(
-                          shape: CircleBorder(),
-                          padding: EdgeInsets.all(5),
-                          backgroundColor: Colors.blueGrey.shade700,
+                            if (_isRunning) {
+                              _controller.restart(
+                                  duration: _duration, initialPosition: 0);
+                              _controller.resume();
+                            } else {
+                              _controller.restart(
+                                  duration: _duration, initialPosition: 0);
+                            }
+                          }),
+                          style: ElevatedButton.styleFrom(
+                            shape: CircleBorder(),
+                            padding: EdgeInsets.all(5),
+                            backgroundColor: secondaryAccentColor,
+                          ),
+                          child: Text(
+                              setTimeModifyValueAdd > 59
+                                  ? '+${changeDurationFromSecondsToMinutes(setTimeModifyValueAdd)}'
+                                  : '+${setTimeModifyValueAdd}s',
+                              style: const TextStyle(fontSize: 20)),
                         ),
-                        child: Text('+$_stringModValue',
-                            style: const TextStyle(fontSize: 20)),
                       ),
-                    ),
+                    )
                   ],
                 ),
+
+                const SizedBox(height: 25),
 
                 //////////////////////
                 // Restart Button  ///
                 //////////////////////
-                ElevatedButton(
-                  onPressed: () => setState(() {
-                    if (_canVibrate) {
-                      Vibrate.feedback(FeedbackType.heavy);
-                    }
-                    _duration = setStartTime;
-                    _controller.restart(
-                        duration: _duration, initialPosition: 0);
-                    _isRunning = false;
-                    Wakelock.disable();
-                  }),
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(40),
-                  ),
-                  child: const Text('Restart'),
+                SizedBox(
+                  height: 90,
+                  width: 90,
+                  child: ElevatedButton(
+                      onPressed: () => setState(() {
+                            HapticFeedback.lightImpact();
+                            resetTimer();
+                          }),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryAccentColor,
+                        shape: CircleBorder(),
+                        padding: EdgeInsets.all(4),
+                      ),
+                      child: const Icon(Icons.autorenew, size: 75)),
                 ),
 
                 // Bottom Spacing
-                const SizedBox(height: 50),
+                const SizedBox(height: 30),
               ],
             ),
+            // ) // ScrollView... disabled for now
           ),
         ),
       ),

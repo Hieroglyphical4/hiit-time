@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hiit.time/Config/settings.dart';
 
 /// Create a Circular countdown indicator
 class CountDownProgressIndicator extends StatefulWidget {
   /// Timer duration in seconds
   final int duration;
-
-  /// Default Background color
-  final Color backgroundColor;
 
   /// Filling color
   final Color valueColor;
@@ -43,25 +41,38 @@ class CountDownProgressIndicator extends StatefulWidget {
   /// will start automatically
   final bool autostart;
 
-  final appInTimerMode;
+  // Used to determine if App is in Timer Mode or Interval Mode
+  var appInTimerMode;
 
-  final restDuration;
+  // Time of rest
+  var restDuration;
+
+  // Determine if timer is in Rest Mode vs Work Mode
+  var timerInRestMode;
+
+  // Determing is Timer is currently running
+  var isRunning;
+
+  // Keeps track and display current lap, resets on Timer reset
+  var intervalLap;
 
   // ignore: public_member_api_docs
-  const CountDownProgressIndicator({
+  CountDownProgressIndicator({
     Key? key,
     required this.duration,
     this.restDuration,
     this.initialPosition = 0,
-    required this.backgroundColor,
     required this.valueColor,
+    this.timerInRestMode,
     this.controller,
+    this.isRunning,
     this.onComplete,
     this.timeTextStyle,
     this.timeFormatter,
     this.labelTextStyle,
     this.strokeWidth = 22,
     this.appInTimerMode,
+    this.intervalLap,
     this.autostart = false,
   })  : assert(duration > 0),
         assert(initialPosition < duration),
@@ -76,13 +87,14 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     with TickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
-  var timerText;
+  var _timerText = 'Tap Here to Start';
   var _currentDuration;
   var _desiredTime = 30;
-  var _secondTimerSize = 120.0;
-  var _minuteTimerSize = 105.0;
-  late var _timerSize =
-      widget.duration > 59 ? _minuteTimerSize : _secondTimerSize;
+  final _secondTimerSize = 120.0;
+  final _minuteTimerSize = 110.0;
+  late var _timerSize = widget.duration > 60
+      ? _minuteTimerSize
+      : _secondTimerSize;
 
   @override
   void dispose() {
@@ -93,14 +105,6 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   @override
   void initState() {
     super.initState();
-
-    // Set Timer text
-    if (widget.appInTimerMode) {
-      timerText = 'Timer Mode';
-    }
-    if (!widget.appInTimerMode) {
-      timerText = 'Interval Mode';
-    }
 
     _animationController = AnimationController(
       vsync: this,
@@ -114,7 +118,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     ).animate(_animationController);
 
     _animationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) widget.onComplete?.call();
+      if (status == AnimationStatus.completed) {
+        widget.onComplete?.call();
+      }
     });
 
     _animationController.addListener(() {
@@ -125,18 +131,27 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         _currentDuration = _desiredTime;
       }
       setState(() {
+        _timerText = 'Timer Mode';
         if (_currentDuration > 59) {
           _timerSize = _minuteTimerSize;
         }
-        if (_currentDuration < 60) {
+        if (_currentDuration < 58) {
           _timerSize = _secondTimerSize;
         }
 
         if (widget.appInTimerMode) {
-          timerText = 'Timer Mode';
+          _timerText = 'Timer Mode';
         }
         if (!widget.appInTimerMode) {
-          timerText = 'Interval Mode';
+          _timerText = 'Interval Mode';
+
+          if (widget.isRunning) {
+            _timerText = 'Work';
+            if (widget.timerInRestMode) {
+              _timerText = 'Rest';
+            }
+          }
+
         }
       });
     });
@@ -165,6 +180,17 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     _animationController.forward(from: 0);
   }
 
+  // To go from seconds to mm:ss
+  String changeDurationFromSecondsToMinutes(int totalSeconds) {
+    final duration = Duration(seconds: totalSeconds);
+    final minutes = duration.inMinutes;
+    final seconds = totalSeconds % 60;
+
+    final minutesString = '$minutes'.padLeft(2, '0');
+    final secondsString = '$seconds'.padLeft(2, '0');
+    return '$minutesString:$secondsString';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -176,7 +202,15 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
             width: double.infinity,
             child: CircularProgressIndicator(
               strokeWidth: widget.strokeWidth,
-              backgroundColor: widget.backgroundColor,
+              backgroundColor: widget.timerInRestMode
+              // Rest Mode:
+              ? widget.isRunning
+                  ? secondaryColor
+                  : Colors.blue
+              // Work Mode:
+              : widget.isRunning
+                ? Colors.lightGreenAccent.shade700
+                : Colors.blue,
               valueColor: AlwaysStoppedAnimation<Color>(widget.valueColor),
               value: _animation.value / widget.duration,
             ),
@@ -188,68 +222,79 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+
+                  // For when the App is in INTERVAL Mode
                   (!widget.appInTimerMode)
                       ? Column(children: [
                           Text(
-                            ////////////////////////////
-                            // Interval Mode: Duration
-                            /////////////////////////////
-                            widget.restDuration.toString()!,
-                            style: widget.labelTextStyle ??
-                                Theme.of(context).textTheme.bodyText1!.copyWith(
-                                    color: Colors.blue.shade300,
+                            //////////////////////////////////////////
+                            // Secondary Number (top most): Duration
+                            /////////////////////////////////////////
+                            widget.restDuration > 59
+                                ? changeDurationFromSecondsToMinutes(widget.restDuration)
+                                : widget.restDuration.toString(),
+
+                            style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                                    color: widget.timerInRestMode
+                                        ? primaryColor
+                                        : Colors.blue.shade300,
+                                    fontFamily: 'AstroSpace',
                                     fontSize: 20,
                                     height: .1
                                     // fontWeight: FontWeight.w600,
                                     ),
                           ),
-                          SizedBox(height: 29),
+                          SizedBox(height: 28),
                         ])
                       : SizedBox(height: 30), // Spacer for Timer Mode
 
-                  (widget.duration - _animation.value).toInt() < 60
+                  // Check if remaining duration should be displayed as Minute or Second
+                  (widget.duration - _animation.value).toInt() < 59
                       ? Text(
                           ///////////////
                           // Second mode:
                           ///////////////
-                          (widget.duration - _animation.value)
-                              .toStringAsFixed(0),
+                          (widget.duration - _animation.value).toStringAsFixed(0),
                           style: widget.timeTextStyle ??
                               Theme.of(context).textTheme.bodyText1!.copyWith(
-                                  color: Colors.white,
-                                  fontSize: _timerSize,
+                                  color: widget.timerInRestMode
+                                      ? Colors.blue.shade300
+                                      : primaryColor,
+                                  // 59 is used here to avoid a small 59
+                                  fontSize: (_currentDuration ?? setStartTime) > 59 ? _minuteTimerSize : _secondTimerSize,
                                   fontWeight: FontWeight.w600),
                         )
                       : Text(
                           ///////////////
                           // Minute mode
                           ///////////////
-                          widget.timeFormatter?.call(
-                                  (widget.duration - _animation.value)
-                                      .ceil()) ??
-                              (widget.duration - _animation.value)
-                                  .toStringAsFixed(0),
+                          widget.timeFormatter?.call((widget.duration - _animation.value).ceil()) ??
+                              (widget.duration - _animation.value).toStringAsFixed(0),
                           style: widget.timeTextStyle ??
                               Theme.of(context).textTheme.bodyText1!.copyWith(
-                                  color: Colors.white,
-                                  fontSize: _timerSize,
+                                  color: widget.timerInRestMode
+                                      ? Colors.blue.shade300
+                                      : primaryColor,
+                                  // 58 is used as a buffer, any higher and 1:00 is huge
+                                  fontSize: (_currentDuration ?? setStartTime) > 58 ? _minuteTimerSize : _secondTimerSize,
                                   fontWeight: FontWeight.w600),
                         ),
-                  // (widget.duration - _animation.value).toInt() > 60
-                  //     ? SizedBox(height: 40)
-                  //     : Container(),
 
+                  ///////////////////////////
+                  // Clock Mode Description
+                  ///////////////////////////
                   (widget.appInTimerMode)
                       ? Column(children: [
                           SizedBox(height: 27),
                           Text(
-                            //////////////////////
-                            // Timer Mode Text
-                            //////////////////////
-                            timerText!,
+                            ///////////////////
+                            // In "Timer Mode"
+                            ///////////////////
+                            _timerText,
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
-                                      color: Colors.white,
+                                      color: primaryColor,
+                                      fontFamily: 'AstroSpace',
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -258,13 +303,20 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                       : Column(children: [
                           SizedBox(height: 27),
                           Text(
-                            //////////////////////
-                            // Interval Mode Text
-                            //////////////////////
-                            timerText!,
+                            ////////////////////////
+                            // In: "Interval Mode"
+                            ////////////////////////
+                            widget.isRunning
+                              ? _timerText + ": " + widget.intervalLap.toString()
+                              : _timerText,
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
-                                      color: Colors.blue.shade300,
+                                      color: !widget.isRunning
+                                      ? Colors.blue
+                                      : widget.timerInRestMode
+                                        ? Colors.blue.shade300
+                                        : primaryColor,
+                                      fontFamily: 'AstroSpace',
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -286,9 +338,13 @@ class CountDownController {
 
   // Switch between Interval and Timer mode when animation is paused
   updateWorkoutMode(bool inTimerMode) {
-    inTimerMode
-        ? _state.timerText = 'Timer Mode'
-        : _state.timerText = 'Interval Mode';
+    if (inTimerMode) {
+      _state._timerText = 'Timer Mode';
+      _state.widget.appInTimerMode = true;
+    } else {
+      _state._timerText = 'Interval Mode';
+      _state.widget.appInTimerMode = false;
+    }
   }
 
   // Update the timers remaining duration using +/- buttons
@@ -330,14 +386,23 @@ class CountDownController {
     }
   }
 
+  void flip() {
+    _state._animationController.forward();
+    // _state._animationController.reverse(); // TODO Get Working
+  }
+
   /// Restarts countdown timer.
   ///
   /// * [duration] is an optional value, if this value is null,
   /// the duration will use the previous one defined in the widget
   /// * Use [initialPosition] if you want the original position
-  void restart({int? duration, required double initialPosition}) {
+  void restart({int? duration, required double initialPosition, int? restDuration}) {
     if (duration != null) {
       _state._animationController.duration = Duration(seconds: duration);
+      _state._desiredTime = duration;
+    }
+    if (restDuration != null) {
+      _state.widget.restDuration = restDuration;
     }
 
     _state._animationController.forward(from: initialPosition);
