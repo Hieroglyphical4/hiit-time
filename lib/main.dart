@@ -211,11 +211,13 @@ class _MyAppState extends State<MyApp> {
                             // Update timer text
                             _controller.updateWorkoutMode(appInTimerMode);
                             // Stop Audio Countdown
-                            _controller.stopAudioDuringPause();
+                            _controller.manageAudioDuringPause('pause');
                             Wakelock.disable();
                           } else {
                             // Timer was paused, turning on
                             _controller.resume();
+                            _controller.manageAudioDuringPause('resume');
+
                             Wakelock.enable();
                           }
                           _isRunning = !_isRunning; // Flip isRunning state

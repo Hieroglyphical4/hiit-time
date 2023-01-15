@@ -401,8 +401,13 @@ class CountDownController {
     // _state._animationController.reverse(); // TODO Get Working
   }
 
-  void stopAudioDuringPause() {
-    _state._audioPlayer.stop();
+  void manageAudioDuringPause(intent) {
+    if (intent == 'pause') {
+      _state._audioPlayer.pause();
+    }
+    if (intent == 'resume') {
+      _state._audioPlayer.resume();
+    }
   }
 
   /// Restarts countdown timer.

@@ -688,7 +688,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     onPressed: () {
                                       HapticFeedback.mediumImpact();
                                       if (_settingsChanged) {
-                                        widget.audio.setVolume(.1);
+                                        widget.audio.setVolume(.2);
                                         widget.audio.setReleaseMode(ReleaseMode.stop);
                                         !appMuted ? widget.audio.play(AssetSource('sounds/Woosh.mp3')) : null;
                                       }
