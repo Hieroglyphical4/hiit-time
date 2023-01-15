@@ -6,6 +6,7 @@ int setTimeModifyValueAdd = 15;
 int setTimeModifyValueSub = 15;
 bool appInTimerMode = true;
 bool appInDarkMode = true;
+bool appMuted = false;
 
 // Dark mode default colors
 var primaryColor = Colors.white;

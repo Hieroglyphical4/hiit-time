@@ -1,6 +1,7 @@
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:hiit.time/countdown_progress_indicator.dart';
 import 'package:hiit.time/Config/settings.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:hiit.time/settings_menu.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,8 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
+  final _audioPlayer = AudioPlayer();
+
   void resetTimer() {
     _intervalLap = 1;
     _isRunning = false;
@@ -53,6 +56,7 @@ class _MyAppState extends State<MyApp> {
     );
     _timerInRestMode = false;
     _controller.updateWorkoutMode(appInTimerMode);
+    _audioPlayer.stop();
     Wakelock.disable();
   }
 
@@ -267,8 +271,12 @@ class _MyAppState extends State<MyApp> {
                               // Enable the next press on the timer button to restart the timer
                               _timerButtonRestart = true;
 
-                              // Disable keeping the phone awake
-                              Wakelock.disable();
+                              // Sound the Alarm:
+                              if (!appMuted) {
+                                // _audioPlayer.play(AssetSource('sounds/alarm-standard-1.mp3'));
+                                _audioPlayer.play(AssetSource('sounds/alarm-beep-beep-1.mp3'));
+                                _audioPlayer.setReleaseMode(ReleaseMode.loop);
+                              }
                             }
                           });
                         },
@@ -357,6 +365,7 @@ class _MyAppState extends State<MyApp> {
                             return Center(
                               child: SettingsMenu(
                                 key: UniqueKey(),
+                                audio: _audioPlayer
                               ),
                             );
                           },

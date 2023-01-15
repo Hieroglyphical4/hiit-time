@@ -19,9 +19,13 @@ void main() {
 //   }
 // }
 
+
 class SettingsMenu extends StatefulWidget {
+  final audio;
+
   SettingsMenu({
     required Key key,
+    this.audio,
   }) : super(key: key);
 
   @override
@@ -100,6 +104,17 @@ class _SettingsMenuState extends State<SettingsMenu> {
         appInTimerMode = false;
       } else {
         appInTimerMode = true;
+      }
+    });
+  }
+
+  void _onMuteModeChanged () {
+    setState(() {
+      if (appMuted) {
+        appMuted = false;
+      } else {
+        appMuted = true;
+        widget.audio.stop();
       }
     });
   }
@@ -403,7 +418,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                             /////////////////////////////////////
                             Column(
                                 children: [
-                                  const SizedBox(height: 20),
+                                  const SizedBox(height: 30),
 
                                   ///////////////////////
                                   // - Time Input Field
@@ -485,7 +500,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     ),
                                   ),
 
-                                  SizedBox(height: 30),
+                                  SizedBox(height: 40),
 
                                   ////////////////////////////////
                                   // Dark Mode/Light Mode Button
@@ -531,139 +546,143 @@ class _SettingsMenuState extends State<SettingsMenu> {
                             Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                              // Save Button
-                              IconButton(
-                                iconSize: 75,
-                                color: primaryAccentColor,
-                                disabledColor: Colors.grey,
-                                icon: const Icon(Icons.check_circle),
-                                onPressed: _settingsChanged
-                                    ? () {
-                                        // Check if settings have changed
-                                        HapticFeedback.mediumImpact();
+                                  SizedBox(height: 20),
 
-                                        ///////////////////////////////////////////////////
-                                        // Check if changes were made to any Time settings
-                                        ///////////////////////////////////////////////////
-                                        // Check for Changes to Rest Time
-                                        if (_desiredRestTimeDuration != '') {
-                                          _changesRequiringRestartOccured =
-                                              true;
-                                          setRestDuration = int.parse(
-                                              _desiredRestTimeDuration);
-                                          // Prevent errors from numbers above 59:59
-                                          if (setRestDuration > 5959) {
-                                            setRestDuration = 5959;
-                                          }
-                                          if (_desiredRestTimeDuration.length >
-                                              2) {
-                                            var timeFormatted = formatDuration(
-                                                setRestDuration.toString());
-                                            var timeInSeconds =
-                                                convertMinutesToSeconds(
-                                                    timeFormatted);
-                                            setRestDuration = timeInSeconds;
-                                          }
-                                        }
+                                  ////////////////
+                                  // Save Button
+                                  ////////////////
+                                  IconButton(
+                                    iconSize: 75,
+                                    color: primaryAccentColor,
+                                    disabledColor: Colors.grey,
+                                    icon: const Icon(Icons.check_circle),
+                                    onPressed: _settingsChanged
+                                        ? () {
+                                            // Check if settings have changed
+                                            HapticFeedback.mediumImpact();
 
-                                        // Check for Changes to Work Time
-                                        if (_desiredWorkTimeDuration != '') {
-                                          _changesRequiringRestartOccured =
-                                              true;
-                                          // Prevent errors from negative numbers
-                                          setStartTime = int.parse(
-                                              _desiredWorkTimeDuration); // works if <2
-                                          if (setStartTime < 1) {
-                                            setStartTime = 1;
-                                          }
-                                          // Prevent errors from numbers above 59:59
-                                          if (setStartTime > 5959) {
-                                            setStartTime = 5959;
-                                          }
-                                          if (_desiredWorkTimeDuration.length >
-                                              2) {
-                                            var timeFormatted = formatDuration(
-                                                setStartTime.toString());
-                                            var timeInSeconds =
-                                                convertMinutesToSeconds(
-                                                    timeFormatted);
-                                            setStartTime = timeInSeconds;
-                                          }
-                                        }
+                                            ///////////////////////////////////////////////////
+                                            // Check if changes were made to any Time settings
+                                            ///////////////////////////////////////////////////
+                                            // Check for Changes to Rest Time
+                                            if (_desiredRestTimeDuration != '') {
+                                              _changesRequiringRestartOccured =
+                                                  true;
+                                              setRestDuration = int.parse(
+                                                  _desiredRestTimeDuration);
+                                              // Prevent errors from numbers above 59:59
+                                              if (setRestDuration > 5959) {
+                                                setRestDuration = 5959;
+                                              }
+                                              if (_desiredRestTimeDuration.length >
+                                                  2) {
+                                                var timeFormatted = formatDuration(
+                                                    setRestDuration.toString());
+                                                var timeInSeconds =
+                                                    convertMinutesToSeconds(
+                                                        timeFormatted);
+                                                setRestDuration = timeInSeconds;
+                                              }
+                                            }
 
-                                        // Check for Changes to Subtract Modifier
-                                        if (_desiredSubTimeMod != '') {
-                                          setTimeModifyValueSub =
-                                              int.parse(_desiredSubTimeMod);
-                                          if (setTimeModifyValueSub > 5959) {
-                                            setTimeModifyValueSub = 5959;
+                                            // Check for Changes to Work Time
+                                            if (_desiredWorkTimeDuration != '') {
+                                              _changesRequiringRestartOccured =
+                                                  true;
+                                              // Prevent errors from negative numbers
+                                              setStartTime = int.parse(
+                                                  _desiredWorkTimeDuration); // works if <2
+                                              if (setStartTime < 1) {
+                                                setStartTime = 1;
+                                              }
+                                              // Prevent errors from numbers above 59:59
+                                              if (setStartTime > 5959) {
+                                                setStartTime = 5959;
+                                              }
+                                              if (_desiredWorkTimeDuration.length >
+                                                  2) {
+                                                var timeFormatted = formatDuration(
+                                                    setStartTime.toString());
+                                                var timeInSeconds =
+                                                    convertMinutesToSeconds(
+                                                        timeFormatted);
+                                                setStartTime = timeInSeconds;
+                                              }
+                                            }
+
+                                            // Check for Changes to Subtract Modifier
+                                            if (_desiredSubTimeMod != '') {
+                                              setTimeModifyValueSub =
+                                                  int.parse(_desiredSubTimeMod);
+                                              if (setTimeModifyValueSub > 5959) {
+                                                setTimeModifyValueSub = 5959;
+                                              }
+                                              if (_desiredSubTimeMod.length > 2) {
+                                                var timeFormatted = formatDuration(
+                                                    setTimeModifyValueSub
+                                                        .toString());
+                                                var timeInSeconds =
+                                                    convertMinutesToSeconds(
+                                                        timeFormatted);
+                                                setTimeModifyValueSub =
+                                                    timeInSeconds;
+                                              }
+                                            }
+
+                                            // Check for Changes to Addition Modifier
+                                            if (_desiredAddTimeMod != '') {
+                                              setTimeModifyValueAdd =
+                                                  int.parse(_desiredAddTimeMod);
+                                              if (setTimeModifyValueAdd > 5959) {
+                                                setTimeModifyValueAdd = 5959;
+                                              }
+                                              if (_desiredAddTimeMod.length > 2) {
+                                                var timeFormatted = formatDuration(
+                                                    setTimeModifyValueAdd
+                                                        .toString());
+                                                var timeInSeconds =
+                                                    convertMinutesToSeconds(
+                                                        timeFormatted);
+                                                setTimeModifyValueAdd =
+                                                    timeInSeconds;
+                                              }
+                                            }
+
+                                            Navigator.pop(context,
+                                                _changesRequiringRestartOccured); // Close Settings menu
                                           }
-                                          if (_desiredSubTimeMod.length > 2) {
-                                            var timeFormatted = formatDuration(
-                                                setTimeModifyValueSub
-                                                    .toString());
-                                            var timeInSeconds =
-                                                convertMinutesToSeconds(
-                                                    timeFormatted);
-                                            setTimeModifyValueSub =
-                                                timeInSeconds;
-                                          }
-                                        }
+                                        : null, // If settings haven't changed, Disable Save Button
+                                  ),
 
-                                        // Check for Changes to Addition Modifier
-                                        if (_desiredAddTimeMod != '') {
-                                          setTimeModifyValueAdd =
-                                              int.parse(_desiredAddTimeMod);
-                                          if (setTimeModifyValueAdd > 5959) {
-                                            setTimeModifyValueAdd = 5959;
-                                          }
-                                          if (_desiredAddTimeMod.length > 2) {
-                                            var timeFormatted = formatDuration(
-                                                setTimeModifyValueAdd
-                                                    .toString());
-                                            var timeInSeconds =
-                                                convertMinutesToSeconds(
-                                                    timeFormatted);
-                                            setTimeModifyValueAdd =
-                                                timeInSeconds;
-                                          }
-                                        }
+                                  // Save Text Description
+                                  Text(
+                                    'Save',
+                                    style: TextStyle(
+                                      fontFamily: 'AstroSpace',
+                                      color: _settingsChanged
+                                          ? primaryAccentColor
+                                          : Colors.grey,
+                                      fontSize: 20,
+                                    ),
+                                  ),
 
-                                        Navigator.pop(context,
-                                            _changesRequiringRestartOccured); // Close Settings menu
-                                      }
-                                    : null, // If settings haven't changed, Disable Save Button
-                              ),
+                                  const SizedBox(height: 10),
 
-                              // Save Text Description
-                              Text(
-                                'Save',
-                                style: TextStyle(
-                                  fontFamily: 'AstroSpace',
-                                  color: _settingsChanged
-                                      ? primaryAccentColor
-                                      : Colors.grey,
-                                  fontSize: 20,
-                                ),
-                              ),
+                                  // Cancel Button
+                                  IconButton(
+                                    iconSize: 45,
+                                    color: _settingsChanged
+                                        ? Colors.red.shade400
+                                        : primaryColor,
+                                    icon: const Icon(Icons.highlight_off),
+                                    onPressed: () {
+                                      HapticFeedback.mediumImpact();
+                                      Navigator.pop(context);
+                                    },
+                                  ),
 
-                              const SizedBox(height: 10),
-
-                              // Cancel Button
-                              IconButton(
-                                iconSize: 45,
-                                color: _settingsChanged
-                                    ? Colors.red.shade400
-                                    : primaryColor,
-                                icon: const Icon(Icons.highlight_off),
-                                onPressed: () {
-                                  HapticFeedback.mediumImpact();
-                                  Navigator.pop(context);
-                                },
-                              ),
-
-                              // Close/Cancel Text Description
-                              Text(
+                                  // Close/Cancel Text Description
+                                  Text(
                                 _settingsChanged ? 'Cancel' : 'Close',
                                 style: TextStyle(
                                   fontFamily: 'AstroSpace',
@@ -678,90 +697,132 @@ class _SettingsMenuState extends State<SettingsMenu> {
                             SizedBox(width: 25),
 
                             //////////////////////
-                            // + time settings
+                            // + time settings and Audio Settings
                             /////////////////////
                             Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                              // + Time Input Field
-                              SizedBox(
-                                width: 100,
-                                child: (TextFormField(
-                                  controller: addTimeTextEditController,
-                                  style: TextStyle(
-                                      color: primaryAccentColor,
-                                      fontSize: 20),
-                                  textAlign: TextAlign.center,
-                                  textDirection: TextDirection.rtl,
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (value) {
-                                    if (value != '') {
-                                      // Only record changes if not filtered (leading 0)
-                                      recordSettingsChanged('addTime');
-                                      if (value.length > 2) {
-                                        addTimeTextEditController.text =
-                                            formatDuration(value);
-                                        addTimeTextEditController.selection =
-                                            TextSelection.collapsed(
-                                                offset:
-                                                    addTimeTextEditController
-                                                        .text.length);
-                                      }
-                                    }
-                                    if (value == '') {
-                                      // Useful if the text field was added to and deleted
-                                      clearSettingsChanged('addTime');
-                                    }
-                                    _desiredAddTimeMod = value;
-                                  },
-                                  onFieldSubmitted: (value) {
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
-                                  decoration: InputDecoration(
-                                    hintText: setTimeModifyValueAdd > 59
-                                        ? changeDurationFromSecondsToMinutes(
-                                            setTimeModifyValueAdd)
-                                        : setTimeModifyValueAdd.toString(),
-                                    hintStyle: TextStyle(
-                                        fontSize: 20, color: primaryColor),
-                                    iconColor: primaryColor,
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      borderSide: BorderSide(
-                                        color: _addTimeSettingChanged
-                                            ? primaryAccentColor
-                                            : primaryColor,
-                                        width: 3,
+                                  const SizedBox(height: 30),
+
+                                  ///////////////////////
+                                  // + Time Input Field
+                                  ///////////////////////
+                                  SizedBox(
+                                    width: 100,
+                                    child: (TextFormField(
+                                      controller: addTimeTextEditController,
+                                      style: TextStyle(
+                                          color: primaryAccentColor,
+                                          fontSize: 20),
+                                      textAlign: TextAlign.center,
+                                      textDirection: TextDirection.rtl,
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) {
+                                        if (value != '') {
+                                          // Only record changes if not filtered (leading 0)
+                                          recordSettingsChanged('addTime');
+                                          if (value.length > 2) {
+                                            addTimeTextEditController.text =
+                                                formatDuration(value);
+                                            addTimeTextEditController.selection =
+                                                TextSelection.collapsed(
+                                                    offset:
+                                                        addTimeTextEditController
+                                                            .text.length);
+                                          }
+                                        }
+                                        if (value == '') {
+                                          // Useful if the text field was added to and deleted
+                                          clearSettingsChanged('addTime');
+                                        }
+                                        _desiredAddTimeMod = value;
+                                      },
+                                      onFieldSubmitted: (value) {
+                                        FocusManager.instance.primaryFocus
+                                            ?.unfocus();
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: setTimeModifyValueAdd > 59
+                                            ? changeDurationFromSecondsToMinutes(
+                                                setTimeModifyValueAdd)
+                                            : setTimeModifyValueAdd.toString(),
+                                        hintStyle: TextStyle(
+                                            fontSize: 20, color: primaryColor),
+                                        iconColor: primaryColor,
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(15.0),
+                                          borderSide: BorderSide(
+                                            color: _addTimeSettingChanged
+                                                ? primaryAccentColor
+                                                : primaryColor,
+                                            width: 3,
+                                          ),
+                                          gapPadding: 1.0,
+                                        ),
                                       ),
-                                      gapPadding: 1.0,
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        // Only numbers can be entered
+                                        FilteringTextInputFormatter.deny(
+                                            RegExp('^0+')),
+                                        // Filter leading 0s
+                                        LengthLimitingTextInputFormatter(4),
+                                        // 4 digits at most
+                                        // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
+                                      ],
+                                    )),
+                                  ),
+
+                                  const SizedBox(height: 4),
+
+                                  // + Time Text Description
+                                  Text(
+                                    '+Time',
+                                    style: TextStyle(
+                                      fontFamily: 'AstroSpace',
+                                      color: primaryColor,
+                                      fontSize: 18,
                                     ),
                                   ),
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    // Only numbers can be entered
-                                    FilteringTextInputFormatter.deny(
-                                        RegExp('^0+')),
-                                    // Filter leading 0s
-                                    LengthLimitingTextInputFormatter(4),
-                                    // 4 digits at most
-                                    // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
-                                  ],
-                                )),
-                              ),
 
-                              const SizedBox(height: 4),
+                                  SizedBox(height: 40),
 
-                              // + Time Text Description
-                              Text(
-                                '+Time',
-                                style: TextStyle(
-                                  fontFamily: 'AstroSpace',
-                                  color: primaryColor,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              SizedBox(height: 100),
+
+                                  ////////////////////////////////
+                                  // Sound Mute Button
+                                  ////////////////////////////////
+                                  IconButton(
+                                    iconSize: 45,
+                                    color: primaryColor,
+                                    icon: appMuted
+                                      ? Icon(Icons.volume_off)
+                                      : Icon(Icons.volume_up),
+                                    onPressed: () {
+                                      _onMuteModeChanged();
+                                      HapticFeedback.mediumImpact();
+                                    },
+                                  ),
+
+                                  // Sound Settings Text Description
+                                  Text(
+                                    'Sound',
+                                    style: TextStyle(
+                                      fontFamily: 'AstroSpace',
+                                      color: primaryColor,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  Text(appMuted
+                                    ? 'Off'
+                                    : 'On',
+                                    style: TextStyle(
+                                      fontFamily: 'AstroSpace',
+                                      color: primaryColor,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+
+                              // SizedBox(height: 100),
                             ]),
                           ]),
 
