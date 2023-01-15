@@ -9,6 +9,6 @@ bool appInDarkMode = true;
 
 // Dark mode default colors
 var primaryColor = Colors.white;
-var secondaryColor = Colors.grey.shade900;
+var secondaryColor = Colors.grey.shade900; // Almost black
 var primaryAccentColor = Colors.blue.shade400;
 var secondaryAccentColor = Colors.blueGrey;

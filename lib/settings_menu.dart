@@ -4,7 +4,7 @@ import 'Config/settings.dart';
 
 void main() {
   runApp(MaterialApp(
-      home: DurationMenu(
+      home: SettingsMenu(
     key: UniqueKey(),
   )));
 }
@@ -19,16 +19,16 @@ void main() {
 //   }
 // }
 
-class DurationMenu extends StatefulWidget {
-  DurationMenu({
+class SettingsMenu extends StatefulWidget {
+  SettingsMenu({
     required Key key,
   }) : super(key: key);
 
   @override
-  _DurationMenuState createState() => _DurationMenuState();
+  _SettingsMenuState createState() => _SettingsMenuState();
 }
 
-class _DurationMenuState extends State<DurationMenu> {
+class _SettingsMenuState extends State<SettingsMenu> {
   final _formKey = GlobalKey<FormState>();
   bool _settingsChanged = false;
   bool _restSettingChanged = false;

@@ -1,7 +1,7 @@
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:hiit.time/countdown_progress_indicator.dart';
 import 'package:hiit.time/Config/settings.dart';
-import 'package:hiit.time/duration_menu.dart';
+import 'package:hiit.time/settings_menu.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -355,7 +355,7 @@ class _MyAppState extends State<MyApp> {
                               Animation animation,
                               Animation secondaryAnimation) {
                             return Center(
-                              child: DurationMenu(
+                              child: SettingsMenu(
                                 key: UniqueKey(),
                               ),
                             );
