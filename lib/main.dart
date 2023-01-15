@@ -64,12 +64,13 @@ class _MyAppState extends State<MyApp> {
   void flipIntervalTimer(bool restFlip) {
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
-      // _audioPlayer.setVolume(1.5);
+      _audioPlayer.setVolume(1.5);
       !appMuted ? _audioPlayer.play(AssetSource('sounds/Rest-Voice-salli.mp3')) : null;
+
       _duration = setRestDuration;
       _restDuration = setStartTime;
     } else {
-      // _audioPlayer.setVolume(1.5);
+      _audioPlayer.setVolume(1.5);
       !appMuted ? _audioPlayer.play(AssetSource('sounds/Work-Voice-salli.mp3')) : null;
       _duration = setStartTime;
       _restDuration = setRestDuration;
@@ -195,8 +196,6 @@ class _MyAppState extends State<MyApp> {
                       },
                       onTap: () {
                         HapticFeedback.lightImpact();
-
-                        _audioPlayer.setVolume(.5);
                         // Check if the user is pressing the timer after it finished.
                         // If so, restart timer to initial state (reset)
                         if (_timerButtonRestart) {
@@ -449,6 +448,9 @@ class _MyAppState extends State<MyApp> {
                   child: ElevatedButton(
                       onPressed: () => setState(() {
                             HapticFeedback.lightImpact();
+
+                            _audioPlayer.setVolume(.2);
+                            !appMuted ? _audioPlayer.play(AssetSource('sounds/Selection1Reversed.mp3')) : null;
                             resetTimer();
                           }),
                       style: ElevatedButton.styleFrom(

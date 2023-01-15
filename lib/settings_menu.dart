@@ -568,7 +568,6 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       widget.audio.setVolume(.1);
                                       widget.audio.setReleaseMode(ReleaseMode.stop);
                                       !appMuted ? widget.audio.play(AssetSource('sounds/Correct1.mp3')) : null;
-
                                       // Check if settings have changed
                                             HapticFeedback.mediumImpact();
 
