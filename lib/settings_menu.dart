@@ -793,7 +793,9 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   ////////////////////////////////
                                   IconButton(
                                     iconSize: 45,
-                                    color: primaryColor,
+                                    color: appMuted
+                                    ? Colors.grey
+                                    : primaryColor,
                                     icon: appMuted
                                       ? Icon(Icons.volume_off)
                                       : Icon(Icons.volume_up),
@@ -808,7 +810,9 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     'Sound',
                                     style: TextStyle(
                                       fontFamily: 'AstroSpace',
-                                      color: primaryColor,
+                                      color: appMuted
+                                          ? Colors.grey
+                                          : primaryColor,
                                       fontSize: 15,
                                     ),
                                   ),
@@ -817,7 +821,9 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     : 'On',
                                     style: TextStyle(
                                       fontFamily: 'AstroSpace',
-                                      color: primaryColor,
+                                      color: appMuted
+                                          ? Colors.grey
+                                          : primaryColor,
                                       fontSize: 15,
                                     ),
                                   ),
