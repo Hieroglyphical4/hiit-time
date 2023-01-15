@@ -67,6 +67,7 @@ flutter:
     - assets/sounds/ShopOpenBellv2.mp3
     - assets/sounds/ShopCloseBell.mp3
     - assets/sounds/Correct1.mp3
+    - assets/sounds/dooDaDoo.mp3
     - assets/sounds/Woosh.mp3
     - assets/sounds/PongUp.mp3
     - assets/sounds/PongDown.mp3
@@ -76,6 +77,8 @@ flutter:
     - assets/sounds/Rest-Voice-salli.mp3
     - assets/sounds/Selection1Reversed.mp3
     - assets/sounds/Countdown3SalliDelayed.mp3
+    - assets/sounds/Switch1.mp3
+    - assets/sounds/SwitchAndBeep1.mp3
 
 
   # The following line ensures that the Material Icons font is

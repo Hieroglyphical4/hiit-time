@@ -64,12 +64,12 @@ class _MyAppState extends State<MyApp> {
   void flipIntervalTimer(bool restFlip) {
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
-      // _audioPlayer.setVolume(.5);
+      // _audioPlayer.setVolume(1.5);
       !appMuted ? _audioPlayer.play(AssetSource('sounds/Rest-Voice-salli.mp3')) : null;
       _duration = setRestDuration;
       _restDuration = setStartTime;
     } else {
-      // _audioPlayer.setVolume(.5);
+      // _audioPlayer.setVolume(1.5);
       !appMuted ? _audioPlayer.play(AssetSource('sounds/Work-Voice-salli.mp3')) : null;
       _duration = setStartTime;
       _restDuration = setRestDuration;
@@ -315,7 +315,7 @@ class _MyAppState extends State<MyApp> {
                           onPressed: () => setState(() {
                             HapticFeedback.mediumImpact();
 
-                            _audioPlayer.setVolume(.5);
+                            _audioPlayer.setVolume(.2);
                             _audioPlayer.setReleaseMode(ReleaseMode.stop);
                             !appMuted ? _audioPlayer.play(AssetSource('sounds/PongDown.mp3')) : null;
                             // If the user is manually changing the time, we shouldn't
@@ -362,7 +362,7 @@ class _MyAppState extends State<MyApp> {
                       color: primaryColor,
                       icon: const Icon(Icons.settings),
                       onPressed: () {
-                        _audioPlayer.setVolume(.8);
+                        _audioPlayer.setVolume(.5);
                         _audioPlayer.setReleaseMode(ReleaseMode.stop);
                         !appMuted ? _audioPlayer.play(AssetSource('sounds/ShopOpenBellv2.mp3')) : null;
                         HapticFeedback.mediumImpact();
@@ -412,7 +412,7 @@ class _MyAppState extends State<MyApp> {
                           onPressed: () => setState(() {
                             HapticFeedback.mediumImpact();
 
-                            _audioPlayer.setVolume(.5);
+                            _audioPlayer.setVolume(.2);
                             _audioPlayer.setReleaseMode(ReleaseMode.stop);
                             !appMuted ? _audioPlayer.play(AssetSource('sounds/PongUp.mp3')) : null;
 
@@ -463,6 +463,10 @@ class _MyAppState extends State<MyApp> {
                   child: ElevatedButton(
                       onPressed: () => setState(() {
                             HapticFeedback.lightImpact();
+
+                            _audioPlayer.setVolume(.3);
+                            !appMuted ? _audioPlayer.play(AssetSource('sounds/dooDaDoo.mp3')) : null;
+
                             resetTimer();
                           }),
                       style: ElevatedButton.styleFrom(
