@@ -74,6 +74,8 @@ flutter:
     - assets/sounds/PianoAlarm.mp3
     - assets/sounds/Work-Voice-salli.mp3
     - assets/sounds/Rest-Voice-salli.mp3
+    - assets/sounds/Selection1Reversed.mp3
+    - assets/sounds/Countdown3SalliDelayed.mp3
 
 
   # The following line ensures that the Material Icons font is

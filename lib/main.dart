@@ -197,7 +197,11 @@ class _MyAppState extends State<MyApp> {
                         HapticFeedback.lightImpact();
 
                         _audioPlayer.setVolume(.5);
-                        !appMuted ? _audioPlayer.play(AssetSource('sounds/Selection1.mp3')) : null;
+                        if (_isRunning) {
+                          !appMuted ? _audioPlayer.play(AssetSource('sounds/Selection1.mp3')) : null;
+                        } else {
+                          !appMuted ? _audioPlayer.play(AssetSource('sounds/Selection1Reversed.mp3')) : null;
+                        }
                         // Check if the user is pressing the timer after it finished.
                         // If so, restart timer to initial state (reset)
                         if (_timerButtonRestart) {

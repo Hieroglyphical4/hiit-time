@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:hiit.time/Config/settings.dart';
 
@@ -96,6 +97,8 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
       ? _minuteTimerSize
       : _secondTimerSize;
 
+  final _audioPlayer = AudioPlayer();
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -131,6 +134,10 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         _currentDuration = _desiredTime;
       }
       setState(() {
+        if (_currentDuration == 3) {
+          _audioPlayer.setVolume(.5);
+          !appMuted ? _audioPlayer.play(AssetSource('sounds/Countdown3SalliDelayed.mp3')) : null;
+        }
         _timerText = 'Timer Mode';
         if (_currentDuration > 59) {
           _timerSize = _minuteTimerSize;

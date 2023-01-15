@@ -559,7 +559,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     icon: const Icon(Icons.check_circle),
                                     onPressed: _settingsChanged
                                         ? () {
-                                      widget.audio.setVolume(.5);
+                                      widget.audio.setVolume(.2);
                                       !appMuted ? widget.audio.play(AssetSource('sounds/Correct1.mp3')) : null;
 
                                       // Check if settings have changed
