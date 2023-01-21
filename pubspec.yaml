@@ -68,15 +68,15 @@ flutter:
     - assets/sounds/ShopCloseBell.mp3
     - assets/sounds/Correct1.mp3
     - assets/sounds/dooDaDoo.mp3
-    - assets/sounds/Woosh.mp3
+    - assets/sounds/Woosh-spaced.mp3
     - assets/sounds/PongUp.mp3
     - assets/sounds/PongDown.mp3
     - assets/sounds/Selection1.mp3
-    - assets/sounds/PianoAlarm.mp3
-    - assets/sounds/Work-Voice-salli.mp3
-    - assets/sounds/Rest-Voice-salli.mp3
+    - assets/sounds/Amplified/PianoAlarmAmped.mp3
+    - assets/sounds/Amplified/Work-Voice-salli-Amped.mp3
+    - assets/sounds/Amplified/Rest-Voice-salli-Amped.mp3
     - assets/sounds/Selection1Reversed.mp3
-    - assets/sounds/Countdown3SalliDelayed.mp3
+    - assets/sounds/Amplified/Countdown3SalliAmped.mp3
     - assets/sounds/Switch1.mp3
     - assets/sounds/SwitchAndBeep1.mp3
 

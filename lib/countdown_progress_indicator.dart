@@ -134,10 +134,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         _currentDuration = _desiredTime;
       }
       setState(() {
-        if (_currentDuration == 3) {
-          // _audioPlayer.setVolume(.5);
+        if (_currentDuration == 3 && widget.isRunning) {
           _audioPlayer.setVolume(setVolume);
-          !appMuted ? _audioPlayer.play(AssetSource('sounds/Countdown3SalliDelayed.mp3')) : null;
+          !appMuted ? _audioPlayer.play(AssetSource('sounds/Amplified/Countdown3SalliAmped.mp3')) : null;
         }
         if (_currentDuration > 3) {
           _audioPlayer.stop();

@@ -428,13 +428,17 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   activeTrackColor: primaryAccentColor,
                                   inactiveTrackColor: secondaryAccentColor,
                                 ),
-                                child: Slider(
-                                  value: setVolume,
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      setVolume = newValue;
-                                    });
-                                  },
+                                child: FractionallySizedBox(
+                                  widthFactor: .8,
+                                    child: Slider(
+                                      value: setVolume,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          setVolume = newValue;
+                                          widget.audio.setVolume(setVolume);
+                                        });
+                                      },
+                                    )
                                 ),
                               ),
                               Text(
@@ -723,7 +727,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       if (_settingsChanged) {
                                         widget.audio.setVolume(setVolume);
                                         widget.audio.setReleaseMode(ReleaseMode.stop);
-                                        !appMuted ? widget.audio.play(AssetSource('sounds/Woosh.mp3')) : null;
+                                        !appMuted ? widget.audio.play(AssetSource('sounds/Woosh-spaced.mp3')) : null;
                                       }
                                       Navigator.pop(context);
                                     },
