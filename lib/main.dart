@@ -64,13 +64,14 @@ class _MyAppState extends State<MyApp> {
   void flipIntervalTimer(bool restFlip) {
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
-      _audioPlayer.setVolume(1.5);
+      // _audioPlayer.setVolume(1.5);
+      _audioPlayer.setVolume(setVolume);
       !appMuted ? _audioPlayer.play(AssetSource('sounds/Rest-Voice-salli.mp3')) : null;
 
       _duration = setRestDuration;
       _restDuration = setStartTime;
     } else {
-      _audioPlayer.setVolume(1.5);
+      _audioPlayer.setVolume(setVolume);
       !appMuted ? _audioPlayer.play(AssetSource('sounds/Work-Voice-salli.mp3')) : null;
       _duration = setStartTime;
       _restDuration = setRestDuration;
@@ -281,7 +282,8 @@ class _MyAppState extends State<MyApp> {
                               if (!appMuted) {
                                 // _audioPlayer.play(AssetSource('sounds/alarm-beep-beep-1.mp3'));
                                 // _audioPlayer.play(AssetSource('sounds/alarm-standard-1.mp3'));
-                                _audioPlayer.setVolume(.5);
+                                // _audioPlayer.setVolume(.5);
+                                _audioPlayer.setVolume(setVolume);
                                 _audioPlayer.play(AssetSource('sounds/PianoAlarm.mp3'));
                                 _audioPlayer.setReleaseMode(ReleaseMode.loop);
                               }
@@ -451,7 +453,8 @@ class _MyAppState extends State<MyApp> {
                       onPressed: () => setState(() {
                             HapticFeedback.lightImpact();
 
-                            _audioPlayer.setVolume(.2);
+                            // _audioPlayer.setVolume(.2);
+                            _audioPlayer.setVolume(setVolume);
                             !appMuted ? _audioPlayer.play(AssetSource('sounds/Selection1Reversed.mp3')) : null;
                             resetTimer();
                           }),

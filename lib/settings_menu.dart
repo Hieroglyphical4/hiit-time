@@ -102,12 +102,12 @@ class _SettingsMenuState extends State<SettingsMenu> {
   void _onTimerModeChanged(bool value) {
     setState(() {
       if (appInTimerMode) {
-        widget.audio.setVolume(.1);
+        widget.audio.setVolume(setVolume);
         widget.audio.setReleaseMode(ReleaseMode.stop);
         !appMuted ? widget.audio.play(AssetSource('sounds/SwitchAndBeep1.mp3')) : null;
         appInTimerMode = false;
       } else {
-        widget.audio.setVolume(.1);
+        widget.audio.setVolume(setVolume);
         widget.audio.setReleaseMode(ReleaseMode.stop);
         !appMuted ? widget.audio.play(AssetSource('sounds/Switch1.mp3')) : null;
         appInTimerMode = true;
@@ -194,183 +194,183 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       // Rest and Work Settings
                       ///////////////////////////
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ////////////////////////
-                          // Rest Input field  ///
-                          ////////////////////////
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 115,
-                                child: (TextFormField(
-                                  controller: restTextEditController,
-                                  style: TextStyle(
-                                      color: primaryAccentColor,
-                                      fontSize: 30),
-                                  textAlign: TextAlign.center,
-                                  textDirection: TextDirection.rtl,
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (value) {
-                                    if (value != '') {
-                                      // Only record changes if not filtered (leading 0)
-                                      recordSettingsChanged('rest');
-                                      if (value.length > 2) {
-                                        restTextEditController.text =
-                                            formatDuration(value);
-                                        restTextEditController.selection =
-                                            TextSelection.collapsed(
-                                                offset: restTextEditController
-                                                    .text.length);
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ////////////////////////
+                            // Rest Input field  ///
+                            ////////////////////////
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 115,
+                                  child: (TextFormField(
+                                    controller: restTextEditController,
+                                    style: TextStyle(
+                                        color: primaryAccentColor,
+                                        fontSize: 30),
+                                    textAlign: TextAlign.center,
+                                    textDirection: TextDirection.rtl,
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) {
+                                      if (value != '') {
+                                        // Only record changes if not filtered (leading 0)
+                                        recordSettingsChanged('rest');
+                                        if (value.length > 2) {
+                                          restTextEditController.text =
+                                              formatDuration(value);
+                                          restTextEditController.selection =
+                                              TextSelection.collapsed(
+                                                  offset: restTextEditController
+                                                      .text.length);
+                                        }
                                       }
-                                    }
-                                    if (value == '') {
-                                      // Useful if the text field was added to and deleted
-                                      clearSettingsChanged('rest');
-                                    }
-                                    _desiredRestTimeDuration = value;
-                                  },
-                                  onFieldSubmitted: (value) {
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
-                                  decoration: InputDecoration(
-                                    hintText: setRestDuration > 59
-                                        ? changeDurationFromSecondsToMinutes(
-                                        setRestDuration)
-                                        : setRestDuration.toString(),
-                                    hintStyle: TextStyle(
-                                      fontSize: 30,
-                                      color: appInTimerMode
-                                          ? Colors.grey
-                                          : primaryColor,
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      borderSide: BorderSide(
-                                        color: _restSettingChanged
-                                            ? primaryAccentColor
-                                            : appInTimerMode
+                                      if (value == '') {
+                                        // Useful if the text field was added to and deleted
+                                        clearSettingsChanged('rest');
+                                      }
+                                      _desiredRestTimeDuration = value;
+                                    },
+                                    onFieldSubmitted: (value) {
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText: setRestDuration > 59
+                                          ? changeDurationFromSecondsToMinutes(
+                                          setRestDuration)
+                                          : setRestDuration.toString(),
+                                      hintStyle: TextStyle(
+                                        fontSize: 30,
+                                        color: appInTimerMode
                                             ? Colors.grey
                                             : primaryColor,
-                                        width: 3,
                                       ),
-                                      gapPadding: 1.0,
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(15.0),
+                                        borderSide: BorderSide(
+                                          color: _restSettingChanged
+                                              ? primaryAccentColor
+                                              : appInTimerMode
+                                              ? Colors.grey
+                                              : primaryColor,
+                                          width: 3,
+                                        ),
+                                        gapPadding: 1.0,
+                                      ),
                                     ),
-                                  ),
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    // Only numbers can be entered
-                                    FilteringTextInputFormatter.deny(
-                                        RegExp('^0+')),
-                                    // Filter leading 0s
-                                    LengthLimitingTextInputFormatter(4),
-                                    // 4 digits at most
-                                    // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
-                                  ],
-                                )),
-                              ),
-
-                              const SizedBox(height: 4),
-
-                              // Rest Text Description
-                              Text(
-                                'Rest Time',
-                                style: TextStyle(
-                                  color: appInTimerMode
-                                      ? Colors.grey
-                                      : primaryColor,
-                                  fontSize: 18,
-                                  fontFamily: 'AstroSpace',
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.digitsOnly,
+                                      // Only numbers can be entered
+                                      FilteringTextInputFormatter.deny(
+                                          RegExp('^0+')),
+                                      // Filter leading 0s
+                                      LengthLimitingTextInputFormatter(4),
+                                      // 4 digits at most
+                                      // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
+                                    ],
+                                  )),
                                 ),
-                              ),
-                            ],
-                          ),
 
-                          ////////////////////////////////
-                          // Spacer between Rest and Work
-                          ////////////////////////////////
-                          const SizedBox(height: 40),
+                                const SizedBox(height: 4),
 
-                          ///////////////////////
-                          // Work input Field  //
-                          ///////////////////////
-                          SizedBox(
-                            width: 115,
-                            child: (TextFormField(
-                              controller: workTextEditController,
-                              style: TextStyle(
-                                  color: primaryAccentColor, fontSize: 30),
-                              textAlign: TextAlign.center,
-                              textDirection: TextDirection.rtl,
-                              keyboardType: TextInputType.number,
-                              onChanged: (value) {
-                                if (value != '') {
-                                  // Only record changes if not filtered (leading 0)
-                                  recordSettingsChanged('work');
-                                  if (value.length > 2) {
-                                    workTextEditController.text =
-                                        formatDuration(value);
-                                    workTextEditController.selection =
-                                        TextSelection.collapsed(
-                                            offset: workTextEditController
-                                                .text.length);
-                                  }
-                                }
-                                if (value == '') {
-                                  // Useful if the text field was added to and deleted
-                                  clearSettingsChanged('work');
-                                }
-                                _desiredWorkTimeDuration = value;
-                              },
-                              onFieldSubmitted: (value) {
-                                FocusManager.instance.primaryFocus?.unfocus();
-                              },
-                              decoration: InputDecoration(
-                                hintText: setStartTime > 59
-                                    ? changeDurationFromSecondsToMinutes(
-                                    setStartTime)
-                                    : setStartTime.toString(),
-                                hintStyle: TextStyle(
-                                    fontSize: 30, color: primaryColor),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  borderSide: BorderSide(
-                                    color: _workSettingChanged
-                                        ? primaryAccentColor
+                                // Rest Text Description
+                                Text(
+                                  'Rest Time',
+                                  style: TextStyle(
+                                    color: appInTimerMode
+                                        ? Colors.grey
                                         : primaryColor,
-                                    width: 3,
+                                    fontSize: 18,
+                                    fontFamily: 'AstroSpace',
                                   ),
-                                  gapPadding: 1.0,
                                 ),
-                              ),
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly,
-                                // Only numbers can be entered
-                                FilteringTextInputFormatter.deny(RegExp('^0+')),
-                                // Filter leading 0s
-                                LengthLimitingTextInputFormatter(4),
-                                // 4 digits at most
-                                // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
                               ],
-                            )),
-                          ),
-
-                          const SizedBox(height: 4),
-
-                          // Work Text Description
-                          Text(
-                            'Work Time',
-                            style: TextStyle(
-                              color: primaryColor,
-                              fontSize: 18,
-                              fontFamily: 'AstroSpace',
                             ),
-                          ),
 
-                        ],
-                      ),
+                            ////////////////////////////////
+                            // Spacer between Rest and Work
+                            ////////////////////////////////
+                            const SizedBox(height: 40),
+
+                            ///////////////////////
+                            // Work input Field  //
+                            ///////////////////////
+                            SizedBox(
+                              width: 115,
+                              child: (TextFormField(
+                                controller: workTextEditController,
+                                style: TextStyle(
+                                    color: primaryAccentColor, fontSize: 30),
+                                textAlign: TextAlign.center,
+                                textDirection: TextDirection.rtl,
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) {
+                                  if (value != '') {
+                                    // Only record changes if not filtered (leading 0)
+                                    recordSettingsChanged('work');
+                                    if (value.length > 2) {
+                                      workTextEditController.text =
+                                          formatDuration(value);
+                                      workTextEditController.selection =
+                                          TextSelection.collapsed(
+                                              offset: workTextEditController
+                                                  .text.length);
+                                    }
+                                  }
+                                  if (value == '') {
+                                    // Useful if the text field was added to and deleted
+                                    clearSettingsChanged('work');
+                                  }
+                                  _desiredWorkTimeDuration = value;
+                                },
+                                onFieldSubmitted: (value) {
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                },
+                                decoration: InputDecoration(
+                                  hintText: setStartTime > 59
+                                      ? changeDurationFromSecondsToMinutes(
+                                      setStartTime)
+                                      : setStartTime.toString(),
+                                  hintStyle: TextStyle(
+                                      fontSize: 30, color: primaryColor),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    borderSide: BorderSide(
+                                      color: _workSettingChanged
+                                          ? primaryAccentColor
+                                          : primaryColor,
+                                      width: 3,
+                                    ),
+                                    gapPadding: 1.0,
+                                  ),
+                                ),
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  // Only numbers can be entered
+                                  FilteringTextInputFormatter.deny(RegExp('^0+')),
+                                  // Filter leading 0s
+                                  LengthLimitingTextInputFormatter(4),
+                                  // 4 digits at most
+                                  // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
+                                ],
+                              )),
+                            ),
+
+                            const SizedBox(height: 4),
+
+                            // Work Text Description
+                            Text(
+                              'Work Time',
+                              style: TextStyle(
+                                color: primaryColor,
+                                fontSize: 18,
+                                fontFamily: 'AstroSpace',
+                              ),
+                            ),
+
+                          ],
+                    ),
 
                       ////////////////////////////////
                       // Spacer between switch and timer settings
@@ -412,7 +412,41 @@ class _SettingsMenuState extends State<SettingsMenu> {
                         ],
                       ),
 
-                      const SizedBox(height: 20),
+                      /////////////////
+                      // Volume Slider
+                      /////////////////
+                      appMuted
+                          ? Container()
+                          : Column(
+                            children: [
+                              SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                  // thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                                  // overlayShape: RoundSliderOverlayShape(overlayRadius: 30.0),
+                                  thumbColor: primaryAccentColor,
+                                  // overlayColor: primaryAccentColor,
+                                  activeTrackColor: primaryAccentColor,
+                                  inactiveTrackColor: secondaryAccentColor,
+                                ),
+                                child: Slider(
+                                  value: setVolume,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      setVolume = newValue;
+                                    });
+                                  },
+                                ),
+                              ),
+                              Text(
+                                'Volume',
+                                style: TextStyle(
+                                  color: primaryColor,
+                                  fontSize: 18,
+                                  fontFamily: 'AstroSpace',
+                                ),
+                              ),
+                            ],
+                          ),
 
                       ////////////////////
                       // Bottom Settings
@@ -425,8 +459,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                             /////////////////////////////////////
                             Column(
                                 children: [
-                                  const SizedBox(height: 30),
-
+                                  appMuted ? const SizedBox(height: 20): Container(),
                                   ///////////////////////
                                   // - Time Input Field
                                   ///////////////////////
@@ -565,7 +598,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     icon: const Icon(Icons.check_circle),
                                     onPressed: _settingsChanged
                                         ? () {
-                                      widget.audio.setVolume(.1);
+                                      widget.audio.setVolume(setVolume);
                                       widget.audio.setReleaseMode(ReleaseMode.stop);
                                       !appMuted ? widget.audio.play(AssetSource('sounds/Correct1.mp3')) : null;
                                       // Check if settings have changed
@@ -688,7 +721,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     onPressed: () {
                                       HapticFeedback.mediumImpact();
                                       if (_settingsChanged) {
-                                        widget.audio.setVolume(.2);
+                                        widget.audio.setVolume(setVolume);
                                         widget.audio.setReleaseMode(ReleaseMode.stop);
                                         !appMuted ? widget.audio.play(AssetSource('sounds/Woosh.mp3')) : null;
                                       }
@@ -717,8 +750,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                             Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const SizedBox(height: 30),
-
+                                  appMuted ? const SizedBox(height: 20): Container(),
                                   ///////////////////////
                                   // + Time Input Field
                                   ///////////////////////
