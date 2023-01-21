@@ -171,7 +171,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 25),
+                      const SizedBox(height: 35),
                       ////////////////////////////////
                       // Settings Text Header      ///
                       ////////////////////////////////
@@ -188,7 +188,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                 textAlign: TextAlign.center),
                           )),
 
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 20),
 
                       ///////////////////////////
                       // Rest and Work Settings
@@ -375,7 +375,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       ////////////////////////////////
                       // Spacer between switch and timer settings
                       ////////////////////////////////
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 20),
 
                       //////////////////////////////
                       // Timer and Interval Switch
@@ -416,7 +416,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       // Volume Slider
                       /////////////////
                       appMuted
-                          ? const SizedBox(height: 65)
+                          ? const SizedBox(height: 68)
                           : Column(
                             children: [
                               SliderTheme(
@@ -429,7 +429,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   inactiveTrackColor: secondaryAccentColor,
                                 ),
                                 child: FractionallySizedBox(
-                                  widthFactor: .8,
+                                  widthFactor: .9,
                                     child: Slider(
                                       value: setVolume,
                                       onChanged: (newValue) {
