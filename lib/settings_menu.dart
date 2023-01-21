@@ -416,7 +416,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       // Volume Slider
                       /////////////////
                       appMuted
-                          ? Container()
+                          ? const SizedBox(height: 65)
                           : Column(
                             children: [
                               SliderTheme(
@@ -463,7 +463,6 @@ class _SettingsMenuState extends State<SettingsMenu> {
                             /////////////////////////////////////
                             Column(
                                 children: [
-                                  appMuted ? const SizedBox(height: 20): Container(),
                                   ///////////////////////
                                   // - Time Input Field
                                   ///////////////////////
@@ -590,8 +589,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                             Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  SizedBox(height: 20),
-
+                                  const SizedBox(height: 20),
                                   ////////////////
                                   // Save Button
                                   ////////////////
@@ -754,7 +752,6 @@ class _SettingsMenuState extends State<SettingsMenu> {
                             Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  appMuted ? const SizedBox(height: 20): Container(),
                                   ///////////////////////
                                   // + Time Input Field
                                   ///////////////////////
