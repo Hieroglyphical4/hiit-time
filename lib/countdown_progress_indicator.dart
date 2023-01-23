@@ -88,7 +88,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     with TickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
-  var _timerText = 'Tap Here to Start';
+  var _timerText = 'Tap to Start';
   var _currentDuration;
   var _desiredTime = 30;
   final _secondTimerSize = 135.0;
