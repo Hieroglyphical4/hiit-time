@@ -41,6 +41,7 @@ dependencies:
   flutter_vibrate: ^1.3.0
   wakelock: ^0.6.2
   native_device_orientation: ^1.1.4
+  audioplayers: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +59,27 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+
+  ## used for importing sounds
+  assets:
+    - assets/sounds/alarm-standard-1.mp3
+    - assets/sounds/alarm-beep-beep-1.mp3
+    - assets/sounds/ShopOpenBellv2.mp3
+    - assets/sounds/ShopCloseBell.mp3
+    - assets/sounds/Correct1.mp3
+    - assets/sounds/dooDaDoo.mp3
+    - assets/sounds/Woosh-spaced.mp3
+    - assets/sounds/PongUp.mp3
+    - assets/sounds/PongDown.mp3
+    - assets/sounds/Selection1.mp3
+    - assets/sounds/Amplified/PianoAlarmAmped.mp3
+    - assets/sounds/Amplified/Work-Voice-salli-Amped.mp3
+    - assets/sounds/Amplified/Rest-Voice-salli-Amped.mp3
+    - assets/sounds/Selection1Reversed.mp3
+    - assets/sounds/Amplified/Countdown3SalliAmped.mp3
+    - assets/sounds/Switch1.mp3
+    - assets/sounds/SwitchAndBeep1.mp3
+
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

@@ -1,6 +1,7 @@
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:hiit.time/countdown_progress_indicator.dart';
 import 'package:hiit.time/Config/settings.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:hiit.time/settings_menu.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,7 @@ class _MyAppState extends State<MyApp> {
   var _timerInRestMode = false;
   var _orientation = 0;
   var _intervalLap = 1;
+  final _audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -53,15 +55,23 @@ class _MyAppState extends State<MyApp> {
     );
     _timerInRestMode = false;
     _controller.updateWorkoutMode(appInTimerMode);
+    _audioPlayer.setReleaseMode(ReleaseMode.stop);
+    _audioPlayer.stop();
     Wakelock.disable();
   }
 
+  // Change timer from Rest Mode to Work Mode and Vice Versa
   void flipIntervalTimer(bool restFlip) {
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
+      _audioPlayer.setVolume(setVolume);
+      !appMuted ? _audioPlayer.play(AssetSource('sounds/Amplified/Rest-Voice-salli-Amped.mp3')) : null;
+
       _duration = setRestDuration;
       _restDuration = setStartTime;
     } else {
+      _audioPlayer.setVolume(setVolume);
+      !appMuted ? _audioPlayer.play(AssetSource('sounds/Amplified/Work-Voice-salli-Amped.mp3')) : null;
       _duration = setStartTime;
       _restDuration = setRestDuration;
       _intervalLap++;
@@ -87,6 +97,7 @@ class _MyAppState extends State<MyApp> {
     return '$minutesString:$secondsString';
   }
 
+  // Used to determine how many times to rotate the screen to maintain the orientation
   void setTurnsFromOrientation(NativeDeviceOrientation orientation) {
     int turns = 0;
     switch (orientation) {
@@ -107,10 +118,6 @@ class _MyAppState extends State<MyApp> {
         break;
     }
     _orientation = turns;
-  }
-
-  onSettingsChange() {
-    print('Settings Changed TriggereD!!');
   }
 
   @override
@@ -189,7 +196,6 @@ class _MyAppState extends State<MyApp> {
                       },
                       onTap: () {
                         HapticFeedback.lightImpact();
-
                         // Check if the user is pressing the timer after it finished.
                         // If so, restart timer to initial state (reset)
                         if (_timerButtonRestart) {
@@ -204,10 +210,14 @@ class _MyAppState extends State<MyApp> {
                             _controller.pause();
                             // Update timer text
                             _controller.updateWorkoutMode(appInTimerMode);
+                            // Stop Audio Countdown
+                            _controller.manageAudioDuringPause('pause');
                             Wakelock.disable();
                           } else {
                             // Timer was paused, turning on
                             _controller.resume();
+                            _controller.manageAudioDuringPause('resume');
+
                             Wakelock.enable();
                           }
                           _isRunning = !_isRunning; // Flip isRunning state
@@ -267,8 +277,14 @@ class _MyAppState extends State<MyApp> {
                               // Enable the next press on the timer button to restart the timer
                               _timerButtonRestart = true;
 
-                              // Disable keeping the phone awake
-                              Wakelock.disable();
+                              // Sound the Alarm:
+                              if (!appMuted) {
+                                // _audioPlayer.play(AssetSource('sounds/alarm-beep-beep-1.mp3'));
+                                // _audioPlayer.play(AssetSource('sounds/alarm-standard-1.mp3'));
+                                _audioPlayer.setVolume(setVolume + .1);
+                                _audioPlayer.play(AssetSource('sounds/Amplified/PianoAlarmAmped.mp3'));
+                                _audioPlayer.setReleaseMode(ReleaseMode.loop);
+                              }
                             }
                           });
                         },
@@ -296,6 +312,7 @@ class _MyAppState extends State<MyApp> {
                         child: ElevatedButton(
                           onPressed: () => setState(() {
                             HapticFeedback.mediumImpact();
+
                             // If the user is manually changing the time, we shouldn't
                             // set the timer up to restart on the next press
                             _timerButtonRestart = false;
@@ -311,6 +328,7 @@ class _MyAppState extends State<MyApp> {
                                   duration: _duration, initialPosition: 0);
                               _controller.resume();
                             } else {
+                              _audioPlayer.stop(); // stop timer alarm
                               _controller.restart(
                                   duration: _duration, initialPosition: 0);
                             }
@@ -331,9 +349,9 @@ class _MyAppState extends State<MyApp> {
 
                     const SizedBox(width: 45),
 
-                    ////////////////////
-                    // Config Button ///
-                    ////////////////////
+                    /////////////////////////////
+                    // Settings/Config Button ///
+                    /////////////////////////////
                     IconButton(
                       iconSize: 45,
                       color: primaryColor,
@@ -357,6 +375,7 @@ class _MyAppState extends State<MyApp> {
                             return Center(
                               child: SettingsMenu(
                                 key: UniqueKey(),
+                                audio: _audioPlayer
                               ),
                             );
                           },
@@ -431,6 +450,8 @@ class _MyAppState extends State<MyApp> {
                   child: ElevatedButton(
                       onPressed: () => setState(() {
                             HapticFeedback.lightImpact();
+                            _audioPlayer.setVolume(setVolume);
+                            !appMuted ? _audioPlayer.play(AssetSource('sounds/Selection1Reversed.mp3')) : null;
                             resetTimer();
                           }),
                       style: ElevatedButton.styleFrom(
