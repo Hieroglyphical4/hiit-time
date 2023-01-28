@@ -133,7 +133,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         _currentDuration = _desiredTime;
       }
       setState(() {
-        if (_currentDuration == 3 && widget.isRunning) {
+        if (_currentDuration == 3 && widget.isRunning&& threeTwoOneCountdownEnabled) {
           _audioPlayer.setVolume(setVolume);
           !appMuted
               ? _audioPlayer.play(

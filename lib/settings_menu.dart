@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'advanced_settings_menu.dart';
 import 'Config/settings.dart';
 
 void main() {
@@ -61,7 +62,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
     });
   }
 
-  // If a string is longer than 3 chars, we assume were in Minutes
+  // If a string is longer than 3 chars, we assume we are in Minutes
   // Convert given string to reflect that
   String formatDuration(String minutesRaw) {
     var string = minutesRaw;
@@ -175,18 +176,61 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       ////////////////////////////////
                       // Settings Text Header      ///
                       ////////////////////////////////
-                      Container(
-                          height: 60,
-                          child: Padding(
-                            padding: EdgeInsets.only(top: 10),
-                            child: Text('Settings',
-                                style: TextStyle(
-                                    color: primaryAccentColor,
-                                    fontFamily: 'AstroSpace',
-                                    fontSize: 40,
-                                    height: 1.1),
-                                textAlign: TextAlign.center),
-                          )),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Spacer(flex: 2),
+
+                            Container(
+                              height: 60,
+                              child: Padding(
+                                padding: EdgeInsets.only(top: 10),
+                                child: Text('Settings',
+                                    style: TextStyle(
+                                        color: primaryAccentColor,
+                                        fontFamily: 'AstroSpace',
+                                        fontSize: 40,
+                                        height: 1.1),
+                                    textAlign: TextAlign.center),
+                              )
+                            ),
+
+                          const Spacer(flex: 1),
+
+                          ////////////////////////////////
+                          // Advanced Settings Button
+                          ////////////////////////////////
+                          IconButton(
+                            iconSize: 45,
+                            color: primaryColor,
+                            icon: const Icon(Icons.list),
+                            onPressed: () {
+                              HapticFeedback.mediumImpact();
+
+                              // Launch settings menu
+                              showGeneralDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                barrierLabel: MaterialLocalizations.of(context)
+                                    .modalBarrierDismissLabel,
+                                barrierColor: Colors.black45,
+                                transitionDuration: const Duration(milliseconds: 200),
+
+                                // ANY Widget can be passed here
+                                pageBuilder: (BuildContext buildContext,
+                                    Animation animation,
+                                    Animation secondaryAnimation) {
+                                  return Center(
+                                    child: AdvancedSettingsMenu(
+                                        key: UniqueKey(),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ]
+            ),
 
                       const SizedBox(height: 20),
 
