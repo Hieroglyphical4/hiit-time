@@ -177,10 +177,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       // Settings Text Header      ///
                       ////////////////////////////////
                       Row(
-                          // mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Spacer(flex: 3),
-
+                            const Spacer(flex: 1),
+                            const SizedBox(width: 55),
                             Container(
                               height: 60,
                               child: Padding(
