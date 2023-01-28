@@ -13,7 +13,7 @@ bool appMuted = false;
 
 // Advanced Menu Settings:
 bool threeTwoOneCountdownEnabled = true;
-bool modeSwitchAudioEnabled = true;
+bool modeSwitchAlertEnabled = true;
 
 
 

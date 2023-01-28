@@ -26,12 +26,12 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
     });
   }
 
-  void _onModeSwitchAudioChanged(bool value) {
+  void _onModeSwitchAlertChanged(bool value) {
     setState(() {
-      if (modeSwitchAudioEnabled) {
-        modeSwitchAudioEnabled = false;
+      if (modeSwitchAlertEnabled) {
+        modeSwitchAlertEnabled = false;
       } else {
-        modeSwitchAudioEnabled = true;
+        modeSwitchAlertEnabled = true;
       }
 
     });
@@ -42,76 +42,90 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
       backgroundColor: secondaryColor,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-      title: Text('Advanced Settings'),
-        leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-        onPressed: () {
-        Navigator.pop(context);
-        },
-        ),
+        centerTitle: true,
+        title: Text('Advanced Settings'),
+          leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+          Navigator.pop(context);
+          },
+          ),
       ),
       body: Center(
-        child: Align(
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Flex(
-                direction: Axis.vertical,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 35),
-                      /////////////////////////////
-                      // 3-2-1 Countdown Settings
-                      /////////////////////////////
-                      Row(
-                        children: [
-                          Text('3-2-1 Countdown',
-                              style: TextStyle(
-                                  color: threeTwoOneCountdownEnabled
-                                    ? primaryColor
-                                    : Colors.grey,
-                                  fontFamily: 'AstroSpace',
-                                  fontSize: 20,
-                                  height: 1.1),
-                              textAlign: TextAlign.center),
-                          Spacer(),
-                          Switch(
-                            value: threeTwoOneCountdownEnabled,
-                            onChanged: _on321CountdownChanged,
-                          ),
-                        ],
-                      ),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Flex(
+              direction: Axis.vertical,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(height: 20),
+                    /////////////////////////////
+                    // 3-2-1 Countdown Settings
+                    /////////////////////////////
+                    Row(
+                      children: [
+                        const SizedBox(width: 20),
 
-                      const SizedBox(height: 35),
-                      ///////////////////////////////
-                      // Mode Switch Audio Settings
-                      //////////////////////////////
-                      Row(
-                        children: [
-                          Text('Mode Switch Audio',
-                              style: TextStyle(
-                                  color: modeSwitchAudioEnabled
-                                    ? primaryColor
-                                    : Colors.grey,
-                                  fontFamily: 'AstroSpace',
-                                  fontSize: 20,
-                                  height: 1.1),
-                              textAlign: TextAlign.center),
-                          Spacer(),
-                          Switch(
-                            value: modeSwitchAudioEnabled,
-                            onChanged: _onModeSwitchAudioChanged,
-                          ),
+                        Text('3-2-1 Countdown',
+                            style: TextStyle(
+                                color: threeTwoOneCountdownEnabled
+                                  ? primaryColor
+                                  : Colors.grey,
+                                fontFamily: 'AstroSpace',
+                                fontSize: 20,
+                                height: 1.1),
+                            textAlign: TextAlign.center),
 
-                        ],
-                      ),
+                        Spacer(),
 
-                    ],
-                  )
-                ],
-              ),
+                        Switch(
+                          value: threeTwoOneCountdownEnabled,
+                          onChanged: _on321CountdownChanged,
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+                    SizedBox(height: 1, child: Container(color: Colors.grey)),
+                    const SizedBox(height: 20),
+                    ///////////////////////////////
+                    // Mode Switch Audio Settings
+                    //////////////////////////////
+                    Row(
+                      children: [
+                        const SizedBox(width: 20),
+
+                        Text('Mode Switch Alert',
+                            style: TextStyle(
+                                color: modeSwitchAlertEnabled
+                                  ? primaryColor
+                                  : Colors.grey,
+                                fontFamily: 'AstroSpace',
+                                fontSize: 20,
+                                height: 1.1),
+                            textAlign: TextAlign.center),
+
+                        Spacer(),
+
+                        Switch(
+                          value: modeSwitchAlertEnabled,
+                          onChanged: _onModeSwitchAlertChanged,
+                        ),
+
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+                    SizedBox(height: 1, child: Container(color: Colors.grey)),
+                    const SizedBox(height: 20),
+
+                    const SizedBox(height: 500),
+                  ],
+                )
+              ],
             ),
           ),
         ),

@@ -65,14 +65,14 @@ class _MyAppState extends State<MyApp> {
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
       _audioPlayer.setVolume(setVolume);
-      if (!appMuted && modeSwitchAudioEnabled) {
+      if (!appMuted && modeSwitchAlertEnabled) {
         _audioPlayer.play(AssetSource('sounds/Amplified/Rest-Voice-salli-Amped.mp3'));
       }
       _duration = setRestDuration;
       _restDuration = setStartTime;
     } else {
       _audioPlayer.setVolume(setVolume);
-      if (!appMuted && modeSwitchAudioEnabled) {
+      if (!appMuted && modeSwitchAlertEnabled) {
         _audioPlayer.play(AssetSource('sounds/Amplified/Work-Voice-salli-Amped.mp3'));
       }
       _duration = setStartTime;

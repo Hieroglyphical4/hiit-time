@@ -177,9 +177,9 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       // Settings Text Header      ///
                       ////////////////////////////////
                       Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          // mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Spacer(flex: 2),
+                            const Spacer(flex: 3),
 
                             Container(
                               height: 60,
@@ -203,7 +203,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                           IconButton(
                             iconSize: 45,
                             color: primaryColor,
-                            icon: const Icon(Icons.list),
+                            icon: Transform.scale(
+                                scale: -1,
+                                child: const Icon(Icons.list)
+                            ),
                             onPressed: () {
                               HapticFeedback.mediumImpact();
 
