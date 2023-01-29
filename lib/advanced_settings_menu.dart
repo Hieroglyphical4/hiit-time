@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'Config/settings.dart';
@@ -14,6 +16,8 @@ class AdvancedSettingsMenu extends StatefulWidget {
 
 class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
   final _formKey = GlobalKey<FormState>();
+  bool _displayAudioSettings = false;
+  bool _displayThemesSettings = false;
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,10 +37,76 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
-            child: Flex(
-              direction: Axis.vertical,
+            child: Column(
+              // direction: Axis.vertical,
               children: [
-                AudioSettingsWidget(),
+                // Body of Settings!
+                SizedBox(height: 5),
+
+                ///////////////////////////
+                // Audio Settings Button
+                ///////////////////////////
+                SizedBox(
+                  height: 90,
+                  width: 350,
+                  child: ElevatedButton(
+                      onPressed: () => setState(() {
+                        if (_displayAudioSettings) {
+                          _displayAudioSettings = false;
+                        } else {
+                          _displayAudioSettings = true;
+                          _displayThemesSettings = false;
+                        }
+                      }),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: secondaryAccentColor,
+                        // shape: Rectangle(),
+                        padding: EdgeInsets.all(4),
+                      ),
+                      child: Text(_displayAudioSettings
+                          ? 'Audio Settings'
+                          : '- Audio Settings -',
+                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1),
+                          textAlign: TextAlign.center))),
+
+                // Determine if Audio Settings Widget should show:
+                _displayAudioSettings
+                  ? AudioSettingsWidget()
+                  : Container(),
+
+                SizedBox(height: 20),
+
+                ///////////////////////////
+                // Theme Settings Button
+                ///////////////////////////
+                SizedBox(
+                    height: 90,
+                    width: 350,
+                    child: ElevatedButton(
+                        onPressed: () => setState(() {
+                          if (_displayThemesSettings) {
+                            _displayThemesSettings = false;
+                          } else {
+                            _displayThemesSettings = true;
+                            _displayAudioSettings = false;
+                          }
+                        }),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: secondaryAccentColor,
+                          // shape: Rectangle(),
+                          padding: EdgeInsets.all(4),
+                        ),
+                        child: Text(_displayThemesSettings
+                            ? 'Themes'
+                            : '- Themes -',
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1),
+                            textAlign: TextAlign.center))),
+                // Determine if Themes Widget should show:
+                _displayThemesSettings
+                  ? ThemeSettingsWidget()
+                  : Container(),
+
+                const SizedBox(height: 200),
               ],
             ),
           ),
@@ -47,9 +117,33 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 }
 
 ////////////////////////////////////////////
+// Widget for all Theme related Settings
+////////////////////////////////////////////
+class ThemeSettingsWidget extends StatefulWidget {
+  const ThemeSettingsWidget({super.key});
+
+  @override
+  ThemeSettingsWidgetState createState() => ThemeSettingsWidgetState();
+}
+
+class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Row(children: [
+      Text('Hello World!',
+        style: TextStyle(fontFamily: 'AstroSpace', fontSize: 40, color: primaryAccentColor, height: 1.1),
+        textAlign: TextAlign.center),
+      SizedBox(height: 400,),
+    ]);
+  }
+}
+
+////////////////////////////////////////////
 // Widget for all Audio related Settings
 ////////////////////////////////////////////
 class AudioSettingsWidget extends StatefulWidget {
+  const AudioSettingsWidget({super.key});
+
   @override
   AudioSettingsWidgetState createState() => AudioSettingsWidgetState();
 }
@@ -301,8 +395,6 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
         const SizedBox(height: 20),
         SizedBox(height: 1, child: Container(color: Colors.grey)),
         const SizedBox(height: 20),
-
-        const SizedBox(height: 500),
       ],
     );
   }
