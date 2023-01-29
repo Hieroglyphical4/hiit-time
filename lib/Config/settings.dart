@@ -18,6 +18,7 @@ bool modeSwitchAlertEnabled = true;
 bool restartButtonAudioEnabled = true;
 bool saveButtonAudioEnabled = true;
 bool cancelButtonAudioEnabled = true;
+bool switchButtonAudioEnabled = true;
 
 
 

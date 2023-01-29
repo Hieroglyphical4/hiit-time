@@ -209,6 +209,16 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
     });
   }
 
+  void _onSwitchButtonAudioChanged(bool value) {
+    setState(() {
+      if (switchButtonAudioEnabled) {
+        switchButtonAudioEnabled = false;
+      } else {
+        switchButtonAudioEnabled = true;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -389,6 +399,36 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
               onChanged: _onCancelButtonAudioChanged,
             ),
 
+          ],
+        ),
+
+        const SizedBox(height: 20),
+        SizedBox(height: 1, child: Container(color: Colors.grey)),
+        const SizedBox(height: 20),
+
+        /////////////////////////
+        // Switch Button Audio
+        /////////////////////////
+        Row(
+          children: [
+            const SizedBox(width: 20),
+
+            Text('Switch Button Audio',
+                style: TextStyle(
+                    color: switchButtonAudioEnabled
+                        ? primaryColor
+                        : Colors.grey,
+                    fontFamily: 'AstroSpace',
+                    fontSize: 20,
+                    height: 1.1),
+                textAlign: TextAlign.center),
+
+            Spacer(),
+
+            Switch(
+              value: switchButtonAudioEnabled,
+              onChanged: _onSwitchButtonAudioChanged,
+            ),
           ],
         ),
 

@@ -105,12 +105,16 @@ class _SettingsMenuState extends State<SettingsMenu> {
       if (appInTimerMode) {
         widget.audio.setVolume(setVolume);
         widget.audio.setReleaseMode(ReleaseMode.stop);
-        !appMuted ? widget.audio.play(AssetSource('sounds/SwitchAndBeep1.mp3')) : null;
+        if (!appMuted && switchButtonAudioEnabled) {
+          widget.audio.play(AssetSource('sounds/SwitchAndBeep1.mp3'));
+      }
         appInTimerMode = false;
       } else {
         widget.audio.setVolume(setVolume);
         widget.audio.setReleaseMode(ReleaseMode.stop);
-        !appMuted ? widget.audio.play(AssetSource('sounds/Switch1.mp3')) : null;
+        if (!appMuted && switchButtonAudioEnabled) {
+          widget.audio.play(AssetSource('sounds/Switch1.mp3'));
+        }
         appInTimerMode = true;
       }
     });
