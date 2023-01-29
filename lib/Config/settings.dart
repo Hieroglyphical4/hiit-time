@@ -12,8 +12,12 @@ bool appInDarkMode = true;
 bool appMuted = false;
 
 // Advanced Menu Settings:
+bool timerAlarmEnabled = true;
 bool threeTwoOneCountdownEnabled = true;
 bool modeSwitchAlertEnabled = true;
+bool restartButtonAudioEnabled = true;
+bool saveButtonAudioEnabled = true;
+bool cancelButtonAudioEnabled = true;
 
 
 

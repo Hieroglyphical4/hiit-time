@@ -179,8 +179,41 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            SizedBox(width: 15),
+                            ////////////////////////////////
+                            // Advanced Settings Button
+                            ////////////////////////////////
+                            IconButton(
+                              iconSize: 45,
+                              color: primaryColor,
+                              icon: const Icon(Icons.rule),
+                              onPressed: () {
+                                HapticFeedback.mediumImpact();
+
+                                // Launch settings menu
+                                showGeneralDialog(
+                                  context: context,
+                                  barrierDismissible: true,
+                                  barrierLabel: MaterialLocalizations.of(context)
+                                      .modalBarrierDismissLabel,
+                                  barrierColor: Colors.black45,
+                                  transitionDuration: const Duration(milliseconds: 200),
+
+                                  // ANY Widget can be passed here
+                                  pageBuilder: (BuildContext buildContext,
+                                      Animation animation,
+                                      Animation secondaryAnimation) {
+                                    return Center(
+                                      child: AdvancedSettingsMenu(
+                                        key: UniqueKey(),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+
                             const Spacer(flex: 1),
-                            const SizedBox(width: 55),
                             Container(
                               height: 60,
                               child: Padding(
@@ -194,44 +227,8 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     textAlign: TextAlign.center),
                               )
                             ),
-
-                          const Spacer(flex: 1),
-
-                          ////////////////////////////////
-                          // Advanced Settings Button
-                          ////////////////////////////////
-                          IconButton(
-                            iconSize: 45,
-                            color: primaryColor,
-                            icon: Transform.scale(
-                                scale: -1,
-                                child: const Icon(Icons.list)
-                            ),
-                            onPressed: () {
-                              HapticFeedback.mediumImpact();
-
-                              // Launch settings menu
-                              showGeneralDialog(
-                                context: context,
-                                barrierDismissible: true,
-                                barrierLabel: MaterialLocalizations.of(context)
-                                    .modalBarrierDismissLabel,
-                                barrierColor: Colors.black45,
-                                transitionDuration: const Duration(milliseconds: 200),
-
-                                // ANY Widget can be passed here
-                                pageBuilder: (BuildContext buildContext,
-                                    Animation animation,
-                                    Animation secondaryAnimation) {
-                                  return Center(
-                                    child: AdvancedSettingsMenu(
-                                        key: UniqueKey(),
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                          ),
+                            const SizedBox(width: 70),
+                            const Spacer(flex: 1),
                         ]
             ),
 
@@ -649,7 +646,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         ? () {
                                       widget.audio.setVolume(setVolume);
                                       widget.audio.setReleaseMode(ReleaseMode.stop);
-                                      !appMuted ? widget.audio.play(AssetSource('sounds/Correct1.mp3')) : null;
+                                      if (!appMuted && saveButtonAudioEnabled) {
+                                        widget.audio.play(AssetSource('sounds/Correct1.mp3'));
+                                        widget.audio.setReleaseMode(ReleaseMode.stop);
+                                      }
                                       // Check if settings have changed
                                             HapticFeedback.mediumImpact();
 
@@ -770,9 +770,11 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     onPressed: () {
                                       HapticFeedback.mediumImpact();
                                       if (_settingsChanged) {
-                                        widget.audio.setVolume(setVolume);
-                                        widget.audio.setReleaseMode(ReleaseMode.stop);
-                                        !appMuted ? widget.audio.play(AssetSource('sounds/Woosh-spaced.mp3')) : null;
+                                        // widget.audio.setVolume(setVolume);
+                                        if (!appMuted && cancelButtonAudioEnabled) {
+                                          widget.audio.play(AssetSource('sounds/Woosh-spaced.mp3'));
+                                          widget.audio.setReleaseMode(ReleaseMode.stop);
+                                        }
                                       }
                                       Navigator.pop(context);
                                     },

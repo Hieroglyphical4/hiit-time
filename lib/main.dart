@@ -280,7 +280,7 @@ class _MyAppState extends State<MyApp> {
                               _timerButtonRestart = true;
 
                               // Sound the Alarm:
-                              if (!appMuted) {
+                              if (!appMuted && timerAlarmEnabled) {
                                 // _audioPlayer.play(AssetSource('sounds/alarm-beep-beep-1.mp3'));
                                 // _audioPlayer.play(AssetSource('sounds/alarm-standard-1.mp3'));
                                 _audioPlayer.setVolume(setVolume + .1);
@@ -453,7 +453,9 @@ class _MyAppState extends State<MyApp> {
                       onPressed: () => setState(() {
                             HapticFeedback.lightImpact();
                             _audioPlayer.setVolume(setVolume);
-                            !appMuted ? _audioPlayer.play(AssetSource('sounds/Selection1Reversed.mp3')) : null;
+                            if (!appMuted && restartButtonAudioEnabled) {
+                              _audioPlayer.play(AssetSource('sounds/Selection1Reversed.mp3'));
+                            }
                             resetTimer();
                           }),
                       style: ElevatedButton.styleFrom(
