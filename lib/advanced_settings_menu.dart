@@ -265,6 +265,16 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
     });
   }
 
+  void _onTenSecondWarningChanged(bool value) {
+    setState(() {
+      if (tenSecondWarningEnabled) {
+        tenSecondWarningEnabled = false;
+      } else {
+        tenSecondWarningEnabled = true;
+      }
+    });
+  }
+
   void _onModeSwitchAlertChanged(bool value) {
     setState(() {
       if (modeSwitchAlertEnabled) {
@@ -333,6 +343,36 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
               Switch(
                 value: threeTwoOneCountdownEnabled,
                 onChanged: _on321CountdownChanged,
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+          SizedBox(height: 1, child: Container(color: Colors.grey)),
+          const SizedBox(height: 20),
+
+          /////////////////////////////
+          // 10 Second Warning Settings
+          /////////////////////////////
+          Row(
+            children: [
+              const SizedBox(width: 20),
+
+              Text('10 Second Warning',
+                  style: TextStyle(
+                      color: threeTwoOneCountdownEnabled
+                          ? primaryColor
+                          : Colors.grey,
+                      fontFamily: 'AstroSpace',
+                      fontSize: 20,
+                      height: 1.1),
+                  textAlign: TextAlign.center),
+
+              Spacer(),
+
+              Switch(
+                value: tenSecondWarningEnabled,
+                onChanged: _onTenSecondWarningChanged,
               ),
             ],
           ),

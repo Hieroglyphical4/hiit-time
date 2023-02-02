@@ -197,6 +197,7 @@ class _MyAppState extends State<MyApp> {
                         // TODO Engage Count-in mode
                       },
                       onTap: () {
+                        _audioPlayer.stop(); // stop timer alarm
                         HapticFeedback.lightImpact();
                         // Check if the user is pressing the timer after it finished.
                         // If so, restart timer to initial state (reset)
@@ -212,14 +213,10 @@ class _MyAppState extends State<MyApp> {
                             _controller.pause();
                             // Update timer text
                             _controller.updateWorkoutMode(appInTimerMode);
-                            // Stop Audio Countdown
-                            _controller.manageAudioDuringPause('pause');
                             Wakelock.disable();
                           } else {
                             // Timer was paused, turning on
                             _controller.resume();
-                            _controller.manageAudioDuringPause('resume');
-
                             Wakelock.enable();
                           }
                           _isRunning = !_isRunning; // Flip isRunning state

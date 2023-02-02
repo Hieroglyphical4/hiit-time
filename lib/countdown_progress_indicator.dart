@@ -133,14 +133,36 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         _currentDuration = _desiredTime;
       }
       setState(() {
-        if (_currentDuration == 3 && widget.isRunning&& threeTwoOneCountdownEnabled) {
+        // TODO Have 3 separate checks on 3-2-1 instead of lumping audio into one
+        if (_currentDuration == 3 && widget.isRunning && threeTwoOneCountdownEnabled) {
           _audioPlayer.setVolume(setVolume);
           !appMuted
               ? _audioPlayer.play(
-                  AssetSource('sounds/Amplified/Countdown3SalliAmped.mp3'))
+                  AssetSource('sounds/Amplified/SalliThree.mp3'))
               : null;
+          // _audioPlayer.stop();
         }
-        if (_currentDuration > 3) {
+        if (_currentDuration == 2 && widget.isRunning && threeTwoOneCountdownEnabled) {
+          _audioPlayer.setVolume(setVolume);
+          !appMuted
+              ? _audioPlayer.play(
+              AssetSource('sounds/Amplified/SalliTwo.mp3'))
+              : null;
+          // _audioPlayer.stop();
+        }
+        if (_currentDuration == 1 && widget.isRunning && threeTwoOneCountdownEnabled) {
+          _audioPlayer.setVolume(setVolume);
+          !appMuted
+              ? _audioPlayer.play(
+              AssetSource('sounds/Amplified/SalliOne1.mp3'))
+              : null;
+          // _audioPlayer.stop();
+        }
+        if (_currentDuration == 10 && widget.isRunning && tenSecondWarningEnabled) {
+          _audioPlayer.setVolume(setVolume);
+          !appMuted
+              ? _audioPlayer.play(AssetSource('sounds/Amplified/JoeyTenAmped.mp3'))
+              : null;
           _audioPlayer.stop();
         }
         _timerText = 'Timer Mode';
@@ -425,15 +447,6 @@ class CountDownController {
   void flip() {
     _state._animationController.forward();
     // _state._animationController.reverse(); // TODO Get Working
-  }
-
-  void manageAudioDuringPause(intent) {
-    if (intent == 'pause') {
-      _state._audioPlayer.pause();
-    }
-    if (intent == 'resume') {
-      _state._audioPlayer.resume();
-    }
   }
 
   /// Restarts countdown timer.
