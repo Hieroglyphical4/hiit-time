@@ -74,7 +74,9 @@ flutter:
     - assets/sounds/Selection1.mp3
     - assets/sounds/Amplified/PianoAlarmAmped.mp3
     - assets/sounds/Amplified/Work-Voice-salli-Amped.mp3
+    - assets/sounds/Amplified/Work-Voice-salli-Amped2.mp3
     - assets/sounds/Amplified/Rest-Voice-salli-Amped.mp3
+    - assets/sounds/Amplified/Rest-Voice-salli-Amped2.mp3
     - assets/sounds/Selection1Reversed.mp3
     - assets/sounds/Amplified/Countdown3SalliAmped.mp3
     - assets/sounds/Switch1.mp3
@@ -83,7 +85,7 @@ flutter:
     - assets/sounds/Amplified/SalliThree.mp3
     - assets/sounds/Amplified/SalliOne1.mp3
     - assets/sounds/Amplified/SalliTenAmped1.mp3
-    - assets/sounds/Amplified/JoeyTenAmped.mp3
+    - assets/sounds/Amplified/JoeyTenAmped2.mp3
 
 
   # The following line ensures that the Material Icons font is

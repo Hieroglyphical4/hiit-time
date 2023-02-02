@@ -66,14 +66,14 @@ class _MyAppState extends State<MyApp> {
     if (restFlip) {
       _audioPlayer.setVolume(setVolume);
       if (!appMuted && modeSwitchAlertEnabled) {
-        _audioPlayer.play(AssetSource('sounds/Amplified/Rest-Voice-salli-Amped.mp3'));
+        _audioPlayer.play(AssetSource('sounds/Amplified/Rest-Voice-salli-Amped2.mp3'));
       }
       _duration = setRestDuration;
       _restDuration = setStartTime;
     } else {
       _audioPlayer.setVolume(setVolume);
       if (!appMuted && modeSwitchAlertEnabled) {
-        _audioPlayer.play(AssetSource('sounds/Amplified/Work-Voice-salli-Amped.mp3'));
+        _audioPlayer.play(AssetSource('sounds/Amplified/Work-Voice-salli-Amped2.mp3'));
       }
       _duration = setStartTime;
       _restDuration = setRestDuration;

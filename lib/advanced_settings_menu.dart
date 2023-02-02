@@ -181,7 +181,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
                 child: Text(_displayTimerAudioSettings
                     ? 'Timer'
                     : '- Timer -',
-                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1),
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1),
                     textAlign: TextAlign.center
                 )
             )
@@ -216,7 +216,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
                 child: Text(_displayButtonAudioSettings
                     ? 'Buttons'
                     : '- Buttons -',
-                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1),
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1),
                     textAlign: TextAlign.center
                 )
             )
@@ -245,6 +245,8 @@ class TimerAudioSettingsWidget extends StatefulWidget {
 }
 
 class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
+  double _textFontSize = 16;
+
   void _onTimerAlarmChanged(bool value) {
     setState(() {
       if (timerAlarmEnabled) {
@@ -290,13 +292,13 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
     return Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           /////////////////////////////
           // Timer Alarm Settings
           /////////////////////////////
           Row(
             children: [
-              const SizedBox(width: 20),
+              const SizedBox(width: 15),
 
               Text('Timer Alarm',
                   style: TextStyle(
@@ -304,7 +306,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
-                      fontSize: 20,
+                      fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
 
@@ -317,16 +319,16 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
 
           /////////////////////////////
           // 3-2-1 Countdown Settings
           /////////////////////////////
           Row(
             children: [
-              const SizedBox(width: 20),
+              const SizedBox(width: 15),
 
               Text('3-2-1 Countdown',
                   style: TextStyle(
@@ -334,7 +336,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
-                      fontSize: 20,
+                      fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
 
@@ -347,16 +349,16 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
 
           /////////////////////////////
           // 10 Second Warning Settings
           /////////////////////////////
           Row(
             children: [
-              const SizedBox(width: 20),
+              const SizedBox(width: 15),
 
               Text('10 Second Warning',
                   style: TextStyle(
@@ -364,7 +366,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
-                      fontSize: 20,
+                      fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
 
@@ -377,15 +379,15 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           ///////////////////////////////
           // Mode Switch Audio Settings
           //////////////////////////////
           Row(
             children: [
-              const SizedBox(width: 20),
+              const SizedBox(width: 15),
 
               Text('Mode Switch Alert',
                   style: TextStyle(
@@ -393,7 +395,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
-                      fontSize: 20,
+                      fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
 
@@ -407,9 +409,9 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
         ]
     );
   }
@@ -426,6 +428,8 @@ class ButtonAudioSettingsWidget extends StatefulWidget {
 }
 
 class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
+  double _textFontSize = 16;
+
   void _onSaveButtonAudioChanged(bool value) {
     setState(() {
       if (saveButtonAudioEnabled) {
@@ -471,7 +475,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
     return Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           ////////////////////////
           // Restart Button Audio
           ////////////////////////
@@ -485,7 +489,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
-                      fontSize: 20,
+                      fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
 
@@ -499,23 +503,23 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
 
           ///////////////////////
           // Save Button Audio
           ///////////////////////
           Row(
             children: [
-              const SizedBox(width: 20),
+              const SizedBox(width: 15),
               Text('Save Button Audio',
                   style: TextStyle(
                       color: saveButtonAudioEnabled
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
-                      fontSize: 20,
+                      fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
 
@@ -528,16 +532,16 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
 
           /////////////////////////
           // Cancel Button Audio
           /////////////////////////
           Row(
             children: [
-              const SizedBox(width: 20),
+              const SizedBox(width: 15),
 
               Text('Cancel Button Audio',
                   style: TextStyle(
@@ -545,7 +549,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
-                      fontSize: 20,
+                      fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
 
@@ -559,16 +563,16 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
 
           /////////////////////////
           // Switch Button Audio
           /////////////////////////
           Row(
             children: [
-              const SizedBox(width: 20),
+              const SizedBox(width: 15),
 
               Text('Switch Button Audio',
                   style: TextStyle(
@@ -576,7 +580,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
-                      fontSize: 20,
+                      fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
 

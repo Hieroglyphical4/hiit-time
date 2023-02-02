@@ -183,7 +183,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(width: 15),
+                            SizedBox(width: 10),
                             ////////////////////////////////
                             // Advanced Settings Button
                             ////////////////////////////////
