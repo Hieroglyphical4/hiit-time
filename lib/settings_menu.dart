@@ -4,13 +4,6 @@ import 'package:flutter/services.dart';
 import 'advanced_settings_menu.dart';
 import 'Config/settings.dart';
 
-void main() {
-  runApp(MaterialApp(
-      home: SettingsMenu(
-    key: UniqueKey(),
-  )));
-}
-
 // class _TextInputFormatter extends TextInputFormatter {
 //   @override
 //   TextEditingValue formatEditUpdate(
@@ -21,13 +14,33 @@ void main() {
 //   }
 // }
 
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+      FutureBuilder(
+        future:getDuration(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            print(snapshot.data);
+            return MaterialApp(
+                home: SettingsMenu(workTime: snapshot.data)
+            );
+          } else {
+            return Container();
+          }
+        }
+      )
+  );
+}
 
 class SettingsMenu extends StatefulWidget {
   final audio;
+  final int? workTime;
 
-  SettingsMenu({
-    required Key key,
+  const SettingsMenu({
+    Key? key,
     this.audio,
+    this.workTime,
   }) : super(key: key);
 
   @override
@@ -36,11 +49,18 @@ class SettingsMenu extends StatefulWidget {
 
 class _SettingsMenuState extends State<SettingsMenu> {
   final _formKey = GlobalKey<FormState>();
+  late int _workTime;
   bool _settingsChanged = false;
   bool _restSettingChanged = false;
   bool _workSettingChanged = false;
   bool _subTimeSettingChanged = false;
   bool _addTimeSettingChanged = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _workTime = widget.workTime ?? setStartTime;
+  }
 
   void recordSettingsChanged(String setting) {
     setState(() {
@@ -376,10 +396,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   FocusManager.instance.primaryFocus?.unfocus();
                                 },
                                 decoration: InputDecoration(
-                                  hintText: setStartTime > 59
+                                  hintText: _workTime > 59
                                       ? changeDurationFromSecondsToMinutes(
-                                      setStartTime)
-                                      : setStartTime.toString(),
+                                      _workTime)
+                                      : _workTime.toString(),
                                   hintStyle: TextStyle(
                                       fontSize: 30, color: primaryColor),
                                   enabledBorder: OutlineInputBorder(
@@ -655,99 +675,102 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         widget.audio.setReleaseMode(ReleaseMode.stop);
                                       }
                                       // Check if settings have changed
-                                            HapticFeedback.mediumImpact();
+                                      HapticFeedback.mediumImpact();
 
-                                            ///////////////////////////////////////////////////
-                                            // Check if changes were made to any Time settings
-                                            ///////////////////////////////////////////////////
-                                            // Check for Changes to Rest Time
-                                            if (_desiredRestTimeDuration != '') {
-                                              _changesRequiringRestartOccured =
-                                                  true;
-                                              setRestDuration = int.parse(
-                                                  _desiredRestTimeDuration);
-                                              // Prevent errors from numbers above 59:59
-                                              if (setRestDuration > 5959) {
-                                                setRestDuration = 5959;
-                                              }
-                                              if (_desiredRestTimeDuration.length >
-                                                  2) {
-                                                var timeFormatted = formatDuration(
-                                                    setRestDuration.toString());
-                                                var timeInSeconds =
-                                                    convertMinutesToSeconds(
-                                                        timeFormatted);
-                                                setRestDuration = timeInSeconds;
-                                              }
-                                            }
+                                      ///////////////////////////////////////////////////
+                                      // Check if changes were made to any Time settings
+                                      ///////////////////////////////////////////////////
+                                      // Check for Changes to Rest Time
+                                      if (_desiredRestTimeDuration != '') {
+                                        _changesRequiringRestartOccured = true;
+                                        setRestDuration = int.parse(_desiredRestTimeDuration);
+                                        // Prevent errors from numbers above 59:59
+                                        if (setRestDuration > 5959) {
+                                          setRestDuration = 5959;
+                                        }
+                                        if (_desiredRestTimeDuration.length > 2) {
+                                          var timeFormatted = formatDuration(
+                                              setRestDuration.toString());
+                                          var timeInSeconds =
+                                              convertMinutesToSeconds(
+                                                  timeFormatted);
+                                          setRestDuration = timeInSeconds;
+                                        }
+                                      }
 
-                                            // Check for Changes to Work Time
-                                            if (_desiredWorkTimeDuration != '') {
-                                              _changesRequiringRestartOccured =
-                                                  true;
-                                              // Prevent errors from negative numbers
-                                              setStartTime = int.parse(
-                                                  _desiredWorkTimeDuration); // works if <2
-                                              if (setStartTime < 1) {
-                                                setStartTime = 1;
-                                              }
-                                              // Prevent errors from numbers above 59:59
-                                              if (setStartTime > 5959) {
-                                                setStartTime = 5959;
-                                              }
-                                              if (_desiredWorkTimeDuration.length >
-                                                  2) {
-                                                var timeFormatted = formatDuration(
-                                                    setStartTime.toString());
-                                                var timeInSeconds =
-                                                    convertMinutesToSeconds(
-                                                        timeFormatted);
-                                                setStartTime = timeInSeconds;
-                                              }
-                                            }
+                                      // Check for Changes to Work Time
+                                      if (_desiredWorkTimeDuration != '') {
+                                        print('Changes to Work Time Detected!');
+                                        _changesRequiringRestartOccured =
+                                            true;
+                                        // Prevent errors from negative numbers
+                                        _workTime = int.parse(_desiredWorkTimeDuration); // works if <2
+                                        print("\nFirst Set\n");
+                                        print(_workTime);
+                                        if (_workTime < 1) {
+                                          _workTime = 1;
+                                        }
+                                        // Prevent errors from numbers above 59:59
+                                        if (_workTime > 5959) {
+                                          _workTime = 5959;
+                                        }
+                                        print("Second Set\n");
+                                        print(_workTime);
+                                        if (_desiredWorkTimeDuration.length > 2) {
+                                          var timeFormatted = formatDuration(_workTime.toString());
+                                          var timeInSeconds = convertMinutesToSeconds(
+                                                  timeFormatted);
+                                          _workTime = timeInSeconds;
+                                        }
+                                        print("final Work Set\n");
+                                        print(_workTime);
+                                        // Save the Stored Time for next Startup
+                                        // Method lives in settings.dart
+                                        setDuration(_workTime);
+                                      }
 
-                                            // Check for Changes to Subtract Modifier
-                                            if (_desiredSubTimeMod != '') {
-                                              setTimeModifyValueSub =
-                                                  int.parse(_desiredSubTimeMod);
-                                              if (setTimeModifyValueSub > 5959) {
-                                                setTimeModifyValueSub = 5959;
-                                              }
-                                              if (_desiredSubTimeMod.length > 2) {
-                                                var timeFormatted = formatDuration(
-                                                    setTimeModifyValueSub
-                                                        .toString());
-                                                var timeInSeconds =
-                                                    convertMinutesToSeconds(
-                                                        timeFormatted);
-                                                setTimeModifyValueSub =
-                                                    timeInSeconds;
-                                              }
-                                            }
+                                      // Check for Changes to Subtract Modifier
+                                      if (_desiredSubTimeMod != '') {
+                                        setTimeModifyValueSub =
+                                            int.parse(_desiredSubTimeMod);
+                                        if (setTimeModifyValueSub > 5959) {
+                                          setTimeModifyValueSub = 5959;
+                                        }
+                                        if (_desiredSubTimeMod.length > 2) {
+                                          var timeFormatted = formatDuration(
+                                              setTimeModifyValueSub
+                                                  .toString());
+                                          var timeInSeconds =
+                                              convertMinutesToSeconds(
+                                                  timeFormatted);
+                                          setTimeModifyValueSub =
+                                              timeInSeconds;
+                                        }
+                                      }
 
-                                            // Check for Changes to Addition Modifier
-                                            if (_desiredAddTimeMod != '') {
-                                              setTimeModifyValueAdd =
-                                                  int.parse(_desiredAddTimeMod);
-                                              if (setTimeModifyValueAdd > 5959) {
-                                                setTimeModifyValueAdd = 5959;
-                                              }
-                                              if (_desiredAddTimeMod.length > 2) {
-                                                var timeFormatted = formatDuration(
-                                                    setTimeModifyValueAdd
-                                                        .toString());
-                                                var timeInSeconds =
-                                                    convertMinutesToSeconds(
-                                                        timeFormatted);
-                                                setTimeModifyValueAdd =
-                                                    timeInSeconds;
-                                              }
-                                            }
+                                      // Check for Changes to Addition Modifier
+                                      if (_desiredAddTimeMod != '') {
+                                        setTimeModifyValueAdd =
+                                            int.parse(_desiredAddTimeMod);
+                                        if (setTimeModifyValueAdd > 5959) {
+                                          setTimeModifyValueAdd = 5959;
+                                        }
+                                        if (_desiredAddTimeMod.length > 2) {
+                                          var timeFormatted = formatDuration(
+                                              setTimeModifyValueAdd
+                                                  .toString());
+                                          var timeInSeconds =
+                                              convertMinutesToSeconds(
+                                                  timeFormatted);
+                                          setTimeModifyValueAdd =
+                                              timeInSeconds;
+                                        }
+                                      }
 
-                                            Navigator.pop(context,
-                                                _changesRequiringRestartOccured); // Close Settings menu
-                                          }
-                                        : null, // If settings haven't changed, Disable Save Button
+                                      Navigator.pop(context,
+                                          _changesRequiringRestartOccured); // Close Settings menu
+                                    }
+                                  : null, // If settings haven't changed, Disable Save Button
                                   ),
 
                                   // Save Text Description

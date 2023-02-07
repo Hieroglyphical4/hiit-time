@@ -309,7 +309,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                       : primaryColor,
                                   // 59 is used here to avoid a small 59
                                   fontSize:
-                                      (_currentDuration ?? setStartTime) > 59
+                                      (_currentDuration ?? widget.duration) > 59
                                           ? _minuteTimerSize
                                           : _secondTimerSize,
                                   fontWeight: FontWeight.w600),
@@ -330,7 +330,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                       : primaryColor,
                                   // 58 is used as a buffer, any higher and 1:00 is huge
                                   fontSize:
-                                      (_currentDuration ?? setStartTime) > 58
+                                      (_currentDuration ?? widget.duration) > 58
                                           ? _minuteTimerSize
                                           : _secondTimerSize,
                                   fontWeight: FontWeight.w600),

@@ -3,20 +3,36 @@ import 'package:hiit.time/countdown_progress_indicator.dart';
 import 'package:hiit.time/Config/settings.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:hiit.time/settings_menu.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    const MaterialApp(
-      home: MyApp(),
-    ),
+    FutureBuilder(
+      future:getDuration(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return MaterialApp(
+            home: MyApp(duration: snapshot.data),
+          );
+        } else {
+          return Container();
+        }
+      }
+  )
   );
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final int? duration;
+
+  const MyApp({
+    Key? key,
+    this.duration
+  }) : super(key: key);
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -38,12 +54,15 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _duration = widget.duration ?? setStartTime;
   }
 
-  void resetTimer() {
+  Future<void> resetTimer() async {
+    final prefs = await SharedPreferences.getInstance();
+
     _intervalLap = 1;
     _isRunning = false;
-    _duration = setStartTime;
+    _duration = prefs.getInt('duration') ?? setStartTime;
     _restDuration = setRestDuration;
     _timerModifierValueAdd = setTimeModifyValueAdd;
     _timerModifierValueSub = setTimeModifyValueSub;
@@ -374,7 +393,8 @@ class _MyAppState extends State<MyApp> {
                             return Center(
                               child: SettingsMenu(
                                 key: UniqueKey(),
-                                audio: _audioPlayer
+                                audio: _audioPlayer,
+                                workTime: _duration ?? setStartTime,
                               ),
                             );
                           },
