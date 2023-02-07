@@ -21,7 +21,6 @@ void main() async {
         future:getDuration(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            print(snapshot.data);
             return MaterialApp(
                 home: SettingsMenu(workTime: snapshot.data)
             );
@@ -700,13 +699,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
 
                                       // Check for Changes to Work Time
                                       if (_desiredWorkTimeDuration != '') {
-                                        print('Changes to Work Time Detected!');
                                         _changesRequiringRestartOccured =
                                             true;
                                         // Prevent errors from negative numbers
                                         _workTime = int.parse(_desiredWorkTimeDuration); // works if <2
-                                        print("\nFirst Set\n");
-                                        print(_workTime);
                                         if (_workTime < 1) {
                                           _workTime = 1;
                                         }
@@ -714,16 +710,12 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         if (_workTime > 5959) {
                                           _workTime = 5959;
                                         }
-                                        print("Second Set\n");
-                                        print(_workTime);
                                         if (_desiredWorkTimeDuration.length > 2) {
                                           var timeFormatted = formatDuration(_workTime.toString());
                                           var timeInSeconds = convertMinutesToSeconds(
                                                   timeFormatted);
                                           _workTime = timeInSeconds;
                                         }
-                                        print("final Work Set\n");
-                                        print(_workTime);
                                         // Save the Stored Time for next Startup
                                         // Method lives in settings.dart
                                         setDuration(_workTime);
