@@ -27,9 +27,9 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  final int? duration;
+  var duration;
 
-  const MyApp({
+  MyApp({
     Key? key,
     this.duration
   }) : super(key: key);
@@ -51,10 +51,21 @@ class _MyAppState extends State<MyApp> {
   var _intervalLap = 1;
   final _audioPlayer = AudioPlayer();
 
+  var _workTime = setStartTime; // Value displayed in settingsMenu
+
   @override
   void initState() {
     super.initState();
     _duration = widget.duration ?? setStartTime;
+  }
+
+  // Update the value to be displayed in settings menu from
+  Future<void> updateWorkTime() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      _workTime = prefs.getInt('duration') ?? setStartTime;
+    });
   }
 
   Future<void> resetTimer() async {
@@ -377,6 +388,9 @@ class _MyAppState extends State<MyApp> {
                       onPressed: () {
                         HapticFeedback.mediumImpact();
 
+                        // Update settings from memory
+                        updateWorkTime();
+
                         // Launch settings menu
                         showGeneralDialog(
                           context: context,
@@ -394,7 +408,7 @@ class _MyAppState extends State<MyApp> {
                               child: SettingsMenu(
                                 key: UniqueKey(),
                                 audio: _audioPlayer,
-                                workTime: _duration ?? setStartTime,
+                                workTime: _workTime,
                               ),
                             );
                           },
