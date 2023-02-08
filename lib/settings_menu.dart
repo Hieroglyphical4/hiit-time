@@ -197,12 +197,33 @@ class _SettingsMenuState extends State<SettingsMenu> {
                     children: [
                       const SizedBox(height: 35),
                       ////////////////////////////////
-                      // Settings Text Header      ///
+                      // Settings Header           ///
                       ////////////////////////////////
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(width: 10),
+                            const SizedBox(width: 70),
+                            const Spacer(flex: 1),
+
+                            //////////////////////////
+                            // Settings Header Text
+                            //////////////////////////
+                            Container(
+                              height: 60,
+                              child: Padding(
+                                padding: EdgeInsets.only(top: 10),
+                                child: Text('Settings',
+                                    style: TextStyle(
+                                        color: primaryAccentColor,
+                                        fontFamily: 'AstroSpace',
+                                        fontSize: 40,
+                                        height: 1.1),
+                                    textAlign: TextAlign.center),
+                              )
+                            ),
+
+                            const SizedBox(width: 10),
+
                             ////////////////////////////////
                             // Advanced Settings Button
                             ////////////////////////////////
@@ -235,22 +256,6 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                 );
                               },
                             ),
-
-                            const Spacer(flex: 1),
-                            Container(
-                              height: 60,
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 10),
-                                child: Text('Settings',
-                                    style: TextStyle(
-                                        color: primaryAccentColor,
-                                        fontFamily: 'AstroSpace',
-                                        fontSize: 40,
-                                        height: 1.1),
-                                    textAlign: TextAlign.center),
-                              )
-                            ),
-                            const SizedBox(width: 70),
                             const Spacer(flex: 1),
                         ]
             ),
