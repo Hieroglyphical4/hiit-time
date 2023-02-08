@@ -85,6 +85,13 @@ class _SettingsMenuState extends State<SettingsMenu> {
   // Convert given string to reflect that
   String formatDuration(String minutesRaw) {
     var string = minutesRaw;
+    var length = string.length;
+
+    // Check if string is still in seconds
+    if (length == 2) {
+      return string;
+    }
+
     final insertIndex = string.length == 3 ? 1 : 2;
     final substring = string.substring(insertIndex);
     final timeFormatted = insertIndex == 1
@@ -286,11 +293,18 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     keyboardType: TextInputType.number,
                                     onChanged: (value) {
                                       if (value != '') {
-                                        // Only record changes if not filtered (leading 0)
+                                        print("Inside Value Guy\n");
+                                        print(value);
                                         recordSettingsChanged('rest');
                                         if (value.length > 2) {
-                                          restTextEditController.text =
-                                              formatDuration(value);
+                                          // Prevent user from pushing 0 into minute section
+                                          if (value[0] == '0') {
+                                            value = value.substring(1,3);
+                                            print("new Value\n");
+                                            print(value);
+                                          }
+
+                                          restTextEditController.text = formatDuration(value);
                                           restTextEditController.selection =
                                               TextSelection.collapsed(
                                                   offset: restTextEditController
@@ -332,11 +346,8 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       ),
                                     ),
                                     inputFormatters: <TextInputFormatter>[
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      // Only numbers can be entered
-                                      FilteringTextInputFormatter.deny(
-                                          RegExp('^0+')),
-                                      // Filter leading 0s
+                                      FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                      // FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
                                       LengthLimitingTextInputFormatter(4),
                                       // 4 digits at most
                                       // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
