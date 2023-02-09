@@ -91,7 +91,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   // Change timer from Rest Mode to Work Mode and Vice Versa
-  void flipIntervalTimer(bool restFlip) {
+  Future<void> flipIntervalTimer(bool restFlip) async {
+    final prefs = await SharedPreferences.getInstance();
+
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
       _audioPlayer.setVolume(setVolume);
@@ -99,13 +101,13 @@ class _MyAppState extends State<MyApp> {
         _audioPlayer.play(AssetSource('sounds/Amplified/Rest-Voice-salli-Amped2.mp3'));
       }
       _duration = setRestDuration;
-      _restDuration = setStartTime;
+      _restDuration = prefs.getInt('duration') ?? setStartTime;
     } else {
       _audioPlayer.setVolume(setVolume);
       if (!appMuted && modeSwitchAlertEnabled) {
         _audioPlayer.play(AssetSource('sounds/Amplified/Work-Voice-salli-Amped2.mp3'));
       }
-      _duration = setStartTime;
+      _duration = prefs.getInt('duration') ?? setStartTime;
       _restDuration = setRestDuration;
       _intervalLap++;
     }
