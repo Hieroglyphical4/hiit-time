@@ -14,28 +14,9 @@ import 'Config/settings.dart';
 //   }
 // }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-      FutureBuilder(
-        future:getSavedUserSettings(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            // Assemble data:
-            int returnedWorkTime = int.parse(snapshot.data!['workDuration']);
-            int returnedRestTime = int.parse(snapshot.data!['restDuration']);
-
-            return MaterialApp(
-                home: SettingsMenu(
-                    workTime: returnedWorkTime,
-                    restTime: returnedRestTime
-                )
-            );
-          } else {
-            return Container();
-          }
-        }
-      )
+main() async {
+  return const MaterialApp(
+      home: SettingsMenu()
   );
 }
 
@@ -43,12 +24,16 @@ class SettingsMenu extends StatefulWidget {
   final audio;
   final int? workTime;
   final int? restTime;
+  final int? timeModAdd;
+  final int? timeModSub;
 
   const SettingsMenu({
     Key? key,
     this.audio,
     this.workTime,
     this.restTime,
+    this.timeModAdd,
+    this.timeModSub,
   }) : super(key: key);
 
   @override
@@ -59,6 +44,8 @@ class _SettingsMenuState extends State<SettingsMenu> {
   final _formKey = GlobalKey<FormState>();
   late int _workTime;
   late int _restTime;
+  late int _timeModAdd;
+  late int _timeModSub;
   bool _settingsChanged = false;
   bool _restSettingChanged = false;
   bool _workSettingChanged = false;
@@ -70,6 +57,8 @@ class _SettingsMenuState extends State<SettingsMenu> {
     super.initState();
     _workTime = widget.workTime ?? defaultWorkDuration;
     _restTime = widget.restTime ?? defaultRestDuration;
+    _timeModAdd = widget.timeModAdd ?? defaultTimeModifyValueAdd;
+    _timeModSub = widget.timeModSub ?? defaultTimeModifyValueSub;
   }
 
   void recordSettingsChanged(String setting) {
@@ -592,10 +581,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                             ?.unfocus();
                                       },
                                       decoration: InputDecoration(
-                                        hintText: defaultTimeModifyValueSub > 59
+                                        hintText: _timeModSub > 59
                                             ? changeDurationFromSecondsToMinutes(
-                                            defaultTimeModifyValueSub)
-                                            : defaultTimeModifyValueSub.toString(),
+                                            _timeModSub)
+                                            : _timeModSub.toString(),
                                         hintStyle: TextStyle(
                                             fontSize: 20, color: primaryColor),
                                         enabledBorder: OutlineInputBorder(
@@ -749,40 +738,46 @@ class _SettingsMenuState extends State<SettingsMenu> {
 
                                       // Check for Changes to Subtract Modifier
                                       if (_desiredSubTimeMod != '') {
-                                        defaultTimeModifyValueSub =
+                                        _timeModSub =
                                             int.parse(_desiredSubTimeMod);
-                                        if (defaultTimeModifyValueSub > 5959) {
-                                          defaultTimeModifyValueSub = 5959;
+                                        if (_timeModSub > 5959) {
+                                          _timeModSub = 5959;
                                         }
                                         if (_desiredSubTimeMod.length > 2) {
                                           var timeFormatted = formatDuration(
-                                              defaultTimeModifyValueSub
+                                              _timeModSub
                                                   .toString());
                                           var timeInSeconds =
                                               convertMinutesToSeconds(
                                                   timeFormatted);
-                                          defaultTimeModifyValueSub =
+                                          _timeModSub =
                                               timeInSeconds;
                                         }
+                                        // Save the Stored Time for next Startup
+                                        // Method lives in settings.dart
+                                        setTimeModifyValueSub(_timeModSub);
                                       }
 
                                       // Check for Changes to Addition Modifier
                                       if (_desiredAddTimeMod != '') {
-                                        defaultTimeModifyValueAdd =
+                                        _timeModAdd =
                                             int.parse(_desiredAddTimeMod);
-                                        if (defaultTimeModifyValueAdd > 5959) {
-                                          defaultTimeModifyValueAdd = 5959;
+                                        if (_timeModAdd > 5959) {
+                                          _timeModAdd = 5959;
                                         }
                                         if (_desiredAddTimeMod.length > 2) {
                                           var timeFormatted = formatDuration(
-                                              defaultTimeModifyValueAdd
+                                              _timeModAdd
                                                   .toString());
                                           var timeInSeconds =
                                               convertMinutesToSeconds(
                                                   timeFormatted);
-                                          defaultTimeModifyValueAdd =
+                                          _timeModAdd =
                                               timeInSeconds;
                                         }
+                                        // Save the Stored Time for next Startup
+                                        // Method lives in settings.dart
+                                        setTimeModifyValueAdd(_timeModAdd);
                                       }
 
                                       Navigator.pop(context,
@@ -884,10 +879,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                             ?.unfocus();
                                       },
                                       decoration: InputDecoration(
-                                        hintText: defaultTimeModifyValueAdd > 59
+                                        hintText: _timeModAdd > 59
                                             ? changeDurationFromSecondsToMinutes(
-                                            defaultTimeModifyValueAdd)
-                                            : defaultTimeModifyValueAdd.toString(),
+                                            _timeModAdd)
+                                            : _timeModAdd.toString(),
                                         hintStyle: TextStyle(
                                             fontSize: 20, color: primaryColor),
                                         iconColor: primaryColor,

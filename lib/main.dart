@@ -18,11 +18,15 @@ void main() async {
           // Assemble user settings:
           int returnedWorkTime = int.parse(snapshot.data!['workDuration']);
           int returnedRestTime = int.parse(snapshot.data!['restDuration']);
+          int returnedTimeModAdd = int.parse(snapshot.data!['timeModifyValueAdd']);
+          int returnedTimeModSub = int.parse(snapshot.data!['timeModifyValueSub']);
 
           return MaterialApp(
             home: MyApp(
-                workDuration: returnedWorkTime,
-                restDuration: returnedRestTime
+              workDuration: returnedWorkTime,
+              restDuration: returnedRestTime,
+              timeModAdd: returnedTimeModAdd,
+              timeModSub: returnedTimeModSub
             ),
           );
         } else {
@@ -36,11 +40,15 @@ void main() async {
 class MyApp extends StatefulWidget {
   var workDuration;
   var restDuration;
+  var timeModAdd;
+  var timeModSub;
 
   MyApp({
     Key? key,
     this.workDuration,
-    this.restDuration
+    this.restDuration,
+    this.timeModAdd,
+    this.timeModSub,
   }) : super(key: key);
 
   @override
@@ -60,14 +68,17 @@ class _MyAppState extends State<MyApp> {
   var _intervalLap = 1;
   final _audioPlayer = AudioPlayer();
 
-  var _workTime = defaultWorkDuration; // Value displayed in settingsMenu
-  var _restTime = defaultRestDuration; // Value displayed in settingsMenu
+  // Values being passed to Settings Menu
+  var _workTime = defaultWorkDuration;
+  var _restTime = defaultRestDuration;
 
   @override
   void initState() {
     super.initState();
     _duration = widget.workDuration ?? defaultWorkDuration;
     _restDuration = widget.restDuration ?? defaultRestDuration;
+    _timerModifierValueAdd = widget.timeModAdd ?? defaultTimeModifyValueAdd;
+    _timerModifierValueSub = widget.timeModSub ?? defaultTimeModifyValueSub;
   }
 
   // Update the value to be displayed in settings menu from
@@ -77,19 +88,18 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _workTime = int.parse(settings['workDuration']);
       _restTime = int.parse(settings['restDuration']);
+      _timerModifierValueAdd = int.parse(settings['timeModifyValueAdd']);
+      _timerModifierValueSub = int.parse(settings['timeModifyValueSub']);
     });
   }
 
   Future<void> resetTimer() async {
     final settings = await getSavedUserSettings();
-    // final prefs = await SharedPreferences.getInstance();
 
     _intervalLap = 1;
     _isRunning = false;
     _duration = int.parse(settings['workDuration']);
     _restDuration = int.parse(settings['restDuration']);
-    _timerModifierValueAdd = defaultTimeModifyValueAdd;
-    _timerModifierValueSub = defaultTimeModifyValueSub;
 
     _controller.restart(
       duration: _duration,
@@ -362,8 +372,6 @@ class _MyAppState extends State<MyApp> {
                             // If the user is manually changing the time, we shouldn't
                             // set the timer up to restart on the next press
                             _timerButtonRestart = false;
-                            // Reassign value in-case setting were saved
-                            _timerModifierValueSub = defaultTimeModifyValueSub;
 
                             var desiredTime = _controller.setDuration(_duration,
                                 (-1 * _timerModifierValueSub.ceil()));
@@ -385,9 +393,9 @@ class _MyAppState extends State<MyApp> {
                             backgroundColor: secondaryAccentColor,
                           ),
                           child: Text(
-                              defaultTimeModifyValueSub > 59
-                                  ? '-${changeDurationFromSecondsToMinutes(defaultTimeModifyValueSub)}'
-                                  : '-${defaultTimeModifyValueSub}s',
+                              _timerModifierValueSub > 59
+                                  ? '-${changeDurationFromSecondsToMinutes(_timerModifierValueSub)}'
+                                  : '-${_timerModifierValueSub}s',
                               style: const TextStyle(fontSize: 20)),
                         ),
                       ),
@@ -427,6 +435,8 @@ class _MyAppState extends State<MyApp> {
                                 audio: _audioPlayer,
                                 workTime: _workTime,
                                 restTime: _restTime,
+                                timeModAdd: _timerModifierValueAdd,
+                                timeModSub: _timerModifierValueSub,
                               ),
                             );
                           },
@@ -435,6 +445,7 @@ class _MyAppState extends State<MyApp> {
                             resetTimer();
                           }
                           setState(() {
+                            updateSettingsFromMemory();
                             _controller.updateWorkoutMode(appInTimerModeDefault);
                           });
                         });
@@ -458,7 +469,7 @@ class _MyAppState extends State<MyApp> {
                             // set the timer up to restart on the next press
                             _timerButtonRestart = false;
                             // Reassign value in-case setting were saved
-                            _timerModifierValueAdd = defaultTimeModifyValueAdd;
+                            // _timerModifierValueAdd = _timeModAdd;
 
                             var desiredTime = _controller
                                 .setDuration(_duration, _timerModifierValueAdd)
@@ -480,9 +491,9 @@ class _MyAppState extends State<MyApp> {
                             backgroundColor: secondaryAccentColor,
                           ),
                           child: Text(
-                              defaultTimeModifyValueAdd > 59
-                                  ? '+${changeDurationFromSecondsToMinutes(defaultTimeModifyValueAdd)}'
-                                  : '+${defaultTimeModifyValueAdd}s',
+                              _timerModifierValueAdd > 59
+                                  ? '+${changeDurationFromSecondsToMinutes(_timerModifierValueAdd)}'
+                                  : '+${_timerModifierValueAdd}s',
                               style: const TextStyle(fontSize: 20)),
                         ),
                       ),

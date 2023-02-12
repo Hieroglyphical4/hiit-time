@@ -133,7 +133,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         _currentDuration = _desiredTime;
       }
       setState(() {
-        // TODO Have 3 separate checks on 3-2-1 instead of lumping audio into one
+        // Update: 3 separate checks on 3-2-1 instead of lumping audio into one
         if (_currentDuration == 3 && widget.isRunning && threeTwoOneCountdownEnabled) {
           _audioPlayer.setVolume(defaultVolume);
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
