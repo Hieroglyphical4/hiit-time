@@ -18,11 +18,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
       FutureBuilder(
-        future:getDuration(),
+        future:getSavedUserSettings(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            // Assemble data:
+            int returnedWorkTime = int.parse(snapshot.data!['workDuration']);
+            int returnedRestTime = int.parse(snapshot.data!['restDuration']);
+
             return MaterialApp(
-                home: SettingsMenu(workTime: snapshot.data)
+                home: SettingsMenu(
+                    workTime: returnedWorkTime,
+                    restTime: returnedRestTime
+                )
             );
           } else {
             return Container();
@@ -35,11 +42,13 @@ void main() async {
 class SettingsMenu extends StatefulWidget {
   final audio;
   final int? workTime;
+  final int? restTime;
 
   const SettingsMenu({
     Key? key,
     this.audio,
     this.workTime,
+    this.restTime,
   }) : super(key: key);
 
   @override
@@ -49,6 +58,7 @@ class SettingsMenu extends StatefulWidget {
 class _SettingsMenuState extends State<SettingsMenu> {
   final _formKey = GlobalKey<FormState>();
   late int _workTime;
+  late int _restTime;
   bool _settingsChanged = false;
   bool _restSettingChanged = false;
   bool _workSettingChanged = false;
@@ -59,6 +69,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
   void initState() {
     super.initState();
     _workTime = widget.workTime ?? defaultWorkDuration;
+    _restTime = widget.restTime ?? defaultRestDuration;
   }
 
   void recordSettingsChanged(String setting) {
@@ -293,15 +304,11 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     keyboardType: TextInputType.number,
                                     onChanged: (value) {
                                       if (value != '') {
-                                        print("Inside Value Guy\n");
-                                        print(value);
                                         recordSettingsChanged('rest');
                                         if (value.length > 2) {
                                           // Prevent user from pushing 0 into minute section
                                           if (value[0] == '0') {
                                             value = value.substring(1,3);
-                                            print("new Value\n");
-                                            print(value);
                                           }
 
                                           restTextEditController.text = formatDuration(value);
@@ -322,10 +329,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                           ?.unfocus();
                                     },
                                     decoration: InputDecoration(
-                                      hintText: defaultRestDuration > 59
+                                      hintText: _restTime > 59
                                           ? changeDurationFromSecondsToMinutes(
-                                          defaultRestDuration)
-                                          : defaultRestDuration.toString(),
+                                          _restTime)
+                                          : _restTime.toString(),
                                       hintStyle: TextStyle(
                                         fontSize: 30,
                                         color: appInTimerModeDefault
@@ -698,19 +705,22 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       // Check for Changes to Rest Time
                                       if (_desiredRestTimeDuration != '') {
                                         _changesRequiringRestartOccured = true;
-                                        defaultRestDuration = int.parse(_desiredRestTimeDuration);
+                                        _restTime = int.parse(_desiredRestTimeDuration);
                                         // Prevent errors from numbers above 59:59
-                                        if (defaultRestDuration > 5959) {
-                                          defaultRestDuration = 5959;
+                                        if (_restTime > 5959) {
+                                          _restTime = 5959;
                                         }
                                         if (_desiredRestTimeDuration.length > 2) {
                                           var timeFormatted = formatDuration(
-                                              defaultRestDuration.toString());
+                                              _restTime.toString());
                                           var timeInSeconds =
                                               convertMinutesToSeconds(
                                                   timeFormatted);
-                                          defaultRestDuration = timeInSeconds;
+                                          _restTime = timeInSeconds;
                                         }
+                                        // Save the Stored Time for next Startup
+                                        // Method lives in settings.dart
+                                        setRestDuration(_restTime);
                                       }
 
                                       // Check for Changes to Work Time
@@ -734,7 +744,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         }
                                         // Save the Stored Time for next Startup
                                         // Method lives in settings.dart
-                                        setDuration(_workTime);
+                                        setWorkDuration(_workTime);
                                       }
 
                                       // Check for Changes to Subtract Modifier

@@ -12,11 +12,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     FutureBuilder(
-      future:getDuration(),
+      future:getSavedUserSettings(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          // Assemble user settings:
+          int returnedWorkTime = int.parse(snapshot.data!['workDuration']);
+          int returnedRestTime = int.parse(snapshot.data!['restDuration']);
+
           return MaterialApp(
-            home: MyApp(duration: snapshot.data),
+            home: MyApp(
+                workDuration: returnedWorkTime,
+                restDuration: returnedRestTime
+            ),
           );
         } else {
           return Container();
@@ -27,11 +34,13 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  var duration;
+  var workDuration;
+  var restDuration;
 
   MyApp({
     Key? key,
-    this.duration
+    this.workDuration,
+    this.restDuration
   }) : super(key: key);
 
   @override
@@ -52,29 +61,33 @@ class _MyAppState extends State<MyApp> {
   final _audioPlayer = AudioPlayer();
 
   var _workTime = defaultWorkDuration; // Value displayed in settingsMenu
+  var _restTime = defaultRestDuration; // Value displayed in settingsMenu
 
   @override
   void initState() {
     super.initState();
-    _duration = widget.duration ?? defaultWorkDuration;
+    _duration = widget.workDuration ?? defaultWorkDuration;
+    _restDuration = widget.restDuration ?? defaultRestDuration;
   }
 
   // Update the value to be displayed in settings menu from
-  Future<void> updateWorkTime() async {
-    final prefs = await SharedPreferences.getInstance();
+  Future<void> updateSettingsFromMemory() async {
+    final settings = await getSavedUserSettings();
 
     setState(() {
-      _workTime = prefs.getInt('duration') ?? defaultWorkDuration;
+      _workTime = int.parse(settings['workDuration']);
+      _restTime = int.parse(settings['restDuration']);
     });
   }
 
   Future<void> resetTimer() async {
-    final prefs = await SharedPreferences.getInstance();
+    final settings = await getSavedUserSettings();
+    // final prefs = await SharedPreferences.getInstance();
 
     _intervalLap = 1;
     _isRunning = false;
-    _duration = prefs.getInt('duration') ?? defaultWorkDuration;
-    _restDuration = defaultRestDuration;
+    _duration = int.parse(settings['workDuration']);
+    _restDuration = int.parse(settings['restDuration']);
     _timerModifierValueAdd = defaultTimeModifyValueAdd;
     _timerModifierValueSub = defaultTimeModifyValueSub;
 
@@ -92,7 +105,9 @@ class _MyAppState extends State<MyApp> {
 
   // Change timer from Rest Mode to Work Mode and Vice Versa
   Future<void> flipIntervalTimer(bool restFlip) async {
-    final prefs = await SharedPreferences.getInstance();
+    final settings = await getSavedUserSettings();
+    final int savedWorkDuration = int.parse(settings['workDuration']);
+    final int savedRestDuration = int.parse(settings['restDuration']);
 
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
@@ -100,15 +115,15 @@ class _MyAppState extends State<MyApp> {
       if (!appMutedDefault && modeSwitchAlertEnabled) {
         _audioPlayer.play(AssetSource('sounds/Amplified/Rest-Voice-salli-Amped2.mp3'));
       }
-      _duration = defaultRestDuration;
-      _restDuration = prefs.getInt('duration') ?? defaultWorkDuration;
+      _duration = savedRestDuration;
+      _restDuration = savedWorkDuration;
     } else {
       _audioPlayer.setVolume(defaultVolume);
       if (!appMutedDefault && modeSwitchAlertEnabled) {
         _audioPlayer.play(AssetSource('sounds/Amplified/Work-Voice-salli-Amped2.mp3'));
       }
-      _duration = prefs.getInt('duration') ?? defaultWorkDuration;
-      _restDuration = defaultRestDuration;
+      _duration = savedWorkDuration;
+      _restDuration = savedRestDuration;
       _intervalLap++;
     }
 
@@ -391,7 +406,7 @@ class _MyAppState extends State<MyApp> {
                         HapticFeedback.mediumImpact();
 
                         // Update settings from memory
-                        updateWorkTime();
+                        updateSettingsFromMemory();
 
                         // Launch settings menu
                         showGeneralDialog(
@@ -411,6 +426,7 @@ class _MyAppState extends State<MyApp> {
                                 key: UniqueKey(),
                                 audio: _audioPlayer,
                                 workTime: _workTime,
+                                restTime: _restTime,
                               ),
                             );
                           },

@@ -17,15 +17,16 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
   bool _displayAudioSettings = false;
   bool _displayThemesSettings = false;
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: secondaryColor,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Advanced Settings'),
+        title: const Text('Advanced Settings'),
           leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
           Navigator.pop(context);
           },
@@ -39,7 +40,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
               // direction: Axis.vertical,
               children: [
                 // Body of Settings!
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
 
                 ///////////////////////////
                 // Audio Settings Button
@@ -59,12 +60,12 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: secondaryAccentColor,
                         // shape: Rectangle(),
-                        padding: EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(4),
                       ),
                       child: Text(_displayAudioSettings
                           ? 'Audio Settings'
                           : '- Audio Settings -',
-                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1),
+                          style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1),
                           textAlign: TextAlign.center
                       )
                   )
@@ -72,7 +73,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 
                 // Determine if Audio Settings Widget should show:
                 _displayAudioSettings
-                  ? AudioSettingsWidget()
+                  ? const AudioSettingsWidget()
                   : Container(),
 
                 const SizedBox(height: 20),
@@ -95,16 +96,16 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: secondaryAccentColor,
                           // shape: Rectangle(),
-                          padding: EdgeInsets.all(4),
+                          padding: const EdgeInsets.all(4),
                         ),
                         child: Text(_displayThemesSettings
                             ? 'Themes'
                             : '- Themes -',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1),
+                            style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1),
                             textAlign: TextAlign.center))),
                 // Determine if Themes Widget should show:
                 _displayThemesSettings
-                  ? ThemeSettingsWidget()
+                  ? const ThemeSettingsWidget()
                   : Container(),
 
                 const SizedBox(height: 200),
@@ -134,7 +135,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
       Text('Hello World!',
         style: TextStyle(fontFamily: 'AstroSpace', fontSize: 40, color: primaryAccentColor, height: 1.1),
         textAlign: TextAlign.center),
-      SizedBox(height: 400,),
+      const SizedBox(height: 400,),
     ]);
   }
 }
@@ -176,12 +177,12 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: secondaryAccentColor,
                   // shape: Rectangle(),
-                  padding: EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(4),
                 ),
                 child: Text(_displayTimerAudioSettings
                     ? 'Timer'
                     : '- Timer -',
-                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1),
+                    style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1),
                     textAlign: TextAlign.center
                 )
             )
@@ -189,7 +190,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
 
         // Determine if Timer Audio Submenu Widget should show:
         _displayTimerAudioSettings
-            ? TimerAudioSettingsWidget()
+            ? const TimerAudioSettingsWidget()
             : Container(),
 
         const SizedBox(height: 20),
@@ -211,12 +212,12 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: secondaryAccentColor,
                   // shape: Rectangle(),
-                  padding: EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(4),
                 ),
                 child: Text(_displayButtonAudioSettings
                     ? 'Buttons'
                     : '- Buttons -',
-                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1),
+                    style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1),
                     textAlign: TextAlign.center
                 )
             )
@@ -224,7 +225,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
 
         // Determine if Timer Audio Submenu Widget should show:
         _displayButtonAudioSettings
-            ? ButtonAudioSettingsWidget()
+            ? const ButtonAudioSettingsWidget()
             : Container(),
 
         const SizedBox(height: 20),
@@ -245,7 +246,7 @@ class TimerAudioSettingsWidget extends StatefulWidget {
 }
 
 class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
-  double _textFontSize = 16;
+  final double _textFontSize = 16;
 
   void _onTimerAlarmChanged(bool value) {
     setState(() {
@@ -310,7 +311,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                       height: 1.1),
                   textAlign: TextAlign.center),
 
-              Spacer(),
+              const Spacer(),
 
               Switch(
                 value: timerAlarmEnabled,
@@ -340,7 +341,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                       height: 1.1),
                   textAlign: TextAlign.center),
 
-              Spacer(),
+              const Spacer(),
 
               Switch(
                 value: threeTwoOneCountdownEnabled,
@@ -370,7 +371,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                       height: 1.1),
                   textAlign: TextAlign.center),
 
-              Spacer(),
+              const Spacer(),
 
               Switch(
                 value: tenSecondWarningEnabled,
@@ -399,7 +400,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                       height: 1.1),
                   textAlign: TextAlign.center),
 
-              Spacer(),
+              const Spacer(),
 
               Switch(
                 value: modeSwitchAlertEnabled,
@@ -428,7 +429,7 @@ class ButtonAudioSettingsWidget extends StatefulWidget {
 }
 
 class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
-  double _textFontSize = 16;
+  final double _textFontSize = 16;
 
   void _onSaveButtonAudioChanged(bool value) {
     setState(() {
@@ -493,7 +494,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                       height: 1.1),
                   textAlign: TextAlign.center),
 
-              Spacer(),
+              const Spacer(),
 
               Switch(
                 value: restartButtonAudioEnabled,
@@ -523,7 +524,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                       height: 1.1),
                   textAlign: TextAlign.center),
 
-              Spacer(),
+              const Spacer(),
 
               Switch(
                 value: saveButtonAudioEnabled,
@@ -553,7 +554,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                       height: 1.1),
                   textAlign: TextAlign.center),
 
-              Spacer(),
+              const Spacer(),
 
               Switch(
                 value: cancelButtonAudioEnabled,
@@ -584,7 +585,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                       height: 1.1),
                   textAlign: TextAlign.center),
 
-              Spacer(),
+              const Spacer(),
 
               Switch(
                 value: switchButtonAudioEnabled,

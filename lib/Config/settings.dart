@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Get Previously Stored Settings:
-Future<int> getDuration() async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getInt('duration') ?? 45; // 45 is default value
+// Get Settings the User Previously Stored:
+Future<Map<String, dynamic>> getSavedUserSettings() async {
+  final prefs = await SharedPreferences.getInstance(); // Access Settings from Memory
+
+  // Create string map to hold Settings
+  Map<String, dynamic> settings = {};
+  settings['workDuration'] = (prefs.getInt('workDuration') ?? defaultWorkDuration).toString();
+  settings['restDuration'] = (prefs.getInt('restDuration') ?? defaultRestDuration).toString();
+
+  return settings;
 }
 
 // Method to update Start Time
-Future<void> setDuration(int value) async {
+Future<void> setWorkDuration(int value) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setInt('duration', value);
+  prefs.setInt('workDuration', value);
+}
+
+// Method to update Start Time
+Future<void> setRestDuration(int value) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setInt('restDuration', value);
 }
 
 
