@@ -20,13 +20,15 @@ void main() async {
           int returnedRestTime = int.parse(snapshot.data!['restDuration']);
           int returnedTimeModAdd = int.parse(snapshot.data!['timeModifyValueAdd']);
           int returnedTimeModSub = int.parse(snapshot.data!['timeModifyValueSub']);
+          double returnedAppVolume = double.parse(snapshot.data!['appVolume']);
 
           return MaterialApp(
             home: MyApp(
               workDuration: returnedWorkTime,
               restDuration: returnedRestTime,
               timeModAdd: returnedTimeModAdd,
-              timeModSub: returnedTimeModSub
+              timeModSub: returnedTimeModSub,
+              appVolume: returnedAppVolume,
             ),
           );
         } else {
@@ -42,6 +44,7 @@ class MyApp extends StatefulWidget {
   var restDuration;
   var timeModAdd;
   var timeModSub;
+  var appVolume;
 
   MyApp({
     Key? key,
@@ -49,6 +52,7 @@ class MyApp extends StatefulWidget {
     this.restDuration,
     this.timeModAdd,
     this.timeModSub,
+    this.appVolume,
   }) : super(key: key);
 
   @override
@@ -67,6 +71,7 @@ class _MyAppState extends State<MyApp> {
   var _orientation = 0;
   var _intervalLap = 1;
   final _audioPlayer = AudioPlayer();
+  var _appVolume = defaultVolume;
 
   // Values being passed to Settings Menu
   var _workTime = defaultWorkDuration;
@@ -79,9 +84,11 @@ class _MyAppState extends State<MyApp> {
     _restDuration = widget.restDuration ?? defaultRestDuration;
     _timerModifierValueAdd = widget.timeModAdd ?? defaultTimeModifyValueAdd;
     _timerModifierValueSub = widget.timeModSub ?? defaultTimeModifyValueSub;
+    _appVolume = widget.appVolume ?? defaultVolume;
+    _audioPlayer.setVolume(_appVolume);
   }
 
-  // Update the value to be displayed in settings menu from
+  // Update values to be displayed in settings menu using previous stored settings
   Future<void> updateSettingsFromMemory() async {
     final settings = await getSavedUserSettings();
 
@@ -90,6 +97,8 @@ class _MyAppState extends State<MyApp> {
       _restTime = int.parse(settings['restDuration']);
       _timerModifierValueAdd = int.parse(settings['timeModifyValueAdd']);
       _timerModifierValueSub = int.parse(settings['timeModifyValueSub']);
+      _appVolume = double.parse(settings['appVolume']);
+      _audioPlayer.setVolume(_appVolume);
     });
   }
 
@@ -121,14 +130,12 @@ class _MyAppState extends State<MyApp> {
 
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
-      _audioPlayer.setVolume(defaultVolume);
       if (!appMutedDefault && modeSwitchAlertEnabled) {
         _audioPlayer.play(AssetSource('sounds/Amplified/Rest-Voice-salli-Amped2.mp3'));
       }
       _duration = savedRestDuration;
       _restDuration = savedWorkDuration;
     } else {
-      _audioPlayer.setVolume(defaultVolume);
       if (!appMutedDefault && modeSwitchAlertEnabled) {
         _audioPlayer.play(AssetSource('sounds/Amplified/Work-Voice-salli-Amped2.mp3'));
       }
@@ -292,6 +299,7 @@ class _MyAppState extends State<MyApp> {
                           : Colors.blueGrey.shade700
                         : Colors.blueGrey.shade700,
                         initialPosition: 0,
+                        audioPlayer: _audioPlayer,
                         isRunning: _isRunning,
                         duration: _duration,
                         restDuration: _restDuration,
@@ -337,7 +345,6 @@ class _MyAppState extends State<MyApp> {
                               if (!appMutedDefault && timerAlarmEnabled) {
                                 // _audioPlayer.play(AssetSource('sounds/alarm-beep-beep-1.mp3'));
                                 // _audioPlayer.play(AssetSource('sounds/alarm-standard-1.mp3'));
-                                _audioPlayer.setVolume(defaultVolume + .1);
                                 _audioPlayer.play(AssetSource('sounds/Amplified/PianoAlarmAmped.mp3'));
                                 _audioPlayer.setReleaseMode(ReleaseMode.loop);
                               }
@@ -437,6 +444,7 @@ class _MyAppState extends State<MyApp> {
                                 restTime: _restTime,
                                 timeModAdd: _timerModifierValueAdd,
                                 timeModSub: _timerModifierValueSub,
+                                appVolume: _appVolume,
                               ),
                             );
                           },
@@ -512,7 +520,6 @@ class _MyAppState extends State<MyApp> {
                   child: ElevatedButton(
                       onPressed: () => setState(() {
                             HapticFeedback.lightImpact();
-                            _audioPlayer.setVolume(defaultVolume);
                             if (!appMutedDefault && restartButtonAudioEnabled) {
                               _audioPlayer.play(AssetSource('sounds/Selection1Reversed.mp3'));
                             }

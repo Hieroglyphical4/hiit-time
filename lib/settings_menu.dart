@@ -26,6 +26,7 @@ class SettingsMenu extends StatefulWidget {
   final int? restTime;
   final int? timeModAdd;
   final int? timeModSub;
+  final double? appVolume;
 
   const SettingsMenu({
     Key? key,
@@ -34,6 +35,7 @@ class SettingsMenu extends StatefulWidget {
     this.restTime,
     this.timeModAdd,
     this.timeModSub,
+    this.appVolume,
   }) : super(key: key);
 
   @override
@@ -46,6 +48,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
   late int _restTime;
   late int _timeModAdd;
   late int _timeModSub;
+  late double _appVolume;
   bool _settingsChanged = false;
   bool _restSettingChanged = false;
   bool _workSettingChanged = false;
@@ -59,6 +62,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
     _restTime = widget.restTime ?? defaultRestDuration;
     _timeModAdd = widget.timeModAdd ?? defaultTimeModifyValueAdd;
     _timeModSub = widget.timeModSub ?? defaultTimeModifyValueSub;
+    _appVolume = widget.appVolume ?? defaultVolume;
   }
 
   void recordSettingsChanged(String setting) {
@@ -129,14 +133,14 @@ class _SettingsMenuState extends State<SettingsMenu> {
   void _onTimerModeChanged(bool value) {
     setState(() {
       if (appInTimerModeDefault) {
-        widget.audio.setVolume(defaultVolume);
+        // widget.audio.setVolume(_appVolume);
         widget.audio.setReleaseMode(ReleaseMode.stop);
         if (!appMutedDefault && switchButtonAudioEnabled) {
           widget.audio.play(AssetSource('sounds/SwitchAndBeep1.mp3'));
       }
         appInTimerModeDefault = false;
       } else {
-        widget.audio.setVolume(defaultVolume);
+        // widget.audio.setVolume(_appVolume);
         widget.audio.setReleaseMode(ReleaseMode.stop);
         if (!appMutedDefault && switchButtonAudioEnabled) {
           widget.audio.play(AssetSource('sounds/Switch1.mp3'));
@@ -510,11 +514,15 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                 child: FractionallySizedBox(
                                   widthFactor: .9,
                                     child: Slider(
-                                      value: defaultVolume,
+                                      value: _appVolume,
                                       onChanged: (newValue) {
                                         setState(() {
-                                          defaultVolume = newValue;
-                                          widget.audio.setVolume(defaultVolume);
+                                          _appVolume = newValue;
+                                          widget.audio.setVolume(_appVolume);
+
+                                          // Save the Stored Volume for next Startup
+                                          // Method lives in settings.dart
+                                          setAppVolume(_appVolume);
                                         });
                                       },
                                     )
@@ -679,7 +687,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     icon: const Icon(Icons.check_circle),
                                     onPressed: _settingsChanged
                                         ? () {
-                                      widget.audio.setVolume(defaultVolume);
+                                      // widget.audio.setVolume(_appVolume);
                                       widget.audio.setReleaseMode(ReleaseMode.stop);
                                       if (!appMutedDefault && saveButtonAudioEnabled) {
                                         widget.audio.play(AssetSource('sounds/Correct1.mp3'));
@@ -810,7 +818,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     onPressed: () {
                                       HapticFeedback.mediumImpact();
                                       if (_settingsChanged) {
-                                        widget.audio.setVolume(defaultVolume);
+                                        // widget.audio.setVolume(_appVolume);
                                         if (!appMutedDefault && cancelButtonAudioEnabled) {
                                           widget.audio.play(AssetSource('sounds/Woosh-spaced.mp3'));
                                           widget.audio.setReleaseMode(ReleaseMode.stop);

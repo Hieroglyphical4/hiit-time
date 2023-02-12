@@ -11,6 +11,7 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   settings['restDuration'] = (prefs.getInt('restDuration') ?? defaultRestDuration).toString();
   settings['timeModifyValueAdd'] = (prefs.getInt('timeModifyValueAdd') ?? defaultTimeModifyValueAdd).toString();
   settings['timeModifyValueSub'] = (prefs.getInt('timeModifyValueSub') ?? defaultTimeModifyValueSub).toString();
+  settings['appVolume'] = (prefs.getDouble('appVolume') ?? defaultVolume).toString();
 
   return settings;
 }
@@ -39,6 +40,12 @@ Future<void> setTimeModifyValueSub(int value) async {
   prefs.setInt('timeModifyValueSub', value);
 }
 
+// Method to update Time Modifier for Subtraction Button
+Future<void> setAppVolume(double value) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setDouble('appVolume', value);
+}
+
 // TODO Make reusable setter/getter for booleans
 
 // General Settings:
@@ -49,6 +56,7 @@ int defaultTimeModifyValueAdd = 15;
 int defaultTimeModifyValueSub = 15;
 
 double defaultVolume = 0.5;
+
 bool appInTimerModeDefault = true;
 bool appInDarkModeDefault = true;
 bool appMutedDefault = false;

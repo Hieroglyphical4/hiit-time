@@ -57,6 +57,9 @@ class CountDownProgressIndicator extends StatefulWidget {
   // Keeps track and display current lap, resets on Timer reset
   var intervalLap;
 
+  // Manages audio output
+  var audioPlayer;
+
   // ignore: public_member_api_docs
   CountDownProgressIndicator({
     Key? key,
@@ -66,6 +69,7 @@ class CountDownProgressIndicator extends StatefulWidget {
     required this.valueColor,
     this.timerInRestMode,
     this.controller,
+    this.audioPlayer,
     this.isRunning,
     this.onComplete,
     this.timeTextStyle,
@@ -88,6 +92,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     with TickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
+  late AudioPlayer _audioPlayer;
   var _timerText = 'Tap to Start';
   var _currentDuration;
   var _desiredTime = 30;
@@ -96,7 +101,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   late var _timerSize =
       widget.duration > 60 ? _minuteTimerSize : _secondTimerSize;
 
-  final _audioPlayer = AudioPlayer();
+
 
   @override
   void dispose() {
@@ -107,6 +112,8 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   @override
   void initState() {
     super.initState();
+
+    _audioPlayer = widget.audioPlayer;
 
     _animationController = AnimationController(
       vsync: this,
@@ -135,7 +142,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
       setState(() {
         // Update: 3 separate checks on 3-2-1 instead of lumping audio into one
         if (_currentDuration == 3 && widget.isRunning && threeTwoOneCountdownEnabled) {
-          _audioPlayer.setVolume(defaultVolume);
+          // _audioPlayer.setVolume(defaultVolume);
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           !appMutedDefault
               ? _audioPlayer.play(
@@ -143,7 +150,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
               : null;
         }
         if (_currentDuration == 2 && widget.isRunning && threeTwoOneCountdownEnabled) {
-          _audioPlayer.setVolume(defaultVolume);
+          // _audioPlayer.setVolume(defaultVolume);
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           !appMutedDefault
               ? _audioPlayer.play(
@@ -151,7 +158,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
               : null;
         }
         if (_currentDuration == 1 && widget.isRunning && threeTwoOneCountdownEnabled) {
-          _audioPlayer.setVolume(defaultVolume);
+          // _audioPlayer.setVolume(defaultVolume);
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           !appMutedDefault
               ? _audioPlayer.play(
@@ -159,7 +166,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
               : null;
         }
         if (_currentDuration == 10 && widget.isRunning && tenSecondWarningEnabled) {
-          _audioPlayer.setVolume(defaultVolume);
+          // _audioPlayer.setVolume(defaultVolume);
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           !appMutedDefault
               ? _audioPlayer.play(AssetSource('sounds/Amplified/JoeyTenAmped2.mp3'))
