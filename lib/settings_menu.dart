@@ -58,7 +58,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
   @override
   void initState() {
     super.initState();
-    _workTime = widget.workTime ?? setStartTime;
+    _workTime = widget.workTime ?? defaultWorkDuration;
   }
 
   void recordSettingsChanged(String setting) {
@@ -128,30 +128,30 @@ class _SettingsMenuState extends State<SettingsMenu> {
 
   void _onTimerModeChanged(bool value) {
     setState(() {
-      if (appInTimerMode) {
-        widget.audio.setVolume(setVolume);
+      if (appInTimerModeDefault) {
+        widget.audio.setVolume(defaultVolume);
         widget.audio.setReleaseMode(ReleaseMode.stop);
-        if (!appMuted && switchButtonAudioEnabled) {
+        if (!appMutedDefault && switchButtonAudioEnabled) {
           widget.audio.play(AssetSource('sounds/SwitchAndBeep1.mp3'));
       }
-        appInTimerMode = false;
+        appInTimerModeDefault = false;
       } else {
-        widget.audio.setVolume(setVolume);
+        widget.audio.setVolume(defaultVolume);
         widget.audio.setReleaseMode(ReleaseMode.stop);
-        if (!appMuted && switchButtonAudioEnabled) {
+        if (!appMutedDefault && switchButtonAudioEnabled) {
           widget.audio.play(AssetSource('sounds/Switch1.mp3'));
         }
-        appInTimerMode = true;
+        appInTimerModeDefault = true;
       }
     });
   }
 
   void _onMuteModeChanged () {
     setState(() {
-      if (appMuted) {
-        appMuted = false;
+      if (appMutedDefault) {
+        appMutedDefault = false;
       } else {
-        appMuted = true;
+        appMutedDefault = true;
         widget.audio.stop();
       }
     });
@@ -159,14 +159,14 @@ class _SettingsMenuState extends State<SettingsMenu> {
 
   void _onDarkModeChanged() {
     setState(() {
-      if (appInDarkMode) {
-        appInDarkMode = false;
+      if (appInDarkModeDefault) {
+        appInDarkModeDefault = false;
         primaryColor = Colors.black;
         secondaryColor = Colors.white;
         primaryAccentColor = Colors.blue.shade400;
         secondaryAccentColor = Colors.blueGrey;
       } else {
-        appInDarkMode = true;
+        appInDarkModeDefault = true;
         primaryColor = Colors.white;
         secondaryColor = Colors.grey.shade900;
         primaryAccentColor = Colors.blue.shade400;
@@ -322,13 +322,13 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                           ?.unfocus();
                                     },
                                     decoration: InputDecoration(
-                                      hintText: setRestDuration > 59
+                                      hintText: defaultRestDuration > 59
                                           ? changeDurationFromSecondsToMinutes(
-                                          setRestDuration)
-                                          : setRestDuration.toString(),
+                                          defaultRestDuration)
+                                          : defaultRestDuration.toString(),
                                       hintStyle: TextStyle(
                                         fontSize: 30,
-                                        color: appInTimerMode
+                                        color: appInTimerModeDefault
                                             ? Colors.grey
                                             : primaryColor,
                                       ),
@@ -337,7 +337,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         borderSide: BorderSide(
                                           color: _restSettingChanged
                                               ? primaryAccentColor
-                                              : appInTimerMode
+                                              : appInTimerModeDefault
                                               ? Colors.grey
                                               : primaryColor,
                                           width: 3,
@@ -361,7 +361,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                 Text(
                                   'Rest Time',
                                   style: TextStyle(
-                                    color: appInTimerMode
+                                    color: appInTimerModeDefault
                                         ? Colors.grey
                                         : primaryColor,
                                     fontSize: 18,
@@ -470,7 +470,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                             'Timer Mode',
                             style: TextStyle(
                               color:
-                                  appInTimerMode ? primaryColor : Colors.grey,
+                              appInTimerModeDefault ? primaryColor : Colors.grey,
                               fontSize: 18,
                               fontFamily: 'AstroSpace',
                             ),
@@ -479,13 +479,13 @@ class _SettingsMenuState extends State<SettingsMenu> {
                           // Switch/Toggle Between App Modes
                           ////////////////////////////////////
                           Switch(
-                            value: !appInTimerMode,
+                            value: !appInTimerModeDefault,
                             onChanged: _onTimerModeChanged,
                           ),
                           Text(
                             'Interval Mode',
                             style: TextStyle(
-                              color: appInTimerMode
+                              color: appInTimerModeDefault
                                   ? Colors.grey
                                   : primaryAccentColor,
                               fontSize: 18,
@@ -498,7 +498,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       /////////////////
                       // Volume Slider
                       /////////////////
-                      appMuted
+                      appMutedDefault
                           ? const SizedBox(height: 68)
                           : Column(
                             children: [
@@ -514,11 +514,11 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                 child: FractionallySizedBox(
                                   widthFactor: .9,
                                     child: Slider(
-                                      value: setVolume,
+                                      value: defaultVolume,
                                       onChanged: (newValue) {
                                         setState(() {
-                                          setVolume = newValue;
-                                          widget.audio.setVolume(setVolume);
+                                          defaultVolume = newValue;
+                                          widget.audio.setVolume(defaultVolume);
                                         });
                                       },
                                     )
@@ -585,10 +585,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                             ?.unfocus();
                                       },
                                       decoration: InputDecoration(
-                                        hintText: setTimeModifyValueSub > 59
+                                        hintText: defaultTimeModifyValueSub > 59
                                             ? changeDurationFromSecondsToMinutes(
-                                                setTimeModifyValueSub)
-                                            : setTimeModifyValueSub.toString(),
+                                            defaultTimeModifyValueSub)
+                                            : defaultTimeModifyValueSub.toString(),
                                         hintStyle: TextStyle(
                                             fontSize: 20, color: primaryColor),
                                         enabledBorder: OutlineInputBorder(
@@ -634,7 +634,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   IconButton(
                                     iconSize: 45,
                                     color: primaryColor,
-                                    icon: appInDarkMode
+                                    icon: appInDarkModeDefault
                                       ? Icon(Icons.dark_mode)
                                       : Icon(Icons.light_mode),
                                     onPressed: () {
@@ -645,7 +645,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
 
                                   // Dark Mode/Light Mode Text Description
                                   Text(
-                                    appInDarkMode
+                                    appInDarkModeDefault
                                       ? 'Dark'
                                       : 'Light',
                                     style: TextStyle(
@@ -683,9 +683,9 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     icon: const Icon(Icons.check_circle),
                                     onPressed: _settingsChanged
                                         ? () {
-                                      widget.audio.setVolume(setVolume);
+                                      widget.audio.setVolume(defaultVolume);
                                       widget.audio.setReleaseMode(ReleaseMode.stop);
-                                      if (!appMuted && saveButtonAudioEnabled) {
+                                      if (!appMutedDefault && saveButtonAudioEnabled) {
                                         widget.audio.play(AssetSource('sounds/Correct1.mp3'));
                                         widget.audio.setReleaseMode(ReleaseMode.stop);
                                       }
@@ -698,18 +698,18 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       // Check for Changes to Rest Time
                                       if (_desiredRestTimeDuration != '') {
                                         _changesRequiringRestartOccured = true;
-                                        setRestDuration = int.parse(_desiredRestTimeDuration);
+                                        defaultRestDuration = int.parse(_desiredRestTimeDuration);
                                         // Prevent errors from numbers above 59:59
-                                        if (setRestDuration > 5959) {
-                                          setRestDuration = 5959;
+                                        if (defaultRestDuration > 5959) {
+                                          defaultRestDuration = 5959;
                                         }
                                         if (_desiredRestTimeDuration.length > 2) {
                                           var timeFormatted = formatDuration(
-                                              setRestDuration.toString());
+                                              defaultRestDuration.toString());
                                           var timeInSeconds =
                                               convertMinutesToSeconds(
                                                   timeFormatted);
-                                          setRestDuration = timeInSeconds;
+                                          defaultRestDuration = timeInSeconds;
                                         }
                                       }
 
@@ -739,38 +739,38 @@ class _SettingsMenuState extends State<SettingsMenu> {
 
                                       // Check for Changes to Subtract Modifier
                                       if (_desiredSubTimeMod != '') {
-                                        setTimeModifyValueSub =
+                                        defaultTimeModifyValueSub =
                                             int.parse(_desiredSubTimeMod);
-                                        if (setTimeModifyValueSub > 5959) {
-                                          setTimeModifyValueSub = 5959;
+                                        if (defaultTimeModifyValueSub > 5959) {
+                                          defaultTimeModifyValueSub = 5959;
                                         }
                                         if (_desiredSubTimeMod.length > 2) {
                                           var timeFormatted = formatDuration(
-                                              setTimeModifyValueSub
+                                              defaultTimeModifyValueSub
                                                   .toString());
                                           var timeInSeconds =
                                               convertMinutesToSeconds(
                                                   timeFormatted);
-                                          setTimeModifyValueSub =
+                                          defaultTimeModifyValueSub =
                                               timeInSeconds;
                                         }
                                       }
 
                                       // Check for Changes to Addition Modifier
                                       if (_desiredAddTimeMod != '') {
-                                        setTimeModifyValueAdd =
+                                        defaultTimeModifyValueAdd =
                                             int.parse(_desiredAddTimeMod);
-                                        if (setTimeModifyValueAdd > 5959) {
-                                          setTimeModifyValueAdd = 5959;
+                                        if (defaultTimeModifyValueAdd > 5959) {
+                                          defaultTimeModifyValueAdd = 5959;
                                         }
                                         if (_desiredAddTimeMod.length > 2) {
                                           var timeFormatted = formatDuration(
-                                              setTimeModifyValueAdd
+                                              defaultTimeModifyValueAdd
                                                   .toString());
                                           var timeInSeconds =
                                               convertMinutesToSeconds(
                                                   timeFormatted);
-                                          setTimeModifyValueAdd =
+                                          defaultTimeModifyValueAdd =
                                               timeInSeconds;
                                         }
                                       }
@@ -805,8 +805,8 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     onPressed: () {
                                       HapticFeedback.mediumImpact();
                                       if (_settingsChanged) {
-                                        // widget.audio.setVolume(setVolume);
-                                        if (!appMuted && cancelButtonAudioEnabled) {
+                                        widget.audio.setVolume(defaultVolume);
+                                        if (!appMutedDefault && cancelButtonAudioEnabled) {
                                           widget.audio.play(AssetSource('sounds/Woosh-spaced.mp3'));
                                           widget.audio.setReleaseMode(ReleaseMode.stop);
                                         }
@@ -874,10 +874,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                             ?.unfocus();
                                       },
                                       decoration: InputDecoration(
-                                        hintText: setTimeModifyValueAdd > 59
+                                        hintText: defaultTimeModifyValueAdd > 59
                                             ? changeDurationFromSecondsToMinutes(
-                                                setTimeModifyValueAdd)
-                                            : setTimeModifyValueAdd.toString(),
+                                            defaultTimeModifyValueAdd)
+                                            : defaultTimeModifyValueAdd.toString(),
                                         hintStyle: TextStyle(
                                             fontSize: 20, color: primaryColor),
                                         iconColor: primaryColor,
@@ -925,10 +925,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   ////////////////////////////////
                                   IconButton(
                                     iconSize: 45,
-                                    color: appMuted
+                                    color: appMutedDefault
                                     ? Colors.grey
                                     : primaryColor,
-                                    icon: appMuted
+                                    icon: appMutedDefault
                                       ? Icon(Icons.volume_off)
                                       : Icon(Icons.volume_up),
                                     onPressed: () {
@@ -942,18 +942,18 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     'Sound',
                                     style: TextStyle(
                                       fontFamily: 'AstroSpace',
-                                      color: appMuted
+                                      color: appMutedDefault
                                           ? Colors.grey
                                           : primaryColor,
                                       fontSize: 15,
                                     ),
                                   ),
-                                  Text(appMuted
+                                  Text(appMutedDefault
                                     ? 'Off'
                                     : 'On',
                                     style: TextStyle(
                                       fontFamily: 'AstroSpace',
-                                      color: appMuted
+                                      color: appMutedDefault
                                           ? Colors.grey
                                           : primaryColor,
                                       fontSize: 15,

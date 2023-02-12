@@ -15,14 +15,16 @@ Future<void> setDuration(int value) async {
 
 
 // General Settings:
-int setStartTime = 45;
-int setRestDuration = 30;
-int setTimeModifyValueAdd = 15;
-int setTimeModifyValueSub = 15;
-double setVolume = 0.5;
-bool appInTimerMode = true;
-bool appInDarkMode = true;
-bool appMuted = false;
+int defaultWorkDuration = 45;
+int defaultRestDuration = 30;
+
+int defaultTimeModifyValueAdd = 15;
+int defaultTimeModifyValueSub = 15;
+
+double defaultVolume = 0.5;
+bool appInTimerModeDefault = true;
+bool appInDarkModeDefault = true;
+bool appMutedDefault = false;
 
 // Advanced Menu Settings:
 bool timerAlarmEnabled = true;

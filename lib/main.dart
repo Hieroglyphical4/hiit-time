@@ -41,22 +41,22 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool _isRunning = false;
   final _controller = CountDownController();
-  var _duration = setStartTime;
-  var _restDuration = setRestDuration;
-  var _timerModifierValueAdd = setTimeModifyValueAdd;
-  var _timerModifierValueSub = setTimeModifyValueSub;
+  var _duration = defaultWorkDuration;
+  var _restDuration = defaultRestDuration;
+  var _timerModifierValueAdd = defaultTimeModifyValueAdd;
+  var _timerModifierValueSub = defaultTimeModifyValueSub;
   var _timerButtonRestart = false;
   var _timerInRestMode = false;
   var _orientation = 0;
   var _intervalLap = 1;
   final _audioPlayer = AudioPlayer();
 
-  var _workTime = setStartTime; // Value displayed in settingsMenu
+  var _workTime = defaultWorkDuration; // Value displayed in settingsMenu
 
   @override
   void initState() {
     super.initState();
-    _duration = widget.duration ?? setStartTime;
+    _duration = widget.duration ?? defaultWorkDuration;
   }
 
   // Update the value to be displayed in settings menu from
@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
     final prefs = await SharedPreferences.getInstance();
 
     setState(() {
-      _workTime = prefs.getInt('duration') ?? setStartTime;
+      _workTime = prefs.getInt('duration') ?? defaultWorkDuration;
     });
   }
 
@@ -73,10 +73,10 @@ class _MyAppState extends State<MyApp> {
 
     _intervalLap = 1;
     _isRunning = false;
-    _duration = prefs.getInt('duration') ?? setStartTime;
-    _restDuration = setRestDuration;
-    _timerModifierValueAdd = setTimeModifyValueAdd;
-    _timerModifierValueSub = setTimeModifyValueSub;
+    _duration = prefs.getInt('duration') ?? defaultWorkDuration;
+    _restDuration = defaultRestDuration;
+    _timerModifierValueAdd = defaultTimeModifyValueAdd;
+    _timerModifierValueSub = defaultTimeModifyValueSub;
 
     _controller.restart(
       duration: _duration,
@@ -84,7 +84,7 @@ class _MyAppState extends State<MyApp> {
       restDuration: _restDuration,
     );
     _timerInRestMode = false;
-    _controller.updateWorkoutMode(appInTimerMode);
+    _controller.updateWorkoutMode(appInTimerModeDefault);
     _audioPlayer.setReleaseMode(ReleaseMode.stop);
     _audioPlayer.stop();
     Wakelock.disable();
@@ -96,19 +96,19 @@ class _MyAppState extends State<MyApp> {
 
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
-      _audioPlayer.setVolume(setVolume);
-      if (!appMuted && modeSwitchAlertEnabled) {
+      _audioPlayer.setVolume(defaultVolume);
+      if (!appMutedDefault && modeSwitchAlertEnabled) {
         _audioPlayer.play(AssetSource('sounds/Amplified/Rest-Voice-salli-Amped2.mp3'));
       }
-      _duration = setRestDuration;
-      _restDuration = prefs.getInt('duration') ?? setStartTime;
+      _duration = defaultRestDuration;
+      _restDuration = prefs.getInt('duration') ?? defaultWorkDuration;
     } else {
-      _audioPlayer.setVolume(setVolume);
-      if (!appMuted && modeSwitchAlertEnabled) {
+      _audioPlayer.setVolume(defaultVolume);
+      if (!appMutedDefault && modeSwitchAlertEnabled) {
         _audioPlayer.play(AssetSource('sounds/Amplified/Work-Voice-salli-Amped2.mp3'));
       }
-      _duration = prefs.getInt('duration') ?? setStartTime;
-      _restDuration = setRestDuration;
+      _duration = prefs.getInt('duration') ?? defaultWorkDuration;
+      _restDuration = defaultRestDuration;
       _intervalLap++;
     }
 
@@ -187,7 +187,7 @@ class _MyAppState extends State<MyApp> {
                       foregroundColor:
                           MaterialStateProperty.resolveWith<Color?>(
                         (Set<MaterialState> states) {
-                          if (appInTimerMode) {
+                          if (appInTimerModeDefault) {
                             return primaryColor;
                           }
                           return null; // defer to the defaults
@@ -198,8 +198,8 @@ class _MyAppState extends State<MyApp> {
                       HapticFeedback.mediumImpact();
 
                       setState(() {
-                        appInTimerMode = !appInTimerMode;
-                        _controller.updateWorkoutMode(appInTimerMode);
+                        appInTimerModeDefault = !appInTimerModeDefault;
+                        _controller.updateWorkoutMode(appInTimerModeDefault);
                       });
                     },
                     child: const Text('HIIT Time',
@@ -244,7 +244,7 @@ class _MyAppState extends State<MyApp> {
                             // Timer was running, going into pause mode
                             _controller.pause();
                             // Update timer text
-                            _controller.updateWorkoutMode(appInTimerMode);
+                            _controller.updateWorkoutMode(appInTimerModeDefault);
                             Wakelock.disable();
                           } else {
                             // Timer was paused, turning on
@@ -262,7 +262,7 @@ class _MyAppState extends State<MyApp> {
                         strokeWidth: 18,
                         autostart: false,
                         valueColor: _timerInRestMode
-                        ? appInDarkMode // Color slice showing time passed
+                        ? appInDarkModeDefault // Color slice showing time passed
                           ? primaryColor
                           : Colors.blueGrey.shade700
                         : Colors.blueGrey.shade700,
@@ -271,7 +271,7 @@ class _MyAppState extends State<MyApp> {
                         duration: _duration,
                         restDuration: _restDuration,
                         intervalLap: _intervalLap,
-                        appInTimerMode: appInTimerMode,
+                        appInTimerMode: appInTimerModeDefault,
                         timerInRestMode: _timerInRestMode,
                         timeFormatter: _duration > 59
                             ? (seconds) {
@@ -291,7 +291,7 @@ class _MyAppState extends State<MyApp> {
                           // Code to be executed when the countdown completes
                           setState(() {
                             HapticFeedback.vibrate();
-                            if (appInTimerMode == false) {
+                            if (appInTimerModeDefault == false) {
                               // App is in Interval mode and needs to repeat
                               if (_timerInRestMode == false) {
                                 _timerInRestMode = true;
@@ -303,16 +303,16 @@ class _MyAppState extends State<MyApp> {
                                 _controller.resume();
                               }
                             }
-                            if (appInTimerMode == true) {
+                            if (appInTimerModeDefault == true) {
                               // Upon completion in Timer mode,
                               // Enable the next press on the timer button to restart the timer
                               _timerButtonRestart = true;
 
                               // Sound the Alarm:
-                              if (!appMuted && timerAlarmEnabled) {
+                              if (!appMutedDefault && timerAlarmEnabled) {
                                 // _audioPlayer.play(AssetSource('sounds/alarm-beep-beep-1.mp3'));
                                 // _audioPlayer.play(AssetSource('sounds/alarm-standard-1.mp3'));
-                                _audioPlayer.setVolume(setVolume + .1);
+                                _audioPlayer.setVolume(defaultVolume + .1);
                                 _audioPlayer.play(AssetSource('sounds/Amplified/PianoAlarmAmped.mp3'));
                                 _audioPlayer.setReleaseMode(ReleaseMode.loop);
                               }
@@ -348,7 +348,7 @@ class _MyAppState extends State<MyApp> {
                             // set the timer up to restart on the next press
                             _timerButtonRestart = false;
                             // Reassign value in-case setting were saved
-                            _timerModifierValueSub = setTimeModifyValueSub;
+                            _timerModifierValueSub = defaultTimeModifyValueSub;
 
                             var desiredTime = _controller.setDuration(_duration,
                                 (-1 * _timerModifierValueSub.ceil()));
@@ -370,9 +370,9 @@ class _MyAppState extends State<MyApp> {
                             backgroundColor: secondaryAccentColor,
                           ),
                           child: Text(
-                              setTimeModifyValueSub > 59
-                                  ? '-${changeDurationFromSecondsToMinutes(setTimeModifyValueSub)}'
-                                  : '-${setTimeModifyValueSub}s',
+                              defaultTimeModifyValueSub > 59
+                                  ? '-${changeDurationFromSecondsToMinutes(defaultTimeModifyValueSub)}'
+                                  : '-${defaultTimeModifyValueSub}s',
                               style: const TextStyle(fontSize: 20)),
                         ),
                       ),
@@ -419,7 +419,7 @@ class _MyAppState extends State<MyApp> {
                             resetTimer();
                           }
                           setState(() {
-                            _controller.updateWorkoutMode(appInTimerMode);
+                            _controller.updateWorkoutMode(appInTimerModeDefault);
                           });
                         });
                       },
@@ -442,7 +442,7 @@ class _MyAppState extends State<MyApp> {
                             // set the timer up to restart on the next press
                             _timerButtonRestart = false;
                             // Reassign value in-case setting were saved
-                            _timerModifierValueAdd = setTimeModifyValueAdd;
+                            _timerModifierValueAdd = defaultTimeModifyValueAdd;
 
                             var desiredTime = _controller
                                 .setDuration(_duration, _timerModifierValueAdd)
@@ -464,9 +464,9 @@ class _MyAppState extends State<MyApp> {
                             backgroundColor: secondaryAccentColor,
                           ),
                           child: Text(
-                              setTimeModifyValueAdd > 59
-                                  ? '+${changeDurationFromSecondsToMinutes(setTimeModifyValueAdd)}'
-                                  : '+${setTimeModifyValueAdd}s',
+                              defaultTimeModifyValueAdd > 59
+                                  ? '+${changeDurationFromSecondsToMinutes(defaultTimeModifyValueAdd)}'
+                                  : '+${defaultTimeModifyValueAdd}s',
                               style: const TextStyle(fontSize: 20)),
                         ),
                       ),
@@ -485,8 +485,8 @@ class _MyAppState extends State<MyApp> {
                   child: ElevatedButton(
                       onPressed: () => setState(() {
                             HapticFeedback.lightImpact();
-                            _audioPlayer.setVolume(setVolume);
-                            if (!appMuted && restartButtonAudioEnabled) {
+                            _audioPlayer.setVolume(defaultVolume);
+                            if (!appMutedDefault && restartButtonAudioEnabled) {
                               _audioPlayer.play(AssetSource('sounds/Selection1Reversed.mp3'));
                             }
                             resetTimer();
