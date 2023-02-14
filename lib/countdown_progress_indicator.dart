@@ -140,32 +140,28 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
       }
       setState(() {
         // Update: 3 separate checks on 3-2-1 instead of lumping audio into one
-        if (_currentDuration == 3 && widget.isRunning && threeTwoOneCountdownEnabled) {
-          // _audioPlayer.setVolume(defaultVolume);
+        if (_currentDuration == 3 && widget.isRunning && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           !appCurrentlyMuted
               ? _audioPlayer.play(
                   AssetSource('sounds/Amplified/SalliThree.mp3'))
               : null;
         }
-        if (_currentDuration == 2 && widget.isRunning && threeTwoOneCountdownEnabled) {
-          // _audioPlayer.setVolume(defaultVolume);
+        if (_currentDuration == 2 && widget.isRunning && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           !appCurrentlyMuted
               ? _audioPlayer.play(
               AssetSource('sounds/Amplified/SalliTwo.mp3'))
               : null;
         }
-        if (_currentDuration == 1 && widget.isRunning && threeTwoOneCountdownEnabled) {
-          // _audioPlayer.setVolume(defaultVolume);
+        if (_currentDuration == 1 && widget.isRunning && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           !appCurrentlyMuted
               ? _audioPlayer.play(
               AssetSource('sounds/Amplified/SalliOne1.mp3'))
               : null;
         }
-        if (_currentDuration == 10 && widget.isRunning && tenSecondWarningEnabled) {
-          // _audioPlayer.setVolume(defaultVolume);
+        if (_currentDuration == 10 && widget.isRunning && tenSecondWarningCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           !appCurrentlyMuted
               ? _audioPlayer.play(AssetSource('sounds/Amplified/JoeyTenAmped2.mp3'))

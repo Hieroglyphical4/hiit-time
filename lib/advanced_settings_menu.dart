@@ -131,12 +131,15 @@ class ThemeSettingsWidget extends StatefulWidget {
 class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      Text('Hello World!',
-        style: TextStyle(fontFamily: 'AstroSpace', fontSize: 40, color: primaryAccentColor, height: 1.1),
-        textAlign: TextAlign.center),
-      const SizedBox(height: 400,),
-    ]);
+    return Center(
+      child: Column(children: [
+        const SizedBox(height: 50),
+        Text('Coming Soon!',
+          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 40, color: primaryAccentColor, height: 1.1),
+          textAlign: TextAlign.center),
+        const SizedBox(height: 400,),
+      ])
+    );
   }
 }
 
@@ -250,40 +253,50 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
 
   void _onTimerAlarmChanged(bool value) {
     setState(() {
-      if (timerAlarmEnabled) {
-        timerAlarmEnabled = false;
+      if (timerAlarmCurrentlyEnabled) {
+        // Call settings.dart Setter
+        setBooleanSetting('timerAlarmEnabled', false);
+        timerAlarmCurrentlyEnabled = false;
       } else {
-        timerAlarmEnabled = true;
+        // Call settings.dart Setter
+        setBooleanSetting('timerAlarmEnabled', true);
+        timerAlarmCurrentlyEnabled = true;
       }
     });
   }
 
   void _on321CountdownChanged(bool value) {
     setState(() {
-      if (threeTwoOneCountdownEnabled) {
-        threeTwoOneCountdownEnabled = false;
+      if (threeTwoOneCountdownCurrentlyEnabled) {
+        setBooleanSetting('threeTwoOneCountdownEnabled', false);
+        threeTwoOneCountdownCurrentlyEnabled = false;
       } else {
-        threeTwoOneCountdownEnabled = true;
+        setBooleanSetting('threeTwoOneCountdownEnabled', true);
+        threeTwoOneCountdownCurrentlyEnabled = true;
       }
     });
   }
 
   void _onTenSecondWarningChanged(bool value) {
     setState(() {
-      if (tenSecondWarningEnabled) {
-        tenSecondWarningEnabled = false;
+      if (tenSecondWarningCurrentlyEnabled) {
+        setBooleanSetting('tenSecondWarningEnabled', false);
+        tenSecondWarningCurrentlyEnabled = false;
       } else {
-        tenSecondWarningEnabled = true;
+        setBooleanSetting('tenSecondWarningEnabled', true);
+        tenSecondWarningCurrentlyEnabled = true;
       }
     });
   }
 
   void _onModeSwitchAlertChanged(bool value) {
     setState(() {
-      if (modeSwitchAlertEnabled) {
-        modeSwitchAlertEnabled = false;
+      if (modeSwitchAlertCurrentlyEnabled) {
+        setBooleanSetting('modeSwitchAlertEnabled', false);
+        modeSwitchAlertCurrentlyEnabled = false;
       } else {
-        modeSwitchAlertEnabled = true;
+        setBooleanSetting('modeSwitchAlertEnabled', true);
+        modeSwitchAlertCurrentlyEnabled = true;
       }
     });
   }
@@ -303,7 +316,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
 
               Text('Timer Alarm',
                   style: TextStyle(
-                      color: timerAlarmEnabled
+                      color: timerAlarmCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
@@ -314,7 +327,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
               const Spacer(),
 
               Switch(
-                value: timerAlarmEnabled,
+                value: timerAlarmCurrentlyEnabled,
                 onChanged: _onTimerAlarmChanged,
               ),
             ],
@@ -333,7 +346,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
 
               Text('3-2-1 Countdown',
                   style: TextStyle(
-                      color: threeTwoOneCountdownEnabled
+                      color: threeTwoOneCountdownCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
@@ -344,7 +357,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
               const Spacer(),
 
               Switch(
-                value: threeTwoOneCountdownEnabled,
+                value: threeTwoOneCountdownCurrentlyEnabled,
                 onChanged: _on321CountdownChanged,
               ),
             ],
@@ -363,7 +376,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
 
               Text('10 Second Warning',
                   style: TextStyle(
-                      color: threeTwoOneCountdownEnabled
+                      color: tenSecondWarningCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
@@ -374,7 +387,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
               const Spacer(),
 
               Switch(
-                value: tenSecondWarningEnabled,
+                value: tenSecondWarningCurrentlyEnabled,
                 onChanged: _onTenSecondWarningChanged,
               ),
             ],
@@ -392,7 +405,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
 
               Text('Mode Switch Alert',
                   style: TextStyle(
-                      color: modeSwitchAlertEnabled
+                      color: modeSwitchAlertCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
@@ -403,7 +416,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
               const Spacer(),
 
               Switch(
-                value: modeSwitchAlertEnabled,
+                value: modeSwitchAlertCurrentlyEnabled,
                 onChanged: _onModeSwitchAlertChanged,
               ),
 

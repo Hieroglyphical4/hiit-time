@@ -3,7 +3,6 @@ import 'package:hiit.time/countdown_progress_indicator.dart';
 import 'package:hiit.time/Config/settings.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:hiit.time/settings_menu.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -130,13 +129,13 @@ class _MyAppState extends State<MyApp> {
 
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
-      if (!appCurrentlyMuted && modeSwitchAlertEnabled) {
+      if (!appCurrentlyMuted && modeSwitchAlertCurrentlyEnabled) {
         _audioPlayer.play(AssetSource('sounds/Amplified/Rest-Voice-salli-Amped2.mp3'));
       }
       _duration = savedRestDuration;
       _restDuration = savedWorkDuration;
     } else {
-      if (!appCurrentlyMuted && modeSwitchAlertEnabled) {
+      if (!appCurrentlyMuted && modeSwitchAlertCurrentlyEnabled) {
         _audioPlayer.play(AssetSource('sounds/Amplified/Work-Voice-salli-Amped2.mp3'));
       }
       _duration = savedWorkDuration;
@@ -343,7 +342,7 @@ class _MyAppState extends State<MyApp> {
                               _timerButtonRestart = true;
 
                               // Sound the Alarm:
-                              if (!appCurrentlyMuted && timerAlarmEnabled) {
+                              if (!appCurrentlyMuted && timerAlarmCurrentlyEnabled) {
                                 // _audioPlayer.play(AssetSource('sounds/alarm-beep-beep-1.mp3'));
                                 // _audioPlayer.play(AssetSource('sounds/alarm-standard-1.mp3'));
                                 _audioPlayer.play(AssetSource('sounds/Amplified/PianoAlarmAmped.mp3'));
