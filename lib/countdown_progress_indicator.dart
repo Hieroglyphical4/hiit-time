@@ -102,7 +102,6 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
       widget.duration > 60 ? _minuteTimerSize : _secondTimerSize;
 
 
-
   @override
   void dispose() {
     _animationController.dispose();
@@ -144,7 +143,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         if (_currentDuration == 3 && widget.isRunning && threeTwoOneCountdownEnabled) {
           // _audioPlayer.setVolume(defaultVolume);
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
-          !appMutedDefault
+          !appCurrentlyMuted
               ? _audioPlayer.play(
                   AssetSource('sounds/Amplified/SalliThree.mp3'))
               : null;
@@ -152,7 +151,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         if (_currentDuration == 2 && widget.isRunning && threeTwoOneCountdownEnabled) {
           // _audioPlayer.setVolume(defaultVolume);
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
-          !appMutedDefault
+          !appCurrentlyMuted
               ? _audioPlayer.play(
               AssetSource('sounds/Amplified/SalliTwo.mp3'))
               : null;
@@ -160,7 +159,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         if (_currentDuration == 1 && widget.isRunning && threeTwoOneCountdownEnabled) {
           // _audioPlayer.setVolume(defaultVolume);
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
-          !appMutedDefault
+          !appCurrentlyMuted
               ? _audioPlayer.play(
               AssetSource('sounds/Amplified/SalliOne1.mp3'))
               : null;
@@ -168,7 +167,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         if (_currentDuration == 10 && widget.isRunning && tenSecondWarningEnabled) {
           // _audioPlayer.setVolume(defaultVolume);
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
-          !appMutedDefault
+          !appCurrentlyMuted
               ? _audioPlayer.play(AssetSource('sounds/Amplified/JoeyTenAmped2.mp3'))
               : null;
         }

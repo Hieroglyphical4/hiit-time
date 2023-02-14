@@ -12,6 +12,13 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   settings['timeModifyValueAdd'] = (prefs.getInt('timeModifyValueAdd') ?? defaultTimeModifyValueAdd).toString();
   settings['timeModifyValueSub'] = (prefs.getInt('timeModifyValueSub') ?? defaultTimeModifyValueSub).toString();
   settings['appVolume'] = (prefs.getDouble('appVolume') ?? defaultVolume).toString();
+  settings['appInTimerMode'] = (prefs.getBool('appInTimerMode') ?? appInTimerModeDefault).toString();
+  settings['appInDarkMode'] = (prefs.getBool('appInDarkMode') ?? appInDarkModeDefault).toString();
+  settings['appMuted'] = (prefs.getBool('appMuted') ?? appMutedDefault).toString();
+
+  setupDarkOrLightMode(settings['appInDarkMode'] == 'true');
+  appCurrentlyMuted = settings['appMuted'] == 'true';
+  appCurrentlyInTimerMode = settings['appInTimerMode'] == 'true';
 
   return settings;
 }
@@ -46,7 +53,11 @@ Future<void> setAppVolume(double value) async {
   prefs.setDouble('appVolume', value);
 }
 
-// TODO Make reusable setter/getter for booleans
+// Reusable setter/getter for booleans
+Future<void> setBooleanSetting(String setting, bool value) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setBool(setting, value);
+}
 
 // General Settings:
 int defaultWorkDuration = 45;
@@ -61,6 +72,12 @@ bool appInTimerModeDefault = true;
 bool appInDarkModeDefault = true;
 bool appMutedDefault = false;
 
+// Current settings to be checked during code execution
+bool appCurrentlyMuted = appMutedDefault;
+bool appCurrentlyInDarkMode = appInDarkModeDefault;
+bool appCurrentlyInTimerMode = appInTimerModeDefault;
+
+
 // Advanced Menu Settings:
 bool timerAlarmEnabled = true;
 bool threeTwoOneCountdownEnabled = true;
@@ -72,9 +89,25 @@ bool cancelButtonAudioEnabled = true;
 bool switchButtonAudioEnabled = true;
 
 
-
 // Dark mode default colors
 var primaryColor = Colors.white;
 var secondaryColor = Colors.grey.shade900; // Almost black
 var primaryAccentColor = Colors.blue.shade400;
 var secondaryAccentColor = Colors.blueGrey;
+
+
+void setupDarkOrLightMode(bool appInDarkMode) {
+  if (appInDarkMode) {
+    appCurrentlyInDarkMode = true;
+    primaryColor = Colors.white;
+    secondaryColor = Colors.grey.shade900;
+    primaryAccentColor = Colors.blue.shade400;
+    secondaryAccentColor = Colors.blueGrey;
+  } else {
+    appCurrentlyInDarkMode = false;
+    primaryColor = Colors.black;
+    secondaryColor = Colors.white;
+    primaryAccentColor = Colors.blue.shade400;
+    secondaryAccentColor = Colors.blueGrey;
+  }
+}

@@ -116,7 +116,7 @@ class _MyAppState extends State<MyApp> {
       restDuration: _restDuration,
     );
     _timerInRestMode = false;
-    _controller.updateWorkoutMode(appInTimerModeDefault);
+    _controller.updateWorkoutMode(appCurrentlyInTimerMode);
     _audioPlayer.setReleaseMode(ReleaseMode.stop);
     _audioPlayer.stop();
     Wakelock.disable();
@@ -130,13 +130,13 @@ class _MyAppState extends State<MyApp> {
 
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
-      if (!appMutedDefault && modeSwitchAlertEnabled) {
+      if (!appCurrentlyMuted && modeSwitchAlertEnabled) {
         _audioPlayer.play(AssetSource('sounds/Amplified/Rest-Voice-salli-Amped2.mp3'));
       }
       _duration = savedRestDuration;
       _restDuration = savedWorkDuration;
     } else {
-      if (!appMutedDefault && modeSwitchAlertEnabled) {
+      if (!appCurrentlyMuted && modeSwitchAlertEnabled) {
         _audioPlayer.play(AssetSource('sounds/Amplified/Work-Voice-salli-Amped2.mp3'));
       }
       _duration = savedWorkDuration;
@@ -219,7 +219,7 @@ class _MyAppState extends State<MyApp> {
                       foregroundColor:
                           MaterialStateProperty.resolveWith<Color?>(
                         (Set<MaterialState> states) {
-                          if (appInTimerModeDefault) {
+                          if (appCurrentlyInTimerMode) {
                             return primaryColor;
                           }
                           return null; // defer to the defaults
@@ -230,8 +230,9 @@ class _MyAppState extends State<MyApp> {
                       HapticFeedback.mediumImpact();
 
                       setState(() {
-                        appInTimerModeDefault = !appInTimerModeDefault;
-                        _controller.updateWorkoutMode(appInTimerModeDefault);
+                        // TODO Change functionality to launch About App Page
+                        // appInTimerModeDefault = !appInTimerModeDefault;
+                        // _controller.updateWorkoutMode(appInTimerModeDefault);
                       });
                     },
                     child: const Text('HIIT Time',
@@ -276,7 +277,7 @@ class _MyAppState extends State<MyApp> {
                             // Timer was running, going into pause mode
                             _controller.pause();
                             // Update timer text
-                            _controller.updateWorkoutMode(appInTimerModeDefault);
+                            _controller.updateWorkoutMode(appCurrentlyInTimerMode);
                             Wakelock.disable();
                           } else {
                             // Timer was paused, turning on
@@ -294,7 +295,7 @@ class _MyAppState extends State<MyApp> {
                         strokeWidth: 18,
                         autostart: false,
                         valueColor: _timerInRestMode
-                        ? appInDarkModeDefault // Color slice showing time passed
+                        ? appCurrentlyInDarkMode // Color slice showing time passed
                           ? primaryColor
                           : Colors.blueGrey.shade700
                         : Colors.blueGrey.shade700,
@@ -304,7 +305,7 @@ class _MyAppState extends State<MyApp> {
                         duration: _duration,
                         restDuration: _restDuration,
                         intervalLap: _intervalLap,
-                        appInTimerMode: appInTimerModeDefault,
+                        appInTimerMode: appCurrentlyInTimerMode,
                         timerInRestMode: _timerInRestMode,
                         timeFormatter: _duration > 59
                             ? (seconds) {
@@ -324,7 +325,7 @@ class _MyAppState extends State<MyApp> {
                           // Code to be executed when the countdown completes
                           setState(() {
                             HapticFeedback.vibrate();
-                            if (appInTimerModeDefault == false) {
+                            if (appCurrentlyInTimerMode == false) {
                               // App is in Interval mode and needs to repeat
                               if (_timerInRestMode == false) {
                                 _timerInRestMode = true;
@@ -336,13 +337,13 @@ class _MyAppState extends State<MyApp> {
                                 _controller.resume();
                               }
                             }
-                            if (appInTimerModeDefault == true) {
+                            if (appCurrentlyInTimerMode == true) {
                               // Upon completion in Timer mode,
                               // Enable the next press on the timer button to restart the timer
                               _timerButtonRestart = true;
 
                               // Sound the Alarm:
-                              if (!appMutedDefault && timerAlarmEnabled) {
+                              if (!appCurrentlyMuted && timerAlarmEnabled) {
                                 // _audioPlayer.play(AssetSource('sounds/alarm-beep-beep-1.mp3'));
                                 // _audioPlayer.play(AssetSource('sounds/alarm-standard-1.mp3'));
                                 _audioPlayer.play(AssetSource('sounds/Amplified/PianoAlarmAmped.mp3'));
@@ -454,7 +455,7 @@ class _MyAppState extends State<MyApp> {
                           }
                           setState(() {
                             updateSettingsFromMemory();
-                            _controller.updateWorkoutMode(appInTimerModeDefault);
+                            _controller.updateWorkoutMode(appCurrentlyInTimerMode);
                           });
                         });
                       },
@@ -520,7 +521,7 @@ class _MyAppState extends State<MyApp> {
                   child: ElevatedButton(
                       onPressed: () => setState(() {
                             HapticFeedback.lightImpact();
-                            if (!appMutedDefault && restartButtonAudioEnabled) {
+                            if (!appCurrentlyMuted && restartButtonAudioEnabled) {
                               _audioPlayer.play(AssetSource('sounds/Selection1Reversed.mp3'));
                             }
                             resetTimer();

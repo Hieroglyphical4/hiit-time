@@ -15,7 +15,7 @@ import 'Config/settings.dart';
 // }
 
 main() async {
-  return const MaterialApp(
+  return MaterialApp(
       home: SettingsMenu()
   );
 }
@@ -49,6 +49,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
   late int _timeModAdd;
   late int _timeModSub;
   late double _appVolume;
+
+  // User Stored boolean Settings:
+
+  // Booleans to track changes to Settings
   bool _settingsChanged = false;
   bool _restSettingChanged = false;
   bool _workSettingChanged = false;
@@ -132,30 +136,37 @@ class _SettingsMenuState extends State<SettingsMenu> {
 
   void _onTimerModeChanged(bool value) {
     setState(() {
-      if (appInTimerModeDefault) {
-        // widget.audio.setVolume(_appVolume);
+      if (appCurrentlyInTimerMode) {
         widget.audio.setReleaseMode(ReleaseMode.stop);
-        if (!appMutedDefault && switchButtonAudioEnabled) {
+        if (!appCurrentlyMuted && switchButtonAudioEnabled) {
           widget.audio.play(AssetSource('sounds/SwitchAndBeep1.mp3'));
       }
-        appInTimerModeDefault = false;
+        // Call Settings.dart Setter
+        setBooleanSetting('appInTimerMode', false);
+        appCurrentlyInTimerMode = false;
       } else {
         // widget.audio.setVolume(_appVolume);
         widget.audio.setReleaseMode(ReleaseMode.stop);
-        if (!appMutedDefault && switchButtonAudioEnabled) {
+        if (!appCurrentlyMuted && switchButtonAudioEnabled) {
           widget.audio.play(AssetSource('sounds/Switch1.mp3'));
         }
-        appInTimerModeDefault = true;
+        // Call Settings.dart Setter
+        setBooleanSetting('appInTimerMode', true);
+        appCurrentlyInTimerMode = true;
       }
     });
   }
 
   void _onMuteModeChanged () {
     setState(() {
-      if (appMutedDefault) {
-        appMutedDefault = false;
+      if (appCurrentlyMuted) {
+        // Call settings.dart Setter
+        setBooleanSetting('appMuted', false);
+        appCurrentlyMuted = false;
       } else {
-        appMutedDefault = true;
+        // Call settings.dart Setter
+        setBooleanSetting('appMuted', true);
+        appCurrentlyMuted = true;
         widget.audio.stop();
       }
     });
@@ -163,18 +174,24 @@ class _SettingsMenuState extends State<SettingsMenu> {
 
   void _onDarkModeChanged() {
     setState(() {
-      if (appInDarkModeDefault) {
-        appInDarkModeDefault = false;
-        primaryColor = Colors.black;
-        secondaryColor = Colors.white;
-        primaryAccentColor = Colors.blue.shade400;
-        secondaryAccentColor = Colors.blueGrey;
+      if (appCurrentlyInDarkMode) {
+        // Call settings.dart Setter:
+        setBooleanSetting('appInDarkMode', false);
+        setupDarkOrLightMode(false);
+
+        // primaryColor = Colors.black;
+        // secondaryColor = Colors.white;
+        // primaryAccentColor = Colors.blue.shade400;
+        // secondaryAccentColor = Colors.blueGrey;
       } else {
-        appInDarkModeDefault = true;
-        primaryColor = Colors.white;
-        secondaryColor = Colors.grey.shade900;
-        primaryAccentColor = Colors.blue.shade400;
-        secondaryAccentColor = Colors.blueGrey;
+        // Call settings.dart Setter:
+        setBooleanSetting('appInDarkMode', true);
+        setupDarkOrLightMode(true);
+
+        // primaryColor = Colors.white;
+        // secondaryColor = Colors.grey.shade900;
+        // primaryAccentColor = Colors.blue.shade400;
+        // secondaryAccentColor = Colors.blueGrey;
       }
     });
   }
@@ -328,7 +345,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                           : _restTime.toString(),
                                       hintStyle: TextStyle(
                                         fontSize: 30,
-                                        color: appInTimerModeDefault
+                                        color: appCurrentlyInTimerMode
                                             ? Colors.grey
                                             : primaryColor,
                                       ),
@@ -337,7 +354,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         borderSide: BorderSide(
                                           color: _restSettingChanged
                                               ? primaryAccentColor
-                                              : appInTimerModeDefault
+                                              : appCurrentlyInTimerMode
                                               ? Colors.grey
                                               : primaryColor,
                                           width: 3,
@@ -361,7 +378,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                 Text(
                                   'Rest Time',
                                   style: TextStyle(
-                                    color: appInTimerModeDefault
+                                    color: appCurrentlyInTimerMode
                                         ? Colors.grey
                                         : primaryColor,
                                     fontSize: 18,
@@ -470,7 +487,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                             'Timer Mode',
                             style: TextStyle(
                               color:
-                              appInTimerModeDefault ? primaryColor : Colors.grey,
+                              appCurrentlyInTimerMode ? primaryColor : Colors.grey,
                               fontSize: 18,
                               fontFamily: 'AstroSpace',
                             ),
@@ -479,13 +496,13 @@ class _SettingsMenuState extends State<SettingsMenu> {
                           // Switch/Toggle Between App Modes
                           ////////////////////////////////////
                           Switch(
-                            value: !appInTimerModeDefault,
+                            value: !appCurrentlyInTimerMode,
                             onChanged: _onTimerModeChanged,
                           ),
                           Text(
                             'Interval Mode',
                             style: TextStyle(
-                              color: appInTimerModeDefault
+                              color: appCurrentlyInTimerMode
                                   ? Colors.grey
                                   : primaryAccentColor,
                               fontSize: 18,
@@ -498,7 +515,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       /////////////////
                       // Volume Slider
                       /////////////////
-                      appMutedDefault
+                      appCurrentlyMuted
                           ? const SizedBox(height: 68)
                           : Column(
                             children: [
@@ -638,9 +655,9 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   IconButton(
                                     iconSize: 45,
                                     color: primaryColor,
-                                    icon: appInDarkModeDefault
-                                      ? Icon(Icons.dark_mode)
-                                      : Icon(Icons.light_mode),
+                                    icon: appCurrentlyInDarkMode
+                                      ? const Icon(Icons.dark_mode)
+                                      : const Icon(Icons.light_mode),
                                     onPressed: () {
                                       HapticFeedback.mediumImpact();
                                       _onDarkModeChanged();
@@ -649,7 +666,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
 
                                   // Dark Mode/Light Mode Text Description
                                   Text(
-                                    appInDarkModeDefault
+                                    appCurrentlyInDarkMode
                                       ? 'Dark'
                                       : 'Light',
                                     style: TextStyle(
@@ -689,7 +706,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         ? () {
                                       // widget.audio.setVolume(_appVolume);
                                       widget.audio.setReleaseMode(ReleaseMode.stop);
-                                      if (!appMutedDefault && saveButtonAudioEnabled) {
+                                      if (!appCurrentlyMuted && saveButtonAudioEnabled) {
                                         widget.audio.play(AssetSource('sounds/Correct1.mp3'));
                                         widget.audio.setReleaseMode(ReleaseMode.stop);
                                       }
@@ -819,7 +836,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       HapticFeedback.mediumImpact();
                                       if (_settingsChanged) {
                                         // widget.audio.setVolume(_appVolume);
-                                        if (!appMutedDefault && cancelButtonAudioEnabled) {
+                                        if (!appCurrentlyMuted && cancelButtonAudioEnabled) {
                                           widget.audio.play(AssetSource('sounds/Woosh-spaced.mp3'));
                                           widget.audio.setReleaseMode(ReleaseMode.stop);
                                         }
@@ -938,12 +955,12 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   ////////////////////////////////
                                   IconButton(
                                     iconSize: 45,
-                                    color: appMutedDefault
+                                    color: appCurrentlyMuted
                                     ? Colors.grey
                                     : primaryColor,
-                                    icon: appMutedDefault
-                                      ? Icon(Icons.volume_off)
-                                      : Icon(Icons.volume_up),
+                                    icon: appCurrentlyMuted
+                                      ? const Icon(Icons.volume_off)
+                                      : const Icon(Icons.volume_up),
                                     onPressed: () {
                                       _onMuteModeChanged();
                                       HapticFeedback.mediumImpact();
@@ -955,18 +972,18 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     'Sound',
                                     style: TextStyle(
                                       fontFamily: 'AstroSpace',
-                                      color: appMutedDefault
+                                      color: appCurrentlyMuted
                                           ? Colors.grey
                                           : primaryColor,
                                       fontSize: 15,
                                     ),
                                   ),
-                                  Text(appMutedDefault
+                                  Text(appCurrentlyMuted
                                     ? 'Off'
                                     : 'On',
                                     style: TextStyle(
                                       fontFamily: 'AstroSpace',
-                                      color: appMutedDefault
+                                      color: appCurrentlyMuted
                                           ? Colors.grey
                                           : primaryColor,
                                       fontSize: 15,
