@@ -1,7 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.gym_bro">
+    package="com.example.hiit_time">
     <uses-permission android:name="android.permission.VIBRATE"/>
-   <application
+    <!-- Next 2 are to keep tasks running in the background -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <application
         android:label="HIIT Time"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">

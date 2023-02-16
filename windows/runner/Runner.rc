@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "gym_bro" "\0"
+            VALUE "FileDescription", "hiit_time" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "gym_bro" "\0"
+            VALUE "InternalName", "hiit_time" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2022 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "gym_bro.exe" "\0"
-            VALUE "ProductName", "gym_bro" "\0"
+            VALUE "OriginalFilename", "hiit_time.exe" "\0"
+            VALUE "ProductName", "hiit_time" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
