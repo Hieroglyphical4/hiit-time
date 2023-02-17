@@ -101,10 +101,16 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   late var _timerSize =
       widget.duration > 60 ? _minuteTimerSize : _secondTimerSize;
 
+  // Used to prevent sounds from stacking
+  bool _tenSecondQuePlayed = false;
+  bool _threeSecondQuePlayed = false;
+  bool _twoSecondQuePlayed = false;
+  bool _oneSecondQuePlayed = false;
 
   @override
   void dispose() {
     _animationController.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
@@ -113,6 +119,10 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     super.initState();
 
     _audioPlayer = widget.audioPlayer;
+    _tenSecondQuePlayed = false;
+    _threeSecondQuePlayed = false;
+    _twoSecondQuePlayed = false;
+    _oneSecondQuePlayed = false;
 
     _animationController = AnimationController(
       vsync: this,
@@ -140,32 +150,25 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
       }
       setState(() {
         // Update: 3 separate checks on 3-2-1 instead of lumping audio into one
-        if (_currentDuration == 3 && widget.isRunning && threeTwoOneCountdownCurrentlyEnabled) {
+        if (_currentDuration == 3 && widget.isRunning && _threeSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
-          !appCurrentlyMuted
-              ? _audioPlayer.play(
-                  AssetSource('sounds/Amplified/SalliThree.mp3'))
-              : null;
+          _audioPlayer.play(AssetSource('sounds/Amplified/SalliThree.mp3'));
+          _threeSecondQuePlayed = true;
         }
-        if (_currentDuration == 2 && widget.isRunning && threeTwoOneCountdownCurrentlyEnabled) {
+        if (_currentDuration == 2 && widget.isRunning && _twoSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
-          !appCurrentlyMuted
-              ? _audioPlayer.play(
-              AssetSource('sounds/Amplified/SalliTwo.mp3'))
-              : null;
+          _audioPlayer.play(AssetSource('sounds/Amplified/SalliTwo.mp3'));
+          _twoSecondQuePlayed = true;
         }
-        if (_currentDuration == 1 && widget.isRunning && threeTwoOneCountdownCurrentlyEnabled) {
+        if (_currentDuration == 1 && widget.isRunning && _oneSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
-          !appCurrentlyMuted
-              ? _audioPlayer.play(
-              AssetSource('sounds/Amplified/SalliOne1.mp3'))
-              : null;
+          _audioPlayer.play(AssetSource('sounds/Amplified/SalliOne1.mp3'));
+          _oneSecondQuePlayed = true;
         }
-        if (_currentDuration == 10 && widget.isRunning && tenSecondWarningCurrentlyEnabled) {
+        if (_currentDuration == 10 && widget.isRunning && _tenSecondQuePlayed == false && !appCurrentlyMuted && tenSecondWarningCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
-          !appCurrentlyMuted
-              ? _audioPlayer.play(AssetSource('sounds/Amplified/JoeyTenAmped2.mp3'))
-              : null;
+          _audioPlayer.play(AssetSource('sounds/Amplified/JoeyTenAmped2.mp3'));
+          _tenSecondQuePlayed = true;
         }
         _timerText = 'Timer Mode';
         if (_currentDuration > 59) {
@@ -424,6 +427,12 @@ class CountDownController {
 
     _state._desiredTime = desiredTime;
     _state._animationController.duration = Duration(seconds: desiredTime);
+    // Enable Audio Queues
+    _state._oneSecondQuePlayed = false;
+    _state._twoSecondQuePlayed = false;
+    _state._threeSecondQuePlayed = false;
+    _state._tenSecondQuePlayed = false;
+
     return desiredTime;
   }
 
@@ -465,6 +474,12 @@ class CountDownController {
     if (restDuration != null) {
       _state.widget.restDuration = restDuration;
     }
+
+    // Enable Audio Queues
+    _state._oneSecondQuePlayed = false;
+    _state._twoSecondQuePlayed = false;
+    _state._threeSecondQuePlayed = false;
+    _state._tenSecondQuePlayed = false;
 
     _state._animationController.forward(from: initialPosition);
     _state._animationController.stop(canceled: false);

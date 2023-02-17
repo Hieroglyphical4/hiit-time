@@ -6,9 +6,22 @@ import 'package:hiit.time/settings_menu.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:audio_service/audio_service.dart';
+
+late AudioHandler _audioHandler;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // _audioHandler = await AudioService.init(
+  //   builder: () => AudioPlayerHandler(), // todo finish tutorial/
+  //   config: AudioServiceConfig(
+  //     androidNotificationChannelId: 'com.mycompany.myapp.channel.audio',
+  //     androidNotificationChannelName: 'Audio playback',
+  //     androidNotificationOngoing: true,
+  //   ),
+  // );
+
   runApp(
     FutureBuilder(
       future:getSavedUserSettings(),
@@ -70,6 +83,8 @@ class _MyAppState extends State<MyApp> {
   var _orientation = 0;
   var _intervalLap = 1;
   final _audioPlayer = AudioPlayer();
+  // Second Audio player added for overlapping audio
+  final _audioPlayer2 = AudioPlayer();
   var _appVolume = defaultVolume;
 
   // Values being passed to Settings Menu
@@ -85,6 +100,14 @@ class _MyAppState extends State<MyApp> {
     _timerModifierValueSub = widget.timeModSub ?? defaultTimeModifyValueSub;
     _appVolume = widget.appVolume ?? defaultVolume;
     _audioPlayer.setVolume(_appVolume);
+    _audioPlayer2.setVolume(_appVolume);
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    _audioPlayer2.dispose();
+    super.dispose();
   }
 
   // Update values to be displayed in settings menu using previous stored settings
@@ -98,6 +121,7 @@ class _MyAppState extends State<MyApp> {
       _timerModifierValueSub = int.parse(settings['timeModifyValueSub']);
       _appVolume = double.parse(settings['appVolume']);
       _audioPlayer.setVolume(_appVolume);
+      _audioPlayer2.setVolume(_appVolume);
     });
   }
 
@@ -130,13 +154,13 @@ class _MyAppState extends State<MyApp> {
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
       if (!appCurrentlyMuted && modeSwitchAlertCurrentlyEnabled) {
-        _audioPlayer.play(AssetSource('sounds/Amplified/Rest-Voice-salli-Amped2.mp3'));
+        _audioPlayer2.play(AssetSource('sounds/Amplified/Rest-Voice-salli-Amped2.mp3'));
       }
       _duration = savedRestDuration;
       _restDuration = savedWorkDuration;
     } else {
       if (!appCurrentlyMuted && modeSwitchAlertCurrentlyEnabled) {
-        _audioPlayer.play(AssetSource('sounds/Amplified/Work-Voice-salli-Amped2.mp3'));
+        _audioPlayer2.play(AssetSource('sounds/Amplified/Work-Voice-salli-Amped2.mp3'));
       }
       _duration = savedWorkDuration;
       _restDuration = savedRestDuration;
