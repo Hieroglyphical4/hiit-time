@@ -1,8 +1,8 @@
 import 'package:native_device_orientation/native_device_orientation.dart';
-import 'package:hiit.time/countdown_progress_indicator.dart';
-import 'package:hiit.time/Config/settings.dart';
+import 'package:hiit_time/countdown_progress_indicator.dart';
+import 'package:hiit_time/Config/settings.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:hiit.time/settings_menu.dart';
+import 'package:hiit_time/settings_menu.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
