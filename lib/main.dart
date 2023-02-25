@@ -6,21 +6,9 @@ import 'package:hiit_time/settings_menu.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:audio_service/audio_service.dart';
-
-late AudioHandler _audioHandler;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // _audioHandler = await AudioService.init(
-  //   builder: () => AudioPlayerHandler(), // todo finish tutorial/
-  //   config: AudioServiceConfig(
-  //     androidNotificationChannelId: 'com.mycompany.myapp.channel.audio',
-  //     androidNotificationChannelName: 'Audio playback',
-  //     androidNotificationOngoing: true,
-  //   ),
-  // );
 
   runApp(
     FutureBuilder(
@@ -130,6 +118,7 @@ class _MyAppState extends State<MyApp> {
 
     _intervalLap = 1;
     _isRunning = false;
+    _timerButtonRestart = false;
     _duration = int.parse(settings['workDuration']);
     _restDuration = int.parse(settings['restDuration']);
 
@@ -141,7 +130,6 @@ class _MyAppState extends State<MyApp> {
     _timerInRestMode = false;
     _controller.updateWorkoutMode(appCurrentlyInTimerMode);
     _audioPlayer.setReleaseMode(ReleaseMode.stop);
-    _audioPlayer.stop();
     Wakelock.disable();
   }
 
