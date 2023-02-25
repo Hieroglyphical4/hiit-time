@@ -532,7 +532,7 @@ class _MyAppState extends State<MyApp> {
                   child: ElevatedButton(
                       onPressed: () => setState(() {
                             HapticFeedback.lightImpact();
-                            if (!appCurrentlyMuted && restartButtonAudioEnabled) {
+                            if (!appCurrentlyMuted && restartButtonAudioCurrentlyEnabled) {
                               _audioPlayer.play(AssetSource('sounds/Selection1Reversed.mp3'));
                             }
                             resetTimer();

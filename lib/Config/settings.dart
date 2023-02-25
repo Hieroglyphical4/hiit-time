@@ -20,8 +20,6 @@ bool threeTwoOneCountdownEnabledDefault = true;
 bool tenSecondWarningEnabledDefault = true;
 bool modeSwitchAlertEnabledDefault = true;
 
-
-// TODO Set defaults and Persist
 bool restartButtonAudioEnabled = true;
 bool saveButtonAudioEnabled = true;
 bool cancelButtonAudioEnabled = true;
@@ -36,6 +34,12 @@ bool timerAlarmCurrentlyEnabled = timerAlarmEnabledDefault;
 bool threeTwoOneCountdownCurrentlyEnabled = threeTwoOneCountdownEnabledDefault;
 bool tenSecondWarningCurrentlyEnabled = tenSecondWarningEnabledDefault;
 bool modeSwitchAlertCurrentlyEnabled = modeSwitchAlertEnabledDefault;
+
+// TODO Set defaults and Persist
+bool restartButtonAudioCurrentlyEnabled = restartButtonAudioEnabled;
+bool saveButtonAudioCurrentlyEnabled = saveButtonAudioEnabled;
+bool cancelButtonAudioCurrentlyEnabled = cancelButtonAudioEnabled;
+bool switchButtonAudioCurrentlyEnabled = switchButtonAudioEnabled;
 
 
 // Dark mode default colors
@@ -65,6 +69,12 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   threeTwoOneCountdownCurrentlyEnabled = prefs.getBool('threeTwoOneCountdownEnabled') ?? threeTwoOneCountdownEnabledDefault;
   tenSecondWarningCurrentlyEnabled = prefs.getBool('tenSecondWarningEnabled') ?? tenSecondWarningEnabledDefault;
   modeSwitchAlertCurrentlyEnabled = prefs.getBool('modeSwitchAlertEnabled') ?? modeSwitchAlertEnabledDefault;
+
+  // TODO Set defaults and Persist
+  restartButtonAudioCurrentlyEnabled = prefs.getBool('restartButtonAudioEnabled') ?? restartButtonAudioEnabled;
+  saveButtonAudioCurrentlyEnabled = prefs.getBool('saveButtonAudioEnabled') ?? saveButtonAudioEnabled;;
+  cancelButtonAudioCurrentlyEnabled = prefs.getBool('cancelButtonAudioEnabled') ?? cancelButtonAudioEnabled;;
+  switchButtonAudioCurrentlyEnabled = prefs.getBool('switchButtonAudioEnabled') ?? switchButtonAudioEnabled;;
 
 
   // Call Method to assign App Colors

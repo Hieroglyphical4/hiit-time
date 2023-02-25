@@ -444,42 +444,63 @@ class ButtonAudioSettingsWidget extends StatefulWidget {
 class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
   final double _textFontSize = 16;
 
+
+  // void _onModeSwitchAlertChanged(bool value) {
+  //   setState(() {
+  //     if (modeSwitchAlertCurrentlyEnabled) {
+  //       setBooleanSetting('modeSwitchAlertEnabled', false);
+  //       modeSwitchAlertCurrentlyEnabled = false;
+  //     } else {
+  //       setBooleanSetting('modeSwitchAlertEnabled', true);
+  //       modeSwitchAlertCurrentlyEnabled = true;
+  //     }
+  //   });
+  // }
+
+  void _onRestartButtonAudioChanged(bool value) {
+    setState(() {
+      if (restartButtonAudioCurrentlyEnabled) {
+        setBooleanSetting('restartButtonAudioEnabled', false);
+        restartButtonAudioCurrentlyEnabled = false;
+      } else {
+        setBooleanSetting('restartButtonAudioEnabled', true);
+        restartButtonAudioCurrentlyEnabled = true;
+      }
+    });
+  }
+
   void _onSaveButtonAudioChanged(bool value) {
     setState(() {
-      if (saveButtonAudioEnabled) {
-        saveButtonAudioEnabled = false;
+      if (saveButtonAudioCurrentlyEnabled) {
+        setBooleanSetting('saveButtonAudioEnabled', false);
+        saveButtonAudioCurrentlyEnabled = false;
       } else {
-        saveButtonAudioEnabled = true;
+        setBooleanSetting('saveButtonAudioEnabled', true);
+        saveButtonAudioCurrentlyEnabled = true;
       }
     });
   }
 
   void _onCancelButtonAudioChanged(bool value) {
     setState(() {
-      if (cancelButtonAudioEnabled) {
-        cancelButtonAudioEnabled = false;
+      if (cancelButtonAudioCurrentlyEnabled) {
+        setBooleanSetting('cancelButtonAudioEnabled', false);
+        cancelButtonAudioCurrentlyEnabled = false;
       } else {
-        cancelButtonAudioEnabled = true;
-      }
-    });
-  }
-
-  void _onRestartButtonAudioChanged(bool value) {
-    setState(() {
-      if (restartButtonAudioEnabled) {
-        restartButtonAudioEnabled = false;
-      } else {
-        restartButtonAudioEnabled = true;
+        setBooleanSetting('cancelButtonAudioEnabled', true);
+        cancelButtonAudioCurrentlyEnabled = true;
       }
     });
   }
 
   void _onSwitchButtonAudioChanged(bool value) {
     setState(() {
-      if (switchButtonAudioEnabled) {
-        switchButtonAudioEnabled = false;
+      if (switchButtonAudioCurrentlyEnabled) {
+        setBooleanSetting('switchButtonAudioEnabled', false);
+        switchButtonAudioCurrentlyEnabled = false;
       } else {
-        switchButtonAudioEnabled = true;
+        setBooleanSetting('switchButtonAudioEnabled', true);
+        switchButtonAudioCurrentlyEnabled = true;
       }
     });
   }
@@ -499,7 +520,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
 
               Text('Restart Button Audio',
                   style: TextStyle(
-                      color: restartButtonAudioEnabled
+                      color: restartButtonAudioCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
@@ -510,7 +531,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
               const Spacer(),
 
               Switch(
-                value: restartButtonAudioEnabled,
+                value: restartButtonAudioCurrentlyEnabled,
                 onChanged: _onRestartButtonAudioChanged,
               ),
 
@@ -529,7 +550,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
               const SizedBox(width: 15),
               Text('Save Button Audio',
                   style: TextStyle(
-                      color: saveButtonAudioEnabled
+                      color: saveButtonAudioCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
@@ -540,7 +561,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
               const Spacer(),
 
               Switch(
-                value: saveButtonAudioEnabled,
+                value: saveButtonAudioCurrentlyEnabled,
                 onChanged: _onSaveButtonAudioChanged,
               ),
             ],
@@ -559,7 +580,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
 
               Text('Cancel Button Audio',
                   style: TextStyle(
-                      color: cancelButtonAudioEnabled
+                      color: cancelButtonAudioCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
@@ -570,7 +591,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
               const Spacer(),
 
               Switch(
-                value: cancelButtonAudioEnabled,
+                value: cancelButtonAudioCurrentlyEnabled,
                 onChanged: _onCancelButtonAudioChanged,
               ),
 
@@ -590,7 +611,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
 
               Text('Switch Button Audio',
                   style: TextStyle(
-                      color: switchButtonAudioEnabled
+                      color: switchButtonAudioCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
                       fontFamily: 'AstroSpace',
@@ -601,7 +622,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
               const Spacer(),
 
               Switch(
-                value: switchButtonAudioEnabled,
+                value: switchButtonAudioCurrentlyEnabled,
                 onChanged: _onSwitchButtonAudioChanged,
               ),
             ],

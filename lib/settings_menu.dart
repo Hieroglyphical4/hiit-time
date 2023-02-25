@@ -138,7 +138,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
     setState(() {
       if (appCurrentlyInTimerMode) {
         widget.audio.setReleaseMode(ReleaseMode.stop);
-        if (!appCurrentlyMuted && switchButtonAudioEnabled) {
+        if (!appCurrentlyMuted && switchButtonAudioCurrentlyEnabled) {
           widget.audio.play(AssetSource('sounds/SwitchAndBeep1.mp3'));
       }
         // Call Settings.dart Setter
@@ -147,7 +147,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
       } else {
         // widget.audio.setVolume(_appVolume);
         widget.audio.setReleaseMode(ReleaseMode.stop);
-        if (!appCurrentlyMuted && switchButtonAudioEnabled) {
+        if (!appCurrentlyMuted && switchButtonAudioCurrentlyEnabled) {
           widget.audio.play(AssetSource('sounds/Switch1.mp3'));
         }
         // Call Settings.dart Setter
@@ -706,7 +706,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         ? () {
                                       // widget.audio.setVolume(_appVolume);
                                       widget.audio.setReleaseMode(ReleaseMode.stop);
-                                      if (!appCurrentlyMuted && saveButtonAudioEnabled) {
+                                      if (!appCurrentlyMuted && saveButtonAudioCurrentlyEnabled) {
                                         widget.audio.play(AssetSource('sounds/Correct1.mp3'));
                                         widget.audio.setReleaseMode(ReleaseMode.stop);
                                       }
@@ -836,7 +836,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       HapticFeedback.mediumImpact();
                                       if (_settingsChanged) {
                                         // widget.audio.setVolume(_appVolume);
-                                        if (!appCurrentlyMuted && cancelButtonAudioEnabled) {
+                                        if (!appCurrentlyMuted && cancelButtonAudioCurrentlyEnabled) {
                                           widget.audio.play(AssetSource('sounds/Woosh-spaced.mp3'));
                                           widget.audio.setReleaseMode(ReleaseMode.stop);
                                         }
