@@ -108,6 +108,11 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                   ? const ThemeSettingsWidget()
                   : Container(),
 
+
+                // TODO Restore Defaults Button
+                // maybe have fixed to the bottom of the page?
+
+
                 const SizedBox(height: 200),
               ],
             ),

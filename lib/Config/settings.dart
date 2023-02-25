@@ -20,10 +20,10 @@ bool threeTwoOneCountdownEnabledDefault = true;
 bool tenSecondWarningEnabledDefault = true;
 bool modeSwitchAlertEnabledDefault = true;
 
-bool restartButtonAudioEnabled = true;
-bool saveButtonAudioEnabled = true;
-bool cancelButtonAudioEnabled = true;
-bool switchButtonAudioEnabled = true;
+bool restartButtonAudioEnabledDefault = true;
+bool saveButtonAudioEnabledDefault = true;
+bool cancelButtonAudioEnabledDefault = true;
+bool switchButtonAudioEnabledDefault = true;
 
 // Current settings to be checked during code execution
 bool appCurrentlyMuted = appMutedDefault;
@@ -35,11 +35,10 @@ bool threeTwoOneCountdownCurrentlyEnabled = threeTwoOneCountdownEnabledDefault;
 bool tenSecondWarningCurrentlyEnabled = tenSecondWarningEnabledDefault;
 bool modeSwitchAlertCurrentlyEnabled = modeSwitchAlertEnabledDefault;
 
-// TODO Set defaults and Persist
-bool restartButtonAudioCurrentlyEnabled = restartButtonAudioEnabled;
-bool saveButtonAudioCurrentlyEnabled = saveButtonAudioEnabled;
-bool cancelButtonAudioCurrentlyEnabled = cancelButtonAudioEnabled;
-bool switchButtonAudioCurrentlyEnabled = switchButtonAudioEnabled;
+bool restartButtonAudioCurrentlyEnabled = restartButtonAudioEnabledDefault;
+bool saveButtonAudioCurrentlyEnabled = saveButtonAudioEnabledDefault;
+bool cancelButtonAudioCurrentlyEnabled = cancelButtonAudioEnabledDefault;
+bool switchButtonAudioCurrentlyEnabled = switchButtonAudioEnabledDefault;
 
 
 // Dark mode default colors
@@ -70,11 +69,10 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   tenSecondWarningCurrentlyEnabled = prefs.getBool('tenSecondWarningEnabled') ?? tenSecondWarningEnabledDefault;
   modeSwitchAlertCurrentlyEnabled = prefs.getBool('modeSwitchAlertEnabled') ?? modeSwitchAlertEnabledDefault;
 
-  // TODO Set defaults and Persist
-  restartButtonAudioCurrentlyEnabled = prefs.getBool('restartButtonAudioEnabled') ?? restartButtonAudioEnabled;
-  saveButtonAudioCurrentlyEnabled = prefs.getBool('saveButtonAudioEnabled') ?? saveButtonAudioEnabled;;
-  cancelButtonAudioCurrentlyEnabled = prefs.getBool('cancelButtonAudioEnabled') ?? cancelButtonAudioEnabled;;
-  switchButtonAudioCurrentlyEnabled = prefs.getBool('switchButtonAudioEnabled') ?? switchButtonAudioEnabled;;
+  restartButtonAudioCurrentlyEnabled = prefs.getBool('restartButtonAudioEnabled') ?? restartButtonAudioEnabledDefault;
+  saveButtonAudioCurrentlyEnabled = prefs.getBool('saveButtonAudioEnabled') ?? saveButtonAudioEnabledDefault;
+  cancelButtonAudioCurrentlyEnabled = prefs.getBool('cancelButtonAudioEnabled') ?? cancelButtonAudioEnabledDefault;
+  switchButtonAudioCurrentlyEnabled = prefs.getBool('switchButtonAudioEnabled') ?? switchButtonAudioEnabledDefault;
 
 
   // Call Method to assign App Colors
