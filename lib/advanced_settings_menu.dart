@@ -17,6 +17,33 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
   bool _displayAudioSettings = false;
   bool _displayThemesSettings = false;
 
+  Future<bool> _confirmRestoreDefaults() async {
+    bool confirmed = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Confirm"),
+          content: Text("Are you sure you want to restore all settings to their default?"),
+          actions: [
+            ElevatedButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            ElevatedButton(
+              child: Text("Confirm"),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+    return confirmed ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,11 +147,21 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                     height: 50,
                     width: 350,
                     child: ElevatedButton(
-                        onPressed: () => setState(() {
-                          // TODO launch confirmation window
-                          clearUserSettings();
-                          Navigator.pop(context, true);
-                        }),
+                        onPressed: () {
+                          _confirmRestoreDefaults().then((confirmed) {
+                            if (confirmed) {
+                              // Perform the action here
+                              // Call Settings.dart method to remove all stored variables
+                              clearUserSettings();
+
+                              // Close this menu and return true to tell the settings menu
+                              // to also close and restart the timer, leaving the user
+                              // at the main/timer screen
+                              Navigator.pop(context, true);
+                            }
+                          });
+                        },
+
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red.shade600,
                           // shape: Rectangle(),
@@ -132,7 +169,9 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         ),
                         child: const Text('Restore Defaults',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1),
-                            textAlign: TextAlign.center))),
+                            textAlign: TextAlign.center)
+                    )
+                ),
 
 
                 const SizedBox(height: 20),
