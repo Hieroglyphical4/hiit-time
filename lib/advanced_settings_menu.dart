@@ -22,17 +22,25 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Confirm"),
-          content: Text("Are you sure you want to restore all settings to their default?"),
+          title: const Text("Confirm",
+            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16, height: 1.1),
+          ),
+          content: const Text("Are you sure you want to restore all settings to their default?",
+            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+          ),
           actions: [
             ElevatedButton(
-              child: Text("Cancel"),
+              child: const Text("Cancel",
+                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+              ),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
             ),
             ElevatedButton(
-              child: Text("Confirm"),
+              child: const Text("Confirm",
+                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+              ),
               onPressed: () {
                 Navigator.of(context).pop(true);
               },
@@ -150,13 +158,12 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         onPressed: () {
                           _confirmRestoreDefaults().then((confirmed) {
                             if (confirmed) {
-                              // Perform the action here
                               // Call Settings.dart method to remove all stored variables
                               clearUserSettings();
 
                               // Close this menu and return true to tell the settings menu
                               // to also close and restart the timer, leaving the user
-                              // at the main/timer screen
+                              // at the main/timer screen with default settings
                               Navigator.pop(context, true);
                             }
                           });
