@@ -98,8 +98,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   var _desiredTime = 30;
   final _secondTimerSize = 135.0;
   final _minuteTimerSize = 115.0;
-  late var _timerSize =
-      widget.duration > 60 ? _minuteTimerSize : _secondTimerSize;
+  late var _timerSize = widget.duration > 60 ? _minuteTimerSize : _secondTimerSize;
 
   // Used to prevent sounds from stacking
   bool _tenSecondQuePlayed = false;
@@ -262,8 +261,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                 children: [
                   (widget.duration - _animation.value).toInt() < 59
                       ? SizedBox(height: 15) // In Second Mode
-                      : SizedBox(height: 12),
-                  // In Minute Mode
+                      : SizedBox(height: 12), // In Minute Mode
 
                   // For when the App is in INTERVAL Mode
                   (!widget.appInTimerMode)
@@ -277,9 +275,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                     widget.restDuration)
                                 : widget.restDuration.toString(),
 
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
+                            style: Theme.of(context).textTheme.bodyText1!
                                 .copyWith(
                                     color: widget.timerInRestMode
                                         ? primaryColor
@@ -312,17 +308,13 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                   color: widget.timerInRestMode
                                       ? Colors.blue.shade300
                                       : primaryColor,
-                                  // 59 is used here to avoid a small 59
-                                  fontSize:
-                                      (_currentDuration ?? widget.duration) > 59
-                                          ? _minuteTimerSize
-                                          : _secondTimerSize,
+                                  fontSize: _secondTimerSize,
                                   fontWeight: FontWeight.w600),
                         )
                       ///////////////
                       // Minute mode
                       ///////////////
-                      : Text(
+                      : Flexible(child: Text(
                           widget.timeFormatter?.call(
                                   (widget.duration - _animation.value)
                                       .ceil()) ??
@@ -333,13 +325,10 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                   color: widget.timerInRestMode
                                       ? Colors.blue.shade300
                                       : primaryColor,
-                                  // 58 is used as a buffer, any higher and 1:00 is huge
-                                  fontSize:
-                                      (_currentDuration ?? widget.duration) > 58
-                                          ? _minuteTimerSize
-                                          : _secondTimerSize,
+                                  fontSize: _minuteTimerSize,
                                   fontWeight: FontWeight.w600),
-                        ),
+                        )
+                  ),
 
                   ///////////////////////////
                   // Clock Mode Description
@@ -350,8 +339,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                         // In "Timer Mode"
                         ///////////////////
                           SizedBox(height: 20),
-                          Text(
-                            _timerText,
+                          Text(_timerText,
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
                                       color: primaryColor,
