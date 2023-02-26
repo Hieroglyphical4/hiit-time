@@ -314,7 +314,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                       ///////////////
                       // Minute mode
                       ///////////////
-                      : Flexible(child: Text(
+                      : Text(
                           widget.timeFormatter?.call(
                                   (widget.duration - _animation.value)
                                       .ceil()) ??
@@ -327,7 +327,6 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                       : primaryColor,
                                   fontSize: _minuteTimerSize,
                                   fontWeight: FontWeight.w600),
-                        )
                   ),
 
                   ///////////////////////////
