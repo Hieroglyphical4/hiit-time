@@ -137,7 +137,9 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                             ? 'Themes'
                             : 'Themes                   >',
                             style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1),
-                            textAlign: TextAlign.center))),
+                            textAlign: TextAlign.center)
+                    )
+                ),
                 // Determine if Themes Widget should show:
                 _displayThemesSettings
                   ? const ThemeSettingsWidget()
@@ -243,7 +245,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
             padding: const EdgeInsets.only(left: 25.0),
             child: SizedBox(
               height: 45,
-              width: 200,
+              width: 350,
               child: ElevatedButton(
                   onPressed: () => setState(() {
                     if (_displayTimerAudioSettings) {
@@ -255,16 +257,14 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: secondaryColor,
                     padding: const EdgeInsets.all(4),
-                    side: BorderSide(
-                      width: 1.0,
-                      color: primaryColor
-                    ),
+                    alignment: _displayTimerAudioSettings
+                      ? Alignment.center
+                      : Alignment.centerLeft
                   ),
                   child: Text(_displayTimerAudioSettings
                       ? 'Timer'
-                      : 'Timer             >',
+                      : 'Timer                                       >',
                       style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor),
-                      textAlign: TextAlign.center
                   )
               )
           )
@@ -275,7 +275,9 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
             ? const TimerAudioSettingsWidget()
             : Container(),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 10),
+        SizedBox(height: 1, child: Container(color: Colors.grey)),
+        const SizedBox(height: 10),
 
         ////////////////////////////
         // Buttons Submenu Button
@@ -284,7 +286,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
             padding: const EdgeInsets.only(left: 25.0),
             child: SizedBox(
               height: 45,
-              width: 200,
+              width: 350,
               child: ElevatedButton(
                   onPressed: () => setState(() {
                     if (_displayButtonAudioSettings) {
@@ -296,16 +298,14 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: secondaryColor,
                     padding: const EdgeInsets.all(4),
-                    side: BorderSide(
-                        width: 1.0,
-                        color: primaryColor
-                    ),
+                    alignment: _displayButtonAudioSettings
+                      ? Alignment.center
+                      : Alignment.centerLeft
                   ),
                   child: Text(_displayButtonAudioSettings
                       ? 'Buttons'
-                      : 'Buttons        >',
+                      : 'Buttons                                 >',
                       style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor),
-                      textAlign: TextAlign.center
                   )
               )
           )
