@@ -281,7 +281,14 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       ),
                                     );
                                   },
-                                );
+                                ).then((restartRequired) {
+                                  setState(() {
+                                    if (restartRequired == true) {
+                                      _changesRequiringRestartOccured = true;
+                                      Navigator.pop(context, _changesRequiringRestartOccured);
+                                    }
+                                  });
+                                });
                               },
                             ),
                             const Spacer(flex: 1),

@@ -49,6 +49,7 @@ var secondaryAccentColor = Colors.blueGrey;
 
 
 // Get Settings the User Previously Stored:
+// If none are found, return default settings
 Future<Map<String, dynamic>> getSavedUserSettings() async {
   // Access Settings from Memory
   final prefs = await SharedPreferences.getInstance();
@@ -79,6 +80,27 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   setupDarkOrLightMode(prefs.getBool('appInDarkMode') ?? appInDarkModeDefault);
 
   return settings;
+}
+
+// Remove all user saved settings
+void clearUserSettings() async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove('workDuration');
+  prefs.remove('restDuration');
+  prefs.remove('timeModifyValueAdd');
+  prefs.remove('timeModifyValueSub');
+  prefs.remove('appVolume');
+  prefs.remove('appMuted');
+  prefs.remove('appInTimerMode');
+  prefs.remove('timerAlarmEnabled');
+  prefs.remove('threeTwoOneCountdownEnabled');
+  prefs.remove('tenSecondWarningEnabled');
+  prefs.remove('modeSwitchAlertEnabled');
+  prefs.remove('restartButtonAudioEnabled');
+  prefs.remove('saveButtonAudioEnabled');
+  prefs.remove('cancelButtonAudioEnabled');
+  prefs.remove('switchButtonAudioEnabled');
+  prefs.remove('appInDarkMode');
 }
 
 // Method to update Work Time

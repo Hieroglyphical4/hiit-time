@@ -108,12 +108,34 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                   ? const ThemeSettingsWidget()
                   : Container(),
 
+                // Spacer between Theme Button and Restore Defaults
+                _displayAudioSettings || _displayThemesSettings
+                    ? const SizedBox(height: 60)
+                    : const SizedBox(height: 300),
 
-                // TODO Restore Defaults Button
-                // maybe have fixed to the bottom of the page?
+                ///////////////////////////
+                // Restore Defaults Button
+                ///////////////////////////
+                SizedBox(
+                    height: 50,
+                    width: 350,
+                    child: ElevatedButton(
+                        onPressed: () => setState(() {
+                          // TODO launch confirmation window
+                          clearUserSettings();
+                          Navigator.pop(context, true);
+                        }),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red.shade600,
+                          // shape: Rectangle(),
+                          padding: const EdgeInsets.all(4),
+                        ),
+                        child: const Text('Restore Defaults',
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1),
+                            textAlign: TextAlign.center))),
 
 
-                const SizedBox(height: 200),
+                const SizedBox(height: 20),
               ],
             ),
           ),
