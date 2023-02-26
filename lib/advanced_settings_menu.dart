@@ -81,7 +81,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                 // Audio Settings Button
                 ///////////////////////////
                 SizedBox(
-                  height: 90,
+                  height: 60,
                   width: 350,
                   child: ElevatedButton(
                       onPressed: () => setState(() {
@@ -99,8 +99,8 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                       ),
                       child: Text(_displayAudioSettings
                           ? 'Audio Settings'
-                          : '- Audio Settings -',
-                          style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1),
+                          : 'Audio Settings    >',
+                          style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1),
                           textAlign: TextAlign.center
                       )
                   )
@@ -117,7 +117,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                 // Theme Settings Button
                 ///////////////////////////
                 SizedBox(
-                    height: 90,
+                    height: 60,
                     width: 350,
                     child: ElevatedButton(
                         onPressed: () => setState(() {
@@ -135,8 +135,8 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         ),
                         child: Text(_displayThemesSettings
                             ? 'Themes'
-                            : '- Themes -',
-                            style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1),
+                            : 'Themes                   >',
+                            style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1),
                             textAlign: TextAlign.center))),
                 // Determine if Themes Widget should show:
                 _displayThemesSettings
@@ -145,7 +145,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 
                 // Spacer between Theme Button and Restore Defaults
                 _displayAudioSettings || _displayThemesSettings
-                    ? const SizedBox(height: 60)
+                    ? const SizedBox(height: 150)
                     : const SizedBox(height: 300),
 
                 ///////////////////////////
@@ -175,11 +175,10 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           padding: const EdgeInsets.all(4),
                         ),
                         child: const Text('Restore Defaults',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1),
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1),
                             textAlign: TextAlign.center)
                     )
                 ),
-
 
                 const SizedBox(height: 20),
               ],
@@ -210,7 +209,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
         Text('Coming Soon!',
           style: TextStyle(fontFamily: 'AstroSpace', fontSize: 40, color: primaryAccentColor, height: 1.1),
           textAlign: TextAlign.center),
-        const SizedBox(height: 400,),
+        const SizedBox(height: 100),
       ])
     );
   }
@@ -227,41 +226,48 @@ class AudioSettingsWidget extends StatefulWidget {
 }
 
 class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
-  bool _displayTimerAudioSettings = true;
-  bool _displayButtonAudioSettings = true;
+  bool _displayTimerAudioSettings = false;
+  bool _displayButtonAudioSettings = false;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 20),
         /////////////////////////
         // Timer Submenu Button
         /////////////////////////
-        SizedBox(
-            height: 45,
-            width: 200,
-            child: ElevatedButton(
-                onPressed: () => setState(() {
-                  if (_displayTimerAudioSettings) {
-                    _displayTimerAudioSettings = false;
-                  } else {
-                    _displayTimerAudioSettings = true;
-                  }
-                }),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: secondaryAccentColor,
-                  // shape: Rectangle(),
-                  padding: const EdgeInsets.all(4),
-                ),
-                child: Text(_displayTimerAudioSettings
-                    ? 'Timer'
-                    : '- Timer -',
-                    style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1),
-                    textAlign: TextAlign.center
-                )
-            )
+        Padding(
+            padding: const EdgeInsets.only(left: 25.0),
+            child: SizedBox(
+              height: 45,
+              width: 200,
+              child: ElevatedButton(
+                  onPressed: () => setState(() {
+                    if (_displayTimerAudioSettings) {
+                      _displayTimerAudioSettings = false;
+                    } else {
+                      _displayTimerAudioSettings = true;
+                    }
+                  }),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: secondaryColor,
+                    padding: const EdgeInsets.all(4),
+                    side: BorderSide(
+                      width: 1.0,
+                      color: primaryColor
+                    ),
+                  ),
+                  child: Text(_displayTimerAudioSettings
+                      ? 'Timer'
+                      : 'Timer             >',
+                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor),
+                      textAlign: TextAlign.center
+                  )
+              )
+          )
         ),
 
         // Determine if Timer Audio Submenu Widget should show:
@@ -274,29 +280,35 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
         ////////////////////////////
         // Buttons Submenu Button
         ////////////////////////////
-        SizedBox(
-            height: 45,
-            width: 200,
-            child: ElevatedButton(
-                onPressed: () => setState(() {
-                  if (_displayButtonAudioSettings) {
-                    _displayButtonAudioSettings = false;
-                  } else {
-                    _displayButtonAudioSettings = true;
-                  }
-                }),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: secondaryAccentColor,
-                  // shape: Rectangle(),
-                  padding: const EdgeInsets.all(4),
-                ),
-                child: Text(_displayButtonAudioSettings
-                    ? 'Buttons'
-                    : '- Buttons -',
-                    style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1),
-                    textAlign: TextAlign.center
-                )
-            )
+        Padding(
+            padding: const EdgeInsets.only(left: 25.0),
+            child: SizedBox(
+              height: 45,
+              width: 200,
+              child: ElevatedButton(
+                  onPressed: () => setState(() {
+                    if (_displayButtonAudioSettings) {
+                      _displayButtonAudioSettings = false;
+                    } else {
+                      _displayButtonAudioSettings = true;
+                    }
+                  }),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: secondaryColor,
+                    padding: const EdgeInsets.all(4),
+                    side: BorderSide(
+                        width: 1.0,
+                        color: primaryColor
+                    ),
+                  ),
+                  child: Text(_displayButtonAudioSettings
+                      ? 'Buttons'
+                      : 'Buttons        >',
+                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor),
+                      textAlign: TextAlign.center
+                  )
+              )
+          )
         ),
 
         // Determine if Timer Audio Submenu Widget should show:
