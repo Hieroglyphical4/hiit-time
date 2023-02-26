@@ -26,7 +26,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16, height: 1.1),
           ),
           content: const Text("Are you sure you want to restore all settings to their default?",
-            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+            style: TextStyle(fontSize: 14, height: 1.1),
           ),
           actions: [
             ElevatedButton(
@@ -235,38 +235,39 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 20),
         /////////////////////////
         // Timer Submenu Button
         /////////////////////////
-        Padding(
-            padding: const EdgeInsets.only(left: 25.0),
-            child: SizedBox(
-              height: 45,
-              width: 350,
-              child: ElevatedButton(
-                  onPressed: () => setState(() {
-                    if (_displayTimerAudioSettings) {
-                      _displayTimerAudioSettings = false;
-                    } else {
-                      _displayTimerAudioSettings = true;
-                    }
-                  }),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: secondaryColor,
-                    padding: const EdgeInsets.all(4),
-                    alignment: _displayTimerAudioSettings
-                      ? Alignment.center
-                      : Alignment.centerLeft
-                  ),
-                  child: Text(_displayTimerAudioSettings
-                      ? 'Timer'
-                      : 'Timer                                       >',
-                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor),
-                  )
-              )
+        SizedBox(
+          height: 45,
+          width: 350,
+          child: ElevatedButton(
+              onPressed: () => setState(() {
+                if (_displayTimerAudioSettings) {
+                  _displayTimerAudioSettings = false;
+                } else {
+                  _displayTimerAudioSettings = true;
+                }
+              }),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: secondaryColor,
+                padding: const EdgeInsets.all(4),
+              ),
+              child: Row(
+                children: [
+                  _displayTimerAudioSettings
+                    ? SizedBox(width: 100)
+                    : SizedBox(width: 10),
+                  const Icon(Icons.watch_later_outlined),
+                  const SizedBox(width: 10),
+                  Text(_displayTimerAudioSettings
+                    ? 'Timer'
+                    : '  Timer                                 >',
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor))
+                ],
+              ),
           )
         ),
 
@@ -282,32 +283,34 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
         ////////////////////////////
         // Buttons Submenu Button
         ////////////////////////////
-        Padding(
-            padding: const EdgeInsets.only(left: 25.0),
-            child: SizedBox(
-              height: 45,
-              width: 350,
-              child: ElevatedButton(
-                  onPressed: () => setState(() {
-                    if (_displayButtonAudioSettings) {
-                      _displayButtonAudioSettings = false;
-                    } else {
-                      _displayButtonAudioSettings = true;
-                    }
-                  }),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: secondaryColor,
-                    padding: const EdgeInsets.all(4),
-                    alignment: _displayButtonAudioSettings
-                      ? Alignment.center
-                      : Alignment.centerLeft
+        SizedBox(
+          height: 45,
+          width: 350,
+          child: ElevatedButton(
+              onPressed: () => setState(() {
+                if (_displayButtonAudioSettings) {
+                  _displayButtonAudioSettings = false;
+                } else {
+                  _displayButtonAudioSettings = true;
+                }
+              }),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: secondaryColor,
+                padding: const EdgeInsets.all(4),
+              ),
+              child: Row(
+                children: [
+                  _displayButtonAudioSettings
+                      ? SizedBox(width: 100)
+                      : SizedBox(width: 10),
+                  const Icon(Icons.touch_app_outlined),
+                  const SizedBox(width: 10),
+                  Text(_displayButtonAudioSettings
+                  ? 'Buttons'
+                      : '  Buttons                           >',
+                  style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor),
                   ),
-                  child: Text(_displayButtonAudioSettings
-                      ? 'Buttons'
-                      : 'Buttons                                 >',
-                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor),
-                  )
-              )
+                ],              )
           )
         ),
 
@@ -334,7 +337,7 @@ class TimerAudioSettingsWidget extends StatefulWidget {
 }
 
 class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
-  final double _textFontSize = 16;
+  final double _textFontSize = 18;
 
   void _onTimerAlarmChanged(bool value) {
     setState(() {
@@ -391,20 +394,18 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
     return Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           /////////////////////////////
           // Timer Alarm Settings
           /////////////////////////////
           Row(
             children: [
-              const SizedBox(width: 15),
-
+              const SizedBox(width: 30),
               Text('Timer Alarm',
                   style: TextStyle(
                       color: timerAlarmCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
-                      fontFamily: 'AstroSpace',
                       fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
@@ -415,26 +416,25 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                 value: timerAlarmCurrentlyEnabled,
                 onChanged: _onTimerAlarmChanged,
               ),
+              const SizedBox(width: 10),
             ],
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
 
           /////////////////////////////
           // 3-2-1 Countdown Settings
           /////////////////////////////
           Row(
             children: [
-              const SizedBox(width: 15),
-
+              const SizedBox(width: 30),
               Text('3-2-1 Countdown',
                   style: TextStyle(
                       color: threeTwoOneCountdownCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
-                      fontFamily: 'AstroSpace',
                       fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
@@ -445,26 +445,26 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                 value: threeTwoOneCountdownCurrentlyEnabled,
                 onChanged: _on321CountdownChanged,
               ),
+              const SizedBox(width: 10),
             ],
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
 
           /////////////////////////////
           // 10 Second Warning Settings
           /////////////////////////////
           Row(
             children: [
-              const SizedBox(width: 15),
+              const SizedBox(width: 30),
 
               Text('10 Second Warning',
                   style: TextStyle(
                       color: tenSecondWarningCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
-                      fontFamily: 'AstroSpace',
                       fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
@@ -475,25 +475,25 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                 value: tenSecondWarningCurrentlyEnabled,
                 onChanged: _onTenSecondWarningChanged,
               ),
+              const SizedBox(width: 10),
             ],
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           ///////////////////////////////
           // Mode Switch Audio Settings
           //////////////////////////////
           Row(
             children: [
-              const SizedBox(width: 15),
+              const SizedBox(width: 30),
 
               Text('Mode Switch Alert',
                   style: TextStyle(
                       color: modeSwitchAlertCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
-                      fontFamily: 'AstroSpace',
                       fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
@@ -504,13 +504,13 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                 value: modeSwitchAlertCurrentlyEnabled,
                 onChanged: _onModeSwitchAlertChanged,
               ),
-
+              const SizedBox(width: 10),
             ],
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
         ]
     );
   }
@@ -527,20 +527,8 @@ class ButtonAudioSettingsWidget extends StatefulWidget {
 }
 
 class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
-  final double _textFontSize = 16;
+  final double _textFontSize = 18;
 
-
-  // void _onModeSwitchAlertChanged(bool value) {
-  //   setState(() {
-  //     if (modeSwitchAlertCurrentlyEnabled) {
-  //       setBooleanSetting('modeSwitchAlertEnabled', false);
-  //       modeSwitchAlertCurrentlyEnabled = false;
-  //     } else {
-  //       setBooleanSetting('modeSwitchAlertEnabled', true);
-  //       modeSwitchAlertCurrentlyEnabled = true;
-  //     }
-  //   });
-  // }
 
   void _onRestartButtonAudioChanged(bool value) {
     setState(() {
@@ -595,20 +583,18 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
     return Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           ////////////////////////
           // Restart Button Audio
           ////////////////////////
           Row(
             children: [
-              const SizedBox(width: 20),
-
+              const SizedBox(width: 30),
               Text('Restart Button Audio',
                   style: TextStyle(
                       color: restartButtonAudioCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
-                      fontFamily: 'AstroSpace',
                       fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
@@ -619,26 +605,25 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                 value: restartButtonAudioCurrentlyEnabled,
                 onChanged: _onRestartButtonAudioChanged,
               ),
-
+              const SizedBox(width: 10),
             ],
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
 
           ///////////////////////
           // Save Button Audio
           ///////////////////////
           Row(
             children: [
-              const SizedBox(width: 15),
+              const SizedBox(width: 30),
               Text('Save Button Audio',
                   style: TextStyle(
                       color: saveButtonAudioCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
-                      fontFamily: 'AstroSpace',
                       fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
@@ -649,26 +634,25 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                 value: saveButtonAudioCurrentlyEnabled,
                 onChanged: _onSaveButtonAudioChanged,
               ),
+              const SizedBox(width: 10),
             ],
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
 
           /////////////////////////
           // Cancel Button Audio
           /////////////////////////
           Row(
             children: [
-              const SizedBox(width: 15),
-
+              const SizedBox(width: 30),
               Text('Cancel Button Audio',
                   style: TextStyle(
                       color: cancelButtonAudioCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
-                      fontFamily: 'AstroSpace',
                       fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
@@ -679,27 +663,25 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                 value: cancelButtonAudioCurrentlyEnabled,
                 onChanged: _onCancelButtonAudioChanged,
               ),
-
+              const SizedBox(width: 10),
             ],
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
 
           /////////////////////////
           // Switch Button Audio
           /////////////////////////
           Row(
             children: [
-              const SizedBox(width: 15),
-
+              const SizedBox(width: 30),
               Text('Switch Button Audio',
                   style: TextStyle(
                       color: switchButtonAudioCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
-                      fontFamily: 'AstroSpace',
                       fontSize: _textFontSize,
                       height: 1.1),
                   textAlign: TextAlign.center),
@@ -710,6 +692,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                 value: switchButtonAudioCurrentlyEnabled,
                 onChanged: _onSwitchButtonAudioChanged,
               ),
+              const SizedBox(width: 10),
             ],
           ),
         ]
