@@ -106,7 +106,6 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   cancelButtonAudioCurrentlyEnabled = prefs.getBool('cancelButtonAudioEnabled') ?? cancelButtonAudioEnabledDefault;
   switchButtonAudioCurrentlyEnabled = prefs.getBool('switchButtonAudioEnabled') ?? switchButtonAudioEnabledDefault;
 
-  // TODO Finish audio settings
   audioForModeSwitchAlertRest = prefs.getString('audioModeSwitchAlertRest') ?? audioModeSwitchAlertRestDefault;
   audioForModeSwitchAlertWork = prefs.getString('audioModeSwitchAlertWork') ?? audioModeSwitchAlertWorkDefault;
   audioForTimerAlarm = prefs.getString('audioTimerAlarm') ?? audioTimerAlarmDefault;
@@ -148,6 +147,19 @@ void clearUserSettings() async {
   prefs.remove('cancelButtonAudioEnabled');
   prefs.remove('switchButtonAudioEnabled');
   prefs.remove('appInDarkMode');
+
+  prefs.remove('audioModeSwitchAlertRest');
+  prefs.remove('audioModeSwitchAlertWork');
+  prefs.remove('audioTimerAlarm');
+  prefs.remove('audioTimerCountdownAtTen');
+  prefs.remove('audioTimerCountdownAtThree');
+  prefs.remove('audioTimerCountdownAtTwo');
+  prefs.remove('audioTimerCountdownAtOne');
+  prefs.remove('audioRestartButton');
+  prefs.remove('audioSaveButton');
+  prefs.remove('audioCancelButton');
+  prefs.remove('audioModeSwitchAlertEnabled');
+  prefs.remove('audioModeSwitchAlertDisabled');
 }
 
 // Method to update Work Time
@@ -184,6 +196,12 @@ Future<void> setAppVolume(double value) async {
 Future<void> setBooleanSetting(String setting, bool value) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setBool(setting, value);
+}
+
+// Reusable setter/getter for strings
+Future<void> setStringSetting(String setting, String value) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setString(setting, value);
 }
 
 void setupDarkOrLightMode(bool appInDarkMode) {
