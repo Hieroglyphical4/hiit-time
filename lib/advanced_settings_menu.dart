@@ -580,8 +580,8 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                       return const Center(
                         child: AudioChangerMenuWidget(
                           parentWidget: '10 Second Warning',
-                          options: ['Option 1', 'Option 2', 'Option 3'],
-                          isCheckedList: [true, false, false],
+                          options: ['Option 1', 'Option 2'],
+                          isCheckedList: [true, false],
                         ),
                       );
                     },
@@ -648,8 +648,8 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                       return const Center(
                         child: AudioChangerMenuWidget(
                           parentWidget: 'Mode Switch Alert',
-                          options: ['Option 1', 'Option 2', 'Option 3'],
-                          isCheckedList: [true, false, false],
+                          options: ['Option 1'],
+                          isCheckedList: [true],
                         ),
                       );
                     },
@@ -865,7 +865,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
 
 
 ////////////////////////////////////////////////
-// Widget to handle Changing Audio Settings (Over-Menu)
+// Widget to handle Changing Audio Settings (Overlay menu)
 ////////////////////////////////////////////////
 class AudioChangerMenuWidget extends StatefulWidget {
   final parentWidget;
@@ -902,7 +902,9 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Called from $_parentWidget"),
+        Text(_parentWidget,
+          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 35, height: 1.1),
+        ),
 
         // Dynamically create rows
         ListView.builder(
