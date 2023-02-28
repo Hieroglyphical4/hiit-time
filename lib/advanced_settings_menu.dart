@@ -407,75 +407,63 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
           /////////////////////////////
           // Timer Alarm Settings
           /////////////////////////////
-          Column(
+          Row(
             children: [
-              Row(
-                children: [
-                  const SizedBox(width: 30),
-                  Text('Timer Alarm',
-                      style: TextStyle(
-                          color: timerAlarmCurrentlyEnabled
-                              ? primaryColor
-                              : Colors.grey,
-                          fontSize: _textFontSize,
-                          height: 1.1),
-                      textAlign: TextAlign.center),
+              const SizedBox(width: 30),
+              Text('Timer Alarm',
+                  style: TextStyle(
+                      color: timerAlarmCurrentlyEnabled
+                          ? primaryColor
+                          : Colors.grey,
+                      fontSize: _textFontSize,
+                      height: 1.1),
+                  textAlign: TextAlign.center),
 
-                  const Spacer(),
+              const Spacer(),
 
-                  // TODO Create button
-                  IconButton(
-                    iconSize: 35,
-                    color: primaryColor,
-                    icon: const Icon(Icons.audio_file_outlined),
-                    onPressed: () {
-                      HapticFeedback.mediumImpact();
+              IconButton(
+                iconSize: 35,
+                color: primaryColor,
+                icon: const Icon(Icons.audio_file_outlined),
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
 
-                      // Launch Audio Changer menu
-                      showGeneralDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        barrierLabel: MaterialLocalizations.of(context)
-                            .modalBarrierDismissLabel,
-                        barrierColor: Colors.black45,
-                        transitionDuration: const Duration(milliseconds: 200),
+                  // Launch Audio Changer menu
+                  showGeneralDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    barrierLabel: MaterialLocalizations.of(context)
+                        .modalBarrierDismissLabel,
+                    barrierColor: Colors.black45,
+                    transitionDuration: const Duration(milliseconds: 200),
 
-                        // ANY Widget can be passed here
-                        pageBuilder: (BuildContext buildContext,
-                            Animation animation,
-                            Animation secondaryAnimation) {
-                          return const Center(
-                            child: AudioChangerMenuWidget(
-                                parentWidget: 'Timer Alarm'
-                            ),
-                          );
-                        },
-                      ).then((restartRequired) {
-                        setState(() {
-                          //
-                        });
-                      });
+                    // ANY Widget can be passed here
+                    pageBuilder: (BuildContext buildContext,
+                        Animation animation,
+                        Animation secondaryAnimation) {
+                      return const Center(
+                        child: AudioChangerMenuWidget(
+                          parentWidget: 'Timer Alarm',
+                          options: ['Option 1', 'Option 2', 'Option 3'],
+                          isCheckedList: [true, false, false],
+                        ),
+                      );
                     },
-                  ),
-
-                  const SizedBox(width: 20),
-
-                  Switch(
-                    value: timerAlarmCurrentlyEnabled,
-                    onChanged: _onTimerAlarmChanged,
-                  ),
-                  const SizedBox(width: 10),
-                ],
+                  ).then((restartRequired) {
+                    setState(() {
+                      //
+                    });
+                  });
+                },
               ),
 
-              // If you want to have things appear under the text and switch
-              // Row(
-              //   children: [
-              //     // const SizedBox(width: 60),
-              //     Spacer(),
-              //     Spacer(),
-              //   ],
-              // )
+              const SizedBox(width: 20),
+
+              Switch(
+                value: timerAlarmCurrentlyEnabled,
+                onChanged: _onTimerAlarmChanged,
+              ),
+              const SizedBox(width: 10),
             ],
           ),
 
@@ -522,7 +510,9 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                         Animation secondaryAnimation) {
                       return const Center(
                         child: AudioChangerMenuWidget(
-                            parentWidget: '3-2-1 Countdown'
+                          parentWidget: '3-2-1 Countdown',
+                          options: ['Option 1', 'Option 2', 'Option 3'],
+                          isCheckedList: [false, true, false],
                         ),
                       );
                     },
@@ -589,7 +579,9 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                         Animation secondaryAnimation) {
                       return const Center(
                         child: AudioChangerMenuWidget(
-                            parentWidget: '10 Second Warning'
+                          parentWidget: '10 Second Warning',
+                          options: ['Option 1', 'Option 2', 'Option 3'],
+                          isCheckedList: [true, false, false],
                         ),
                       );
                     },
@@ -655,7 +647,9 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                         Animation secondaryAnimation) {
                       return const Center(
                         child: AudioChangerMenuWidget(
-                            parentWidget: 'Mode Switch Alert'
+                          parentWidget: 'Mode Switch Alert',
+                          options: ['Option 1', 'Option 2', 'Option 3'],
+                          isCheckedList: [true, false, false],
                         ),
                       );
                     },
@@ -875,10 +869,14 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
 ////////////////////////////////////////////////
 class AudioChangerMenuWidget extends StatefulWidget {
   final parentWidget;
+  final List<String> options;
+  final List<bool> isCheckedList;
 
   const AudioChangerMenuWidget({
     super.key,
-    required this.parentWidget
+    required this.parentWidget,
+    required this.options,
+    required this.isCheckedList
   });
 
   @override
@@ -888,10 +886,15 @@ class AudioChangerMenuWidget extends StatefulWidget {
 class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
   final double _textFontSize = 18;
   late String _parentWidget = '';
+  late List<String> _options;
+  late List<bool> _isCheckedList;
 
   @override
   void initState() {
+    super.initState();
     _parentWidget = widget.parentWidget;
+    _options = widget.options;
+    _isCheckedList = List.from(widget.isCheckedList);
   }
 
   @override
@@ -901,11 +904,21 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
       children: [
         Text("Called from $_parentWidget"),
 
-        // TODO Dynamically create rows
-        Row(
-          children: [
-
-          ],
+        // Dynamically create rows
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: _options.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Card(
+              child: ListTile(
+                title: Text(_options[index]),
+                leading: Checkbox(
+                  value: false,
+                  onChanged: (bool? value) {},
+                ),
+              ),
+            );
+          },
         ),
       ],
     );
