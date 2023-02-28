@@ -151,22 +151,22 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         // Update: 3 separate checks on 3-2-1 instead of lumping audio into one
         if (_currentDuration == 3 && widget.isRunning && _threeSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
-          _audioPlayer.play(AssetSource('sounds/Amplified/SalliThree.mp3'));
+          _audioPlayer.play(AssetSource(audioForTimerCountdownAtThree));
           _threeSecondQuePlayed = true;
         }
         if (_currentDuration == 2 && widget.isRunning && _twoSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
-          _audioPlayer.play(AssetSource('sounds/Amplified/SalliTwo.mp3'));
+          _audioPlayer.play(AssetSource(audioForTimerCountdownAtTwo));
           _twoSecondQuePlayed = true;
         }
         if (_currentDuration == 1 && widget.isRunning && _oneSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
-          _audioPlayer.play(AssetSource('sounds/Amplified/SalliOne1.mp3'));
+          _audioPlayer.play(AssetSource(audioForTimerCountdownAtOne));
           _oneSecondQuePlayed = true;
         }
         if (_currentDuration == 10 && widget.isRunning && _tenSecondQuePlayed == false && !appCurrentlyMuted && tenSecondWarningCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
-          _audioPlayer.play(AssetSource('sounds/Amplified/JoeyTenAmped2.mp3'));
+          _audioPlayer.play(AssetSource(audioForTimerCountdownAtTen));
           _tenSecondQuePlayed = true;
         }
         _timerText = 'Timer Mode';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// General Setting Default Values:
+/// General Setting Default Values:
 int defaultWorkDuration = 45;
 int defaultRestDuration = 30;
 
@@ -14,7 +14,7 @@ bool appInTimerModeDefault = true;
 bool appInDarkModeDefault = true;
 bool appMutedDefault = false;
 
-// Advanced Menu Default Settings:
+/// Advanced Menu Default Settings:
 bool timerAlarmEnabledDefault = true;
 bool threeTwoOneCountdownEnabledDefault = true;
 bool tenSecondWarningEnabledDefault = true;
@@ -25,7 +25,24 @@ bool saveButtonAudioEnabledDefault = true;
 bool cancelButtonAudioEnabledDefault = true;
 bool switchButtonAudioEnabledDefault = true;
 
-// Current settings to be checked during code execution
+/// Audio Related Default Settings:
+var audioModeSwitchAlertRestDefault = 'sounds/Amplified/Rest-Voice-salli-Amped2.mp3';
+var audioModeSwitchAlertWorkDefault = 'sounds/Amplified/Work-Voice-salli-Amped2.mp3';
+var audioTimerAlarmDefault = 'sounds/Amplified/PianoAlarmAmped.mp3';
+var audioTimerCountdownAtTenDefault = 'sounds/Amplified/JoeyTenAmped2.mp3';
+var audioTimerCountdownAtThreeDefault = 'sounds/Amplified/SalliThree.mp3';
+var audioTimerCountdownAtTwoDefault = 'sounds/Amplified/SalliTwo.mp3';
+var audioTimerCountdownAtOneDefault = 'sounds/Amplified/SalliOne1.mp3';
+
+// buttons:
+var audioSaveButtonDefault = 'sounds/Correct1.mp3';
+var audioCancelButtonDefault = 'sounds/Woosh-spaced.mp3';
+var audioRestartButtonDefault = 'sounds/Selection1Reversed.mp3';
+var audioModeSwitchAlertEnabledDefault = 'sounds/SwitchAndBeep1.mp3';
+var audioModeSwitchAlertDisabledDefault = 'sounds/Switch1.mp3';
+
+
+/// Current settings to be checked during code execution
 bool appCurrentlyMuted = appMutedDefault;
 bool appCurrentlyInDarkMode = appInDarkModeDefault;
 bool appCurrentlyInTimerMode = appInTimerModeDefault;
@@ -40,6 +57,20 @@ bool saveButtonAudioCurrentlyEnabled = saveButtonAudioEnabledDefault;
 bool cancelButtonAudioCurrentlyEnabled = cancelButtonAudioEnabledDefault;
 bool switchButtonAudioCurrentlyEnabled = switchButtonAudioEnabledDefault;
 
+var audioForModeSwitchAlertRest = audioModeSwitchAlertRestDefault;
+var audioForModeSwitchAlertWork = audioModeSwitchAlertWorkDefault;
+var audioForTimerAlarm = audioTimerAlarmDefault;
+var audioForTimerCountdownAtTen = audioTimerCountdownAtTenDefault;
+var audioForTimerCountdownAtThree = audioTimerCountdownAtThreeDefault;
+var audioForTimerCountdownAtTwo = audioTimerCountdownAtTwoDefault;
+var audioForTimerCountdownAtOne = audioTimerCountdownAtOneDefault;
+
+var audioForRestartButton = audioRestartButtonDefault;
+var audioForSaveButton = audioSaveButtonDefault;
+var audioForCancelButton = audioCancelButtonDefault;
+var audioForModeSwitchAlertEnabled = audioModeSwitchAlertEnabledDefault;
+var audioForModeSwitchAlertDisabled = audioModeSwitchAlertDisabledDefault;
+
 
 // Dark mode default colors
 var primaryColor = Colors.white;
@@ -48,8 +79,8 @@ var primaryAccentColor = Colors.blue.shade400;
 var secondaryAccentColor = Colors.blueGrey;
 
 
-// Get Settings the User Previously Stored:
-// If none are found, return default settings
+/// Get Settings the User Previously Stored:
+/// If none are found, return default settings
 Future<Map<String, dynamic>> getSavedUserSettings() async {
   // Access Settings from Memory
   final prefs = await SharedPreferences.getInstance();
@@ -74,6 +105,22 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   saveButtonAudioCurrentlyEnabled = prefs.getBool('saveButtonAudioEnabled') ?? saveButtonAudioEnabledDefault;
   cancelButtonAudioCurrentlyEnabled = prefs.getBool('cancelButtonAudioEnabled') ?? cancelButtonAudioEnabledDefault;
   switchButtonAudioCurrentlyEnabled = prefs.getBool('switchButtonAudioEnabled') ?? switchButtonAudioEnabledDefault;
+
+  // TODO Finish audio settings
+  audioForModeSwitchAlertRest = prefs.getString('audioModeSwitchAlertRest') ?? audioModeSwitchAlertRestDefault;
+  audioForModeSwitchAlertWork = prefs.getString('audioModeSwitchAlertWork') ?? audioModeSwitchAlertWorkDefault;
+  audioForTimerAlarm = prefs.getString('audioTimerAlarm') ?? audioTimerAlarmDefault;
+
+  audioForTimerCountdownAtTen = prefs.getString('audioTimerCountdownAtTen') ?? audioTimerCountdownAtTenDefault;
+  audioForTimerCountdownAtThree = prefs.getString('audioTimerCountdownAtThree') ?? audioTimerCountdownAtThreeDefault;
+  audioForTimerCountdownAtTwo = prefs.getString('audioTimerCountdownAtTwo') ?? audioTimerCountdownAtTwoDefault;
+  audioForTimerCountdownAtOne = prefs.getString('audioTimerCountdownAtOne') ?? audioTimerCountdownAtOneDefault;
+
+  audioForRestartButton = prefs.getString('audioRestartButton') ?? audioRestartButtonDefault;
+  audioForSaveButton = prefs.getString('audioSaveButton') ?? audioSaveButtonDefault;
+  audioForCancelButton = prefs.getString('audioCancelButton') ?? audioCancelButtonDefault;
+  audioForModeSwitchAlertEnabled = prefs.getString('audioModeSwitchAlertEnabled') ?? audioModeSwitchAlertEnabledDefault;
+  audioForModeSwitchAlertDisabled = prefs.getString('audioModeSwitchAlertDisabled') ?? audioModeSwitchAlertDisabledDefault;
 
 
   // Call Method to assign App Colors

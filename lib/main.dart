@@ -142,13 +142,13 @@ class _MyAppState extends State<MyApp> {
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
       if (!appCurrentlyMuted && modeSwitchAlertCurrentlyEnabled) {
-        _audioPlayer2.play(AssetSource('sounds/Amplified/Rest-Voice-salli-Amped2.mp3'));
+        _audioPlayer2.play(AssetSource(audioForModeSwitchAlertRest));
       }
       _duration = savedRestDuration;
       _restDuration = savedWorkDuration;
     } else {
       if (!appCurrentlyMuted && modeSwitchAlertCurrentlyEnabled) {
-        _audioPlayer2.play(AssetSource('sounds/Amplified/Work-Voice-salli-Amped2.mp3'));
+        _audioPlayer2.play(AssetSource(audioForModeSwitchAlertWork));
       }
       _duration = savedWorkDuration;
       _restDuration = savedRestDuration;
@@ -357,7 +357,7 @@ class _MyAppState extends State<MyApp> {
                               if (!appCurrentlyMuted && timerAlarmCurrentlyEnabled) {
                                 // _audioPlayer.play(AssetSource('sounds/alarm-beep-beep-1.mp3'));
                                 // _audioPlayer.play(AssetSource('sounds/alarm-standard-1.mp3'));
-                                _audioPlayer.play(AssetSource('sounds/Amplified/PianoAlarmAmped.mp3'));
+                                _audioPlayer.play(AssetSource(audioForTimerAlarm));
                                 _audioPlayer.setReleaseMode(ReleaseMode.loop);
                               }
                             }
@@ -533,7 +533,7 @@ class _MyAppState extends State<MyApp> {
                       onPressed: () => setState(() {
                             HapticFeedback.lightImpact();
                             if (!appCurrentlyMuted && restartButtonAudioCurrentlyEnabled) {
-                              _audioPlayer.play(AssetSource('sounds/Selection1Reversed.mp3'));
+                              _audioPlayer.play(AssetSource(audioForRestartButton));
                             }
                             resetTimer();
                           }),

@@ -139,7 +139,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
       if (appCurrentlyInTimerMode) {
         widget.audio.setReleaseMode(ReleaseMode.stop);
         if (!appCurrentlyMuted && switchButtonAudioCurrentlyEnabled) {
-          widget.audio.play(AssetSource('sounds/SwitchAndBeep1.mp3'));
+          widget.audio.play(AssetSource(audioForModeSwitchAlertEnabled));
       }
         // Call Settings.dart Setter
         setBooleanSetting('appInTimerMode', false);
@@ -148,7 +148,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
         // widget.audio.setVolume(_appVolume);
         widget.audio.setReleaseMode(ReleaseMode.stop);
         if (!appCurrentlyMuted && switchButtonAudioCurrentlyEnabled) {
-          widget.audio.play(AssetSource('sounds/Switch1.mp3'));
+          widget.audio.play(AssetSource(audioForModeSwitchAlertDisabled));
         }
         // Call Settings.dart Setter
         setBooleanSetting('appInTimerMode', true);
@@ -714,7 +714,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       // widget.audio.setVolume(_appVolume);
                                       widget.audio.setReleaseMode(ReleaseMode.stop);
                                       if (!appCurrentlyMuted && saveButtonAudioCurrentlyEnabled) {
-                                        widget.audio.play(AssetSource('sounds/Correct1.mp3'));
+                                        widget.audio.play(AssetSource(audioForSaveButton));
                                         widget.audio.setReleaseMode(ReleaseMode.stop);
                                       }
                                       // Check if settings have changed
@@ -844,7 +844,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       if (_settingsChanged) {
                                         // widget.audio.setVolume(_appVolume);
                                         if (!appCurrentlyMuted && cancelButtonAudioCurrentlyEnabled) {
-                                          widget.audio.play(AssetSource('sounds/Woosh-spaced.mp3'));
+                                          widget.audio.play(AssetSource(audioForCancelButton));
                                           widget.audio.setReleaseMode(ReleaseMode.stop);
                                         }
                                       }

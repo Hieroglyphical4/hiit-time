@@ -75,7 +75,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
               // direction: Axis.vertical,
               children: [
                 // Body of Settings!
-                const SizedBox(height: 5),
+                const SizedBox(height: 115),
 
                 ///////////////////////////
                 // Audio Settings Button
@@ -140,6 +140,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                             textAlign: TextAlign.center)
                     )
                 ),
+
                 // Determine if Themes Widget should show:
                 _displayThemesSettings
                   ? const ThemeSettingsWidget()
@@ -182,7 +183,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                     )
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 110),
               ],
             ),
           ),
@@ -207,11 +208,11 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
   Widget build(BuildContext context) {
     return Center(
       child: Column(children: [
-        const SizedBox(height: 50),
+        const SizedBox(height: 55),
         Text('Coming Soon!',
           style: TextStyle(fontFamily: 'AstroSpace', fontSize: 40, color: primaryAccentColor, height: 1.1),
           textAlign: TextAlign.center),
-        const SizedBox(height: 100),
+        const SizedBox(height: 55),
       ])
     );
   }
