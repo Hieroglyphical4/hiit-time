@@ -26,20 +26,20 @@ bool cancelButtonAudioEnabledDefault = true;
 bool switchButtonAudioEnabledDefault = true;
 
 /// Audio Related Default Settings:
-var audioModeSwitchAlertRestDefault = 'sounds/Amplified/Rest-Voice-salli-Amped2.mp3';
-var audioModeSwitchAlertWorkDefault = 'sounds/Amplified/Work-Voice-salli-Amped2.mp3';
-var audioTimerAlarmDefault = 'sounds/Amplified/PianoAlarmAmped.mp3';
-var audioTimerCountdownAtTenDefault = 'sounds/Amplified/JoeyTenAmped2.mp3';
-var audioTimerCountdownAtThreeDefault = 'sounds/Amplified/SalliThree.mp3';
-var audioTimerCountdownAtTwoDefault = 'sounds/Amplified/SalliTwo.mp3';
-var audioTimerCountdownAtOneDefault = 'sounds/Amplified/SalliOne1.mp3';
+var audioModeSwitchAlertRestDefault = assetSalliRest;
+var audioModeSwitchAlertWorkDefault = assetSalliWork;
+var audioTimerAlarmDefault = assetAlarmPiano;
+var audioTimerCountdownAtTenDefault = assetJoeyTen;
+var audioTimerCountdownAtThreeDefault = assetSalliThree;
+var audioTimerCountdownAtTwoDefault = assetSalliTwo;
+var audioTimerCountdownAtOneDefault = assetSalliOne;
 
 // buttons:
-var audioSaveButtonDefault = 'sounds/Correct1.mp3';
-var audioCancelButtonDefault = 'sounds/Woosh-spaced.mp3';
-var audioRestartButtonDefault = 'sounds/Selection1Reversed.mp3';
-var audioModeSwitchAlertEnabledDefault = 'sounds/SwitchAndBeep1.mp3';
-var audioModeSwitchAlertDisabledDefault = 'sounds/Switch1.mp3';
+var audioSaveButtonDefault = assetCorrect;
+var audioCancelButtonDefault = assetWoosh;
+var audioRestartButtonDefault = assetSelectionReversed;
+var audioModeSwitchAlertEnabledDefault = assetSwitchAndBeep;
+var audioModeSwitchAlertDisabledDefault = assetSwitch;
 
 
 /// Current settings to be checked during code execution
@@ -219,3 +219,25 @@ void setupDarkOrLightMode(bool appInDarkMode) {
     secondaryAccentColor = Colors.blueGrey;
   }
 }
+
+/// Audio Assets:
+
+// Alarms
+var assetAlarmPiano = 'sounds/Amplified/PianoAlarmAmped.mp3';
+var assetAlarmBeepBeep = 'sounds/alarm-beep-beep-1.mp3';
+var assetAlarmStandard = 'sounds/alarm-standard-1.mp3';
+
+// AI Voices
+var assetSalliRest = 'sounds/Amplified/Rest-Voice-salli-Amped2.mp3';
+var assetSalliWork = 'sounds/Amplified/Work-Voice-salli-Amped2.mp3';
+var assetJoeyTen = 'sounds/Amplified/JoeyTenAmped2.mp3';
+var assetSalliThree = 'sounds/Amplified/SalliThree.mp3';
+var assetSalliTwo = 'sounds/Amplified/SalliTwo.mp3';
+var assetSalliOne = 'sounds/Amplified/SalliOne1.mp3';
+
+// buttons:
+var assetCorrect = 'sounds/Correct1.mp3';
+var assetWoosh = 'sounds/Woosh-spaced.mp3';
+var assetSelectionReversed = 'sounds/Selection1Reversed.mp3';
+var assetSwitchAndBeep = 'sounds/SwitchAndBeep1.mp3';
+var assetSwitch = 'sounds/Switch1.mp3';

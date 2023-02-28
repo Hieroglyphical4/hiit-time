@@ -275,8 +275,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                     widget.restDuration)
                                 : widget.restDuration.toString(),
 
-                            style: Theme.of(context).textTheme.bodyText1!
-                                .copyWith(
+                            style: Theme.of(context).textTheme.bodyText1!.copyWith(
                                     color: widget.timerInRestMode
                                         ? primaryColor
                                         : Colors.blue.shade300,

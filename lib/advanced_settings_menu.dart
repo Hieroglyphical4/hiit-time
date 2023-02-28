@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'Config/settings.dart';
 
 // This is the Parent Widget from which other settings menus are opened
@@ -339,6 +340,13 @@ class TimerAudioSettingsWidget extends StatefulWidget {
 
 class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
   final double _textFontSize = 18;
+  String _currentTimerAlarm = 'Piano Alarm'; // TODO Create map from settings to user version of asset
+
+  final List<String> _timerAlarmOptions = [
+    'Piano Alarm',
+    'Beep Beep',
+    'Standard',
+  ];
 
   void _onTimerAlarmChanged(bool value) {
     setState(() {
@@ -399,25 +407,75 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
           /////////////////////////////
           // Timer Alarm Settings
           /////////////////////////////
-          Row(
+          Column(
             children: [
-              const SizedBox(width: 30),
-              Text('Timer Alarm',
-                  style: TextStyle(
-                      color: timerAlarmCurrentlyEnabled
-                          ? primaryColor
-                          : Colors.grey,
-                      fontSize: _textFontSize,
-                      height: 1.1),
-                  textAlign: TextAlign.center),
+              Row(
+                children: [
+                  const SizedBox(width: 30),
+                  Text('Timer Alarm',
+                      style: TextStyle(
+                          color: timerAlarmCurrentlyEnabled
+                              ? primaryColor
+                              : Colors.grey,
+                          fontSize: _textFontSize,
+                          height: 1.1),
+                      textAlign: TextAlign.center),
 
-              const Spacer(),
+                  const Spacer(),
 
-              Switch(
-                value: timerAlarmCurrentlyEnabled,
-                onChanged: _onTimerAlarmChanged,
+                  // TODO Create button
+                  IconButton(
+                    iconSize: 35,
+                    color: primaryColor,
+                    icon: const Icon(Icons.audio_file_outlined),
+                    onPressed: () {
+                      HapticFeedback.mediumImpact();
+
+                      // Launch Audio Changer menu
+                      showGeneralDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        barrierLabel: MaterialLocalizations.of(context)
+                            .modalBarrierDismissLabel,
+                        barrierColor: Colors.black45,
+                        transitionDuration: const Duration(milliseconds: 200),
+
+                        // ANY Widget can be passed here
+                        pageBuilder: (BuildContext buildContext,
+                            Animation animation,
+                            Animation secondaryAnimation) {
+                          return const Center(
+                            child: AudioChangerMenuWidget(
+                                parentWidget: 'Timer Alarm'
+                            ),
+                          );
+                        },
+                      ).then((restartRequired) {
+                        setState(() {
+                          //
+                        });
+                      });
+                    },
+                  ),
+
+                  const SizedBox(width: 20),
+
+                  Switch(
+                    value: timerAlarmCurrentlyEnabled,
+                    onChanged: _onTimerAlarmChanged,
+                  ),
+                  const SizedBox(width: 10),
+                ],
               ),
-              const SizedBox(width: 10),
+
+              // If you want to have things appear under the text and switch
+              // Row(
+              //   children: [
+              //     // const SizedBox(width: 60),
+              //     Spacer(),
+              //     Spacer(),
+              //   ],
+              // )
             ],
           ),
 
@@ -441,6 +499,42 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                   textAlign: TextAlign.center),
 
               const Spacer(),
+
+              IconButton(
+                iconSize: 35,
+                color: primaryColor,
+                icon: const Icon(Icons.audio_file_outlined),
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+
+                  // Launch Audio Changer menu
+                  showGeneralDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    barrierLabel: MaterialLocalizations.of(context)
+                        .modalBarrierDismissLabel,
+                    barrierColor: Colors.black45,
+                    transitionDuration: const Duration(milliseconds: 200),
+
+                    // ANY Widget can be passed here
+                    pageBuilder: (BuildContext buildContext,
+                        Animation animation,
+                        Animation secondaryAnimation) {
+                      return const Center(
+                        child: AudioChangerMenuWidget(
+                            parentWidget: '3-2-1 Countdown'
+                        ),
+                      );
+                    },
+                  ).then((restartRequired) {
+                    setState(() {
+                      //
+                    });
+                  });
+                },
+              ),
+
+              const SizedBox(width: 20),
 
               Switch(
                 value: threeTwoOneCountdownCurrentlyEnabled,
@@ -472,6 +566,43 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
 
               const Spacer(),
 
+
+              IconButton(
+                iconSize: 35,
+                color: primaryColor,
+                icon: const Icon(Icons.audio_file_outlined),
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+
+                  // Launch Audio Changer menu
+                  showGeneralDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    barrierLabel: MaterialLocalizations.of(context)
+                        .modalBarrierDismissLabel,
+                    barrierColor: Colors.black45,
+                    transitionDuration: const Duration(milliseconds: 200),
+
+                    // ANY Widget can be passed here
+                    pageBuilder: (BuildContext buildContext,
+                        Animation animation,
+                        Animation secondaryAnimation) {
+                      return const Center(
+                        child: AudioChangerMenuWidget(
+                            parentWidget: '10 Second Warning'
+                        ),
+                      );
+                    },
+                  ).then((restartRequired) {
+                    setState(() {
+                      //
+                    });
+                  });
+                },
+              ),
+
+              const SizedBox(width: 20),
+
               Switch(
                 value: tenSecondWarningCurrentlyEnabled,
                 onChanged: _onTenSecondWarningChanged,
@@ -500,6 +631,43 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                   textAlign: TextAlign.center),
 
               const Spacer(),
+
+
+              IconButton(
+                iconSize: 35,
+                color: primaryColor,
+                icon: const Icon(Icons.audio_file_outlined),
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+
+                  // Launch Audio Changer menu
+                  showGeneralDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    barrierLabel: MaterialLocalizations.of(context)
+                        .modalBarrierDismissLabel,
+                    barrierColor: Colors.black45,
+                    transitionDuration: const Duration(milliseconds: 200),
+
+                    // ANY Widget can be passed here
+                    pageBuilder: (BuildContext buildContext,
+                        Animation animation,
+                        Animation secondaryAnimation) {
+                      return const Center(
+                        child: AudioChangerMenuWidget(
+                            parentWidget: 'Mode Switch Alert'
+                        ),
+                      );
+                    },
+                  ).then((restartRequired) {
+                    setState(() {
+                      //
+                    });
+                  });
+                },
+              ),
+
+              const SizedBox(width: 20),
 
               Switch(
                 value: modeSwitchAlertCurrentlyEnabled,
@@ -697,6 +865,49 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
             ],
           ),
         ]
+    );
+  }
+}
+
+
+////////////////////////////////////////////////
+// Widget to handle Changing Audio Settings (Over-Menu)
+////////////////////////////////////////////////
+class AudioChangerMenuWidget extends StatefulWidget {
+  final parentWidget;
+
+  const AudioChangerMenuWidget({
+    super.key,
+    required this.parentWidget
+  });
+
+  @override
+  AudioChangerMenuWidgetState createState() => AudioChangerMenuWidgetState();
+}
+
+class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
+  final double _textFontSize = 18;
+  late String _parentWidget = '';
+
+  @override
+  void initState() {
+    _parentWidget = widget.parentWidget;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("Called from $_parentWidget"),
+
+        // TODO Dynamically create rows
+        Row(
+          children: [
+
+          ],
+        ),
+      ],
     );
   }
 }

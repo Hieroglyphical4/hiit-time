@@ -355,8 +355,6 @@ class _MyAppState extends State<MyApp> {
 
                               // Sound the Alarm:
                               if (!appCurrentlyMuted && timerAlarmCurrentlyEnabled) {
-                                // _audioPlayer.play(AssetSource('sounds/alarm-beep-beep-1.mp3'));
-                                // _audioPlayer.play(AssetSource('sounds/alarm-standard-1.mp3'));
                                 _audioPlayer.play(AssetSource(audioForTimerAlarm));
                                 _audioPlayer.setReleaseMode(ReleaseMode.loop);
                               }
