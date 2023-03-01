@@ -526,7 +526,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                       return Center(
                         child: AudioChangerMenuWidget(
                           parentWidget: '3-2-1 Countdown',
-                          options: ['Option 1', 'Option 2', 'Option 3'],
+                          options: [],
                         ),
                       );
                     },
