@@ -18,7 +18,8 @@ bool appMutedDefault = false;
 bool timerAlarmEnabledDefault = true;
 bool threeTwoOneCountdownEnabledDefault = true;
 bool tenSecondWarningEnabledDefault = true;
-bool modeSwitchAlertEnabledDefault = true;
+bool alertWorkModeStartedEnabledDefault = true;
+bool alertRestModeStartedEnabledDefault = true;
 
 bool restartButtonAudioEnabledDefault = true;
 bool saveButtonAudioEnabledDefault = true;
@@ -26,8 +27,8 @@ bool cancelButtonAudioEnabledDefault = true;
 bool switchButtonAudioEnabledDefault = true;
 
 /// Audio Related Default Settings:
-var audioModeSwitchAlertRestDefault = assetSalliRest;
-var audioModeSwitchAlertWorkDefault = assetSalliWork;
+var audioAlertWorkModeStartedDefault = assetSalliWork;
+var audioAlertRestModeStartedDefault = assetSalliRest;
 var audioTimerAlarmDefault = assetAlarmPiano;
 var audioTimerCountdownAtTenDefault = assetJoeyTen;
 var audioTimerCountdownAtThreeDefault = assetSalliThree;
@@ -38,8 +39,8 @@ var audioTimerCountdownAtOneDefault = assetSalliOne;
 var audioSaveButtonDefault = assetCorrect;
 var audioCancelButtonDefault = assetWoosh;
 var audioRestartButtonDefault = assetSelectionReversed;
-var audioModeSwitchAlertEnabledDefault = assetSwitchAndBeep;
-var audioModeSwitchAlertDisabledDefault = assetSwitch;
+var audioSwitchButtonEnabledDefault = assetSwitchAndBeep;
+var audioSwitchButtonDisabledDefault = assetSwitch;
 
 
 /// Current settings to be checked during code execution
@@ -50,15 +51,18 @@ bool appCurrentlyInTimerMode = appInTimerModeDefault;
 bool timerAlarmCurrentlyEnabled = timerAlarmEnabledDefault;
 bool threeTwoOneCountdownCurrentlyEnabled = threeTwoOneCountdownEnabledDefault;
 bool tenSecondWarningCurrentlyEnabled = tenSecondWarningEnabledDefault;
-bool modeSwitchAlertCurrentlyEnabled = modeSwitchAlertEnabledDefault;
+bool alertWorkModeStartedCurrentlyEnabled = alertWorkModeStartedEnabledDefault;
+bool alertRestModeStartedCurrentlyEnabled = alertRestModeStartedEnabledDefault;
 
 bool restartButtonAudioCurrentlyEnabled = restartButtonAudioEnabledDefault;
 bool saveButtonAudioCurrentlyEnabled = saveButtonAudioEnabledDefault;
 bool cancelButtonAudioCurrentlyEnabled = cancelButtonAudioEnabledDefault;
 bool switchButtonAudioCurrentlyEnabled = switchButtonAudioEnabledDefault;
 
-var audioForModeSwitchAlertRest = audioModeSwitchAlertRestDefault;
-var audioForModeSwitchAlertWork = audioModeSwitchAlertWorkDefault;
+double appCurrentVolume = defaultVolume;
+
+var audioForAlertWorkModeStarted = audioAlertWorkModeStartedDefault;
+var audioForAlertRestModeStarted = audioAlertRestModeStartedDefault;
 var audioForTimerAlarm = audioTimerAlarmDefault;
 var audioForTimerCountdownAtTen = audioTimerCountdownAtTenDefault;
 var audioForTimerCountdownAtThree = audioTimerCountdownAtThreeDefault;
@@ -68,8 +72,8 @@ var audioForTimerCountdownAtOne = audioTimerCountdownAtOneDefault;
 var audioForRestartButton = audioRestartButtonDefault;
 var audioForSaveButton = audioSaveButtonDefault;
 var audioForCancelButton = audioCancelButtonDefault;
-var audioForModeSwitchAlertEnabled = audioModeSwitchAlertEnabledDefault;
-var audioForModeSwitchAlertDisabled = audioModeSwitchAlertDisabledDefault;
+var audioForSwitchButtonEnabled = audioSwitchButtonEnabledDefault;
+var audioForSwitchButtonDisabled = audioSwitchButtonDisabledDefault;
 
 
 // Dark mode default colors
@@ -93,21 +97,24 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   settings['timeModifyValueSub'] = (prefs.getInt('timeModifyValueSub') ?? defaultTimeModifyValueSub).toString();
   settings['appVolume'] = (prefs.getDouble('appVolume') ?? defaultVolume).toString();
 
+  appCurrentVolume = prefs.getDouble('appVolume') ?? defaultVolume;
+
   appCurrentlyMuted = prefs.getBool('appMuted') ?? appMutedDefault;
   appCurrentlyInTimerMode = prefs.getBool('appInTimerMode') ?? appInTimerModeDefault;
 
   timerAlarmCurrentlyEnabled = prefs.getBool('timerAlarmEnabled') ?? timerAlarmEnabledDefault;
   threeTwoOneCountdownCurrentlyEnabled = prefs.getBool('threeTwoOneCountdownEnabled') ?? threeTwoOneCountdownEnabledDefault;
   tenSecondWarningCurrentlyEnabled = prefs.getBool('tenSecondWarningEnabled') ?? tenSecondWarningEnabledDefault;
-  modeSwitchAlertCurrentlyEnabled = prefs.getBool('modeSwitchAlertEnabled') ?? modeSwitchAlertEnabledDefault;
+  alertWorkModeStartedCurrentlyEnabled = prefs.getBool('alertWorkModeStartedEnabled') ?? alertWorkModeStartedEnabledDefault;
+  alertRestModeStartedCurrentlyEnabled = prefs.getBool('alertRestModeStartedEnabled') ?? alertRestModeStartedEnabledDefault;
 
   restartButtonAudioCurrentlyEnabled = prefs.getBool('restartButtonAudioEnabled') ?? restartButtonAudioEnabledDefault;
   saveButtonAudioCurrentlyEnabled = prefs.getBool('saveButtonAudioEnabled') ?? saveButtonAudioEnabledDefault;
   cancelButtonAudioCurrentlyEnabled = prefs.getBool('cancelButtonAudioEnabled') ?? cancelButtonAudioEnabledDefault;
   switchButtonAudioCurrentlyEnabled = prefs.getBool('switchButtonAudioEnabled') ?? switchButtonAudioEnabledDefault;
 
-  audioForModeSwitchAlertRest = prefs.getString('audioModeSwitchAlertRest') ?? audioModeSwitchAlertRestDefault;
-  audioForModeSwitchAlertWork = prefs.getString('audioModeSwitchAlertWork') ?? audioModeSwitchAlertWorkDefault;
+  audioForAlertWorkModeStarted = prefs.getString('audioAlertWorkModeStarted') ?? audioAlertWorkModeStartedDefault;
+  audioForAlertRestModeStarted = prefs.getString('audioAlertRestModeStarted') ?? audioAlertRestModeStartedDefault;
   audioForTimerAlarm = prefs.getString('audioTimerAlarm') ?? audioTimerAlarmDefault;
 
   audioForTimerCountdownAtTen = prefs.getString('audioTimerCountdownAtTen') ?? audioTimerCountdownAtTenDefault;
@@ -118,8 +125,8 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   audioForRestartButton = prefs.getString('audioRestartButton') ?? audioRestartButtonDefault;
   audioForSaveButton = prefs.getString('audioSaveButton') ?? audioSaveButtonDefault;
   audioForCancelButton = prefs.getString('audioCancelButton') ?? audioCancelButtonDefault;
-  audioForModeSwitchAlertEnabled = prefs.getString('audioModeSwitchAlertEnabled') ?? audioModeSwitchAlertEnabledDefault;
-  audioForModeSwitchAlertDisabled = prefs.getString('audioModeSwitchAlertDisabled') ?? audioModeSwitchAlertDisabledDefault;
+  audioForSwitchButtonEnabled = prefs.getString('audioModeSwitchAlertEnabled') ?? audioSwitchButtonEnabledDefault;
+  audioForSwitchButtonDisabled = prefs.getString('audioModeSwitchAlertDisabled') ?? audioSwitchButtonDisabledDefault;
 
 
   // Call Method to assign App Colors
@@ -190,6 +197,7 @@ Future<void> setTimeModifyValueSub(int value) async {
 Future<void> setAppVolume(double value) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setDouble('appVolume', value);
+  appCurrentVolume = value;
 }
 
 // Reusable setter/getter for booleans
@@ -235,9 +243,41 @@ var assetSalliThree = 'sounds/Amplified/SalliThree.mp3';
 var assetSalliTwo = 'sounds/Amplified/SalliTwo.mp3';
 var assetSalliOne = 'sounds/Amplified/SalliOne1.mp3';
 
-// buttons:
+// Effects:
 var assetCorrect = 'sounds/Correct1.mp3';
 var assetWoosh = 'sounds/Woosh-spaced.mp3';
 var assetSelectionReversed = 'sounds/Selection1Reversed.mp3';
 var assetSwitchAndBeep = 'sounds/SwitchAndBeep1.mp3';
 var assetSwitch = 'sounds/Switch1.mp3';
+
+var assetShopOpenBell = 'sounds/ShopOpenBellv2.mp3';
+var assetShopCloseBell = 'sounds/ShopCloseBell.mp3';
+
+/// Maps Between Audio Assets and Descriptive text displayed to User
+Map<String, String> timerAlarmAssetMap = {
+  assetAlarmPiano: 'Piano Alarm',
+  assetAlarmBeepBeep: 'Beep Beep Alarm',
+  assetAlarmStandard: 'Standard Alarm'
+};
+
+Map<String, String> threeTwoOneCountdownAssetMap = {
+
+};
+
+Map<String, String> tenSecondWarningAssetMap = {
+  assetJoeyTen: "Joey: 'Ten'",
+  assetShopOpenBell: 'Shop Open Bell',
+  assetShopCloseBell: 'Shop Close Bell'
+};
+
+Map<String, String> alertWorkModeStartedAssetMap = {
+  assetSalliWork: "Salli: 'Work'",
+  assetShopOpenBell: 'Shop Open Bell',
+  assetShopCloseBell: 'Shop Close Bell'
+};
+
+Map<String, String> alertRestModeStartedAssetMap = {
+  assetSalliRest: "Salli: 'Rest'",
+  assetShopOpenBell: 'Shop Open Bell',
+  assetShopCloseBell: 'Shop Close Bell'
+};

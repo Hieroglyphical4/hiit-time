@@ -15,7 +15,7 @@ import 'Config/settings.dart';
 // }
 
 main() async {
-  return MaterialApp(
+  return const MaterialApp(
       home: SettingsMenu()
   );
 }
@@ -139,16 +139,15 @@ class _SettingsMenuState extends State<SettingsMenu> {
       if (appCurrentlyInTimerMode) {
         widget.audio.setReleaseMode(ReleaseMode.stop);
         if (!appCurrentlyMuted && switchButtonAudioCurrentlyEnabled) {
-          widget.audio.play(AssetSource(audioForModeSwitchAlertEnabled));
+          widget.audio.play(AssetSource(audioForSwitchButtonEnabled));
       }
         // Call Settings.dart Setter
         setBooleanSetting('appInTimerMode', false);
         appCurrentlyInTimerMode = false;
       } else {
-        // widget.audio.setVolume(_appVolume);
         widget.audio.setReleaseMode(ReleaseMode.stop);
         if (!appCurrentlyMuted && switchButtonAudioCurrentlyEnabled) {
-          widget.audio.play(AssetSource(audioForModeSwitchAlertDisabled));
+          widget.audio.play(AssetSource(audioForSwitchButtonDisabled));
         }
         // Call Settings.dart Setter
         setBooleanSetting('appInTimerMode', true);
@@ -278,6 +277,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     return Center(
                                       child: AdvancedSettingsMenu(
                                         key: UniqueKey(),
+                                        audio: widget.audio
                                       ),
                                     );
                                   },

@@ -10,16 +10,17 @@ import 'package:flutter/services.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(
-    FutureBuilder(
-      future:getSavedUserSettings(),
+  runApp(FutureBuilder(
+      future: getSavedUserSettings(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           // Assemble user settings:
           int returnedWorkTime = int.parse(snapshot.data!['workDuration']);
           int returnedRestTime = int.parse(snapshot.data!['restDuration']);
-          int returnedTimeModAdd = int.parse(snapshot.data!['timeModifyValueAdd']);
-          int returnedTimeModSub = int.parse(snapshot.data!['timeModifyValueSub']);
+          int returnedTimeModAdd =
+              int.parse(snapshot.data!['timeModifyValueAdd']);
+          int returnedTimeModSub =
+              int.parse(snapshot.data!['timeModifyValueSub']);
           double returnedAppVolume = double.parse(snapshot.data!['appVolume']);
 
           return MaterialApp(
@@ -34,9 +35,7 @@ void main() async {
         } else {
           return Container();
         }
-      }
-  )
-  );
+      }));
 }
 
 class MyApp extends StatefulWidget {
@@ -71,6 +70,7 @@ class _MyAppState extends State<MyApp> {
   var _orientation = 0;
   var _intervalLap = 1;
   final _audioPlayer = AudioPlayer();
+
   // Second Audio player added for overlapping audio
   final _audioPlayer2 = AudioPlayer();
   var _appVolume = defaultVolume;
@@ -141,14 +141,14 @@ class _MyAppState extends State<MyApp> {
 
     // Rest Flip indicates the duration needs to be set to Rest Duration
     if (restFlip) {
-      if (!appCurrentlyMuted && modeSwitchAlertCurrentlyEnabled) {
-        _audioPlayer2.play(AssetSource(audioForModeSwitchAlertRest));
+      if (!appCurrentlyMuted && alertRestModeStartedCurrentlyEnabled) {
+        _audioPlayer2.play(AssetSource(audioForAlertRestModeStarted));
       }
       _duration = savedRestDuration;
       _restDuration = savedWorkDuration;
     } else {
-      if (!appCurrentlyMuted && modeSwitchAlertCurrentlyEnabled) {
-        _audioPlayer2.play(AssetSource(audioForModeSwitchAlertWork));
+      if (!appCurrentlyMuted && alertWorkModeStartedCurrentlyEnabled) {
+        _audioPlayer2.play(AssetSource(audioForAlertWorkModeStarted));
       }
       _duration = savedWorkDuration;
       _restDuration = savedRestDuration;
@@ -247,7 +247,10 @@ class _MyAppState extends State<MyApp> {
                       });
                     },
                     child: const Text('HIIT Time',
-                        style: TextStyle(fontFamily: 'AstroSpace', fontSize: 40, height: 1.1),
+                        style: TextStyle(
+                            fontFamily: 'AstroSpace',
+                            fontSize: 40,
+                            height: 1.1),
                         textAlign: TextAlign.center),
                   ),
                 ),
@@ -288,7 +291,8 @@ class _MyAppState extends State<MyApp> {
                             // Timer was running, going into pause mode
                             _controller.pause();
                             // Update timer text
-                            _controller.updateWorkoutMode(appCurrentlyInTimerMode);
+                            _controller
+                                .updateWorkoutMode(appCurrentlyInTimerMode);
                             Wakelock.disable();
                           } else {
                             // Timer was paused, turning on
@@ -306,10 +310,10 @@ class _MyAppState extends State<MyApp> {
                         strokeWidth: 18,
                         autostart: false,
                         valueColor: _timerInRestMode
-                        ? appCurrentlyInDarkMode // Color slice showing time passed
-                          ? primaryColor
-                          : Colors.blueGrey.shade700
-                        : Colors.blueGrey.shade700,
+                            ? appCurrentlyInDarkMode // Color slice showing time passed
+                                ? primaryColor
+                                : Colors.blueGrey.shade700
+                            : Colors.blueGrey.shade700,
                         initialPosition: 0,
                         audioPlayer: _audioPlayer,
                         isRunning: _isRunning,
@@ -354,8 +358,10 @@ class _MyAppState extends State<MyApp> {
                               _timerButtonRestart = true;
 
                               // Sound the Alarm:
-                              if (!appCurrentlyMuted && timerAlarmCurrentlyEnabled) {
-                                _audioPlayer.play(AssetSource(audioForTimerAlarm));
+                              if (!appCurrentlyMuted &&
+                                  timerAlarmCurrentlyEnabled) {
+                                _audioPlayer
+                                    .play(AssetSource(audioForTimerAlarm));
                                 _audioPlayer.setReleaseMode(ReleaseMode.loop);
                               }
                             }
@@ -464,7 +470,8 @@ class _MyAppState extends State<MyApp> {
                           }
                           setState(() {
                             updateSettingsFromMemory();
-                            _controller.updateWorkoutMode(appCurrentlyInTimerMode);
+                            _controller
+                                .updateWorkoutMode(appCurrentlyInTimerMode);
                           });
                         });
                       },
@@ -530,8 +537,10 @@ class _MyAppState extends State<MyApp> {
                   child: ElevatedButton(
                       onPressed: () => setState(() {
                             HapticFeedback.lightImpact();
-                            if (!appCurrentlyMuted && restartButtonAudioCurrentlyEnabled) {
-                              _audioPlayer.play(AssetSource(audioForRestartButton));
+                            if (!appCurrentlyMuted &&
+                                restartButtonAudioCurrentlyEnabled) {
+                              _audioPlayer
+                                  .play(AssetSource(audioForRestartButton));
                             }
                             resetTimer();
                           }),

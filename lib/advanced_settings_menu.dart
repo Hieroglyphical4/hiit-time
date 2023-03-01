@@ -1,12 +1,15 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Config/settings.dart';
 
 // This is the Parent Widget from which other settings menus are opened
 class AdvancedSettingsMenu extends StatefulWidget {
+  final audio;
 
   const AdvancedSettingsMenu({
     required Key key,
+    this.audio,
   }) : super(key: key);
 
   @override
@@ -109,7 +112,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 
                 // Determine if Audio Settings Widget should show:
                 _displayAudioSettings
-                  ? const AudioSettingsWidget()
+                  ? AudioSettingsWidget(audio: widget.audio)
                   : Container(),
 
                 const SizedBox(height: 20),
@@ -223,7 +226,12 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 // Widget for all Audio related Settings (submenu)
 ////////////////////////////////////////////
 class AudioSettingsWidget extends StatefulWidget {
-  const AudioSettingsWidget({super.key});
+  final audio;
+
+  const AudioSettingsWidget({
+    super.key,
+    this.audio
+  });
 
   @override
   AudioSettingsWidgetState createState() => AudioSettingsWidgetState();
@@ -275,7 +283,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
 
         // Determine if Timer Audio Submenu Widget should show:
         _displayTimerAudioSettings
-            ? const TimerAudioSettingsWidget()
+            ? TimerAudioSettingsWidget(audio: widget.audio)
             : Container(),
 
         const SizedBox(height: 10),
@@ -332,7 +340,12 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
 // Widget for all Timer Audio related Settings (sub-submenu)
 ////////////////////////////////////////////////
 class TimerAudioSettingsWidget extends StatefulWidget {
-  const TimerAudioSettingsWidget({super.key});
+  final audio;
+
+  const TimerAudioSettingsWidget({
+    super.key,
+    this.audio
+  });
 
   @override
   TimerAudioSettingsWidgetState createState() => TimerAudioSettingsWidgetState();
@@ -340,13 +353,6 @@ class TimerAudioSettingsWidget extends StatefulWidget {
 
 class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
   final double _textFontSize = 18;
-  String _currentTimerAlarm = 'Piano Alarm'; // TODO Create map from settings to user version of asset
-
-  final List<String> _timerAlarmOptions = [
-    'Piano Alarm',
-    'Beep Beep',
-    'Standard',
-  ];
 
   void _onTimerAlarmChanged(bool value) {
     setState(() {
@@ -386,14 +392,26 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
     });
   }
 
-  void _onModeSwitchAlertChanged(bool value) {
+  void _onWorkModeAlertSwitchChanged(bool value) {
     setState(() {
-      if (modeSwitchAlertCurrentlyEnabled) {
-        setBooleanSetting('modeSwitchAlertEnabled', false);
-        modeSwitchAlertCurrentlyEnabled = false;
+      if (alertWorkModeStartedCurrentlyEnabled) {
+        setBooleanSetting('audioAlertWorkModeStarted', false);
+        alertWorkModeStartedCurrentlyEnabled = false;
       } else {
-        setBooleanSetting('modeSwitchAlertEnabled', true);
-        modeSwitchAlertCurrentlyEnabled = true;
+        setBooleanSetting('audioAlertWorkModeStarted', true);
+        alertWorkModeStartedCurrentlyEnabled = true;
+      }
+    });
+  }
+
+  void _onRestModeAlertSwitchChanged(bool value) {
+    setState(() {
+      if (alertRestModeStartedCurrentlyEnabled) {
+        setBooleanSetting('modeSwitchAlertRestEnabled', false);
+        alertRestModeStartedCurrentlyEnabled = false;
+      } else {
+        setBooleanSetting('modeSwitchAlertRestEnabled', true);
+        alertRestModeStartedCurrentlyEnabled = true;
       }
     });
   }
@@ -423,7 +441,9 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
 
               IconButton(
                 iconSize: 35,
-                color: primaryColor,
+                color: timerAlarmCurrentlyEnabled
+                    ? primaryColor
+                    : Colors.grey,
                 icon: const Icon(Icons.audio_file_outlined),
                 onPressed: () {
                   HapticFeedback.mediumImpact();
@@ -441,11 +461,11 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                     pageBuilder: (BuildContext buildContext,
                         Animation animation,
                         Animation secondaryAnimation) {
-                      return const Center(
+                      return Center(
                         child: AudioChangerMenuWidget(
+                          audio: widget.audio,
                           parentWidget: 'Timer Alarm',
-                          options: ['Option 1', 'Option 2', 'Option 3'],
-                          isCheckedList: [true, false, false],
+                          options: timerAlarmAssetMap.values.toList(),
                         ),
                       );
                     },
@@ -457,7 +477,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                 },
               ),
 
-              const SizedBox(width: 20),
+              const SizedBox(width: 15),
 
               Switch(
                 value: timerAlarmCurrentlyEnabled,
@@ -490,7 +510,9 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
 
               IconButton(
                 iconSize: 35,
-                color: primaryColor,
+                color: threeTwoOneCountdownCurrentlyEnabled
+                    ? primaryColor
+                    : Colors.grey,
                 icon: const Icon(Icons.audio_file_outlined),
                 onPressed: () {
                   HapticFeedback.mediumImpact();
@@ -508,11 +530,11 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                     pageBuilder: (BuildContext buildContext,
                         Animation animation,
                         Animation secondaryAnimation) {
-                      return const Center(
+                      return Center(
                         child: AudioChangerMenuWidget(
+                          audio: widget.audio,
                           parentWidget: '3-2-1 Countdown',
                           options: ['Option 1', 'Option 2', 'Option 3'],
-                          isCheckedList: [false, true, false],
                         ),
                       );
                     },
@@ -524,7 +546,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                 },
               ),
 
-              const SizedBox(width: 20),
+              const SizedBox(width: 15),
 
               Switch(
                 value: threeTwoOneCountdownCurrentlyEnabled,
@@ -559,7 +581,9 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
 
               IconButton(
                 iconSize: 35,
-                color: primaryColor,
+                color: tenSecondWarningCurrentlyEnabled
+                    ? primaryColor
+                    : Colors.grey,
                 icon: const Icon(Icons.audio_file_outlined),
                 onPressed: () {
                   HapticFeedback.mediumImpact();
@@ -577,11 +601,11 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                     pageBuilder: (BuildContext buildContext,
                         Animation animation,
                         Animation secondaryAnimation) {
-                      return const Center(
+                      return Center(
                         child: AudioChangerMenuWidget(
+                          audio: widget.audio,
                           parentWidget: '10 Second Warning',
-                          options: ['Option 1', 'Option 2'],
-                          isCheckedList: [true, false],
+                          options: tenSecondWarningAssetMap.values.toList(),
                         ),
                       );
                     },
@@ -593,7 +617,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                 },
               ),
 
-              const SizedBox(width: 20),
+              const SizedBox(width: 15),
 
               Switch(
                 value: tenSecondWarningCurrentlyEnabled,
@@ -607,15 +631,15 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
           SizedBox(height: 1, child: Container(color: Colors.grey)),
           const SizedBox(height: 10),
           ///////////////////////////////
-          // Mode Switch Audio Settings
+          // Mode Switch Alert: Work Audio Settings
           //////////////////////////////
           Row(
             children: [
               const SizedBox(width: 30),
 
-              Text('Mode Switch Alert',
+              Text('Alert for Work Mode',
                   style: TextStyle(
-                      color: modeSwitchAlertCurrentlyEnabled
+                      color: alertWorkModeStartedCurrentlyEnabled
                           ? primaryColor
                           : Colors.grey,
                       fontSize: _textFontSize,
@@ -627,7 +651,9 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
 
               IconButton(
                 iconSize: 35,
-                color: primaryColor,
+                color: alertWorkModeStartedCurrentlyEnabled
+                    ? primaryColor
+                    : Colors.grey,
                 icon: const Icon(Icons.audio_file_outlined),
                 onPressed: () {
                   HapticFeedback.mediumImpact();
@@ -645,11 +671,11 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                     pageBuilder: (BuildContext buildContext,
                         Animation animation,
                         Animation secondaryAnimation) {
-                      return const Center(
+                      return Center(
                         child: AudioChangerMenuWidget(
-                          parentWidget: 'Mode Switch Alert',
-                          options: ['Option 1'],
-                          isCheckedList: [true],
+                          audio: widget.audio,
+                          parentWidget: 'Alert for Work Mode',
+                          options: alertWorkModeStartedAssetMap.values.toList(),
                         ),
                       );
                     },
@@ -661,11 +687,11 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                 },
               ),
 
-              const SizedBox(width: 20),
+              const SizedBox(width: 15),
 
               Switch(
-                value: modeSwitchAlertCurrentlyEnabled,
-                onChanged: _onModeSwitchAlertChanged,
+                value: alertWorkModeStartedCurrentlyEnabled,
+                onChanged: _onWorkModeAlertSwitchChanged,
               ),
               const SizedBox(width: 10),
             ],
@@ -674,6 +700,73 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
           const SizedBox(height: 10),
           SizedBox(height: 1, child: Container(color: Colors.grey)),
           const SizedBox(height: 10),
+
+          ///////////////////////////////
+          // Mode Switch Alert: Rest Audio Settings
+          //////////////////////////////
+          Row(
+            children: [
+              const SizedBox(width: 30),
+
+              Text('Alert for Rest Mode',
+                  style: TextStyle(
+                      color: alertRestModeStartedCurrentlyEnabled
+                          ? primaryColor
+                          : Colors.grey,
+                      fontSize: _textFontSize,
+                      height: 1.1),
+                  textAlign: TextAlign.center),
+
+              const Spacer(),
+
+              IconButton(
+                iconSize: 35,
+                color: alertRestModeStartedCurrentlyEnabled
+                    ? primaryColor
+                    : Colors.grey,
+                icon: const Icon(Icons.audio_file_outlined),
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+
+                  // Launch Audio Changer menu
+                  showGeneralDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    barrierLabel: MaterialLocalizations.of(context)
+                        .modalBarrierDismissLabel,
+                    barrierColor: Colors.black45,
+                    transitionDuration: const Duration(milliseconds: 200),
+
+                    // ANY Widget can be passed here
+                    pageBuilder: (BuildContext buildContext,
+                        Animation animation,
+                        Animation secondaryAnimation) {
+                      return Center(
+                        child: AudioChangerMenuWidget(
+                          audio: widget.audio,
+                          parentWidget: 'Alert for Rest Mode',
+                          options: alertRestModeStartedAssetMap.values.toList(),
+                        ),
+                      );
+                    },
+                  ).then((restartRequired) {
+                    setState(() {
+                      //
+                    });
+                  });
+                },
+              ),
+
+              const SizedBox(width: 15),
+
+              Switch(
+                value: alertRestModeStartedCurrentlyEnabled,
+                onChanged: _onRestModeAlertSwitchChanged,
+              ),
+              const SizedBox(width: 10),
+            ],
+          ),
+
         ]
     );
   }
@@ -868,15 +961,15 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
 // Widget to handle Changing Audio Settings (Overlay menu)
 ////////////////////////////////////////////////
 class AudioChangerMenuWidget extends StatefulWidget {
+  final audio;
   final parentWidget;
   final List<String> options;
-  final List<bool> isCheckedList;
 
   const AudioChangerMenuWidget({
     super.key,
+    this.audio,
     required this.parentWidget,
     required this.options,
-    required this.isCheckedList
   });
 
   @override
@@ -884,17 +977,115 @@ class AudioChangerMenuWidget extends StatefulWidget {
 }
 
 class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
-  final double _textFontSize = 18;
   late String _parentWidget = '';
   late List<String> _options;
-  late List<bool> _isCheckedList;
+  String? _selectedOption;
+
+  final _audioPlayer = AudioPlayer();
+
 
   @override
   void initState() {
     super.initState();
     _parentWidget = widget.parentWidget;
     _options = widget.options;
-    _isCheckedList = List.from(widget.isCheckedList);
+    setupForParentWidget();
+    _audioPlayer.setVolume(appCurrentVolume);
+  }
+
+  @override
+  void dispose() {
+    widget.audio.dispose();
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  void setupForParentWidget() {
+    switch (_parentWidget) {
+      case 'Timer Alarm':
+        _selectedOption = timerAlarmAssetMap[audioForTimerAlarm];
+        break;
+      case '3-2-1 Countdown':
+        _selectedOption = 'Salli Countdown';
+        break;
+      case '10 Second Warning':
+        _selectedOption = tenSecondWarningAssetMap[audioForTimerCountdownAtTen];
+        break;
+      case 'Alert for Work Mode':
+        _selectedOption = alertWorkModeStartedAssetMap[audioForAlertWorkModeStarted];
+        break;
+      case 'Alert for Rest Mode':
+        _selectedOption = alertRestModeStartedAssetMap[audioForAlertRestModeStarted];
+        break;
+    }
+  }
+
+  String getAudioAssetFromMap() {
+    switch (_parentWidget) {
+      case 'Timer Alarm':
+        for (var entry in timerAlarmAssetMap.entries) {
+          if (entry.value == _selectedOption) {
+            return entry.key;
+          }
+        }
+        return '';
+
+      case '3-2-1 Countdown':
+        return '';
+
+      case '10 Second Warning':
+        for (var entry in tenSecondWarningAssetMap.entries) {
+          if (entry.value == _selectedOption) {
+            return entry.key;
+          }
+        }
+        return '';
+
+      case 'Alert for Work Mode':
+        for (var entry in alertWorkModeStartedAssetMap.entries) {
+          if (entry.value == _selectedOption) {
+            return entry.key;
+          }
+        }
+        return '';
+      case 'Alert for Rest Mode':
+        for (var entry in alertRestModeStartedAssetMap.entries) {
+          if (entry.value == _selectedOption) {
+            return entry.key;
+          }
+        }
+        return '';
+      default:
+        throw Exception('Invalid Asset Provided');
+    }
+  }
+
+  void setChosenAudioAsset(String desiredAsset) {
+    switch (_parentWidget) {
+      case 'Timer Alarm':
+        audioForTimerAlarm = desiredAsset;
+        setStringSetting('audioTimerAlarm', desiredAsset);
+        break;
+      case '3-2-1 Countdown':
+        // setStringSetting('audioTimerCountdownAtThree', desiredAsset);
+        // setStringSetting('audioTimerCountdownAtTwo', desiredAsset);
+        // setStringSetting('audioTimerCountdownAtOne', desiredAsset);
+        break;
+      case '10 Second Warning':
+        audioForTimerCountdownAtTen = desiredAsset;
+        setStringSetting('audioTimerCountdownAtTen', desiredAsset);
+        break;
+
+      case 'Alert for Work Mode':
+        audioForAlertWorkModeStarted = desiredAsset;
+        setStringSetting('audioAlertWorkModeStarted', desiredAsset);
+        break;
+
+      case 'Alert for Rest Mode':
+        audioForAlertRestModeStarted = desiredAsset;
+        setStringSetting('audioAlertRestModeStarted', desiredAsset);
+        break;
+    }
   }
 
   @override
@@ -914,9 +1105,18 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
             return Card(
               child: ListTile(
                 title: Text(_options[index]),
-                leading: Checkbox(
-                  value: false,
-                  onChanged: (bool? value) {},
+                leading: Radio<String>(
+                  value: _options[index],
+                  groupValue: _selectedOption,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedOption = value;
+                      var desiredAsset = getAudioAssetFromMap();
+                      // widget.audio.play(AssetSource(desiredAsset));
+                      _audioPlayer.play(AssetSource(desiredAsset));
+                      setChosenAudioAsset(desiredAsset);
+                    });
+                  },
                 ),
               ),
             );
