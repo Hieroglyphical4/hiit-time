@@ -395,10 +395,10 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
   void _onWorkModeAlertSwitchChanged(bool value) {
     setState(() {
       if (alertWorkModeStartedCurrentlyEnabled) {
-        setBooleanSetting('audioAlertWorkModeStarted', false);
+        setBooleanSetting('alertWorkModeStartedEnabled', false);
         alertWorkModeStartedCurrentlyEnabled = false;
       } else {
-        setBooleanSetting('audioAlertWorkModeStarted', true);
+        setBooleanSetting('alertWorkModeStartedEnabled', true);
         alertWorkModeStartedCurrentlyEnabled = true;
       }
     });
@@ -407,10 +407,10 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
   void _onRestModeAlertSwitchChanged(bool value) {
     setState(() {
       if (alertRestModeStartedCurrentlyEnabled) {
-        setBooleanSetting('modeSwitchAlertRestEnabled', false);
+        setBooleanSetting('alertRestModeStartedEnabled', false);
         alertRestModeStartedCurrentlyEnabled = false;
       } else {
-        setBooleanSetting('modeSwitchAlertRestEnabled', true);
+        setBooleanSetting('alertRestModeStartedEnabled', true);
         alertRestModeStartedCurrentlyEnabled = true;
       }
     });
