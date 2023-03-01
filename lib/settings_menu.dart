@@ -276,8 +276,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       Animation secondaryAnimation) {
                                     return Center(
                                       child: AdvancedSettingsMenu(
-                                        key: UniqueKey(),
-                                        audio: widget.audio
+                                        key: UniqueKey()
                                       ),
                                     );
                                   },

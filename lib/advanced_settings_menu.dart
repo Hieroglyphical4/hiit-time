@@ -5,11 +5,9 @@ import 'Config/settings.dart';
 
 // This is the Parent Widget from which other settings menus are opened
 class AdvancedSettingsMenu extends StatefulWidget {
-  final audio;
 
   const AdvancedSettingsMenu({
     required Key key,
-    this.audio,
   }) : super(key: key);
 
   @override
@@ -112,7 +110,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 
                 // Determine if Audio Settings Widget should show:
                 _displayAudioSettings
-                  ? AudioSettingsWidget(audio: widget.audio)
+                  ? AudioSettingsWidget()
                   : Container(),
 
                 const SizedBox(height: 20),
@@ -226,11 +224,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 // Widget for all Audio related Settings (submenu)
 ////////////////////////////////////////////
 class AudioSettingsWidget extends StatefulWidget {
-  final audio;
 
   const AudioSettingsWidget({
     super.key,
-    this.audio
   });
 
   @override
@@ -283,7 +279,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
 
         // Determine if Timer Audio Submenu Widget should show:
         _displayTimerAudioSettings
-            ? TimerAudioSettingsWidget(audio: widget.audio)
+            ? TimerAudioSettingsWidget()
             : Container(),
 
         const SizedBox(height: 10),
@@ -340,11 +336,9 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
 // Widget for all Timer Audio related Settings (sub-submenu)
 ////////////////////////////////////////////////
 class TimerAudioSettingsWidget extends StatefulWidget {
-  final audio;
 
   const TimerAudioSettingsWidget({
     super.key,
-    this.audio
   });
 
   @override
@@ -463,7 +457,6 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                         Animation secondaryAnimation) {
                       return Center(
                         child: AudioChangerMenuWidget(
-                          audio: widget.audio,
                           parentWidget: 'Timer Alarm',
                           options: timerAlarmAssetMap.values.toList(),
                         ),
@@ -532,7 +525,6 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                         Animation secondaryAnimation) {
                       return Center(
                         child: AudioChangerMenuWidget(
-                          audio: widget.audio,
                           parentWidget: '3-2-1 Countdown',
                           options: ['Option 1', 'Option 2', 'Option 3'],
                         ),
@@ -603,7 +595,6 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                         Animation secondaryAnimation) {
                       return Center(
                         child: AudioChangerMenuWidget(
-                          audio: widget.audio,
                           parentWidget: '10 Second Warning',
                           options: tenSecondWarningAssetMap.values.toList(),
                         ),
@@ -673,7 +664,6 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                         Animation secondaryAnimation) {
                       return Center(
                         child: AudioChangerMenuWidget(
-                          audio: widget.audio,
                           parentWidget: 'Alert for Work Mode',
                           options: alertWorkModeStartedAssetMap.values.toList(),
                         ),
@@ -743,7 +733,6 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                         Animation secondaryAnimation) {
                       return Center(
                         child: AudioChangerMenuWidget(
-                          audio: widget.audio,
                           parentWidget: 'Alert for Rest Mode',
                           options: alertRestModeStartedAssetMap.values.toList(),
                         ),
@@ -961,13 +950,11 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
 // Widget to handle Changing Audio Settings (Overlay menu)
 ////////////////////////////////////////////////
 class AudioChangerMenuWidget extends StatefulWidget {
-  final audio;
   final parentWidget;
   final List<String> options;
 
   const AudioChangerMenuWidget({
     super.key,
-    this.audio,
     required this.parentWidget,
     required this.options,
   });
@@ -980,7 +967,6 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
   late String _parentWidget = '';
   late List<String> _options;
   String? _selectedOption;
-
   final _audioPlayer = AudioPlayer();
 
 
@@ -995,7 +981,6 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
 
   @override
   void dispose() {
-    widget.audio.dispose();
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -1006,7 +991,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         _selectedOption = timerAlarmAssetMap[audioForTimerAlarm];
         break;
       case '3-2-1 Countdown':
-        _selectedOption = 'Salli Countdown';
+        // _selectedOption = 'Salli Countdown';
         break;
       case '10 Second Warning':
         _selectedOption = tenSecondWarningAssetMap[audioForTimerCountdownAtTen];
@@ -1112,7 +1097,6 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                     setState(() {
                       _selectedOption = value;
                       var desiredAsset = getAudioAssetFromMap();
-                      // widget.audio.play(AssetSource(desiredAsset));
                       _audioPlayer.play(AssetSource(desiredAsset));
                       setChosenAudioAsset(desiredAsset);
                     });
