@@ -1090,64 +1090,77 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(_parentWidget,
-          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 35, height: 1.1),
-        ),
+    return Container(
+        height: 350,
+        // width: 300,
+        color: secondaryColor.withOpacity(0.8),
+        child: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20),
+                Text(_parentWidget,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 35, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+                const SizedBox(height: 10),
 
-        // Dynamically create rows
-        ListView.builder(
-          shrinkWrap: true,
-          itemCount: _options.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Card(
-                child: GestureDetector(
-                  // This is activated when the user clicks on the text field
-                  onTap: () {
-                    setState(() {
-                      _selectedOption = _options[index];
-                      var desiredAsset = getAudioAssetFromMap();
-                      setChosenAudioAsset(desiredAsset);
+                ///////////////////////////
+                // Dynamically create rows
+                ///////////////////////////
+                Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _options.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Card(
+                            child: GestureDetector(
+                              // This is activated when the user clicks on the text field
+                              onTap: () {
+                                setState(() {
+                                  _selectedOption = _options[index];
+                                  var desiredAsset = getAudioAssetFromMap();
+                                  setChosenAudioAsset(desiredAsset);
 
-                      if (_parentWidget == '3-2-1 Countdown') {
-                        // We need to break the desired asset down into 3 with spaces
-                        playAudioWithDelay(desiredAsset);
-                      } else {
-                        // There is only one asset to play:
-                        _audioPlayer.play(AssetSource(desiredAsset));
-                      }
-                    });
-                  },
-                  child: ListTile(
-                    title: Text(_options[index]),
-                    leading: Radio<String>(
-                      value: _options[index],
-                      groupValue: _selectedOption,
-                      onChanged: (String? value) {
-                        // This is activated when the user clicks on a new Radio Button
-                        setState(() {
-                          _selectedOption = value;
-                          var desiredAsset = getAudioAssetFromMap();
-                          setChosenAudioAsset(desiredAsset);
+                                  if (_parentWidget == '3-2-1 Countdown') {
+                                    // We need to break the desired asset down into 3 with spaces
+                                    playAudioWithDelay(desiredAsset);
+                                  } else {
+                                    // There is only one asset to play:
+                                    _audioPlayer.play(AssetSource(desiredAsset));
+                                  }
+                                });
+                              },
+                              child: ListTile(
+                                title: Text(_options[index]),
+                                leading: Radio<String>(
+                                  value: _options[index],
+                                  groupValue: _selectedOption,
+                                  onChanged: (String? value) {
+                                    // This is activated when the user clicks on a new Radio Button
+                                    setState(() {
+                                      _selectedOption = value;
+                                      var desiredAsset = getAudioAssetFromMap();
+                                      setChosenAudioAsset(desiredAsset);
 
-                          if (_parentWidget == '3-2-1 Countdown') {
-                            // We need to break the desired asset down into 3 with spaces
-                            playAudioWithDelay(desiredAsset);
-                          } else {
-                            // There is only one asset to play:
-                            _audioPlayer.play(AssetSource(desiredAsset));
-                          }
-                        });
+                                      if (_parentWidget == '3-2-1 Countdown') {
+                                        // We need to break the desired asset down into 3 with spaces
+                                        playAudioWithDelay(desiredAsset);
+                                      } else {
+                                        // There is only one asset to play:
+                                        _audioPlayer.play(AssetSource(desiredAsset));
+                                      }
+                                    });
+                                  },
+                                ),
+                              )
+                            ),
+                        );
                       },
                     ),
                   )
-                ),
-            );
-          },
-        ),
-      ],
+                ],
+        )
+    )
     );
   }
 }
