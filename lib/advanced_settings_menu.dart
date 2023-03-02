@@ -100,8 +100,8 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         padding: const EdgeInsets.all(4),
                       ),
                       child: Text(_displayAudioSettings
-                          ? 'Audio Settings'
-                          : 'Audio Settings    >',
+                          ? '-   Audio Settings   -'
+                          : 'Audio Settings       >',
                           style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1),
                           textAlign: TextAlign.center
                       )
@@ -136,8 +136,8 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           padding: const EdgeInsets.all(4),
                         ),
                         child: Text(_displayThemesSettings
-                            ? 'Themes'
-                            : 'Themes                   >',
+                            ? '-         Themes         -'
+                            : 'Themes                      >',
                             style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1),
                             textAlign: TextAlign.center)
                     )
@@ -264,12 +264,15 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
               child: Row(
                 children: [
                   _displayTimerAudioSettings
-                    ? SizedBox(width: 100)
+                    ? Row(children:[
+                        Text('    -',style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor)),
+                        SizedBox(width: 75)
+                    ])
                     : SizedBox(width: 10),
                   const Icon(Icons.watch_later_outlined),
                   const SizedBox(width: 10),
                   Text(_displayTimerAudioSettings
-                    ? 'Timer'
+                    ? 'Timer                -'
                     : '  Timer                                 >',
                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor))
                 ],
@@ -307,12 +310,15 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
               child: Row(
                 children: [
                   _displayButtonAudioSettings
-                      ? SizedBox(width: 100)
+                      ? Row(children: [
+                          Text('    -',style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor)),
+                          SizedBox(width: 60),
+                      ])
                       : SizedBox(width: 10),
                   const Icon(Icons.touch_app_outlined),
                   const SizedBox(width: 10),
                   Text(_displayButtonAudioSettings
-                  ? 'Buttons'
+                  ? 'Buttons             -'
                       : '  Buttons                           >',
                   style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor),
                   ),
@@ -1126,14 +1132,13 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                           var desiredAsset = getAudioAssetFromMap();
                           setChosenAudioAsset(desiredAsset);
 
-                          // Sound on this type of selection is currently disabled
-                          // if (_parentWidget == '3-2-1 Countdown') {
-                          //   // We need to break the desired asset down into 3 with spaces
-                          //   playAudioWithDelay(desiredAsset);
-                          // } else {
-                          //   // There is only one asset to play:
-                          //   _audioPlayer.play(AssetSource(desiredAsset));
-                          // }
+                          if (_parentWidget == '3-2-1 Countdown') {
+                            // We need to break the desired asset down into 3 with spaces
+                            playAudioWithDelay(desiredAsset);
+                          } else {
+                            // There is only one asset to play:
+                            _audioPlayer.play(AssetSource(desiredAsset));
+                          }
                         });
                       },
                     ),
