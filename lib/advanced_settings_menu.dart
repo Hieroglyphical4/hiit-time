@@ -995,6 +995,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
     }
   }
 
+  // TODO Update this method to accept the _selectedOption
   String getAudioAssetFromMap() {
     switch (_parentWidget) {
       case 'Timer Alarm':
@@ -1097,14 +1098,10 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
           itemCount: _options.length,
           itemBuilder: (BuildContext context, int index) {
             return Card(
-              child: ListTile(
-                title: Text(_options[index]),
-                leading: Radio<String>(
-                  value: _options[index],
-                  groupValue: _selectedOption,
-                  onChanged: (String? value) {
+                child: GestureDetector(
+                  onTap: () {
                     setState(() {
-                      _selectedOption = value;
+                      _selectedOption = _options[index];
                       var desiredAsset = getAudioAssetFromMap();
                       setChosenAudioAsset(desiredAsset);
 
@@ -1117,8 +1114,29 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                       }
                     });
                   },
+                  child: ListTile(
+                    title: Text(_options[index]),
+                    leading: Radio<String>(
+                      value: _options[index],
+                      groupValue: _selectedOption,
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedOption = value;
+                          var desiredAsset = getAudioAssetFromMap();
+                          setChosenAudioAsset(desiredAsset);
+
+                          // if (_parentWidget == '3-2-1 Countdown') {
+                          //   // We need to break the desired asset down into 3 with spaces
+                          //   playAudioWithDelay(desiredAsset);
+                          // } else {
+                          //   // There is only one asset to play:
+                          //   _audioPlayer.play(AssetSource(desiredAsset));
+                          // }
+                        });
+                      },
+                    ),
+                  )
                 ),
-              ),
             );
           },
         ),
