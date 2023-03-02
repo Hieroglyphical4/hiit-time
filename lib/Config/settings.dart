@@ -34,6 +34,7 @@ var audioTimerCountdownAtTenDefault = assetJoeyTen;
 var audioTimerCountdownAtThreeDefault = assetSalliThree;
 var audioTimerCountdownAtTwoDefault = assetSalliTwo;
 var audioTimerCountdownAtOneDefault = assetSalliOne;
+var audioAssembledCountdownDefault = assembledAssetSalliCountdown;
 
 // buttons:
 var audioSaveButtonDefault = assetCorrect;
@@ -68,6 +69,7 @@ var audioForTimerCountdownAtTen = audioTimerCountdownAtTenDefault;
 var audioForTimerCountdownAtThree = audioTimerCountdownAtThreeDefault;
 var audioForTimerCountdownAtTwo = audioTimerCountdownAtTwoDefault;
 var audioForTimerCountdownAtOne = audioTimerCountdownAtOneDefault;
+var audioForAssembledCountdown = audioAssembledCountdownDefault;
 
 var audioForRestartButton = audioRestartButtonDefault;
 var audioForSaveButton = audioSaveButtonDefault;
@@ -121,6 +123,7 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   audioForTimerCountdownAtThree = prefs.getString('audioTimerCountdownAtThree') ?? audioTimerCountdownAtThreeDefault;
   audioForTimerCountdownAtTwo = prefs.getString('audioTimerCountdownAtTwo') ?? audioTimerCountdownAtTwoDefault;
   audioForTimerCountdownAtOne = prefs.getString('audioTimerCountdownAtOne') ?? audioTimerCountdownAtOneDefault;
+  audioForAssembledCountdown = prefs.getString('audioAssembledCountdown') ?? audioAssembledCountdownDefault;
 
   audioForRestartButton = prefs.getString('audioRestartButton') ?? audioRestartButtonDefault;
   audioForSaveButton = prefs.getString('audioSaveButton') ?? audioSaveButtonDefault;
@@ -249,9 +252,15 @@ var assetWoosh = 'sounds/Woosh-spaced.mp3';
 var assetSelectionReversed = 'sounds/Selection1Reversed.mp3';
 var assetSwitchAndBeep = 'sounds/SwitchAndBeep1.mp3';
 var assetSwitch = 'sounds/Switch1.mp3';
+var assetPongUp = 'sounds/PongUp.mp3';
 
 var assetShopOpenBell = 'sounds/ShopOpenBellv2.mp3';
 var assetShopCloseBell = 'sounds/ShopCloseBell.mp3';
+
+// 3-2-1 Countdowns Assembled:
+// Three asset strings delimited with commas for later transformation
+var assembledAssetSalliCountdown = "$assetSalliThree,$assetSalliTwo,$assetSalliOne";
+var assembledAssetPongUpCountdown = "$assetPongUp,$assetPongUp,$assetPongUp";
 
 /// Maps Between Audio Assets and Descriptive text displayed to User
 Map<String, String> timerAlarmAssetMap = {
@@ -261,7 +270,8 @@ Map<String, String> timerAlarmAssetMap = {
 };
 
 Map<String, String> threeTwoOneCountdownAssetMap = {
-
+  assembledAssetSalliCountdown: 'Salli Countdown',
+  assembledAssetPongUpCountdown: 'Pong Up'
 };
 
 Map<String, String> tenSecondWarningAssetMap = {

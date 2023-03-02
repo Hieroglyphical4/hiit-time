@@ -526,7 +526,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                       return Center(
                         child: AudioChangerMenuWidget(
                           parentWidget: '3-2-1 Countdown',
-                          options: [],
+                          options: threeTwoOneCountdownAssetMap.values.toList(),
                         ),
                       );
                     },
@@ -558,7 +558,6 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
           Row(
             children: [
               const SizedBox(width: 30),
-
               Text('10 Second Warning',
                   style: TextStyle(
                       color: tenSecondWarningCurrentlyEnabled
@@ -569,8 +568,6 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                   textAlign: TextAlign.center),
 
               const Spacer(),
-
-
               IconButton(
                 iconSize: 35,
                 color: tenSecondWarningCurrentlyEnabled
@@ -609,7 +606,6 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
               ),
 
               const SizedBox(width: 15),
-
               Switch(
                 value: tenSecondWarningCurrentlyEnabled,
                 onChanged: _onTenSecondWarningChanged,
@@ -627,7 +623,6 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
           Row(
             children: [
               const SizedBox(width: 30),
-
               Text('Alert for Work Mode',
                   style: TextStyle(
                       color: alertWorkModeStartedCurrentlyEnabled
@@ -638,8 +633,6 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                   textAlign: TextAlign.center),
 
               const Spacer(),
-
-
               IconButton(
                 iconSize: 35,
                 color: alertWorkModeStartedCurrentlyEnabled
@@ -678,7 +671,6 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
               ),
 
               const SizedBox(width: 15),
-
               Switch(
                 value: alertWorkModeStartedCurrentlyEnabled,
                 onChanged: _onWorkModeAlertSwitchChanged,
@@ -708,7 +700,6 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                   textAlign: TextAlign.center),
 
               const Spacer(),
-
               IconButton(
                 iconSize: 35,
                 color: alertRestModeStartedCurrentlyEnabled
@@ -747,7 +738,6 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
               ),
 
               const SizedBox(width: 15),
-
               Switch(
                 value: alertRestModeStartedCurrentlyEnabled,
                 onChanged: _onRestModeAlertSwitchChanged,
@@ -991,7 +981,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         _selectedOption = timerAlarmAssetMap[audioForTimerAlarm];
         break;
       case '3-2-1 Countdown':
-        // _selectedOption = 'Salli Countdown';
+        _selectedOption = threeTwoOneCountdownAssetMap[audioForAssembledCountdown];
         break;
       case '10 Second Warning':
         _selectedOption = tenSecondWarningAssetMap[audioForTimerCountdownAtTen];
@@ -1016,6 +1006,11 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         return '';
 
       case '3-2-1 Countdown':
+        for (var entry in threeTwoOneCountdownAssetMap.entries) {
+          if (entry.value == _selectedOption) {
+            return entry.key;
+          }
+        }
         return '';
 
       case '10 Second Warning':
@@ -1033,6 +1028,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
           }
         }
         return '';
+
       case 'Alert for Rest Mode':
         for (var entry in alertRestModeStartedAssetMap.entries) {
           if (entry.value == _selectedOption) {
@@ -1040,6 +1036,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
           }
         }
         return '';
+
       default:
         throw Exception('Invalid Asset Provided');
     }
@@ -1052,9 +1049,14 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         setStringSetting('audioTimerAlarm', desiredAsset);
         break;
       case '3-2-1 Countdown':
-        // setStringSetting('audioTimerCountdownAtThree', desiredAsset);
-        // setStringSetting('audioTimerCountdownAtTwo', desiredAsset);
-        // setStringSetting('audioTimerCountdownAtOne', desiredAsset);
+        print("\n\nhere is the desired asset:");
+        print(desiredAsset);
+        List<String> assetsSplit = desiredAsset.split(",");
+        print("\n\nHere is ya sset Split:");
+        print(assetsSplit);
+        setStringSetting('audioTimerCountdownAtThree', assetsSplit[0]);
+        setStringSetting('audioTimerCountdownAtTwo', assetsSplit[1]);
+        setStringSetting('audioTimerCountdownAtOne', assetsSplit[2]);
         break;
       case '10 Second Warning':
         audioForTimerCountdownAtTen = desiredAsset;
@@ -1071,6 +1073,15 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         setStringSetting('audioAlertRestModeStarted', desiredAsset);
         break;
     }
+  }
+
+  void playAudioWithDelay(String desiredAsset) async {
+    List<String> assetsSplit = desiredAsset.split(",");
+    _audioPlayer.play(AssetSource(assetsSplit[0]));
+    await Future.delayed(const Duration(seconds: 1));
+    _audioPlayer.play(AssetSource(assetsSplit[1]));
+    await Future.delayed(const Duration(seconds: 1));
+    _audioPlayer.play(AssetSource(assetsSplit[2]));
   }
 
   @override
@@ -1097,8 +1108,15 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                     setState(() {
                       _selectedOption = value;
                       var desiredAsset = getAudioAssetFromMap();
-                      _audioPlayer.play(AssetSource(desiredAsset));
                       setChosenAudioAsset(desiredAsset);
+
+                      if (_parentWidget == '3-2-1 Countdown') {
+                        // We need to break the desired asset down into 3 with spaces
+                        playAudioWithDelay(desiredAsset);
+                      } else {
+                        // There is only one asset to play:
+                        _audioPlayer.play(AssetSource(desiredAsset));
+                      }
                     });
                   },
                 ),
