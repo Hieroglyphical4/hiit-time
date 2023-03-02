@@ -1049,14 +1049,12 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         setStringSetting('audioTimerAlarm', desiredAsset);
         break;
       case '3-2-1 Countdown':
-        print("\n\nhere is the desired asset:");
-        print(desiredAsset);
         List<String> assetsSplit = desiredAsset.split(",");
-        print("\n\nHere is ya sset Split:");
-        print(assetsSplit);
         setStringSetting('audioTimerCountdownAtThree', assetsSplit[0]);
         setStringSetting('audioTimerCountdownAtTwo', assetsSplit[1]);
         setStringSetting('audioTimerCountdownAtOne', assetsSplit[2]);
+        audioForAssembledCountdown = desiredAsset;
+        setStringSetting('audioAssembledCountdown', desiredAsset);
         break;
       case '10 Second Warning':
         audioForTimerCountdownAtTen = desiredAsset;
