@@ -995,7 +995,6 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
     }
   }
 
-  // TODO Update this method to accept the _selectedOption
   String getAudioAssetFromMap() {
     switch (_parentWidget) {
       case 'Timer Alarm':
@@ -1099,6 +1098,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
           itemBuilder: (BuildContext context, int index) {
             return Card(
                 child: GestureDetector(
+                  // This is activated when the user clicks on the text field
                   onTap: () {
                     setState(() {
                       _selectedOption = _options[index];
@@ -1120,11 +1120,13 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                       value: _options[index],
                       groupValue: _selectedOption,
                       onChanged: (String? value) {
+                        // This is activated when the user clicks on a new Radio Button
                         setState(() {
                           _selectedOption = value;
                           var desiredAsset = getAudioAssetFromMap();
                           setChosenAudioAsset(desiredAsset);
 
+                          // Sound on this type of selection is currently disabled
                           // if (_parentWidget == '3-2-1 Countdown') {
                           //   // We need to break the desired asset down into 3 with spaces
                           //   playAudioWithDelay(desiredAsset);
