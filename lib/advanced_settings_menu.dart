@@ -531,7 +531,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                         Animation secondaryAnimation) {
                       return Center(
                         child: AudioChangerMenuWidget(
-                          parentWidget: '3-2-1 Countdown',
+                          parentWidget: '3-2-1     Countdown',
                           options: threeTwoOneCountdownAssetMap.values.toList(),
                         ),
                       );
@@ -986,7 +986,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
       case 'Timer Alarm':
         _selectedOption = timerAlarmAssetMap[audioForTimerAlarm];
         break;
-      case '3-2-1 Countdown':
+      case '3-2-1     Countdown':
         _selectedOption = threeTwoOneCountdownAssetMap[audioForAssembledCountdown];
         break;
       case '10 Second Warning':
@@ -1011,7 +1011,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         }
         return '';
 
-      case '3-2-1 Countdown':
+      case '3-2-1     Countdown':
         for (var entry in threeTwoOneCountdownAssetMap.entries) {
           if (entry.value == _selectedOption) {
             return entry.key;
@@ -1054,7 +1054,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         audioForTimerAlarm = desiredAsset;
         setStringSetting('audioTimerAlarm', desiredAsset);
         break;
-      case '3-2-1 Countdown':
+      case '3-2-1     Countdown':
         List<String> assetsSplit = desiredAsset.split(",");
         setStringSetting('audioTimerCountdownAtThree', assetsSplit[0]);
         setStringSetting('audioTimerCountdownAtTwo', assetsSplit[1]);
@@ -1091,8 +1091,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 350,
-        // width: 300,
+        height: 300,
         color: secondaryColor.withOpacity(0.8),
         child: Center(
           child: Column(
@@ -1101,7 +1100,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                 const SizedBox(height: 20),
                 Text(_parentWidget,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 35, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 38, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
                 const SizedBox(height: 10),
 
                 ///////////////////////////
@@ -1121,7 +1120,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                                   var desiredAsset = getAudioAssetFromMap();
                                   setChosenAudioAsset(desiredAsset);
 
-                                  if (_parentWidget == '3-2-1 Countdown') {
+                                  if (_parentWidget == '3-2-1     Countdown') {
                                     // We need to break the desired asset down into 3 with spaces
                                     playAudioWithDelay(desiredAsset);
                                   } else {
@@ -1131,7 +1130,8 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                                 });
                               },
                               child: ListTile(
-                                title: Text(_options[index]),
+                                tileColor: primaryColor,
+                                title: Text(_options[index], style: TextStyle(color: secondaryColor, fontSize: 18)),
                                 leading: Radio<String>(
                                   value: _options[index],
                                   groupValue: _selectedOption,
@@ -1142,7 +1142,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                                       var desiredAsset = getAudioAssetFromMap();
                                       setChosenAudioAsset(desiredAsset);
 
-                                      if (_parentWidget == '3-2-1 Countdown') {
+                                      if (_parentWidget == '3-2-1     Countdown') {
                                         // We need to break the desired asset down into 3 with spaces
                                         playAudioWithDelay(desiredAsset);
                                       } else {
@@ -1151,8 +1151,8 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                                       }
                                     });
                                   },
-                                ),
-                              )
+                              ),
+                          )
                             ),
                         );
                       },
