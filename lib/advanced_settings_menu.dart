@@ -1091,7 +1091,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 300,
+        height: 325,
         color: secondaryColor.withOpacity(0.8),
         child: Center(
           child: Column(
@@ -1151,14 +1151,15 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                                       }
                                     });
                                   },
-                              ),
-                          )
+                                ),
+                              )
                             ),
                         );
                       },
                     ),
-                  )
-                ],
+                  ),
+                const SizedBox(height: 20),
+              ],
         )
     )
     );

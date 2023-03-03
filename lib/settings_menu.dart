@@ -521,46 +521,52 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       /////////////////
                       // Volume Slider
                       /////////////////
-                      appCurrentlyMuted
-                          ? const SizedBox(height: 68)
-                          : Column(
-                            children: [
-                              SliderTheme(
-                                data: SliderTheme.of(context).copyWith(
-                                  // thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                                  // overlayShape: RoundSliderOverlayShape(overlayRadius: 30.0),
-                                  thumbColor: primaryAccentColor,
-                                  // overlayColor: primaryAccentColor,
-                                  activeTrackColor: primaryAccentColor,
-                                  inactiveTrackColor: secondaryAccentColor,
-                                ),
-                                child: FractionallySizedBox(
-                                  widthFactor: .9,
-                                    child: Slider(
-                                      value: _appVolume,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          _appVolume = newValue;
-                                          widget.audio.setVolume(_appVolume);
+                      Column(
+                        children: [
+                          SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              // thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                              // overlayShape: RoundSliderOverlayShape(overlayRadius: 30.0),
+                              thumbColor: appCurrentlyMuted
+                                  ? Colors.grey
+                                  : primaryAccentColor,
+                              // overlayColor: primaryAccentColor,
+                              activeTrackColor: appCurrentlyMuted
+                                  ? secondaryAccentColor
+                                  : primaryAccentColor,
+                              inactiveTrackColor: appCurrentlyMuted
+                                  ? Colors.grey
+                                  : secondaryAccentColor,
+                            ),
+                            child: FractionallySizedBox(
+                              widthFactor: .9,
+                                child: Slider(
+                                  value: _appVolume,
+                                  onChanged: (newValue) {
+                                    setState(() {
+                                      _appVolume = newValue;
+                                      widget.audio.setVolume(_appVolume);
 
-                                          // Save the Stored Volume for next Startup
-                                          // Method lives in settings.dart
-                                          setAppVolume(_appVolume);
-                                        });
-                                      },
-                                    )
-                                ),
-                              ),
-                              Text(
-                                'Volume',
-                                style: TextStyle(
-                                  color: primaryColor,
-                                  fontSize: 18,
-                                  fontFamily: 'AstroSpace',
-                                ),
-                              ),
-                            ],
+                                      // Save the Stored Volume for next Startup
+                                      // Method lives in settings.dart
+                                      setAppVolume(_appVolume);
+                                    });
+                                  },
+                                )
+                            ),
                           ),
+                          Text(
+                            'Volume',
+                            style: TextStyle(
+                              color: appCurrentlyMuted
+                                ? Colors.grey
+                                : primaryColor,
+                              fontSize: 18,
+                              fontFamily: 'AstroSpace',
+                            ),
+                          ),
+                        ],
+                      ),
 
                       ////////////////////
                       // Bottom Settings
