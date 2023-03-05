@@ -245,9 +245,9 @@ var assetAlarmStandard = 'sounds/alarm-standard-1.mp3';
 var assetSalliRest = 'sounds/Amplified/Rest-Voice-salli-Amped2.mp3';
 var assetSalliWork = 'sounds/Amplified/Work-Voice-salli-Amped2.mp3';
 var assetJoeyTen = 'sounds/Amplified/JoeyTenAmped2.mp3';
-var assetSalliThree = 'sounds/Amplified/SalliThree.mp3';
-var assetSalliTwo = 'sounds/Amplified/SalliTwo.mp3';
-var assetSalliOne = 'sounds/Amplified/SalliOne1.mp3';
+var assetSalliThree = 'sounds/Amplified/SalliThree2.mp3';
+var assetSalliTwo = 'sounds/Amplified/SalliTwo2.mp3';
+var assetSalliOne = 'sounds/Amplified/SalliOne2.mp3';
 
 // Effects:
 var assetCorrect = 'sounds/Correct1.mp3';
