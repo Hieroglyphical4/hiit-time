@@ -1083,10 +1083,8 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
     List<String> assetsSplit = desiredAsset.split(",");
     _audioPlayer.play(AssetSource(assetsSplit[0]));
     await Future.delayed(const Duration(seconds: 1));
-    _audioPlayer.stop();
     _audioPlayer.play(AssetSource(assetsSplit[1]));
     await Future.delayed(const Duration(seconds: 1));
-    _audioPlayer.stop();
     _audioPlayer.play(AssetSource(assetsSplit[2]));
   }
 

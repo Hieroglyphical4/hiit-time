@@ -255,7 +255,8 @@ var assetWoosh = 'sounds/Woosh-spaced.mp3';
 var assetSelectionReversed = 'sounds/Selection1Reversed.mp3';
 var assetSwitchAndBeep = 'sounds/SwitchAndBeep1.mp3';
 var assetSwitch = 'sounds/Switch1.mp3';
-var assetPongUp = 'sounds/Amplified/PongUpAmped2.mp3';
+var assetPongUp = 'sounds/Amplified/PongUpAmped3.mp3';
+var assetPongUpExtended = 'sounds/Amplified/PongUpExtended2.mp3';
 var assetPongDown = 'sounds/Amplified/PongDownAmped.mp3';
 var assetShopOpenBell = 'sounds/ShopOpenBellv2.mp3';
 var assetShopCloseBell = 'sounds/ShopCloseBell.mp3';
@@ -265,8 +266,7 @@ var assetFlourishDelayed = 'sounds/FlourishDelayed2.mp3';
 // 3-2-1 Countdowns Assembled:
 // Three asset strings delimited with commas for later transformation
 var assembledAssetSalliCountdown = "$assetSalliThree,$assetSalliTwo,$assetSalliOne";
-var assembledAssetPongUpCountdown = "$assetPongUp,$assetPongUp,$assetPongUp";
-var assembledAssetPongDownCountdown = "$assetPongDown,$assetPongDown,$assetPongDown";
+var assembledAssetPongUpCountdown = "$assetPongUp,$assetPongUpExtended,$assetPongUp";
 
 
 /// Maps Between Audio Assets and Descriptive text displayed to User
@@ -286,7 +286,6 @@ Map<String, String> timerAlarmAssetMap = {
 Map<String, String> threeTwoOneCountdownAssetMap = {
   assembledAssetSalliCountdown: 'Salli Countdown',
   assembledAssetPongUpCountdown: 'Pong Up',
-  assembledAssetPongDownCountdown: 'Pong Down',
 };
 
 Map<String, String> tenSecondWarningAssetMap = {
