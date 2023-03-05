@@ -161,10 +161,13 @@ void clearUserSettings() async {
   prefs.remove('audioModeSwitchAlertRest');
   prefs.remove('audioModeSwitchAlertWork');
   prefs.remove('audioTimerAlarm');
+  prefs.remove('audioAlertWorkModeStarted');
+  prefs.remove('audioAlertRestModeStarted');
   prefs.remove('audioTimerCountdownAtTen');
   prefs.remove('audioTimerCountdownAtThree');
   prefs.remove('audioTimerCountdownAtTwo');
   prefs.remove('audioTimerCountdownAtOne');
+  prefs.remove('audioAssembledCountdown');
   prefs.remove('audioRestartButton');
   prefs.remove('audioSaveButton');
   prefs.remove('audioCancelButton');
@@ -252,15 +255,19 @@ var assetWoosh = 'sounds/Woosh-spaced.mp3';
 var assetSelectionReversed = 'sounds/Selection1Reversed.mp3';
 var assetSwitchAndBeep = 'sounds/SwitchAndBeep1.mp3';
 var assetSwitch = 'sounds/Switch1.mp3';
-var assetPongUp = 'sounds/PongUp.mp3';
-
+var assetPongUp = 'sounds/Amplified/PongUpAmped.mp3';
+var assetPongDown = 'sounds/Amplified/PongDownAmped.mp3';
 var assetShopOpenBell = 'sounds/ShopOpenBellv2.mp3';
 var assetShopCloseBell = 'sounds/ShopCloseBell.mp3';
+var assetFlourish = 'sounds/Flourish.mp3';
+var assetFlourishDelayed = 'sounds/FlourishDelayed2.mp3';
 
 // 3-2-1 Countdowns Assembled:
 // Three asset strings delimited with commas for later transformation
 var assembledAssetSalliCountdown = "$assetSalliThree,$assetSalliTwo,$assetSalliOne";
 var assembledAssetPongUpCountdown = "$assetPongUp,$assetPongUp,$assetPongUp";
+var assembledAssetPongDownCountdown = "$assetPongDown,$assetPongDown,$assetPongDown";
+
 
 /// Maps Between Audio Assets and Descriptive text displayed to User
 Map<String, String> timerAlarmAssetMap = {
@@ -278,23 +285,25 @@ Map<String, String> timerAlarmAssetMap = {
 
 Map<String, String> threeTwoOneCountdownAssetMap = {
   assembledAssetSalliCountdown: 'Salli Countdown',
-  assembledAssetPongUpCountdown: 'Pong Up'
+  assembledAssetPongUpCountdown: 'Pong Up',
+  assembledAssetPongDownCountdown: 'Pong Down',
 };
 
 Map<String, String> tenSecondWarningAssetMap = {
   assetJoeyTen: "Joey: 'Ten'",
-  assetShopOpenBell: 'Shop Open Bell',
-  assetShopCloseBell: 'Shop Close Bell'
+  assetFlourishDelayed: "Flourish"
 };
 
 Map<String, String> alertWorkModeStartedAssetMap = {
   assetSalliWork: "Salli: 'Work'",
   assetShopOpenBell: 'Shop Open Bell',
-  assetShopCloseBell: 'Shop Close Bell'
+  assetShopCloseBell: 'Shop Close Bell',
+  assetFlourish: "Flourish"
 };
 
 Map<String, String> alertRestModeStartedAssetMap = {
   assetSalliRest: "Salli: 'Rest'",
   assetShopOpenBell: 'Shop Open Bell',
-  assetShopCloseBell: 'Shop Close Bell'
+  assetShopCloseBell: 'Shop Close Bell',
+  assetFlourish: "Flourish"
 };
