@@ -1092,7 +1092,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
   Widget build(BuildContext context) {
     return Container(
         height: 325,
-        color: secondaryColor.withOpacity(0.8),
+        color: secondaryColor,
         child: Center(
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
