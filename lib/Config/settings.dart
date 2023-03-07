@@ -78,11 +78,27 @@ var audioForSwitchButtonEnabled = audioSwitchButtonEnabledDefault;
 var audioForSwitchButtonDisabled = audioSwitchButtonDisabledDefault;
 
 
+/// Theme Related defaults
+var defaultTheme = 'default';
+var appCurrentTheme = defaultTheme;
+
 // Dark mode default colors
-var primaryColor = Colors.white;
-var secondaryColor = Colors.grey.shade900; // Almost black
-var primaryAccentColor = Colors.blue.shade400;
-var secondaryAccentColor = Colors.blueGrey;
+var primaryColorDarkMode = Colors.white;
+var secondaryColorDarkMode = Colors.grey.shade900; // Almost black
+var primaryAccentColorDarkMode = Colors.blue.shade400;
+var secondaryAccentColorDarkMode = Colors.blueGrey;
+
+// Light mode Default colors
+var primaryColorLightMode = Colors.black;
+var secondaryColorLightMode = Colors.white;
+var primaryAccentColorLightMode = Colors.blue.shade400;
+var secondaryAccentColorLightMode = Colors.blueGrey;
+
+// Setup current app colors to Default Dark Mode
+var primaryColor = primaryColorDarkMode;
+var secondaryColor = secondaryColorDarkMode;
+var primaryAccentColor = primaryAccentColorDarkMode;
+var secondaryAccentColor = secondaryAccentColorDarkMode;
 
 
 /// Get Settings the User Previously Stored:
@@ -132,7 +148,9 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   audioForSwitchButtonDisabled = prefs.getString('audioModeSwitchAlertDisabled') ?? audioSwitchButtonDisabledDefault;
 
 
-  // Call Method to assign App Colors
+  // Call Methods to assign App Colors
+  appCurrentTheme = prefs.getString('appTheme') ?? defaultTheme;
+  setupAppTheme(appCurrentTheme);
   setupDarkOrLightMode(prefs.getBool('appInDarkMode') ?? appInDarkModeDefault);
 
   return settings;
@@ -157,6 +175,7 @@ void clearUserSettings() async {
   prefs.remove('cancelButtonAudioEnabled');
   prefs.remove('switchButtonAudioEnabled');
   prefs.remove('appInDarkMode');
+  prefs.remove('appTheme');
 
   prefs.remove('audioModeSwitchAlertRest');
   prefs.remove('audioModeSwitchAlertWork');
@@ -218,19 +237,60 @@ Future<void> setStringSetting(String setting, String value) async {
   prefs.setString(setting, value);
 }
 
+/// App Theme related settings
+// Map<String, Color> defaultThemeColorMap = {
+//   'primary': Colors.white,
+//   'secondary': Colors.grey.shade900,
+//   'accent': Colors.blue.shade400,
+//   'secondaryAccent': Colors.blueGrey
+// };
+
+
+void setupAppTheme(String theme) {
+  switch (theme) {
+    case "default":
+      // Dark mode
+      primaryColorDarkMode = Colors.white;
+      secondaryColorDarkMode = Colors.grey.shade900; // Almost black
+      primaryAccentColorDarkMode = Colors.blue.shade400;
+      secondaryAccentColorDarkMode = Colors.blueGrey;
+
+      // Light mode
+      primaryColorLightMode = Colors.black;
+      secondaryColorLightMode = Colors.white;
+      primaryAccentColorLightMode = Colors.blue.shade400;
+      secondaryAccentColorLightMode = Colors.blueGrey;
+      break;
+
+    case "bubblegum":
+    // Dark mode
+      primaryColorDarkMode = Colors.white;
+      secondaryColorDarkMode = Colors.pink.shade600;
+      primaryAccentColorDarkMode = Colors.tealAccent;
+      secondaryAccentColorDarkMode = Colors.green;
+
+      // Light mode
+      primaryColorLightMode = Colors.black;
+      secondaryColorLightMode = Colors.pink.shade200;
+      primaryAccentColorLightMode = Colors.teal;
+      secondaryAccentColorLightMode = Colors.yellow;
+      break;
+  }
+}
+
 void setupDarkOrLightMode(bool appInDarkMode) {
   if (appInDarkMode) {
     appCurrentlyInDarkMode = true;
-    primaryColor = Colors.white;
-    secondaryColor = Colors.grey.shade900;
-    primaryAccentColor = Colors.blue.shade400;
-    secondaryAccentColor = Colors.blueGrey;
+    primaryColor = primaryColorDarkMode;
+    secondaryColor = secondaryColorDarkMode;
+    primaryAccentColor = primaryAccentColorDarkMode;
+    secondaryAccentColor = secondaryAccentColorDarkMode;
   } else {
     appCurrentlyInDarkMode = false;
-    primaryColor = Colors.black;
-    secondaryColor = Colors.white;
-    primaryAccentColor = Colors.blue.shade400;
-    secondaryAccentColor = Colors.blueGrey;
+    primaryColor = primaryColorLightMode;
+    secondaryColor = secondaryColorLightMode;
+    primaryAccentColor = primaryAccentColorLightMode;
+    secondaryAccentColor = secondaryAccentColorLightMode;
   }
 }
 

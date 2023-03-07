@@ -206,15 +206,55 @@ class ThemeSettingsWidget extends StatefulWidget {
 }
 
 class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
+
+  var _currentTheme = appCurrentTheme;
+
+  void updateAppTheme(String theme){
+    _currentTheme = theme;
+    appCurrentTheme = theme;
+    setStringSetting('appTheme', theme);
+    setupAppTheme(theme);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(children: [
-        const SizedBox(height: 55),
-        Text('Coming Soon!',
-          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 40, color: primaryAccentColor, height: 1.1),
-          textAlign: TextAlign.center),
-        const SizedBox(height: 55),
+      child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(horizontal: 110.0),
+          children: [
+            const SizedBox(height: 20),
+
+            RadioListTile(
+              title: Text('Default',
+                style: TextStyle(color: appCurrentlyInDarkMode ? primaryColor : secondaryColor)
+              ),
+              value: 'default',
+              groupValue: _currentTheme,
+              onChanged: (String? value) {
+                updateAppTheme(value!);
+
+                setState(() {
+                  setupDarkOrLightMode(appCurrentlyInDarkMode);
+                });
+              },
+            ),
+            RadioListTile(
+              title: Text('BubbleGum',
+                  style: TextStyle(color: appCurrentlyInDarkMode ? primaryColor : secondaryColor)
+              ),
+              value: 'bubblegum',
+              groupValue: _currentTheme,
+              onChanged: (String? value) {
+                updateAppTheme(value!);
+
+                setState(() {
+                  setupDarkOrLightMode(appCurrentlyInDarkMode);
+                });
+              },
+            ),
+
+        const SizedBox(height: 35),
       ])
     );
   }

@@ -419,7 +419,7 @@ class _MyAppState extends State<MyApp> {
                               _timerModifierValueSub > 59
                                   ? '-${changeDurationFromSecondsToMinutes(_timerModifierValueSub)}'
                                   : '-${_timerModifierValueSub}s',
-                              style: const TextStyle(fontSize: 20)),
+                              style: TextStyle(fontSize: 20, color: appCurrentlyInDarkMode ? primaryColor : secondaryColor)),
                         ),
                       ),
                     ),
@@ -519,7 +519,7 @@ class _MyAppState extends State<MyApp> {
                               _timerModifierValueAdd > 59
                                   ? '+${changeDurationFromSecondsToMinutes(_timerModifierValueAdd)}'
                                   : '+${_timerModifierValueAdd}s',
-                              style: const TextStyle(fontSize: 20)),
+                              style: TextStyle(fontSize: 20, color: appCurrentlyInDarkMode ? primaryColor : secondaryColor)),
                         ),
                       ),
                     )
