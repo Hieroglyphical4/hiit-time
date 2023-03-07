@@ -279,19 +279,19 @@ void setupAppTheme(String theme) {
 }
 
 void setupDarkOrLightMode(bool appInDarkMode) {
-  if (appInDarkMode) {
-    appCurrentlyInDarkMode = true;
-    primaryColor = primaryColorDarkMode;
-    secondaryColor = secondaryColorDarkMode;
-    primaryAccentColor = primaryAccentColorDarkMode;
-    secondaryAccentColor = secondaryAccentColorDarkMode;
-  } else {
-    appCurrentlyInDarkMode = false;
-    primaryColor = primaryColorLightMode;
-    secondaryColor = secondaryColorLightMode;
-    primaryAccentColor = primaryAccentColorLightMode;
-    secondaryAccentColor = secondaryAccentColorLightMode;
-  }
+    if (appInDarkMode) {
+      appCurrentlyInDarkMode = true;
+      primaryColor = primaryColorDarkMode;
+      secondaryColor = secondaryColorDarkMode;
+      primaryAccentColor = primaryAccentColorDarkMode;
+      secondaryAccentColor = secondaryAccentColorDarkMode;
+    } else {
+      appCurrentlyInDarkMode = false;
+      primaryColor = primaryColorLightMode;
+      secondaryColor = secondaryColorLightMode;
+      primaryAccentColor = primaryAccentColorLightMode;
+      secondaryAccentColor = secondaryAccentColorLightMode;
+    }
 }
 
 /// Audio Assets:

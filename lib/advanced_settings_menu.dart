@@ -54,6 +54,15 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
     return confirmed ?? false;
   }
 
+  // It was necessary to call this from the parent widget to make the
+  // changes appear as soon as the user makes them
+  void onColorChanged() {
+    setState(() {
+      // update the state with the new color
+      setupDarkOrLightMode(appCurrentlyInDarkMode);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,7 +154,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 
                 // Determine if Themes Widget should show:
                 _displayThemesSettings
-                  ? const ThemeSettingsWidget()
+                  ? ThemeSettingsWidget(onColorChanged: onColorChanged)
                   : Container(),
 
                 // Spacer between Theme Button and Restore Defaults
@@ -199,7 +208,9 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 // Widget for all Theme related Settings (submenu)
 ////////////////////////////////////////////
 class ThemeSettingsWidget extends StatefulWidget {
-  const ThemeSettingsWidget({super.key});
+  final Function() onColorChanged;
+
+  const ThemeSettingsWidget({super.key, required this.onColorChanged});
 
   @override
   ThemeSettingsWidgetState createState() => ThemeSettingsWidgetState();
@@ -209,11 +220,16 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 
   var _currentTheme = appCurrentTheme;
 
-  void updateAppTheme(String theme){
-    _currentTheme = theme;
-    appCurrentTheme = theme;
-    setStringSetting('appTheme', theme);
-    setupAppTheme(theme);
+  void _updateAppTheme(String? theme) {
+    if (theme != null){
+      setState(() {
+        _currentTheme = theme;
+        appCurrentTheme = theme;
+        setStringSetting('appTheme', theme);
+        setupAppTheme(theme);
+        widget.onColorChanged();
+      });
+    }
   }
 
   @override
@@ -221,37 +237,32 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
     return Center(
       child: ListView(
           shrinkWrap: true,
-          padding: const EdgeInsets.symmetric(horizontal: 110.0),
+          padding: const EdgeInsets.symmetric(horizontal: 50.0),
           children: [
             const SizedBox(height: 20),
 
             RadioListTile(
               title: Text('Default',
-                style: TextStyle(color: appCurrentlyInDarkMode ? primaryColor : secondaryColor)
+                style: TextStyle(color: primaryColor)
               ),
               value: 'default',
               groupValue: _currentTheme,
-              onChanged: (String? value) {
-                updateAppTheme(value!);
-
-                setState(() {
-                  setupDarkOrLightMode(appCurrentlyInDarkMode);
-                });
-              },
+              onChanged: _updateAppTheme,
             ),
             RadioListTile(
               title: Text('BubbleGum',
-                  style: TextStyle(color: appCurrentlyInDarkMode ? primaryColor : secondaryColor)
+                  style: TextStyle(color: primaryColor)
               ),
               value: 'bubblegum',
               groupValue: _currentTheme,
-              onChanged: (String? value) {
-                updateAppTheme(value!);
-
-                setState(() {
-                  setupDarkOrLightMode(appCurrentlyInDarkMode);
-                });
-              },
+              onChanged: _updateAppTheme,
+              // onChanged: (String? value) {
+              //   updateAppTheme(value!);
+              //
+              //   setState(() {
+              //     setupDarkOrLightMode(appCurrentlyInDarkMode);
+              //   });
+              // },
             ),
 
         const SizedBox(height: 35),
