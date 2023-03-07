@@ -56,7 +56,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 
   // It was necessary to call this from the parent widget to make the
   // changes appear as soon as the user makes them
-  void onColorChanged() {
+  void onThemeChanged() {
     setState(() {
       // update the state with the new color
       setupDarkOrLightMode(appCurrentlyInDarkMode);
@@ -154,7 +154,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 
                 // Determine if Themes Widget should show:
                 _displayThemesSettings
-                  ? ThemeSettingsWidget(onColorChanged: onColorChanged)
+                  ? ThemeSettingsWidget(onThemeChanged: onThemeChanged)
                   : Container(),
 
                 // Spacer between Theme Button and Restore Defaults
@@ -208,16 +208,14 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 // Widget for all Theme related Settings (submenu)
 ////////////////////////////////////////////
 class ThemeSettingsWidget extends StatefulWidget {
-  final Function() onColorChanged;
-
-  const ThemeSettingsWidget({super.key, required this.onColorChanged});
+  final Function() onThemeChanged;
+  const ThemeSettingsWidget({super.key, required this.onThemeChanged});
 
   @override
   ThemeSettingsWidgetState createState() => ThemeSettingsWidgetState();
 }
 
 class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
-
   var _currentTheme = appCurrentTheme;
 
   void _updateAppTheme(String? theme) {
@@ -227,7 +225,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
         appCurrentTheme = theme;
         setStringSetting('appTheme', theme);
         setupAppTheme(theme);
-        widget.onColorChanged();
+        widget.onThemeChanged();
       });
     }
   }
@@ -256,13 +254,6 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
               value: 'bubblegum',
               groupValue: _currentTheme,
               onChanged: _updateAppTheme,
-              // onChanged: (String? value) {
-              //   updateAppTheme(value!);
-              //
-              //   setState(() {
-              //     setupDarkOrLightMode(appCurrentlyInDarkMode);
-              //   });
-              // },
             ),
 
         const SizedBox(height: 35),
