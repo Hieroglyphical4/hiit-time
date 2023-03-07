@@ -309,11 +309,9 @@ class _MyAppState extends State<MyApp> {
                         controller: _controller,
                         strokeWidth: 18,
                         autostart: false,
-                        valueColor: _timerInRestMode
-                            ? appCurrentlyInDarkMode // Color slice showing time passed
-                                ? primaryColor
-                                : Colors.blueGrey.shade700
-                            : Colors.blueGrey.shade700,
+                        valueColor: _timerInRestMode // Color slice showing time passed
+                            ? primaryColor
+                            : secondaryColor,
                         initialPosition: 0,
                         audioPlayer: _audioPlayer,
                         isRunning: _isRunning,

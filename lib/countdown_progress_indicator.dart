@@ -278,7 +278,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                             style: Theme.of(context).textTheme.bodyText1!.copyWith(
                                     color: widget.timerInRestMode
                                         ? primaryColor
-                                        : Colors.blue.shade300,
+                                        : primaryAccentColor,
                                     fontFamily: 'AstroSpace',
                                     fontSize: 25,
                                     height: .1
@@ -305,7 +305,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                           style: widget.timeTextStyle ??
                               Theme.of(context).textTheme.bodyText1!.copyWith(
                                   color: widget.timerInRestMode
-                                      ? Colors.blue.shade300
+                                      ? primaryAccentColor
                                       : primaryColor,
                                   fontSize: _secondTimerSize,
                                   fontWeight: FontWeight.w600),
@@ -322,7 +322,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                           style: widget.timeTextStyle ??
                               Theme.of(context).textTheme.bodyText1!.copyWith(
                                   color: widget.timerInRestMode
-                                      ? Colors.blue.shade300
+                                      ? primaryAccentColor
                                       : primaryColor,
                                   fontSize: _minuteTimerSize,
                                   fontWeight: FontWeight.w600),
@@ -360,11 +360,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                 : _timerText,
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
-                                      color: !widget.isRunning
-                                          ? Colors.blue
-                                          : widget.timerInRestMode
-                                              ? Colors.blue.shade300
-                                              : primaryColor,
+                                      color: widget.timerInRestMode
+                                              ? primaryColor
+                                              : primaryAccentColor,
                                       fontFamily: 'AstroSpace',
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600,
