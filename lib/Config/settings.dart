@@ -87,18 +87,21 @@ var primaryColorDarkMode = Colors.white;
 var secondaryColorDarkMode = Colors.grey.shade900; // Almost black
 var primaryAccentColorDarkMode = Colors.blue.shade400;
 var secondaryAccentColorDarkMode = Colors.blueGrey;
+var runningClockColorDarkMode = Colors.lightGreenAccent.shade700;
 
 // Light mode Default colors
 var primaryColorLightMode = Colors.black;
 var secondaryColorLightMode = Colors.white;
 var primaryAccentColorLightMode = Colors.blue.shade400;
 var secondaryAccentColorLightMode = Colors.blueGrey;
+var runningClockColorLightMode = Colors.lightGreenAccent.shade700;
 
 // Setup current app colors to Default Dark Mode
 var primaryColor = primaryColorDarkMode;
 var secondaryColor = secondaryColorDarkMode;
 var primaryAccentColor = primaryAccentColorDarkMode;
 var secondaryAccentColor = secondaryAccentColorDarkMode;
+var runningClockColor = runningClockColorDarkMode;
 
 
 /// Get Settings the User Previously Stored:
@@ -249,31 +252,37 @@ Future<void> setStringSetting(String setting, String value) async {
 void setupAppTheme(String theme) {
   switch (theme) {
     case "default":
+
       // Dark mode
       primaryColorDarkMode = Colors.white;
       secondaryColorDarkMode = Colors.grey.shade900; // Almost black
       primaryAccentColorDarkMode = Colors.blue.shade400;
       secondaryAccentColorDarkMode = Colors.blueGrey;
+      runningClockColorDarkMode = Colors.lightGreenAccent.shade700;
 
       // Light mode
       primaryColorLightMode = Colors.black;
       secondaryColorLightMode = Colors.white;
       primaryAccentColorLightMode = Colors.blue.shade400;
       secondaryAccentColorLightMode = Colors.blueGrey;
+      runningClockColorLightMode = Colors.lightGreenAccent.shade700;
       break;
 
     case "bubblegum":
-    // Dark mode
+
+      // Dark mode
       primaryColorDarkMode = Colors.white;
       secondaryColorDarkMode = Colors.pink.shade600;
       primaryAccentColorDarkMode = Colors.tealAccent;
       secondaryAccentColorDarkMode = Colors.green;
+      runningClockColorDarkMode = secondaryAccentColorDarkMode;
 
       // Light mode
       primaryColorLightMode = Colors.black;
       secondaryColorLightMode = Colors.pink.shade200;
       primaryAccentColorLightMode = Colors.teal;
       secondaryAccentColorLightMode = Colors.yellow;
+      runningClockColorLightMode = secondaryAccentColorLightMode;
       break;
   }
 }
@@ -285,12 +294,14 @@ void setupDarkOrLightMode(bool appInDarkMode) {
       secondaryColor = secondaryColorDarkMode;
       primaryAccentColor = primaryAccentColorDarkMode;
       secondaryAccentColor = secondaryAccentColorDarkMode;
+      runningClockColor = runningClockColorDarkMode;
     } else {
       appCurrentlyInDarkMode = false;
       primaryColor = primaryColorLightMode;
       secondaryColor = secondaryColorLightMode;
       primaryAccentColor = primaryAccentColorLightMode;
       secondaryAccentColor = secondaryAccentColorLightMode;
+      runningClockColor = runningClockColorLightMode;
     }
 }
 

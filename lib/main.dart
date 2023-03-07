@@ -233,7 +233,7 @@ class _MyAppState extends State<MyApp> {
                           if (appCurrentlyInTimerMode) {
                             return primaryColor;
                           }
-                          return null; // defer to the defaults
+                          return primaryAccentColor; // defer to the defaults
                         },
                       ),
                     ),

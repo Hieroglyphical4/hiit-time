@@ -243,11 +243,11 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                   // Rest Mode:
                   ? widget.isRunning
                       ? secondaryColor
-                      : Colors.blue
+                      : primaryAccentColor
                   // Work Mode:
                   : widget.isRunning
-                      ? Colors.lightGreenAccent.shade700
-                      : Colors.blue,
+                      ? runningClockColor
+                      : primaryAccentColor,
               valueColor: AlwaysStoppedAnimation<Color>(widget.valueColor),
               value: _animation.value / widget.duration,
             ),
