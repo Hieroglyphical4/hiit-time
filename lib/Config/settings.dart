@@ -82,6 +82,10 @@ var audioForSwitchButtonDisabled = audioSwitchButtonDisabledDefault;
 var defaultTheme = 'default';
 var appCurrentTheme = defaultTheme;
 
+// In some cases text needs to be altered to be legible with a theme
+// this boolean supports that behavior
+bool textColorOverwrite = false;
+
 // Dark mode default colors
 var primaryColorDarkMode = Colors.white;
 var secondaryColorDarkMode = Colors.grey.shade900; // Almost black
@@ -252,6 +256,7 @@ Future<void> setStringSetting(String setting, String value) async {
 void setupAppTheme(String theme) {
   switch (theme) {
     case "default":
+      textColorOverwrite = false;
 
       // Dark mode
       primaryColorDarkMode = Colors.white;
@@ -269,12 +274,13 @@ void setupAppTheme(String theme) {
       break;
 
     case "bubblegum":
+      textColorOverwrite = true;
 
       // Dark mode
       primaryColorDarkMode = Colors.white;
       secondaryColorDarkMode = Colors.pink.shade600;
       primaryAccentColorDarkMode = Colors.tealAccent;
-      secondaryAccentColorDarkMode = Colors.green;
+      secondaryAccentColorDarkMode = Colors.yellow;
       runningClockColorDarkMode = secondaryAccentColorDarkMode;
 
       // Light mode

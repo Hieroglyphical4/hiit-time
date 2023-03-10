@@ -69,8 +69,14 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
       backgroundColor: secondaryColor,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
+        backgroundColor: primaryAccentColor,
         centerTitle: true,
-        title: const Text('Advanced Settings'),
+        title: Text('Advanced Settings', style: TextStyle(
+            color: textColorOverwrite
+                ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                : Colors.white
+        ),
+        ),
           leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -111,7 +117,9 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                       child: Text(_displayAudioSettings
                           ? '-   Audio Settings   -'
                           : 'Audio Settings       >',
-                          style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1),
+                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
+                              color: textColorOverwrite ? Colors.black : Colors.white
+                          ),
                           textAlign: TextAlign.center
                       )
                   )
@@ -147,7 +155,9 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         child: Text(_displayThemesSettings
                             ? '-         Themes         -'
                             : 'Themes                      >',
-                            style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1),
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
+                                color: textColorOverwrite ? Colors.black : Colors.white
+                            ),
                             textAlign: TextAlign.center)
                     )
                 ),
