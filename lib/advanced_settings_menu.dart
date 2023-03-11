@@ -238,8 +238,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
   late PageController _pageController;
 
   // Indicates what page the user is currently looking at
-  var _currentPageIndex; // TODO update to users current Default
-
+  var _currentPageIndex;
 
   void _updateAppTheme(String? theme) {
     if (theme != null) {
@@ -277,95 +276,101 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
         builder: (BuildContext context, BoxConstraints constraints) {
       return Container(
           child: Center(
-            child: Column(
+              child: Column(children: [
+        SizedBox(
+            height: 400,
+            width: 300,
+            /////////////////////////////////////////////////////
+            /// These are the individual pages that show themes
+            /////////////////////////////////////////////////////
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentPageIndex = index;
+                });
+              },
+              // Each of these Children represents a Page
               children: [
-                // const SizedBox(height: 10),
-
-                SizedBox(
-                  height: 400,
-                  width: 300,
-                  /////////////////////////////////////////////////////
-                  /// These are the individual pages that show themes
-                  /////////////////////////////////////////////////////
-                  child: PageView(
-                    controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentPageIndex = index;
-                      });
-                    },
-                    // Each of these Children represents a Page
+                /// Default Theme Page
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      /// Default Theme Page
-                      Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset('assets/images/DefaultCombined.png'),
-                            const SizedBox(height: 10),
-                            Container(
-                              width: 200,
-                                child: RadioListTile(
-                                  title: Text(_possibleThemes[0],
-                                    style: TextStyle(
-                                        color: textColorOverwrite ? Colors.black : Colors.white,
-                                        fontSize: _textFontSize),                                  ),
-                                  tileColor: Colors.blueGrey,
-                                  shape: BeveledRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  value: _possibleThemes[0],
-                                  groupValue: _currentTheme,
-                                  onChanged: _updateAppTheme,
-                              )
-                            )
-                          ],
-                        ),
-                      ),
-                      /// Bubblegum Theme Page
-                      Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset('assets/images/BubbleGumCombined.png'),
-                            const SizedBox(height: 10),
-                            Container(
-                              width: 250,
-                                child: RadioListTile(
-                              title: Text(_possibleThemes[1],
-                                style: TextStyle(
-                                    color: textColorOverwrite ? Colors.black : Colors.white,
-                                    fontSize: _textFontSize
-                                ),
-                              ),
-                              tileColor: appCurrentlyInDarkMode ? Colors.pink.shade200 : Colors.pink.shade600,
+                      Image.asset('assets/images/DefaultCombined.png'),
+                      const SizedBox(height: 10),
+                      Container(
+                          width: 200,
+                          child: Material(
                               shape: BeveledRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              value: _possibleThemes[1],
-                              groupValue: _currentTheme,
-                              onChanged: _updateAppTheme,
-                            )
-                            ),
-                          ],
-                        ),
-                      ),
+                              child: RadioListTile(
+                                title: Text(
+                                  _possibleThemes[0],
+                                  style: TextStyle(
+                                      color: textColorOverwrite
+                                          ? Colors.black
+                                          : Colors.white,
+                                      fontSize: _textFontSize),
+                                ),
+                                tileColor: Colors.blueGrey,
+                                shape: BeveledRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                value: _possibleThemes[0],
+                                groupValue: _currentTheme,
+                                onChanged: _updateAppTheme,
+                              )))
                     ],
-                  )
-              ),
-
-                PageIndicator(
-                  currentPageIndex: _currentPageIndex,
-                  possibleThemes: _possibleThemes,
+                  ),
                 ),
 
-                const SizedBox(height: 25),
-                SizedBox(height: 1, child: Container(color: Colors.grey)),
-                const SizedBox(height: 25),
-              ]
-            )
-          )
-      );
+                /// Bubblegum Theme Page
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/images/BubbleGumCombined.png'),
+                      const SizedBox(height: 10),
+                      Container(
+                          width: 250,
+                          child: Material(
+                              shape: BeveledRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: RadioListTile(
+                                title: Text(
+                                  _possibleThemes[1],
+                                  style: TextStyle(
+                                      color: textColorOverwrite
+                                          ? Colors.black
+                                          : Colors.white,
+                                      fontSize: _textFontSize),
+                                ),
+                                tileColor: appCurrentlyInDarkMode
+                                    ? Colors.pink.shade200
+                                    : Colors.pink.shade600,
+                                shape: BeveledRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                value: _possibleThemes[1],
+                                groupValue: _currentTheme,
+                                onChanged: _updateAppTheme,
+                              ))),
+                    ],
+                  ),
+                ),
+              ],
+            )),
+        PageIndicator(
+          currentPageIndex: _currentPageIndex,
+          possibleThemes: _possibleThemes,
+        ),
+        const SizedBox(height: 25),
+        SizedBox(height: 1, child: Container(color: Colors.grey)),
+        const SizedBox(height: 25),
+      ])));
     });
   }
 }
