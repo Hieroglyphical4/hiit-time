@@ -303,15 +303,22 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                           children: [
                             Image.asset('assets/images/DefaultCombined.png'),
                             const SizedBox(height: 10),
-                              RadioListTile(
-                                title: Text(
-                                  _possibleThemes[0],
-                                  style: TextStyle(color: primaryColor, fontSize: _textFontSize),
-                                ),
-                                value: _possibleThemes[0],
-                                groupValue: _currentTheme,
-                                onChanged: _updateAppTheme,
+                            Container(
+                              width: 200,
+                                child: RadioListTile(
+                                  title: Text(_possibleThemes[0],
+                                    style: TextStyle(
+                                        color: textColorOverwrite ? Colors.black : Colors.white,
+                                        fontSize: _textFontSize),                                  ),
+                                  tileColor: Colors.blueGrey,
+                                  shape: BeveledRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  value: _possibleThemes[0],
+                                  groupValue: _currentTheme,
+                                  onChanged: _updateAppTheme,
                               )
+                            )
                           ],
                         ),
                       ),
@@ -322,14 +329,23 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                           children: [
                             Image.asset('assets/images/BubbleGumCombined.png'),
                             const SizedBox(height: 10),
-                            RadioListTile(
-                              title: Text(
-                                _possibleThemes[1],
-                                style: TextStyle(color: primaryColor, fontSize: _textFontSize),
+                            Container(
+                              width: 250,
+                                child: RadioListTile(
+                              title: Text(_possibleThemes[1],
+                                style: TextStyle(
+                                    color: textColorOverwrite ? Colors.black : Colors.white,
+                                    fontSize: _textFontSize
+                                ),
+                              ),
+                              tileColor: appCurrentlyInDarkMode ? Colors.pink.shade200 : Colors.pink.shade600,
+                              shape: BeveledRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
                               value: _possibleThemes[1],
                               groupValue: _currentTheme,
                               onChanged: _updateAppTheme,
+                            )
                             ),
                           ],
                         ),
@@ -337,8 +353,6 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                     ],
                   )
               ),
-
-                // const SizedBox(height: 25),
 
                 PageIndicator(
                   currentPageIndex: _currentPageIndex,
