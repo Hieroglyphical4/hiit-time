@@ -79,7 +79,7 @@ var audioForSwitchButtonDisabled = audioSwitchButtonDisabledDefault;
 
 
 /// Theme Related defaults
-var defaultTheme = 'default';
+var defaultTheme = 'Default';
 var appCurrentTheme = defaultTheme;
 
 // In some cases text needs to be altered to be legible with a theme
@@ -245,17 +245,10 @@ Future<void> setStringSetting(String setting, String value) async {
 }
 
 /// App Theme related settings
-// Map<String, Color> defaultThemeColorMap = {
-//   'primary': Colors.white,
-//   'secondary': Colors.grey.shade900,
-//   'accent': Colors.blue.shade400,
-//   'secondaryAccent': Colors.blueGrey
-// };
-
-
+List<String> appPossibleThemes = ['Default', 'Bubblegum'];
 void setupAppTheme(String theme) {
   switch (theme) {
-    case "default":
+    case "Default":
       textColorOverwrite = false;
 
       // Dark mode
@@ -273,7 +266,7 @@ void setupAppTheme(String theme) {
       runningClockColorLightMode = Colors.lightGreenAccent.shade700;
       break;
 
-    case "bubblegum":
+    case "Bubblegum":
       textColorOverwrite = true;
 
       // Dark mode

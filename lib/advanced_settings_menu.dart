@@ -92,7 +92,9 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
               // direction: Axis.vertical,
               children: [
                 // Body of Settings!
-                const SizedBox(height: 115),
+                _displayThemesSettings
+                    ? const SizedBox(height: 20)
+                    : const SizedBox(height: 115),
 
                 ///////////////////////////
                 // Audio Settings Button
@@ -168,9 +170,14 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                   : Container(),
 
                 // Spacer between Theme Button and Restore Defaults
-                _displayAudioSettings || _displayThemesSettings
+                (!_displayAudioSettings && !_displayThemesSettings)
+                    ? const SizedBox(height: 300)
+                    : Container(),
+
+                _displayAudioSettings
                     ? const SizedBox(height: 150)
-                    : const SizedBox(height: 300),
+                    : Container(),
+
 
                 ///////////////////////////
                 // Restore Defaults Button
@@ -226,10 +233,16 @@ class ThemeSettingsWidget extends StatefulWidget {
 }
 
 class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
+  final double _textFontSize = 30;
   var _currentTheme = appCurrentTheme;
+  late PageController _pageController;
+
+  // Indicates what page the user is currently looking at
+  var _currentPageIndex; // TODO update to users current Default
+
 
   void _updateAppTheme(String? theme) {
-    if (theme != null){
+    if (theme != null) {
       setState(() {
         _currentTheme = theme;
         appCurrentTheme = theme;
@@ -240,34 +253,139 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
     }
   }
 
+  final List<String> _possibleThemes = appPossibleThemes;
+  int _determineCurrentPageIndex() {
+    switch (appCurrentTheme){
+      case 'Default':
+        return 0;
+      case 'Bubblegum':
+        return 1;
+    }
+    return 0;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _currentPageIndex = _determineCurrentPageIndex();
+    _pageController = PageController(initialPage: _currentPageIndex);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.symmetric(horizontal: 50.0),
-          children: [
-            const SizedBox(height: 20),
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      return Container(
+          child: Center(
+            child: Column(
+              children: [
+                // const SizedBox(height: 10),
 
-            RadioListTile(
-              title: Text('Default',
-                style: TextStyle(color: primaryColor)
+                SizedBox(
+                  height: 400,
+                  width: 300,
+                  /////////////////////////////////////////////////////
+                  /// These are the individual pages that show themes
+                  /////////////////////////////////////////////////////
+                  child: PageView(
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentPageIndex = index;
+                      });
+                    },
+                    // Each of these Children represents a Page
+                    children: [
+                      /// Default Theme Page
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset('assets/images/DefaultCombined.png'),
+                            const SizedBox(height: 10),
+                              RadioListTile(
+                                title: Text(
+                                  _possibleThemes[0],
+                                  style: TextStyle(color: primaryColor, fontSize: _textFontSize),
+                                ),
+                                value: _possibleThemes[0],
+                                groupValue: _currentTheme,
+                                onChanged: _updateAppTheme,
+                              )
+                          ],
+                        ),
+                      ),
+                      /// Bubblegum Theme Page
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset('assets/images/BubbleGumCombined.png'),
+                            const SizedBox(height: 10),
+                            RadioListTile(
+                              title: Text(
+                                _possibleThemes[1],
+                                style: TextStyle(color: primaryColor, fontSize: _textFontSize),
+                              ),
+                              value: _possibleThemes[1],
+                              groupValue: _currentTheme,
+                              onChanged: _updateAppTheme,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
               ),
-              value: 'default',
-              groupValue: _currentTheme,
-              onChanged: _updateAppTheme,
-            ),
-            RadioListTile(
-              title: Text('BubbleGum',
-                  style: TextStyle(color: primaryColor)
-              ),
-              value: 'bubblegum',
-              groupValue: _currentTheme,
-              onChanged: _updateAppTheme,
-            ),
 
-        const SizedBox(height: 35),
-      ])
+                // const SizedBox(height: 25),
+
+                PageIndicator(
+                  currentPageIndex: _currentPageIndex,
+                  possibleThemes: _possibleThemes,
+                ),
+
+                const SizedBox(height: 25),
+                SizedBox(height: 1, child: Container(color: Colors.grey)),
+                const SizedBox(height: 25),
+              ]
+            )
+          )
+      );
+    });
+  }
+}
+
+///////////////////////////////////////////////////////////////////
+// Helps navigate the pages used to display the different Themes
+///////////////////////////////////////////////////////////////////
+class PageIndicator extends StatelessWidget {
+  final int currentPageIndex;
+  final List<String> possibleThemes;
+
+  const PageIndicator({
+    Key? key,
+    required this.currentPageIndex,
+    required this.possibleThemes,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          for (int i = 0; i < possibleThemes.length; i++)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Icon(
+                i == currentPageIndex ? Icons.indeterminate_check_box : Icons.check_box_outline_blank,
+                size: 40.0,
+                color: primaryColor
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
