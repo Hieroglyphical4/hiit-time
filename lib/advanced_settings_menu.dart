@@ -458,7 +458,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
                         SizedBox(width: 75)
                     ])
                     : SizedBox(width: 10),
-                  const Icon(Icons.watch_later_outlined),
+                  Icon(Icons.watch_later_outlined, color: primaryColor),
                   const SizedBox(width: 10),
                   Text(_displayTimerAudioSettings
                     ? 'Timer                -'
@@ -504,7 +504,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
                           SizedBox(width: 60),
                       ])
                       : SizedBox(width: 10),
-                  const Icon(Icons.touch_app_outlined),
+                  Icon(Icons.touch_app_outlined, color: primaryColor),
                   const SizedBox(width: 10),
                   Text(_displayButtonAudioSettings
                   ? 'Buttons             -'
