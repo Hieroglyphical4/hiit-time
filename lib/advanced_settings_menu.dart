@@ -452,7 +452,9 @@ class PageIndicator extends StatelessWidget {
               child: Icon(
                 i == currentPageIndex ? Icons.indeterminate_check_box : Icons.check_box_outline_blank,
                 size: 40.0,
-                color: i == currentPageIndex ? Colors.blue : Colors.white,
+                color: i == currentPageIndex
+                    ? Colors.blue
+                    : appCurrentlyInDarkMode ? Colors.white : Colors.black,
               ),
             ),
           ),
