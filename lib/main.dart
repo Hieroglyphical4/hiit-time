@@ -547,7 +547,8 @@ class _MyAppState extends State<MyApp> {
                         shape: CircleBorder(),
                         padding: EdgeInsets.all(4),
                       ),
-                      child: const Icon(Icons.autorenew, size: 75)),
+                      child: Icon(Icons.autorenew, size: 75, color: alternateColorOverwrite ? Colors.black : Colors.white
+                      )),
                 ),
 
                 // Bottom Spacing

@@ -82,9 +82,11 @@ var audioForSwitchButtonDisabled = audioSwitchButtonDisabledDefault;
 var defaultTheme = 'Default';
 var appCurrentTheme = defaultTheme;
 
-// In some cases text needs to be altered to be legible with a theme
+// In some cases text/icon symbols needs to be altered to be legible with a theme
 // this boolean supports that behavior
 bool textColorOverwrite = false;
+bool alternateColorOverwrite = false;
+
 
 // Dark mode default colors
 var primaryColorDarkMode = Colors.white;
@@ -245,11 +247,13 @@ Future<void> setStringSetting(String setting, String value) async {
 }
 
 /// App Theme related settings
-List<String> appPossibleThemes = ['Default', 'Bubblegum'];
+List<String> appPossibleThemes = ['Default', 'Bubblegum', 'Pumpkin'];
+
 void setupAppTheme(String theme) {
   switch (theme) {
     case "Default":
       textColorOverwrite = false;
+      alternateColorOverwrite = false;
 
       // Dark mode
       primaryColorDarkMode = Colors.white;
@@ -268,6 +272,7 @@ void setupAppTheme(String theme) {
 
     case "Bubblegum":
       textColorOverwrite = true;
+      alternateColorOverwrite = false;
 
       // Dark mode
       primaryColorDarkMode = Colors.white;
@@ -281,6 +286,25 @@ void setupAppTheme(String theme) {
       secondaryColorLightMode = Colors.pink.shade200;
       primaryAccentColorLightMode = Colors.teal;
       secondaryAccentColorLightMode = Colors.yellow;
+      runningClockColorLightMode = secondaryAccentColorLightMode;
+      break;
+
+    case "Pumpkin":
+      textColorOverwrite = false;
+      alternateColorOverwrite = true;
+
+      // Dark mode
+      primaryColorDarkMode = Colors.white;
+      secondaryColorDarkMode = Colors.deepOrange;
+      primaryAccentColorDarkMode = Colors.yellow.shade600;
+      secondaryAccentColorDarkMode = Colors.green;
+      runningClockColorDarkMode = secondaryAccentColorDarkMode;
+
+      // Light mode
+      primaryColorLightMode = Colors.black;
+      secondaryColorLightMode = Colors.deepOrangeAccent;
+      primaryAccentColorLightMode = Colors.yellowAccent;
+      secondaryAccentColorLightMode = Colors.green;
       runningClockColorLightMode = secondaryAccentColorLightMode;
       break;
   }

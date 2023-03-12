@@ -74,11 +74,12 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
         title: Text('Advanced Settings', style: TextStyle(
             color: textColorOverwrite
                 ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                : alternateColorOverwrite ? Colors.black
                 : Colors.white
         ),
         ),
           leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back, color: alternateColorOverwrite ? Colors.black : Colors.white),
           onPressed: () {
           Navigator.pop(context);
           },
@@ -92,7 +93,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
               // direction: Axis.vertical,
               children: [
                 // Body of Settings!
-                _displayThemesSettings
+                _displayThemesSettings || _displayAudioSettings
                     ? const SizedBox(height: 20)
                     : const SizedBox(height: 115),
 
@@ -259,6 +260,8 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
         return 0;
       case 'Bubblegum':
         return 1;
+      case 'Pumpkin':
+        return 2;
     }
     return 0;
   }
@@ -292,7 +295,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
               },
               // Each of these Children represents a Page
               children: [
+                ////////////////////////
                 /// Default Theme Page
+                ////////////////////////
                 Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -326,7 +331,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   ),
                 ),
 
+                ///////////////////////////
                 /// Bubblegum Theme Page
+                ///////////////////////////
                 Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -355,6 +362,42 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 value: _possibleThemes[1],
+                                groupValue: _currentTheme,
+                                onChanged: _updateAppTheme,
+                              ))),
+                    ],
+                  ),
+                ),
+
+                ////////////////////////
+                /// Pumpkin Theme Page
+                ////////////////////////
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset('assets/images/PumpkinCombined.png'),
+                      const SizedBox(height: 10),
+                      Container(
+                          width: 250,
+                          child: Material(
+                              shape: BeveledRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: RadioListTile(
+                                title: Text(
+                                  _possibleThemes[2],
+                                  style: TextStyle(
+                                      color: textColorOverwrite
+                                          ? Colors.black
+                                          : Colors.white,
+                                      fontSize: _textFontSize),
+                                ),
+                                tileColor: Colors.orange,
+                                shape: BeveledRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                value: _possibleThemes[2],
                                 groupValue: _currentTheme,
                                 onChanged: _updateAppTheme,
                               ))),

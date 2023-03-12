@@ -92,6 +92,7 @@ flutter:
     - assets/sounds/FlourishDelayed2.mp3
     - assets/images/DefaultCombined.png
     - assets/images/BubbleGumCombined.png
+    - assets/images/PumpkinCombined.png
 
 
   # The following line ensures that the Material Icons font is
