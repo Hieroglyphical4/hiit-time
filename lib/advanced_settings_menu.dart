@@ -379,7 +379,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                       Image.asset('assets/images/PumpkinCombined.png'),
                       const SizedBox(height: 10),
                       Container(
-                          width: 250,
+                          width: 210,
                           child: Material(
                               shape: BeveledRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
