@@ -409,6 +409,13 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
         PageIndicator(
           currentPageIndex: _currentPageIndex,
           possibleThemes: _possibleThemes,
+          onPageSelected: (int pageIndex) {
+            _pageController.animateToPage(
+              pageIndex,
+              duration: Duration(milliseconds: 400),
+              curve: Curves.easeInOut,
+            );
+          },
         ),
         const SizedBox(height: 25),
         SizedBox(height: 1, child: Container(color: Colors.grey)),
@@ -424,30 +431,32 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 class PageIndicator extends StatelessWidget {
   final int currentPageIndex;
   final List<String> possibleThemes;
+  final ValueChanged<int> onPageSelected;
 
-  const PageIndicator({
-    Key? key,
+  PageIndicator({
     required this.currentPageIndex,
     required this.possibleThemes,
-  }) : super(key: key);
+    required this.onPageSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          for (int i = 0; i < possibleThemes.length; i++)
-            Padding(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (int i = 0; i < possibleThemes.length; i++)
+          GestureDetector(
+            onTap: () => onPageSelected(i),
+            child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Icon(
                 i == currentPageIndex ? Icons.indeterminate_check_box : Icons.check_box_outline_blank,
                 size: 40.0,
-                color: primaryColor
+                color: i == currentPageIndex ? Colors.blue : Colors.white,
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }
