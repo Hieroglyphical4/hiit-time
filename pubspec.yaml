@@ -61,7 +61,7 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
 
-  ## used for importing sounds
+  ## used for importing sounds/images
   assets:
     - assets/sounds/alarm-standard-1.mp3
     - assets/sounds/alarm-beep-beep-1.mp3
@@ -90,9 +90,14 @@ flutter:
     - assets/sounds/Flourish.mp3
     - assets/sounds/FlourishDelayed.mp3
     - assets/sounds/FlourishDelayed2.mp3
-    - assets/images/DefaultCombined.png
-    - assets/images/BubbleGumCombined.png
-    - assets/images/PumpkinCombined.png
+
+    # Images:
+    - assets/images/DefaultDark.png
+    - assets/images/DefaultLight.png
+    - assets/images/BubbleGumDark.png
+    - assets/images/BubbleGumLight.png
+    - assets/images/PumpkinDark.png
+    - assets/images/PumpkinLight.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

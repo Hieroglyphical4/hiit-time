@@ -241,6 +241,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
   // Indicates what page the user is currently looking at
   var _currentPageIndex;
 
+  // This indicates which Image Asset should be highlighted
+  String? _assetForSelectedThemeAndMode;
+
   void _updateAppTheme(String? theme) {
     if (theme != null) {
       setState(() {
@@ -266,10 +269,32 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
     return 0;
   }
 
+  String _determineAssetForCurrentTheme() {
+    switch (appCurrentTheme){
+      case 'Default':
+        if (appCurrentlyInDarkMode) {
+          return 'assets/images/DefaultDark.png';
+        }
+        return 'assets/images/DefaultLight.png';
+      case 'Bubblegum':
+        if (appCurrentlyInDarkMode) {
+          return 'assets/images/BubbleGumDark.png';
+        }
+        return 'assets/images/BubbleGumLight.png';
+      case 'Pumpkin':
+        if (appCurrentlyInDarkMode) {
+          return 'assets/images/PumpkinDark.png';
+        }
+        return 'assets/images/PumpkinLight.png';
+    }
+    return '';
+  }
+
   @override
   void initState() {
     super.initState();
     _currentPageIndex = _determineCurrentPageIndex();
+    _assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
     _pageController = PageController(initialPage: _currentPageIndex);
   }
 
@@ -302,8 +327,60 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/DefaultCombined.png'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Default Dark
+                          GestureDetector(
+                            onTap: () {
+                              setState((){
+                                _assetForSelectedThemeAndMode = 'assets/images/DefaultDark.png';
+                                _updateAppTheme('Default');
+                                setBooleanSetting('appInDarkMode', true);
+                                setupDarkOrLightMode(true);
+                              });
+                            },
+                            child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 4,
+                                        color: _assetForSelectedThemeAndMode == 'assets/images/DefaultDark.png'
+                                            ? Colors.blue
+                                            : Colors.transparent
+                                    )
+                                ),
+                                child: Image.asset('assets/images/DefaultDark.png', width: 140, height: 240)
+                            ),
+                          ),
+
+                          // Default Light
+                          GestureDetector(
+                            onTap: () {
+                              setState((){
+                                _assetForSelectedThemeAndMode = 'assets/images/DefaultLight.png';
+                                _updateAppTheme('Default');
+                                setBooleanSetting('appInDarkMode', false);
+                                setupDarkOrLightMode(false);
+                              });
+                            },
+                            child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 4,
+                                        color: _assetForSelectedThemeAndMode == 'assets/images/DefaultLight.png'
+                                            ? Colors.blue
+                                            : Colors.transparent
+                                    )
+                                ),
+                                child: Image.asset('assets/images/DefaultLight.png', width: 140, height: 240)
+                            ),
+                          ),
+                        ],
+                      ),
+
                       const SizedBox(height: 10),
+
+                      // Radio Tile
                       Container(
                           width: 200,
                           child: Material(
@@ -338,8 +415,59 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/BubbleGumCombined.png'),
+
+                      Row(children: [
+                        // Bubblegum Dark
+                        GestureDetector(
+                          onTap: () {
+                            setState((){
+                              _assetForSelectedThemeAndMode = 'assets/images/BubbleGumDark.png';
+                              _updateAppTheme('Bubblegum');
+                              setBooleanSetting('appInDarkMode', true);
+                              setupDarkOrLightMode(true);
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    width: 4,
+                                    color: _assetForSelectedThemeAndMode == 'assets/images/BubbleGumDark.png'
+                                        ? Colors.blue
+                                        : Colors.transparent
+                                )
+                            ),
+                            child: Image.asset('assets/images/BubbleGumDark.png', width: 140, height: 240),
+                          ),
+                        ),
+
+                        // Bubblegum Light
+                        GestureDetector(
+                          onTap: () {
+                            setState((){
+                              _assetForSelectedThemeAndMode = 'assets/images/BubbleGumLight.png';
+                              _updateAppTheme('Bubblegum');
+                              setBooleanSetting('appInDarkMode', false);
+                              setupDarkOrLightMode(false);
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    width: 4,
+                                    color: _assetForSelectedThemeAndMode == 'assets/images/BubbleGumLight.png'
+                                        ? Colors.blue
+                                        : Colors.transparent
+                                )
+                            ),
+                            child: Image.asset('assets/images/BubbleGumLight.png', width: 140, height: 240),
+                          ),
+                        ),
+
+                      ]),
+
                       const SizedBox(height: 10),
+
+                      // Radio Tile
                       Container(
                           width: 250,
                           child: Material(
@@ -376,7 +504,55 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/PumpkinCombined.png'),
+
+                      Row(children: [
+                        // Pumpkin Dark
+                        GestureDetector(
+                          onTap: () {
+                            setState((){
+                              _assetForSelectedThemeAndMode = 'assets/images/PumpkinDark.png';
+                              _updateAppTheme('Pumpkin');
+                              setBooleanSetting('appInDarkMode', true);
+                              setupDarkOrLightMode(true);
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    width: 4,
+                                    color: _assetForSelectedThemeAndMode == 'assets/images/PumpkinDark.png'
+                                        ? Colors.blue
+                                        : Colors.transparent
+                                )
+                            ),
+                            child: Image.asset('assets/images/PumpkinDark.png', width: 140, height: 240),
+                          ),
+                        ),
+
+                        // Pumpkin Light
+                        GestureDetector(
+                          onTap: () {
+                            setState((){
+                              _assetForSelectedThemeAndMode = 'assets/images/PumpkinLight.png';
+                              _updateAppTheme('Pumpkin');
+                              setBooleanSetting('appInDarkMode', false);
+                              setupDarkOrLightMode(false);
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    width: 4,
+                                    color: _assetForSelectedThemeAndMode == 'assets/images/PumpkinLight.png'
+                                        ? Colors.blue
+                                        : Colors.transparent
+                                )
+                            ),
+                            child: Image.asset('assets/images/PumpkinLight.png', width: 140, height: 240),
+                          ),
+                        ),
+                      ]),
+
                       const SizedBox(height: 10),
                       Container(
                           width: 210,
