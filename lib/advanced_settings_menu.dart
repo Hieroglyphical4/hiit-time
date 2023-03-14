@@ -252,6 +252,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
         setStringSetting('appTheme', theme);
         setupAppTheme(theme);
         widget.onThemeChanged();
+        _assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
       });
     }
   }
@@ -334,10 +335,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                           GestureDetector(
                             onTap: () {
                               setState((){
-                                _assetForSelectedThemeAndMode = 'assets/images/DefaultDark.png';
-                                _updateAppTheme('Default');
                                 setBooleanSetting('appInDarkMode', true);
                                 setupDarkOrLightMode(true);
+                                _updateAppTheme('Default');
                               });
                             },
                             child: Container(
@@ -357,10 +357,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                           GestureDetector(
                             onTap: () {
                               setState((){
-                                _assetForSelectedThemeAndMode = 'assets/images/DefaultLight.png';
-                                _updateAppTheme('Default');
                                 setBooleanSetting('appInDarkMode', false);
                                 setupDarkOrLightMode(false);
+                                _updateAppTheme('Default');
                               });
                             },
                             child: Container(
@@ -421,10 +420,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              _assetForSelectedThemeAndMode = 'assets/images/BubbleGumDark.png';
-                              _updateAppTheme('Bubblegum');
                               setBooleanSetting('appInDarkMode', true);
                               setupDarkOrLightMode(true);
+                              _updateAppTheme('Bubblegum');
                             });
                           },
                           child: Container(
@@ -444,10 +442,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              _assetForSelectedThemeAndMode = 'assets/images/BubbleGumLight.png';
-                              _updateAppTheme('Bubblegum');
                               setBooleanSetting('appInDarkMode', false);
                               setupDarkOrLightMode(false);
+                              _updateAppTheme('Bubblegum');
                             });
                           },
                           child: Container(
@@ -510,10 +507,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              _assetForSelectedThemeAndMode = 'assets/images/PumpkinDark.png';
-                              _updateAppTheme('Pumpkin');
                               setBooleanSetting('appInDarkMode', true);
                               setupDarkOrLightMode(true);
+                              _updateAppTheme('Pumpkin');
                             });
                           },
                           child: Container(
@@ -533,10 +529,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              _assetForSelectedThemeAndMode = 'assets/images/PumpkinLight.png';
-                              _updateAppTheme('Pumpkin');
                               setBooleanSetting('appInDarkMode', false);
                               setupDarkOrLightMode(false);
+                              _updateAppTheme('Pumpkin');
                             });
                           },
                           child: Container(

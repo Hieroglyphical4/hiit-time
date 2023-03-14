@@ -295,14 +295,14 @@ void setupAppTheme(String theme) {
 
       // Dark mode
       primaryColorDarkMode = Colors.white;
-      secondaryColorDarkMode = Colors.deepOrange;
+      secondaryColorDarkMode = Colors.deepOrange.shade900;
       primaryAccentColorDarkMode = Colors.yellow.shade600;
       secondaryAccentColorDarkMode = Colors.green;
       runningClockColorDarkMode = secondaryAccentColorDarkMode;
 
       // Light mode
       primaryColorLightMode = Colors.black;
-      secondaryColorLightMode = Colors.deepOrangeAccent;
+      secondaryColorLightMode = Colors.deepOrangeAccent.shade200;
       primaryAccentColorLightMode = Colors.yellowAccent;
       secondaryAccentColorLightMode = Colors.green;
       runningClockColorLightMode = secondaryAccentColorLightMode;
