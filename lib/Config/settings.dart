@@ -89,25 +89,25 @@ bool alternateColorOverwrite = false;
 
 
 // Dark mode default colors
-var primaryColorDarkMode = Colors.white;
-var secondaryColorDarkMode = Colors.grey.shade900; // Almost black
-var primaryAccentColorDarkMode = Colors.blue.shade400;
-var secondaryAccentColorDarkMode = Colors.blueGrey;
-var runningClockColorDarkMode = Colors.lightGreenAccent.shade700;
+var primaryColorDarkMode;
+var secondaryColorDarkMode;
+var primaryAccentColorDarkMode;
+var secondaryAccentColorDarkMode;
+var runningClockColorDarkMode;
 
 // Light mode Default colors
-var primaryColorLightMode = Colors.black;
-var secondaryColorLightMode = Colors.white;
-var primaryAccentColorLightMode = Colors.blue.shade400;
-var secondaryAccentColorLightMode = Colors.blueGrey;
-var runningClockColorLightMode = Colors.lightGreenAccent.shade700;
+var primaryColorLightMode;
+var secondaryColorLightMode;
+var primaryAccentColorLightMode;
+var secondaryAccentColorLightMode;
+var runningClockColorLightMode;
 
 // Setup current app colors to Default Dark Mode
-var primaryColor = primaryColorDarkMode;
-var secondaryColor = secondaryColorDarkMode;
-var primaryAccentColor = primaryAccentColorDarkMode;
-var secondaryAccentColor = secondaryAccentColorDarkMode;
-var runningClockColor = runningClockColorDarkMode;
+var primaryColor;
+var secondaryColor;
+var primaryAccentColor;
+var secondaryAccentColor;
+var runningClockColor;
 
 
 /// Get Settings the User Previously Stored:
@@ -297,14 +297,14 @@ void setupAppTheme(String theme) {
       primaryColorDarkMode = Colors.white;
       secondaryColorDarkMode = Colors.deepOrange.shade900;
       primaryAccentColorDarkMode = Colors.yellow.shade600;
-      secondaryAccentColorDarkMode = Colors.green;
+      secondaryAccentColorDarkMode = Colors.green.shade700;
       runningClockColorDarkMode = secondaryAccentColorDarkMode;
 
       // Light mode
       primaryColorLightMode = Colors.black;
       secondaryColorLightMode = Colors.deepOrangeAccent.shade200;
       primaryAccentColorLightMode = Colors.yellowAccent;
-      secondaryAccentColorLightMode = Colors.green;
+      secondaryAccentColorLightMode = Colors.green.shade700;
       runningClockColorLightMode = secondaryAccentColorLightMode;
       break;
   }

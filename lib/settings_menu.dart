@@ -178,19 +178,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
         setBooleanSetting('appInDarkMode', false);
         setupDarkOrLightMode(false);
 
-        // primaryColor = Colors.black;
-        // secondaryColor = Colors.white;
-        // primaryAccentColor = Colors.blue.shade400;
-        // secondaryAccentColor = Colors.blueGrey;
       } else {
         // Call settings.dart Setter:
         setBooleanSetting('appInDarkMode', true);
         setupDarkOrLightMode(true);
-
-        // primaryColor = Colors.white;
-        // secondaryColor = Colors.grey.shade900;
-        // primaryAccentColor = Colors.blue.shade400;
-        // secondaryAccentColor = Colors.blueGrey;
       }
     });
   }

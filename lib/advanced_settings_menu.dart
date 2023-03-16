@@ -151,7 +151,6 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         }),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: secondaryAccentColor,
-                          // shape: Rectangle(),
                           padding: const EdgeInsets.all(4),
                         ),
                         child: Text(_displayThemesSettings
@@ -1271,9 +1270,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
           ////////////////////////
           Row(
             children: [
-              // const SizedBox(width: 30),
               const Spacer(flex: 1),
-
               Text('Restart Button Audio',
                   style: TextStyle(
                       color: restartButtonAudioCurrentlyEnabled
@@ -1283,13 +1280,11 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                       height: 1.1),
                   textAlign: TextAlign.center),
 
-              const Spacer(flex: 1),
-
+              const Spacer(flex: 3),
               Switch(
                 value: restartButtonAudioCurrentlyEnabled,
                 onChanged: _onRestartButtonAudioChanged,
               ),
-              // const SizedBox(width: 10),
               const Spacer(flex: 1),
             ],
           ),
@@ -1304,7 +1299,6 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
           Row(
             children: [
               const Spacer(flex: 1),
-
               Text('Save Button Audio',
                   style: TextStyle(
                       color: saveButtonAudioCurrentlyEnabled
@@ -1314,7 +1308,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                       height: 1.1),
                   textAlign: TextAlign.center),
 
-              const Spacer(flex: 1),
+              const Spacer(flex: 3),
               SizedBox(width: 20),
 
               Switch(
@@ -1345,8 +1339,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                       height: 1.1),
                   textAlign: TextAlign.center),
 
-              const Spacer(flex: 1),
-
+              const Spacer(flex: 3),
               Switch(
                 value: cancelButtonAudioCurrentlyEnabled,
                 onChanged: _onCancelButtonAudioChanged,
@@ -1374,8 +1367,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                       height: 1.1),
                   textAlign: TextAlign.center),
 
-              const Spacer(flex: 1),
-
+              const Spacer(flex: 3),
               Switch(
                 value: switchButtonAudioCurrentlyEnabled,
                 onChanged: _onSwitchButtonAudioChanged,
