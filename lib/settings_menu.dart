@@ -229,8 +229,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(width: 70),
-                            const Spacer(flex: 1),
+                            const Spacer(flex: 10),
 
                             //////////////////////////
                             // Settings Header Text
@@ -249,7 +248,8 @@ class _SettingsMenuState extends State<SettingsMenu> {
                               )
                             ),
 
-                            const SizedBox(width: 10),
+                            const Spacer(flex: 4),
+
 
                             ////////////////////////////////
                             // Advanced Settings Button
@@ -290,6 +290,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                 });
                               },
                             ),
+
                             const Spacer(flex: 1),
                         ]
             ),
@@ -489,15 +490,32 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            'Timer Mode',
-                            style: TextStyle(
-                              color:
-                              appCurrentlyInTimerMode ? primaryColor : Colors.grey,
-                              fontSize: 18,
-                              fontFamily: 'AstroSpace',
+                          Spacer(flex: 5),
+
+                          // Timer Mode Text Column
+                          Column(children: [
+                            Text(
+                              'Timer',
+                              style: TextStyle(
+                                color:
+                                appCurrentlyInTimerMode ? primaryColor : Colors.grey,
+                                fontSize: 18,
+                                fontFamily: 'AstroSpace',
+                              ),
                             ),
-                          ),
+                            Text(
+                              'Mode',
+                              style: TextStyle(
+                                color:
+                                appCurrentlyInTimerMode ? primaryColor : Colors.grey,
+                                fontSize: 18,
+                                fontFamily: 'AstroSpace',
+                              ),
+                            ),
+                          ]),
+
+                          Spacer(flex: 1),
+
                           ////////////////////////////////////
                           // Switch/Toggle Between App Modes
                           ////////////////////////////////////
@@ -505,16 +523,36 @@ class _SettingsMenuState extends State<SettingsMenu> {
                             value: !appCurrentlyInTimerMode,
                             onChanged: _onTimerModeChanged,
                           ),
-                          Text(
-                            'Interval Mode',
-                            style: TextStyle(
-                              color: appCurrentlyInTimerMode
-                                  ? Colors.grey
-                                  : primaryAccentColor,
-                              fontSize: 18,
-                              fontFamily: 'AstroSpace',
-                            ),
+
+                          Spacer(flex: 1),
+
+                          // Interval Mode Text Column
+                          Column(
+                            children: [
+                              Text(
+                                'Interval',
+                                style: TextStyle(
+                                  color: appCurrentlyInTimerMode
+                                      ? Colors.grey
+                                      : primaryAccentColor,
+                                  fontSize: 18,
+                                  fontFamily: 'AstroSpace',
+                                ),
+                              ),
+                              Text(
+                                'Mode',
+                                style: TextStyle(
+                                  color: appCurrentlyInTimerMode
+                                      ? Colors.grey
+                                      : primaryAccentColor,
+                                  fontSize: 18,
+                                  fontFamily: 'AstroSpace',
+                                ),
+                              ),
+                            ],
                           ),
+
+                          Spacer(flex: 3),
                         ],
                       ),
 
@@ -574,6 +612,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            Spacer(flex: 1),
                             /////////////////////////////////////
                             // - Time Settings and Theme Button
                             /////////////////////////////////////
@@ -697,7 +736,9 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   ),
                                 ]),
 
-                            SizedBox(width: 25),
+                            // SizedBox(width: 25),
+                            Spacer(flex: 1),
+
 
                             //////////////////////////////
                             // save and close buttons
@@ -870,7 +911,9 @@ class _SettingsMenuState extends State<SettingsMenu> {
                               ),
                             ]),
 
-                            SizedBox(width: 25),
+                            // SizedBox(width: 25),
+                            Spacer(flex: 1),
+
 
                             //////////////////////
                             // + time settings and Audio Settings
@@ -1004,6 +1047,8 @@ class _SettingsMenuState extends State<SettingsMenu> {
 
                               // SizedBox(height: 100),
                             ]),
+
+                            Spacer(flex: 1),
                           ]),
 
                       const SizedBox(height: 25),
