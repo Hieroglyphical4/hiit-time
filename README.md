@@ -1,4 +1,4 @@
-# gym_bro
+# hiit_time
 
 A new Flutter project.
 

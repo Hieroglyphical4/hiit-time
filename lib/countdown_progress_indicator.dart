@@ -1,6 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:hiit.time/Config/settings.dart';
+import 'package:hiit_time/Config/settings.dart';
 
 /// Create a Circular countdown indicator
 class CountDownProgressIndicator extends StatefulWidget {
@@ -57,6 +57,9 @@ class CountDownProgressIndicator extends StatefulWidget {
   // Keeps track and display current lap, resets on Timer reset
   var intervalLap;
 
+  // Manages audio output
+  var audioPlayer;
+
   // ignore: public_member_api_docs
   CountDownProgressIndicator({
     Key? key,
@@ -66,6 +69,7 @@ class CountDownProgressIndicator extends StatefulWidget {
     required this.valueColor,
     this.timerInRestMode,
     this.controller,
+    this.audioPlayer,
     this.isRunning,
     this.onComplete,
     this.timeTextStyle,
@@ -88,25 +92,36 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     with TickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
+  late AudioPlayer _audioPlayer;
   var _timerText = 'Tap to Start';
   var _currentDuration;
   var _desiredTime = 30;
   final _secondTimerSize = 135.0;
   final _minuteTimerSize = 115.0;
-  late var _timerSize =
-      widget.duration > 60 ? _minuteTimerSize : _secondTimerSize;
+  late var _timerSize = widget.duration > 60 ? _minuteTimerSize : _secondTimerSize;
 
-  final _audioPlayer = AudioPlayer();
+  // Used to prevent sounds from stacking
+  bool _tenSecondQuePlayed = false;
+  bool _threeSecondQuePlayed = false;
+  bool _twoSecondQuePlayed = false;
+  bool _oneSecondQuePlayed = false;
 
   @override
   void dispose() {
     _animationController.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
+
+    _audioPlayer = widget.audioPlayer;
+    _tenSecondQuePlayed = false;
+    _threeSecondQuePlayed = false;
+    _twoSecondQuePlayed = false;
+    _oneSecondQuePlayed = false;
 
     _animationController = AnimationController(
       vsync: this,
@@ -133,15 +148,26 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         _currentDuration = _desiredTime;
       }
       setState(() {
-        if (_currentDuration == 3 && widget.isRunning) {
-          _audioPlayer.setVolume(setVolume);
-          !appMuted
-              ? _audioPlayer.play(
-                  AssetSource('sounds/Amplified/Countdown3SalliAmped.mp3'))
-              : null;
+        // Update: 3 separate checks on 3-2-1 instead of lumping audio into one
+        if (_currentDuration == 3 && widget.isRunning && _threeSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
+          _audioPlayer.setReleaseMode(ReleaseMode.stop);
+          _audioPlayer.play(AssetSource(audioForTimerCountdownAtThree));
+          _threeSecondQuePlayed = true;
         }
-        if (_currentDuration > 3) {
-          _audioPlayer.stop();
+        if (_currentDuration == 2 && widget.isRunning && _twoSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
+          _audioPlayer.setReleaseMode(ReleaseMode.stop);
+          _audioPlayer.play(AssetSource(audioForTimerCountdownAtTwo));
+          _twoSecondQuePlayed = true;
+        }
+        if (_currentDuration == 1 && widget.isRunning && _oneSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
+          _audioPlayer.setReleaseMode(ReleaseMode.stop);
+          _audioPlayer.play(AssetSource(audioForTimerCountdownAtOne));
+          _oneSecondQuePlayed = true;
+        }
+        if (_currentDuration == 10 && widget.isRunning && _tenSecondQuePlayed == false && !appCurrentlyMuted && tenSecondWarningCurrentlyEnabled) {
+          _audioPlayer.setReleaseMode(ReleaseMode.stop);
+          _audioPlayer.play(AssetSource(audioForTimerCountdownAtTen));
+          _tenSecondQuePlayed = true;
         }
         _timerText = 'Timer Mode';
         if (_currentDuration > 59) {
@@ -217,11 +243,11 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                   // Rest Mode:
                   ? widget.isRunning
                       ? secondaryColor
-                      : Colors.blue
+                      : primaryAccentColor
                   // Work Mode:
                   : widget.isRunning
-                      ? Colors.lightGreenAccent.shade700
-                      : Colors.blue,
+                      ? runningClockColor
+                      : primaryAccentColor,
               valueColor: AlwaysStoppedAnimation<Color>(widget.valueColor),
               value: _animation.value / widget.duration,
             ),
@@ -235,8 +261,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                 children: [
                   (widget.duration - _animation.value).toInt() < 59
                       ? SizedBox(height: 15) // In Second Mode
-                      : SizedBox(height: 12),
-                  // In Minute Mode
+                      : SizedBox(height: 12), // In Minute Mode
 
                   // For when the App is in INTERVAL Mode
                   (!widget.appInTimerMode)
@@ -250,13 +275,10 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                     widget.restDuration)
                                 : widget.restDuration.toString(),
 
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(
+                            style: Theme.of(context).textTheme.bodyText1!.copyWith(
                                     color: widget.timerInRestMode
                                         ? primaryColor
-                                        : Colors.blue.shade300,
+                                        : primaryAccentColor,
                                     fontFamily: 'AstroSpace',
                                     fontSize: 25,
                                     height: .1
@@ -283,13 +305,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                           style: widget.timeTextStyle ??
                               Theme.of(context).textTheme.bodyText1!.copyWith(
                                   color: widget.timerInRestMode
-                                      ? Colors.blue.shade300
+                                      ? primaryAccentColor
                                       : primaryColor,
-                                  // 59 is used here to avoid a small 59
-                                  fontSize:
-                                      (_currentDuration ?? setStartTime) > 59
-                                          ? _minuteTimerSize
-                                          : _secondTimerSize,
+                                  fontSize: _secondTimerSize,
                                   fontWeight: FontWeight.w600),
                         )
                       ///////////////
@@ -304,15 +322,11 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                           style: widget.timeTextStyle ??
                               Theme.of(context).textTheme.bodyText1!.copyWith(
                                   color: widget.timerInRestMode
-                                      ? Colors.blue.shade300
+                                      ? primaryAccentColor
                                       : primaryColor,
-                                  // 58 is used as a buffer, any higher and 1:00 is huge
-                                  fontSize:
-                                      (_currentDuration ?? setStartTime) > 58
-                                          ? _minuteTimerSize
-                                          : _secondTimerSize,
+                                  fontSize: _minuteTimerSize,
                                   fontWeight: FontWeight.w600),
-                        ),
+                  ),
 
                   ///////////////////////////
                   // Clock Mode Description
@@ -323,8 +337,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                         // In "Timer Mode"
                         ///////////////////
                           SizedBox(height: 20),
-                          Text(
-                            _timerText,
+                          Text(_timerText,
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
                                       color: primaryColor,
@@ -347,11 +360,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
                                 : _timerText,
                             style: widget.labelTextStyle ??
                                 Theme.of(context).textTheme.bodyText1!.copyWith(
-                                      color: !widget.isRunning
-                                          ? Colors.blue
-                                          : widget.timerInRestMode
-                                              ? Colors.blue.shade300
-                                              : primaryColor,
+                                      color: widget.timerInRestMode
+                                              ? primaryColor
+                                              : primaryAccentColor,
                                       fontFamily: 'AstroSpace',
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600,
@@ -400,6 +411,12 @@ class CountDownController {
 
     _state._desiredTime = desiredTime;
     _state._animationController.duration = Duration(seconds: desiredTime);
+    // Enable Audio Queues
+    _state._oneSecondQuePlayed = false;
+    _state._twoSecondQuePlayed = false;
+    _state._threeSecondQuePlayed = false;
+    _state._tenSecondQuePlayed = false;
+
     return desiredTime;
   }
 
@@ -427,15 +444,6 @@ class CountDownController {
     // _state._animationController.reverse(); // TODO Get Working
   }
 
-  void manageAudioDuringPause(intent) {
-    if (intent == 'pause') {
-      _state._audioPlayer.pause();
-    }
-    if (intent == 'resume') {
-      _state._audioPlayer.resume();
-    }
-  }
-
   /// Restarts countdown timer.
   ///
   /// * [duration] is an optional value, if this value is null,
@@ -450,6 +458,12 @@ class CountDownController {
     if (restDuration != null) {
       _state.widget.restDuration = restDuration;
     }
+
+    // Enable Audio Queues
+    _state._oneSecondQuePlayed = false;
+    _state._twoSecondQuePlayed = false;
+    _state._threeSecondQuePlayed = false;
+    _state._tenSecondQuePlayed = false;
 
     _state._animationController.forward(from: initialPosition);
     _state._animationController.stop(canceled: false);

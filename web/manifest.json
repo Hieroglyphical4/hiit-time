@@ -1,6 +1,6 @@
 {
-    "name": "gym_bro",
-    "short_name": "gym_bro",
+    "name": "hiit_time",
+    "short_name": "hiit_time",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
