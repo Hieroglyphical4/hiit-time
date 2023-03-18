@@ -1,6 +1,8 @@
-import 'package:audioplayers/audioplayers.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:hiit_time/Config/settings.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 /// Create a Circular countdown indicator
 class CountDownProgressIndicator extends StatefulWidget {
@@ -89,7 +91,7 @@ class CountDownProgressIndicator extends StatefulWidget {
 }
 
 class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late Animation<double> _animation;
   late AnimationController _animationController;
   late AudioPlayer _audioPlayer;
@@ -99,6 +101,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   final _secondTimerSize = 135.0;
   final _minuteTimerSize = 115.0;
   late var _timerSize = widget.duration > 60 ? _minuteTimerSize : _secondTimerSize;
+
+  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  late Timer _notificationTimer;
 
   // Used to prevent sounds from stacking
   bool _tenSecondQuePlayed = false;
@@ -110,12 +115,15 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   void dispose() {
     _animationController.dispose();
     _audioPlayer.dispose();
+    _notificationTimer.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
+    initNotifications();
 
     _audioPlayer = widget.audioPlayer;
     _tenSecondQuePlayed = false;
@@ -138,6 +146,14 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
       if (status == AnimationStatus.completed) {
         widget.onComplete?.call();
       }
+    });
+    _animation.addListener(() {
+      setState(() {
+        _animation = Tween<double>(
+          begin: widget.initialPosition.toDouble(),
+          end: widget.duration.toDouble(),
+        ).animate(_animationController);
+      });
     });
 
     _animationController.addListener(() {
@@ -193,18 +209,10 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
       });
     });
 
-    _animation.addListener(() {
-      setState(() {
-        _animation = Tween<double>(
-          begin: widget.initialPosition.toDouble(),
-          end: widget.duration.toDouble(),
-        ).animate(_animationController);
-      });
-    });
-
     widget.controller?._state = this;
 
     if (widget.autostart) onAnimationStart();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -215,6 +223,108 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
 
   void onAnimationStart() {
     _animationController.forward(from: 0);
+  }
+
+// This method is called when the phone locks or minimizes the app
+  @override
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      // Cancel notification windows when the user returns to the app
+      _notificationTimer.cancel();
+
+      var activeNotifications = await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+          ?.getActiveNotifications();
+
+      for (var notification in activeNotifications!) {
+        if (notification.id == 1) {
+          await flutterLocalNotificationsPlugin.cancel(1);
+          break;
+        }
+      }
+    }
+    else if (state == AppLifecycleState.paused) {
+      if (_animationController.isAnimating) {
+        _currentDuration = (widget.duration - _animation.value).toInt();
+
+        // Update notification content with new duration value every second
+        _notificationTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
+          if (_currentDuration > 0) {
+            _currentDuration--;
+
+            // Notification Related Settings:
+            var androidDetails = const AndroidNotificationDetails(
+              'my_channel_id',
+              'My Channel',
+              channelDescription: 'My Channel Description',
+              importance: Importance.high,
+              priority: Priority.high,
+              ticker: 'ticker',
+              playSound: true,
+              showWhen: false,
+            );
+            var platformChannelSpecifics =
+            NotificationDetails(android: androidDetails);
+            await flutterLocalNotificationsPlugin.show(
+                1,
+                'HIIT Time',
+                'Remaining: $_currentDuration seconds',
+                platformChannelSpecifics,
+                payload: 'open');
+            ////////////////////////////////////////////////////////////////////
+
+            // TODO Store this in a method to be referenced in both audio que places
+            if (_currentDuration == 3 && widget.isRunning && _threeSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
+              _audioPlayer.setReleaseMode(ReleaseMode.stop);
+              _audioPlayer.play(AssetSource(audioForTimerCountdownAtThree));
+              _threeSecondQuePlayed = true;
+            }
+            if (_currentDuration == 2 && widget.isRunning && _twoSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
+              _audioPlayer.setReleaseMode(ReleaseMode.stop);
+              _audioPlayer.play(AssetSource(audioForTimerCountdownAtTwo));
+              _twoSecondQuePlayed = true;
+            }
+            if (_currentDuration == 1 && widget.isRunning && _oneSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
+              _audioPlayer.setReleaseMode(ReleaseMode.stop);
+              _audioPlayer.play(AssetSource(audioForTimerCountdownAtOne));
+              _oneSecondQuePlayed = true;
+            }
+            if (_currentDuration == 10 && widget.isRunning && _tenSecondQuePlayed == false && !appCurrentlyMuted && tenSecondWarningCurrentlyEnabled) {
+              _audioPlayer.setReleaseMode(ReleaseMode.stop);
+              _audioPlayer.play(AssetSource(audioForTimerCountdownAtTen));
+              _tenSecondQuePlayed = true;
+            }
+
+          } else {
+            timer.cancel();
+          }
+        });
+      }
+    }
+  }
+
+  // Gets permission from user to display notifications
+  void initNotifications() async {
+    var android = const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var platform = InitializationSettings(android: android);
+
+    flutterLocalNotificationsPlugin.initialize(platform);
+
+    // Create notification channel
+    var androidChannel = const AndroidNotificationChannel(
+      'my_channel_id',
+      'My Channel',
+      description: 'My Channel Description',
+      importance: Importance.high,
+      playSound: true,
+    );
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(androidChannel);
   }
 
   // To go from seconds to mm:ss
@@ -388,6 +498,7 @@ class CountDownController {
     if (inTimerMode) {
       _state._timerText = 'Timer Mode';
       _state.widget.appInTimerMode = true;
+      _state.widget.isRunning = false;
     } else {
       _state._timerText = 'Interval Mode';
       _state.widget.appInTimerMode = false;

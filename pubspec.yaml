@@ -43,6 +43,7 @@ dependencies:
   native_device_orientation: ^1.1.4
   audioplayers: ^2.0.0
   shared_preferences: ^2.0.17
+  flutter_local_notifications: ^13.0.0
 
 dev_dependencies:
   flutter_test:

@@ -122,13 +122,13 @@ class _MyAppState extends State<MyApp> {
     _duration = int.parse(settings['workDuration']);
     _restDuration = int.parse(settings['restDuration']);
 
+    _controller.updateWorkoutMode(appCurrentlyInTimerMode);
     _controller.restart(
       duration: _duration,
       initialPosition: 0,
       restDuration: _restDuration,
     );
     _timerInRestMode = false;
-    _controller.updateWorkoutMode(appCurrentlyInTimerMode);
     _audioPlayer.setReleaseMode(ReleaseMode.stop);
     Wakelock.disable();
   }
