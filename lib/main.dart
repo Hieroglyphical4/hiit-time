@@ -115,23 +115,43 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> resetTimer() async {
     final settings = await getSavedUserSettings();
-
-    _intervalLap = 1;
-    _isRunning = false;
-    _timerButtonRestart = false;
     _duration = int.parse(settings['workDuration']);
     _restDuration = int.parse(settings['restDuration']);
 
-    _controller.updateWorkoutMode(appCurrentlyInTimerMode);
+    setState(() {
+      _intervalLap = 1;
+      _isRunning = false;
+      _timerButtonRestart = false;
+      _controller.updateWorkoutMode(appCurrentlyInTimerMode);
+      _timerInRestMode = false;
+    });
+
     _controller.restart(
       duration: _duration,
       initialPosition: 0,
       restDuration: _restDuration,
     );
-    _timerInRestMode = false;
     _audioPlayer.setReleaseMode(ReleaseMode.stop);
     Wakelock.disable();
   }
+
+  // When the user re-opens their running app, we need to match
+  //    the displayed timer with the background timer.
+  reestablishRunningTimer(duration, altDuration, inRestMode, lap) {
+    setState(() {
+      _duration = duration;
+      _restDuration = altDuration;
+      _timerInRestMode = inRestMode;
+      _intervalLap = lap;
+    });
+
+    _controller.restart(
+      duration: duration,
+      initialPosition: 0,
+      restDuration: altDuration,
+    );
+    _controller.resume();
+}
 
   // Change timer from Rest Mode to Work Mode and Vice Versa
   Future<void> flipIntervalTimer(bool restFlip) async {
@@ -160,7 +180,7 @@ class _MyAppState extends State<MyApp> {
       initialPosition: 0,
       restDuration: _restDuration,
     );
-    _controller.flip();
+    _controller.resume();
   }
 
   // Convert from seconds to mm:ss
@@ -291,8 +311,7 @@ class _MyAppState extends State<MyApp> {
                               // Timer was running, going into pause mode
                               _controller.pause();
                               // Update timer text
-                              _controller
-                                  .updateWorkoutMode(appCurrentlyInTimerMode);
+                              _controller.updateWorkoutMode(appCurrentlyInTimerMode);
                               Wakelock.disable();
                             } else {
                               // Timer was paused, turning on
@@ -320,6 +339,7 @@ class _MyAppState extends State<MyApp> {
                           intervalLap: _intervalLap,
                           appInTimerMode: appCurrentlyInTimerMode,
                           timerInRestMode: _timerInRestMode,
+                          reestablishRunningTimer: reestablishRunningTimer,
                           timeFormatter: _duration > 59
                               ? (seconds) {
                                   // When the duration is above 59 seconds,
@@ -356,13 +376,12 @@ class _MyAppState extends State<MyApp> {
                                 _timerButtonRestart = true;
 
                                 // Sound the Alarm:
-                                if (!appCurrentlyMuted &&
-                                    timerAlarmCurrentlyEnabled) {
-                                  _audioPlayer
-                                      .play(AssetSource(audioForTimerAlarm));
-                                  _audioPlayer.setReleaseMode(ReleaseMode.loop);
-                                }
+                                // if (!appCurrentlyMuted && timerAlarmCurrentlyEnabled) {
+                                //   _audioPlayer.play(AssetSource(audioForTimerAlarm));
+                                //   _audioPlayer.setReleaseMode(ReleaseMode.loop);
+                                // }
                               }
+
                             });
                           },
                         ),
