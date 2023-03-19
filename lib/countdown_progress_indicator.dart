@@ -293,6 +293,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
             widget.reestablishRunningTimer(savedRestDuration, savedWorkDuration, !widget.timerInRestMode, widget.intervalLap);
           }
         } else {
+          // Continue background timer at current duration
           widget.reestablishRunningTimer(backgroundTimerDuration, backgroundTimerAltDuration, widget.timerInRestMode, widget.intervalLap);
         }
       }
