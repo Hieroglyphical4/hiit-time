@@ -183,7 +183,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         //////////////////////
         // App in Timer Mode
         //////////////////////
-        if (_currentDuration == 0 && widget.isRunning && _timerAlarmPlayed == false && !appCurrentlyMuted && timerAlarmCurrentlyEnabled) {
+        if (_animation.isCompleted && widget.isRunning && _timerAlarmPlayed == false && !appCurrentlyMuted && timerAlarmCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.loop);
           _audioPlayer.play(AssetSource(audioForTimerAlarm));
           _timerAlarmPlayed = true;
