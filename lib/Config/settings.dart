@@ -178,6 +178,8 @@ void clearUserSettings() async {
   prefs.remove('timerAlarmEnabled');
   prefs.remove('threeTwoOneCountdownEnabled');
   prefs.remove('tenSecondWarningEnabled');
+  prefs.remove('alertWorkModeStartedEnabled');
+  prefs.remove('alertRestModeStartedEnabled');
   prefs.remove('modeSwitchAlertEnabled');
   prefs.remove('restartButtonAudioEnabled');
   prefs.remove('saveButtonAudioEnabled');
