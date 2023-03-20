@@ -91,6 +91,7 @@ flutter:
     - assets/sounds/Flourish.mp3
     - assets/sounds/FlourishDelayed.mp3
     - assets/sounds/FlourishDelayed2.mp3
+    - assets/sounds/Silence.mp3
 
     # Images:
     - assets/images/DefaultDark.png

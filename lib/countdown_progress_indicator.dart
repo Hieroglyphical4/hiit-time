@@ -344,27 +344,38 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     _backgroundTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
       if (backgroundTimerDuration > 0) {
         backgroundTimerDuration--;
+        bool quePlayed = false;
 
         // TODO Store this in a method to be referenced in both audio que places
         if (backgroundTimerDuration == 10 && widget.isRunning && _tenSecondQuePlayed == false && !appCurrentlyMuted && tenSecondWarningCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           _audioPlayer.play(AssetSource(audioForTimerCountdownAtTen));
           _tenSecondQuePlayed = true;
+          quePlayed = true;
         }
         if (backgroundTimerDuration == 3 && widget.isRunning && _threeSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           _audioPlayer.play(AssetSource(audioForTimerCountdownAtThree));
           _threeSecondQuePlayed = true;
+          quePlayed = true;
         }
         if (backgroundTimerDuration == 2 && widget.isRunning && _twoSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           _audioPlayer.play(AssetSource(audioForTimerCountdownAtTwo));
           _twoSecondQuePlayed = true;
+          quePlayed = true;
         }
         if (backgroundTimerDuration == 1 && widget.isRunning && _oneSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           _audioPlayer.play(AssetSource(audioForTimerCountdownAtOne));
           _oneSecondQuePlayed = true;
+          quePlayed = true;
+        }
+        if (quePlayed == false) {
+          // Keep the connection between the app and the phone alive
+          //   in case the phone is locked
+          _audioPlayer.setReleaseMode(ReleaseMode.stop);
+          _audioPlayer.play(AssetSource('sounds/Silence.mp3'));
         }
       } else {
         ///////////////////////
