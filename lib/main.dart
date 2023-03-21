@@ -374,14 +374,7 @@ class _MyAppState extends State<MyApp> {
                                 // Upon completion in Timer mode,
                                 // Enable the next press on the timer button to restart the timer
                                 _timerButtonRestart = true;
-
-                                // Sound the Alarm:
-                                // if (!appCurrentlyMuted && timerAlarmCurrentlyEnabled) {
-                                //   _audioPlayer.play(AssetSource(audioForTimerAlarm));
-                                //   _audioPlayer.setReleaseMode(ReleaseMode.loop);
-                                // }
                               }
-
                             });
                           },
                         ),

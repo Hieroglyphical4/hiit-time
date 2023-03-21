@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/services.dart';
 import 'package:hiit_time/Config/settings.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -120,8 +121,6 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   bool _twoSecondQuePlayed = false;
   bool _oneSecondQuePlayed = false;
   bool _timerAlarmPlayed = false;
-  bool _workAlertPlayed = false;
-  bool _restAlertPlayed = false;
 
   @override
   void dispose() {
@@ -143,8 +142,6 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     _twoSecondQuePlayed = false;
     _oneSecondQuePlayed = false;
     _timerAlarmPlayed = false;
-    _workAlertPlayed = false;
-    _restAlertPlayed = false;
 
     _animationController = AnimationController(
       vsync: this,
@@ -342,10 +339,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
 
     // With the timer running in the background, keep track of audio ques and timer flips
     _backgroundTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
-      if (backgroundTimerDuration > 0) {
-        backgroundTimerDuration--;
-        bool quePlayed = false;
-
+      // A que needs to be played on every interval to keep the connection alive in the background
+      bool quePlayed = false;
+      if (backgroundTimerDuration > -1) {
         // TODO Store this in a method to be referenced in both audio que places
         if (backgroundTimerDuration == 10 && widget.isRunning && _tenSecondQuePlayed == false && !appCurrentlyMuted && tenSecondWarningCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
@@ -371,61 +367,83 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
           _oneSecondQuePlayed = true;
           quePlayed = true;
         }
+
         if (quePlayed == false) {
           // Keep the connection between the app and the phone alive
           //   in case the phone is locked
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           _audioPlayer.play(AssetSource('sounds/Silence.mp3'));
         }
-      } else {
+        backgroundTimerDuration--;
+      } else if (backgroundTimerDuration == -1) {
         ///////////////////////
         // Duration has ended
         ///////////////////////
         if (widget.appInTimerMode) {
           //////////////////////
-          // App in Timer Mode
+          /// App in Timer Mode
           //////////////////////
-          if (backgroundTimerDuration == 0 && widget.isRunning && _timerAlarmPlayed == false && !appCurrentlyMuted && timerAlarmCurrentlyEnabled) {
-            _audioPlayer.setReleaseMode(ReleaseMode.loop);
-            _audioPlayer.play(AssetSource(audioForTimerAlarm));
+          if (widget.isRunning && _timerAlarmPlayed == false) {
+            if (!appCurrentlyMuted && timerAlarmCurrentlyEnabled) {
+              _audioPlayer.setReleaseMode(ReleaseMode.loop);
+              _audioPlayer.play(AssetSource(audioForTimerAlarm));
+            }
+            HapticFeedback.vibrate(); // todo loop
             _timerAlarmPlayed = true;
             widget.isRunning = false;
+            _backgroundTimer.cancel();
           }
         } else {
           /////////////////////////
-          // App in Interval Mode
+          /// App in Interval Mode
           /////////////////////////
-          if (widget.timerInRestMode && backgroundTimerDuration == 0 && _workAlertPlayed == false && !appCurrentlyMuted && alertWorkModeStartedCurrentlyEnabled) {
+          if (widget.timerInRestMode) {
             /// Entering Work Mode in Background
-            _audioPlayer.play(AssetSource(audioForAlertWorkModeStarted));
-            _workAlertPlayed = true;
+            if (!appCurrentlyMuted && alertWorkModeStartedCurrentlyEnabled) {
+              _audioPlayer.setReleaseMode(ReleaseMode.stop);
+              _audioPlayer.play(AssetSource(audioForAlertWorkModeStarted));
+              quePlayed = true;
+            }
             _tenSecondQuePlayed = false;
             _threeSecondQuePlayed = false;
             _twoSecondQuePlayed = false;
             _oneSecondQuePlayed = false;
             _timerAlarmPlayed = false;
-            _restAlertPlayed = false;
 
             widget.intervalLap ++;
             widget.timerInRestMode = false;
+
+            if (quePlayed == false) {
+              // Keep the connection between the app and the phone alive
+              //   in case the phone is locked
+              _audioPlayer.setReleaseMode(ReleaseMode.stop);
+              _audioPlayer.play(AssetSource('sounds/Silence.mp3'));
+            }
 
             // Kill current timer and start new timer (Timer Flip)
             backgroundTimerAltDuration = savedRestDuration;
             _backgroundTimer.cancel();
             startBackgroundTimer(savedWorkDuration);
-          }
-
-          if (!widget.timerInRestMode && backgroundTimerDuration == 0 && _restAlertPlayed == false && !appCurrentlyMuted && alertRestModeStartedCurrentlyEnabled) {
+          } else {
             /// Entering Rest Mode in Background
-            _audioPlayer.play(AssetSource(audioForAlertRestModeStarted));
-            _restAlertPlayed = true;
+            if (!appCurrentlyMuted && alertRestModeStartedCurrentlyEnabled) {
+              _audioPlayer.setReleaseMode(ReleaseMode.stop);
+              _audioPlayer.play(AssetSource(audioForAlertRestModeStarted));
+              quePlayed = true;
+            }
             _tenSecondQuePlayed = false;
             _threeSecondQuePlayed = false;
             _twoSecondQuePlayed = false;
             _oneSecondQuePlayed = false;
             _timerAlarmPlayed = false;
-            _workAlertPlayed = false;
             widget.timerInRestMode = true;
+
+            if (quePlayed == false) {
+              // Keep the connection between the app and the phone alive
+              //   in case the phone is locked
+              _audioPlayer.setReleaseMode(ReleaseMode.stop);
+              _audioPlayer.play(AssetSource('sounds/Silence.mp3'));
+            }
 
             backgroundTimerAltDuration = savedWorkDuration;
             _backgroundTimer.cancel();
@@ -662,8 +680,6 @@ class CountDownController {
     _state._threeSecondQuePlayed = false;
     _state._tenSecondQuePlayed = false;
     _state._timerAlarmPlayed = false;
-    _state._workAlertPlayed = false;
-    _state._restAlertPlayed = false;
 
     return desiredTime;
   }
@@ -708,8 +724,6 @@ class CountDownController {
     _state._threeSecondQuePlayed = false;
     _state._tenSecondQuePlayed = false;
     _state._timerAlarmPlayed = false;
-    _state._workAlertPlayed = false;
-    _state._restAlertPlayed = false;
 
     _state._animationController.forward(from: initialPosition);
     _state._animationController.stop(canceled: false);
