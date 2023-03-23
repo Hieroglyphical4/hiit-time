@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:ui';
+
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:hiit_time/countdown_progress_indicator.dart';
 import 'package:hiit_time/Config/settings.dart';
@@ -9,6 +13,9 @@ import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Service Used to keep timer running in background
+  initializeService();
 
   runApp(FutureBuilder(
       future: getSavedUserSettings(),
@@ -36,6 +43,38 @@ void main() async {
           return Container();
         }
       }));
+}
+
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      // this will be executed when app is in foreground or background in separated isolate
+      onStart: onStart,
+
+      // auto start service
+      autoStart: true,
+      isForegroundMode: false,
+
+      initialNotificationTitle: 'AWESOME SERVICE',
+      initialNotificationContent: 'Initializing',
+      foregroundServiceNotificationId: 888,
+    ),
+    iosConfiguration: IosConfiguration(),
+  );
+
+  service.startService();
+}
+
+Future<void> onStart(ServiceInstance service) async {
+  // Only available for flutter 3.0.0 and later
+  DartPluginRegistrant.ensureInitialized();
+  var servicePlayer = AudioPlayer();
+
+  Timer.periodic(const Duration(seconds: 1), (timer) async {
+    servicePlayer.play(AssetSource('sounds/Silence.mp3'));
+  });
 }
 
 class MyApp extends StatefulWidget {

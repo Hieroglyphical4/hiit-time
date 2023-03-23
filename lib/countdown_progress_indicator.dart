@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:hiit_time/Config/settings.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -126,7 +126,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   void dispose() {
     _animationController.dispose();
     _audioPlayer.dispose();
-    _backgroundTimer.cancel();
+    cancelNotificationAndTimer();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -254,6 +254,26 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     _animationController.forward(from: 0);
   }
 
+  Future<void> cancelNotificationAndTimer() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+    _backgroundTimer.cancel(); // TODO Set boolean to determine if this is running
+
+    // var activeNotifications = await flutterLocalNotificationsPlugin
+    //     .resolvePlatformSpecificImplementation<
+    //     AndroidFlutterLocalNotificationsPlugin>()
+    //     ?.getActiveNotifications();
+    //
+    // for (var notification in activeNotifications!) {
+    //   if (notification.id == 1) {
+    //     // Cancel notification windows when the user closes the app
+    //     _backgroundTimer.cancel();
+    //
+    //     await flutterLocalNotificationsPlugin.cancel(1);
+    //     break;
+    //   }
+    // }
+  }
+
 // This method is called when the phone locks or minimizes the app
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
@@ -263,20 +283,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
 
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      // Cancel notification windows when the user returns to the app
-      _backgroundTimer.cancel();
-
-      var activeNotifications = await flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>()
-          ?.getActiveNotifications();
-
-      for (var notification in activeNotifications!) {
-        if (notification.id == 1) {
-          await flutterLocalNotificationsPlugin.cancel(1);
-          break;
-        }
-      }
+      cancelNotificationAndTimer();
 
       /// Call Method on Parent (main.dart) to Reset timer to show
       ///    correct stuff in case interval mode was running in background
@@ -290,7 +297,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
             widget.reestablishRunningTimer(savedRestDuration, savedWorkDuration, !widget.timerInRestMode, widget.intervalLap);
           }
         } else {
-          // Continue background timer at current duration
+          // Continue timer at current duration
           widget.reestablishRunningTimer(backgroundTimerDuration, backgroundTimerAltDuration, widget.timerInRestMode, widget.intervalLap);
         }
       }
@@ -302,32 +309,11 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
       if (_animationController.isAnimating) {
         _currentDuration = (widget.duration - _animation.value).toInt();
 
-        // Notification Related Settings:
-        var androidDetails = AndroidNotificationDetails(
-          'hiit_time_channel_id',
-          'Hiit Time Channel',
-          channelDescription: 'Channel Description',
-          importance: Importance.high,
-          priority: Priority.high,
-          ticker: 'ticker',
-          playSound: true,
-          enableVibration: false,
-          vibrationPattern: Int64List.fromList([]),
-        );
-
-        var platformChannelSpecifics = NotificationDetails(android: androidDetails);
-
-        await flutterLocalNotificationsPlugin.show(
-            1,
-            'HIIT Time',
-            'Running in Background',
-            platformChannelSpecifics,
-            payload: 'open',
-        );
-
         // Call Background timer
         startBackgroundTimer(_currentDuration);
       }
+    } else if (state == AppLifecycleState.detached) {
+        cancelNotificationAndTimer();
     }
   }
 
@@ -339,43 +325,71 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
 
     // With the timer running in the background, keep track of audio ques and timer flips
     _backgroundTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
-      // A que needs to be played on every interval to keep the connection alive in the background
-      bool quePlayed = false;
-      if (backgroundTimerDuration > -1) {
+      String header;
+      if (widget.appInTimerMode) {
+        header = 'Timer Mode';
+      } else {
+        if (widget.timerInRestMode) {
+          header = 'Rest Interval: ${widget.intervalLap}';
+        } else {
+          header = 'Work Interval: ${widget.intervalLap}';
+        }
+      }
+      var timeFormatted = changeDurationFromSecondsToMinutes(backgroundTimerDuration);
+
+      await flutterLocalNotificationsPlugin.show(
+        1,
+        header,
+        timeFormatted,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+              'hiit_time_channel_id',
+              'Hiit Time Channel',
+              icon: 'mipmap/ic_launcher', // ic_bg_service_small
+              ongoing: false,
+              enableVibration: false,
+              vibrationPattern: null
+          ),
+        ),
+      );
+
+      if (backgroundTimerDuration > 0) {
         // TODO Store this in a method to be referenced in both audio que places
+        // Alert Work Mode Started
+        if (!widget.appInTimerMode && backgroundTimerDuration == savedWorkDuration && widget.isRunning && widget.timerInRestMode == false && !appCurrentlyMuted && alertWorkModeStartedCurrentlyEnabled) {
+          _audioPlayer.setReleaseMode(ReleaseMode.stop);
+          _audioPlayer.play(AssetSource(audioForAlertWorkModeStarted));
+        }
+
+        // Alert Rest Mode Started
+        if (!widget.appInTimerMode && backgroundTimerDuration == savedRestDuration && widget.isRunning && widget.timerInRestMode == true && !appCurrentlyMuted && alertRestModeStartedCurrentlyEnabled) {
+          _audioPlayer.setReleaseMode(ReleaseMode.stop);
+          _audioPlayer.play(AssetSource(audioForAlertRestModeStarted));
+        }
+
         if (backgroundTimerDuration == 10 && widget.isRunning && _tenSecondQuePlayed == false && !appCurrentlyMuted && tenSecondWarningCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           _audioPlayer.play(AssetSource(audioForTimerCountdownAtTen));
           _tenSecondQuePlayed = true;
-          quePlayed = true;
         }
         if (backgroundTimerDuration == 3 && widget.isRunning && _threeSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           _audioPlayer.play(AssetSource(audioForTimerCountdownAtThree));
           _threeSecondQuePlayed = true;
-          quePlayed = true;
         }
         if (backgroundTimerDuration == 2 && widget.isRunning && _twoSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           _audioPlayer.play(AssetSource(audioForTimerCountdownAtTwo));
           _twoSecondQuePlayed = true;
-          quePlayed = true;
         }
         if (backgroundTimerDuration == 1 && widget.isRunning && _oneSecondQuePlayed == false && !appCurrentlyMuted && threeTwoOneCountdownCurrentlyEnabled) {
           _audioPlayer.setReleaseMode(ReleaseMode.stop);
           _audioPlayer.play(AssetSource(audioForTimerCountdownAtOne));
           _oneSecondQuePlayed = true;
-          quePlayed = true;
         }
 
-        if (quePlayed == false) {
-          // Keep the connection between the app and the phone alive
-          //   in case the phone is locked
-          _audioPlayer.setReleaseMode(ReleaseMode.stop);
-          _audioPlayer.play(AssetSource('sounds/Silence.mp3'));
-        }
         backgroundTimerDuration--;
-      } else if (backgroundTimerDuration == -1) {
+      } else if (backgroundTimerDuration == 0) {
         ///////////////////////
         // Duration has ended
         ///////////////////////
@@ -399,11 +413,6 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
           /////////////////////////
           if (widget.timerInRestMode) {
             /// Entering Work Mode in Background
-            if (!appCurrentlyMuted && alertWorkModeStartedCurrentlyEnabled) {
-              _audioPlayer.setReleaseMode(ReleaseMode.stop);
-              _audioPlayer.play(AssetSource(audioForAlertWorkModeStarted));
-              quePlayed = true;
-            }
             _tenSecondQuePlayed = false;
             _threeSecondQuePlayed = false;
             _twoSecondQuePlayed = false;
@@ -413,37 +422,18 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
             widget.intervalLap ++;
             widget.timerInRestMode = false;
 
-            if (quePlayed == false) {
-              // Keep the connection between the app and the phone alive
-              //   in case the phone is locked
-              _audioPlayer.setReleaseMode(ReleaseMode.stop);
-              _audioPlayer.play(AssetSource('sounds/Silence.mp3'));
-            }
-
             // Kill current timer and start new timer (Timer Flip)
             backgroundTimerAltDuration = savedRestDuration;
             _backgroundTimer.cancel();
             startBackgroundTimer(savedWorkDuration);
           } else {
             /// Entering Rest Mode in Background
-            if (!appCurrentlyMuted && alertRestModeStartedCurrentlyEnabled) {
-              _audioPlayer.setReleaseMode(ReleaseMode.stop);
-              _audioPlayer.play(AssetSource(audioForAlertRestModeStarted));
-              quePlayed = true;
-            }
             _tenSecondQuePlayed = false;
             _threeSecondQuePlayed = false;
             _twoSecondQuePlayed = false;
             _oneSecondQuePlayed = false;
             _timerAlarmPlayed = false;
             widget.timerInRestMode = true;
-
-            if (quePlayed == false) {
-              // Keep the connection between the app and the phone alive
-              //   in case the phone is locked
-              _audioPlayer.setReleaseMode(ReleaseMode.stop);
-              _audioPlayer.play(AssetSource('sounds/Silence.mp3'));
-            }
 
             backgroundTimerAltDuration = savedWorkDuration;
             _backgroundTimer.cancel();
@@ -460,14 +450,15 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     var platform = InitializationSettings(android: android);
 
     flutterLocalNotificationsPlugin.initialize(platform);
+    flutterLocalNotificationsPlugin.cancelAll();
 
     // Create notification channel
     var androidChannel = AndroidNotificationChannel(
       'hiit_time_channel_id',
       'Hiit Time Channel',
       description: 'Channel Description',
-      importance: Importance.high,
-      playSound: true,
+      importance: Importance.low,
+      playSound: false,
       enableVibration: false,
       vibrationPattern: Int64List.fromList([]),
     );
