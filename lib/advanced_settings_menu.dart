@@ -80,7 +80,10 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
         ),
         ),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: alternateColorOverwrite ? Colors.black : Colors.white),
+            icon: Icon(Icons.arrow_back, color: textColorOverwrite
+            ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                : alternateColorOverwrite ? Colors.black
+                : Colors.white),
           onPressed: () {
           Navigator.pop(context);
           },

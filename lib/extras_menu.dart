@@ -37,14 +37,22 @@ class ExtrasMenuState extends State<ExtrasMenu> {
           ),
           ),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: alternateColorOverwrite ? Colors.black : Colors.white),
+            icon: Icon(Icons.arrow_back, color: textColorOverwrite
+                ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                : alternateColorOverwrite ? Colors.black
+                : Colors.white
+            ),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
           actions: [
             IconButton(
-              icon: Icon(Icons.calculate_outlined),
+              icon: Icon(Icons.calculate_outlined, color: textColorOverwrite
+                  ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                  : alternateColorOverwrite ? Colors.black
+                  : Colors.white
+              ),
               onPressed: () {
                 // Launch Extras Menu
                 showGeneralDialog(

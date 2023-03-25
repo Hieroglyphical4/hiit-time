@@ -168,7 +168,10 @@ class PlateCalculatorState extends State<PlateCalculator> {
             ////////////////////////////////////
             // Weight Calculation Text Field
             ////////////////////////////////////
-            Container(
+            Row(mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(width: 30),
+                  Container(
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: primaryColor,
@@ -187,7 +190,15 @@ class PlateCalculatorState extends State<PlateCalculator> {
                   )
                   ),
                 )
-            ),
+              ),
+                  SizedBox(width: 10),
+                  Align(alignment: Alignment.bottomCenter,
+                      child:Text('lb.',
+                      style: TextStyle(
+                          color: primaryColor,
+                          fontSize: 22)
+                  ))
+            ]),
 
             SizedBox(height: 10),
 

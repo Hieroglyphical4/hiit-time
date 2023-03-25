@@ -16,6 +16,8 @@ class LogsWidget extends StatefulWidget {
 class LogsWidgetState extends State<LogsWidget> {
   @override
   Widget build(BuildContext context) {
-    return Text("User can track PRs here", style: TextStyle(fontSize: 30, color: primaryColor),);
+    // TODO Display Pages based on options:
+    // Workout, Day, Muscle Group
+    return Text("User can track PRs here", style: TextStyle(fontSize: 30, color: primaryColor));
   }
 }
