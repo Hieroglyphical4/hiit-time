@@ -1,11 +1,11 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hiit_time/extras_menu.dart';
 import 'Config/settings.dart';
 
 // This is the Parent Widget from which other settings menus are opened
 class AdvancedSettingsMenu extends StatefulWidget {
-
   const AdvancedSettingsMenu({
     required Key key,
   }) : super(key: key);
@@ -18,6 +18,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
   final _formKey = GlobalKey<FormState>();
   bool _displayAudioSettings = false;
   bool _displayThemesSettings = false;
+  // bool _displayExtras = false;
 
   Future<bool> _confirmRestoreDefaults() async {
     bool confirmed = await showDialog(
@@ -168,15 +169,60 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                   ? ThemeSettingsWidget(onThemeChanged: onThemeChanged)
                   : Container(),
 
+                const SizedBox(height: 20),
+
+                /////////////////////////////
+                // Shortcut to Extras Button
+                /////////////////////////////
+                SizedBox(
+                    height: 60,
+                    width: 350,
+                    child: ElevatedButton(
+                        onPressed: () => setState(() {
+                          /// Launch Extras Menu
+                          showGeneralDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            barrierLabel: MaterialLocalizations.of(context)
+                                .modalBarrierDismissLabel,
+                            barrierColor: Colors.black45,
+                            transitionDuration: const Duration(milliseconds: 200),
+
+                            // ANY Widget can be passed here
+                            pageBuilder: (BuildContext buildContext,
+                                Animation animation,
+                                Animation secondaryAnimation) {
+                              return Center(
+                                child: ExtrasMenu(key: UniqueKey(),), //TODO Continue building
+                              );
+                            },
+                          );
+                        }),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: secondaryAccentColor,
+                          padding: const EdgeInsets.all(4),
+                        ),
+                        child: Text(_displayThemesSettings
+                            ? '-         Extras         -'
+                            : 'Extras                      >',
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
+                                color: textColorOverwrite ? Colors.black : Colors.white
+                            ),
+                            textAlign: TextAlign.center)
+                    )
+                ),
+
+                // _displayExtras ? Center(child: ExtrasMenu(key: UniqueKey())) : Container(),
+
                 // Spacer between Theme Button and Restore Defaults
                 (!_displayAudioSettings && !_displayThemesSettings)
                     ? const SizedBox(height: 300)
                     : Container(),
 
+                // Spacer between Theme Button and Restore Defaults
                 _displayAudioSettings
                     ? const SizedBox(height: 150)
                     : Container(),
-
 
                 ///////////////////////////
                 // Restore Defaults Button

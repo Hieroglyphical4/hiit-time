@@ -11,6 +11,8 @@ import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'extras_menu.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -278,6 +280,7 @@ class _MyAppState extends State<MyApp> {
                         setTurnsFromOrientation(currentOrientation);
                         return Center(child: Container());
                       }),
+                  SizedBox(height: 5),
                   ///////////////////////
                   //  HIIT Time Header //
                   ///////////////////////
@@ -300,9 +303,24 @@ class _MyAppState extends State<MyApp> {
                         HapticFeedback.mediumImpact();
 
                         setState(() {
-                          // TODO Change functionality to launch About App Page
-                          // appInTimerModeDefault = !appInTimerModeDefault;
-                          // _controller.updateWorkoutMode(appInTimerModeDefault);
+                          /// Launch Extras Menu
+                          showGeneralDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            barrierLabel: MaterialLocalizations.of(context)
+                                .modalBarrierDismissLabel,
+                            barrierColor: Colors.black45,
+                            transitionDuration: const Duration(milliseconds: 200),
+
+                            // ANY Widget can be passed here
+                            pageBuilder: (BuildContext buildContext,
+                                Animation animation,
+                                Animation secondaryAnimation) {
+                              return Center(
+                                child: ExtrasMenu(key: UniqueKey(),), //TODO Continue building
+                              );
+                            },
+                          );
                         });
                       },
                       child: const Text('HIIT Time',
@@ -571,13 +589,15 @@ class _MyAppState extends State<MyApp> {
                                 _timerModifierValueAdd > 59
                                     ? '+${changeDurationFromSecondsToMinutes(_timerModifierValueAdd)}'
                                     : '+${_timerModifierValueAdd}s',
-                                style: TextStyle(fontSize: 20, color: textColorOverwrite ? Colors.black : Colors.white)),
+                                style: TextStyle(fontSize: 20, color: textColorOverwrite ? Colors.black : Colors.white)
+                            ),
                           ),
                         ),
                       )
                     ],
                   ),
 
+                  // Spacer between config and restart buttons
                   const SizedBox(height: 25),
 
                   //////////////////////
