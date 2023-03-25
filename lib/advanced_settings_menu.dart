@@ -182,6 +182,9 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                     width: 350,
                     child: ElevatedButton(
                         onPressed: () => setState(() {
+                          _displayAudioSettings = false;
+                          _displayThemesSettings = false;
+
                           /// Launch Extras Menu
                           showGeneralDialog(
                             context: context,
@@ -205,9 +208,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           backgroundColor: secondaryAccentColor,
                           padding: const EdgeInsets.all(4),
                         ),
-                        child: Text(_displayThemesSettings
-                            ? '-         Extras         -'
-                            : 'Extras                      >',
+                        child: Text('Extras                      >',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
                                 color: textColorOverwrite ? Colors.black : Colors.white
                             ),
@@ -219,11 +220,16 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 
                 // Spacer between Theme Button and Restore Defaults
                 (!_displayAudioSettings && !_displayThemesSettings)
-                    ? const SizedBox(height: 300)
+                    ? const SizedBox(height: 250)
                     : Container(),
 
                 // Spacer between Theme Button and Restore Defaults
                 _displayAudioSettings
+                    ? const SizedBox(height: 200)
+                    : Container(),
+
+                // Spacer between Theme Button and Restore Defaults
+                _displayThemesSettings
                     ? const SizedBox(height: 150)
                     : Container(),
 
@@ -354,7 +360,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
           child: Center(
               child: Column(children: [
         SizedBox(
-            height: 400,
+            height: 325,
             width: 300,
             /////////////////////////////////////////////////////
             /// These are the individual pages that show themes
@@ -449,7 +455,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                 value: _possibleThemes[0],
                                 groupValue: _currentTheme,
                                 onChanged: _updateAppTheme,
-                              )))
+                              )
+                          )
+                      )
                     ],
                   ),
                 ),
@@ -618,7 +626,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                 value: _possibleThemes[2],
                                 groupValue: _currentTheme,
                                 onChanged: _updateAppTheme,
-                              ))),
+                              )
+                          )
+                      ),
                     ],
                   ),
                 ),
@@ -635,9 +645,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
             );
           },
         ),
-        const SizedBox(height: 25),
+        const SizedBox(height: 15),
         SizedBox(height: 1, child: Container(color: Colors.grey)),
-        const SizedBox(height: 25),
+        const SizedBox(height: 15),
       ])));
     });
   }

@@ -18,6 +18,6 @@ class LogsWidgetState extends State<LogsWidget> {
   Widget build(BuildContext context) {
     // TODO Display Pages based on options:
     // Workout, Day, Muscle Group
-    return Text("User can track PRs here", style: TextStyle(fontSize: 30, color: primaryColor));
+    return Text("User can track PRs here", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white));
   }
 }

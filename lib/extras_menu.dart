@@ -24,7 +24,7 @@ class ExtrasMenuState extends State<ExtrasMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: secondaryColor,
+      backgroundColor: secondaryAccentColor,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
           backgroundColor: primaryAccentColor,
@@ -103,14 +103,17 @@ class ExtrasMenuState extends State<ExtrasMenu> {
                           }
                         }),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryAccentColor,
+                          backgroundColor: secondaryColor,
                           padding: const EdgeInsets.all(4),
                         ),
                         child: Text(_displayLogs
                             ? '-             Logs             -'
                             : 'Logs                             >',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
-                                color: textColorOverwrite ? Colors.black : Colors.white
+                                color: textColorOverwrite
+                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    : alternateColorOverwrite ? Colors.black
+                                    : appCurrentlyInDarkMode ? Colors.white : Colors.black
                             ),
                             textAlign: TextAlign.center
                         )
@@ -140,14 +143,17 @@ class ExtrasMenuState extends State<ExtrasMenu> {
                           }
                         }),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryAccentColor,
+                          backgroundColor: secondaryColor,
                           padding: const EdgeInsets.all(4),
                         ),
                         child: Text(_displayFaqs
                             ? '-             FAQs             -'
                             : 'FAQs                             >',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
-                                color: textColorOverwrite ? Colors.black : Colors.white
+                                color: textColorOverwrite
+                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    : alternateColorOverwrite ? Colors.black
+                                    : appCurrentlyInDarkMode ? Colors.white : Colors.black
                             ),
                             textAlign: TextAlign.center
                         )
@@ -177,14 +183,17 @@ class ExtrasMenuState extends State<ExtrasMenu> {
                           }
                         }),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryAccentColor,
+                          backgroundColor: secondaryColor,
                           padding: const EdgeInsets.all(4),
                         ),
                         child: Text(_displayAboutThisApp
                             ? '-   About This App   -'
                             : 'About This App         >',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
-                                color: textColorOverwrite ? Colors.black : Colors.white
+                                color: textColorOverwrite
+                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    : alternateColorOverwrite ? Colors.black
+                                    : appCurrentlyInDarkMode ? Colors.white : Colors.black
                             ),
                             textAlign: TextAlign.center
                         )
@@ -196,7 +205,7 @@ class ExtrasMenuState extends State<ExtrasMenu> {
                     ? AboutThisAppWidget(key: UniqueKey(),)
                     : Container(),
 
-                SizedBox(height: 250),
+                SizedBox(height: 400),
               ],
             )
         )
@@ -220,7 +229,7 @@ class FaqsWidget extends StatefulWidget {
 class FaqsWidgetState extends State<FaqsWidget> {
   @override
   Widget build(BuildContext context) {
-    return Text("Here are some Tips: ", style: TextStyle(fontSize: 30, color: primaryColor),);
+    return Text("Here are some Tips: ", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white),);
   }
 }
 
@@ -243,9 +252,9 @@ class AboutThisAppWidgetState extends State<AboutThisAppWidget> {
       width: 225,
         child: Column(
             children: [
-              Text("Thank you for downloading my first app.", style: TextStyle(fontSize: 30, color: primaryColor)),
+              Text("Thank you for downloading my first app.", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
               SizedBox(height: 20),
-              Text("Email: app@gmail.com", style: TextStyle(fontSize: 30, color: primaryColor)),
+              Text("Email: app@gmail.com", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
             ]
         )
     );
