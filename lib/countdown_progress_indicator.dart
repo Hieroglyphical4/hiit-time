@@ -289,16 +289,29 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
       ///    correct stuff in case interval mode was running in background
       if (widget.isRunning) {
         if (backgroundTimerDuration == 0) {
-          if (widget.timerInRestMode) {
-            // Flip Timer into Work Mode
-            widget.reestablishRunningTimer(savedWorkDuration, savedRestDuration, !widget.timerInRestMode, ++widget.intervalLap);
-          } else {
-            // Flip Timer into Rest Mode
-            widget.reestablishRunningTimer(savedRestDuration, savedWorkDuration, !widget.timerInRestMode, widget.intervalLap);
+          if (!widget.appInTimerMode) {
+            // App in Interval Mode
+            if (widget.timerInRestMode) {
+              // Flip Timer into Work Mode
+              widget.reestablishRunningTimer(savedWorkDuration, savedRestDuration, !widget.timerInRestMode, ++widget.intervalLap);
+            } else {
+              // Flip Timer into Rest Mode
+              if (savedRestDuration > 0) {
+                widget.reestablishRunningTimer(savedRestDuration, savedWorkDuration, !widget.timerInRestMode, widget.intervalLap);
+              } else {
+                // If rest is set to 0, restart Work Mode with increased interval
+                widget.reestablishRunningTimer(savedWorkDuration, savedRestDuration, widget.timerInRestMode, ++widget.intervalLap);
+              }
+            }
           }
         } else {
           // Continue timer at current duration
           widget.reestablishRunningTimer(backgroundTimerDuration, backgroundTimerAltDuration, widget.timerInRestMode, widget.intervalLap);
+        }
+      } else {
+        if (backgroundTimerDuration == 0 && widget.appInTimerMode) {
+          // Timer is going off, lets stop it for the returning user
+          _audioPlayer.stop();
         }
       }
 
@@ -388,7 +401,10 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
           _oneSecondQuePlayed = true;
         }
 
-        backgroundTimerDuration--;
+        if (backgroundTimerDuration > 0) {
+          backgroundTimerDuration--;
+        }
+
       } else if (backgroundTimerDuration == 0) {
         ///////////////////////
         // Duration has ended
@@ -435,9 +451,20 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
             _timerAlarmPlayed = false;
             widget.timerInRestMode = true;
 
-            backgroundTimerAltDuration = savedWorkDuration;
-            _backgroundTimer.cancel();
-            startBackgroundTimer(savedRestDuration);
+            if (savedRestDuration > 0) {
+              backgroundTimerAltDuration = savedWorkDuration;
+              _backgroundTimer.cancel();
+              startBackgroundTimer(savedRestDuration);
+            } else {
+              // If rest duration is set to 0, restart Work Mode with increased interval
+              widget.intervalLap ++;
+              widget.timerInRestMode = false;
+
+              backgroundTimerAltDuration = savedRestDuration;
+              _backgroundTimer.cancel();
+              startBackgroundTimer(savedWorkDuration);
+            }
+
           }
         }
       }

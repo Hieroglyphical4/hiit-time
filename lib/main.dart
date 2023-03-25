@@ -340,6 +340,9 @@ class _MyAppState extends State<MyApp> {
                           // Check if the user is pressing the timer after it finished.
                           // If so, restart timer to initial state (reset)
                           if (_timerButtonRestart) {
+                            if (!appCurrentlyMuted && restartButtonAudioCurrentlyEnabled) {
+                              _audioPlayer.play(AssetSource(audioForRestartButton));
+                            }
                             resetTimer();
                             _isRunning = true; // To get into upcoming pause block
                             _timerButtonRestart = false;
@@ -586,10 +589,8 @@ class _MyAppState extends State<MyApp> {
                     child: ElevatedButton(
                         onPressed: () => setState(() {
                               HapticFeedback.lightImpact();
-                              if (!appCurrentlyMuted &&
-                                  restartButtonAudioCurrentlyEnabled) {
-                                _audioPlayer
-                                    .play(AssetSource(audioForRestartButton));
+                              if (!appCurrentlyMuted && restartButtonAudioCurrentlyEnabled) {
+                                _audioPlayer.play(AssetSource(audioForRestartButton));
                               }
                               resetTimer();
                             }),
