@@ -43,6 +43,8 @@ dependencies:
   native_device_orientation: ^1.1.4
   audioplayers: ^2.0.0
   shared_preferences: ^2.0.17
+  flutter_local_notifications: ^13.0.0
+  flutter_background_service: ^2.4.6
 
 dev_dependencies:
   flutter_test:
@@ -83,13 +85,14 @@ flutter:
     - assets/sounds/Switch1.mp3
     - assets/sounds/SwitchAndBeep1.mp3
     - assets/sounds/Amplified/SalliTwo2.mp3
-    - assets/sounds/Amplified/SalliThree2.mp3
+    - assets/sounds/Amplified/SalliThree3.mp3
     - assets/sounds/Amplified/SalliOne2.mp3
     - assets/sounds/Amplified/SalliTenAmped1.mp3
     - assets/sounds/Amplified/JoeyTenAmped2.mp3
     - assets/sounds/Flourish.mp3
     - assets/sounds/FlourishDelayed.mp3
     - assets/sounds/FlourishDelayed2.mp3
+    - assets/sounds/Silence.mp3
 
     # Images:
     - assets/images/DefaultDark.png

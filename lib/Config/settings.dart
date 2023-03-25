@@ -178,6 +178,8 @@ void clearUserSettings() async {
   prefs.remove('timerAlarmEnabled');
   prefs.remove('threeTwoOneCountdownEnabled');
   prefs.remove('tenSecondWarningEnabled');
+  prefs.remove('alertWorkModeStartedEnabled');
+  prefs.remove('alertRestModeStartedEnabled');
   prefs.remove('modeSwitchAlertEnabled');
   prefs.remove('restartButtonAudioEnabled');
   prefs.remove('saveButtonAudioEnabled');
@@ -339,7 +341,7 @@ var assetAlarmStandard = 'sounds/alarm-standard-1.mp3';
 var assetSalliRest = 'sounds/Amplified/Rest-Voice-salli-Amped2.mp3';
 var assetSalliWork = 'sounds/Amplified/Work-Voice-salli-Amped2.mp3';
 var assetJoeyTen = 'sounds/Amplified/JoeyTenAmped2.mp3';
-var assetSalliThree = 'sounds/Amplified/SalliThree2.mp3';
+var assetSalliThree = 'sounds/Amplified/SalliThree3.mp3';
 var assetSalliTwo = 'sounds/Amplified/SalliTwo2.mp3';
 var assetSalliOne = 'sounds/Amplified/SalliOne2.mp3';
 
