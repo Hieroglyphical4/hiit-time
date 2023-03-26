@@ -172,7 +172,9 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                   ? ThemeSettingsWidget(onThemeChanged: onThemeChanged)
                   : Container(),
 
-                const SizedBox(height: 20),
+                _displayThemesSettings
+                    ? const SizedBox(height: 25)
+                    : SizedBox(height: 125),
 
                 /////////////////////////////
                 // Shortcut to Extras Button
@@ -208,7 +210,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           backgroundColor: secondaryAccentColor,
                           padding: const EdgeInsets.all(4),
                         ),
-                        child: Text('Extras                      >',
+                        child: Text('Extras',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
                                 color: textColorOverwrite ? Colors.black : Colors.white
                             ),
@@ -216,22 +218,11 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                     )
                 ),
 
-                // _displayExtras ? Center(child: ExtrasMenu(key: UniqueKey())) : Container(),
-
-                // Spacer between Theme Button and Restore Defaults
+                // Spacer between Extras Button and Restore Defaults
                 (!_displayAudioSettings && !_displayThemesSettings)
-                    ? const SizedBox(height: 250)
+                    ? const SizedBox(height: 25)
                     : Container(),
-
-                // Spacer between Theme Button and Restore Defaults
-                _displayAudioSettings
-                    ? const SizedBox(height: 200)
-                    : Container(),
-
-                // Spacer between Theme Button and Restore Defaults
-                _displayThemesSettings
-                    ? const SizedBox(height: 150)
-                    : Container(),
+                const SizedBox(height: 50),
 
                 ///////////////////////////
                 // Restore Defaults Button
