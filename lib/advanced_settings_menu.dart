@@ -1,8 +1,9 @@
+import 'package:hiit_time/plate_calculator.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hiit_time/extras_menu.dart';
 import 'Config/settings.dart';
+import 'logs_widget.dart';
 
 // This is the Parent Widget from which other settings menus are opened
 class AdvancedSettingsMenu extends StatefulWidget {
@@ -18,7 +19,9 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
   final _formKey = GlobalKey<FormState>();
   bool _displayAudioSettings = false;
   bool _displayThemesSettings = false;
-  // bool _displayExtras = false;
+  bool _displayLogs = false;
+  bool _displayAboutThisApp = false;
+  bool _displayFaqs = false;
 
   Future<bool> _confirmRestoreDefaults() async {
     bool confirmed = await showDialog(
@@ -67,7 +70,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: secondaryColor,
+      backgroundColor: secondaryAccentColor,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: primaryAccentColor,
@@ -88,6 +91,35 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
           Navigator.pop(context);
           },
           ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.calculate_outlined, color: textColorOverwrite
+                ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                : alternateColorOverwrite ? Colors.black
+                : Colors.white
+            ),
+            onPressed: () {
+              // Launch Extras Menu
+              showGeneralDialog(
+                context: context,
+                barrierDismissible: true,
+                barrierLabel: MaterialLocalizations.of(context)
+                    .modalBarrierDismissLabel,
+                barrierColor: Colors.black45,
+                transitionDuration: const Duration(milliseconds: 200),
+
+                // ANY Widget can be passed here
+                pageBuilder: (BuildContext buildContext,
+                    Animation animation,
+                    Animation secondaryAnimation) {
+                  return Center(
+                    child: PlateCalculator(key: UniqueKey(),),
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -97,9 +129,8 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
               // direction: Axis.vertical,
               children: [
                 // Body of Settings!
-                _displayThemesSettings || _displayAudioSettings
-                    ? const SizedBox(height: 20)
-                    : const SizedBox(height: 115),
+
+                SizedBox(height: 20),
 
                 ///////////////////////////
                 // Audio Settings Button
@@ -117,14 +148,17 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         }
                       }),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: secondaryAccentColor,
+                        backgroundColor: secondaryColor,
                         padding: const EdgeInsets.all(4),
                       ),
                       child: Text(_displayAudioSettings
                           ? '-   Audio Settings   -'
                           : 'Audio Settings       >',
-                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
-                              color: textColorOverwrite ? Colors.black : Colors.white
+                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                              color: textColorOverwrite
+                                  ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                  : alternateColorOverwrite ? Colors.black
+                                  : appCurrentlyInDarkMode ? Colors.white : Colors.black
                           ),
                           textAlign: TextAlign.center
                       )
@@ -154,14 +188,17 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           }
                         }),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryAccentColor,
+                          backgroundColor: secondaryColor,
                           padding: const EdgeInsets.all(4),
                         ),
                         child: Text(_displayThemesSettings
                             ? '-         Themes         -'
                             : 'Themes                      >',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
-                                color: textColorOverwrite ? Colors.black : Colors.white
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                color: textColorOverwrite
+                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    : alternateColorOverwrite ? Colors.black
+                                    : appCurrentlyInDarkMode ? Colors.white : Colors.black
                             ),
                             textAlign: TextAlign.center)
                     )
@@ -172,51 +209,134 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                   ? ThemeSettingsWidget(onThemeChanged: onThemeChanged)
                   : Container(),
 
-                _displayThemesSettings
-                    ? const SizedBox(height: 25)
-                    : SizedBox(height: 125),
+                // _displayThemesSettings
+                //     ? const SizedBox(height: 25)
+                //     : SizedBox(height: 125),
 
-                /////////////////////////////
-                // Shortcut to Extras Button
-                /////////////////////////////
+                SizedBox(height: 20),
+
+                ///////////////////////////
+                // Logs Button
+                ///////////////////////////
                 SizedBox(
                     height: 60,
                     width: 350,
                     child: ElevatedButton(
                         onPressed: () => setState(() {
-                          _displayAudioSettings = false;
-                          _displayThemesSettings = false;
-
-                          /// Launch Extras Menu
-                          showGeneralDialog(
-                            context: context,
-                            barrierDismissible: true,
-                            barrierLabel: MaterialLocalizations.of(context)
-                                .modalBarrierDismissLabel,
-                            barrierColor: Colors.black45,
-                            transitionDuration: const Duration(milliseconds: 200),
-
-                            // ANY Widget can be passed here
-                            pageBuilder: (BuildContext buildContext,
-                                Animation animation,
-                                Animation secondaryAnimation) {
-                              return Center(
-                                child: ExtrasMenu(key: UniqueKey(),), //TODO Continue building
-                              );
-                            },
-                          );
+                          if (_displayLogs) {
+                            _displayLogs = false;
+                          } else {
+                            _displayLogs = true;
+                            _displayAboutThisApp = false;
+                            _displayFaqs = false;
+                          }
                         }),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryAccentColor,
+                          backgroundColor: secondaryColor,
                           padding: const EdgeInsets.all(4),
                         ),
-                        child: Text('Extras',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
-                                color: textColorOverwrite ? Colors.black : Colors.white
+                        child: Text(_displayLogs
+                            ? '-             Logs             -'
+                            : 'Logs                             >',
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                color: textColorOverwrite
+                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    : alternateColorOverwrite ? Colors.black
+                                    : appCurrentlyInDarkMode ? Colors.white : Colors.black
                             ),
-                            textAlign: TextAlign.center)
+                            textAlign: TextAlign.center
+                        )
                     )
                 ),
+
+                // Determine if Logs Widget should show:
+                _displayLogs
+                    ? LogsWidget(key: UniqueKey(),)
+                    : Container(),
+
+                SizedBox(height: 20),
+
+                ///////////////////////////
+                // FAQs Button
+                ///////////////////////////
+                SizedBox(
+                    height: 60,
+                    width: 350,
+                    child: ElevatedButton(
+                        onPressed: () => setState(() {
+                          if (_displayFaqs) {
+                            _displayFaqs = false;
+                          } else {
+                            _displayFaqs = true;
+                            _displayLogs = false;
+                            _displayAboutThisApp = false;
+                          }
+                        }),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: secondaryColor,
+                          padding: const EdgeInsets.all(4),
+                        ),
+                        child: Text(_displayFaqs
+                            ? '-             FAQs             -'
+                            : 'FAQs                             >',
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                color: textColorOverwrite
+                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    : alternateColorOverwrite ? Colors.black
+                                    : appCurrentlyInDarkMode ? Colors.white : Colors.black
+                            ),
+                            textAlign: TextAlign.center
+                        )
+                    )
+                ),
+
+                // Determine if FAQ Widget should show:
+                _displayFaqs
+                    ? FaqsWidget(key: UniqueKey(),)
+                    : Container(),
+
+                SizedBox(height: 20),
+
+                ///////////////////////////
+                // About This App Button
+                ///////////////////////////
+                SizedBox(
+                    height: 60,
+                    width: 350,
+                    child: ElevatedButton(
+                        onPressed: () => setState(() {
+                          if (_displayAboutThisApp) {
+                            _displayAboutThisApp = false;
+                          } else {
+                            _displayAboutThisApp = true;
+                            _displayLogs = false;
+                            _displayFaqs = false;
+                          }
+                        }),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: secondaryColor,
+                          padding: const EdgeInsets.all(4),
+                        ),
+                        child: Text(_displayAboutThisApp
+                            ? '-   About This App   -'
+                            : 'About This App         >',
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                color: textColorOverwrite
+                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    : alternateColorOverwrite ? Colors.black
+                                    : appCurrentlyInDarkMode ? Colors.white : Colors.black
+                            ),
+                            textAlign: TextAlign.center
+                        )
+                    )
+                ),
+
+                // Determine if About This App Widget should show:
+                _displayAboutThisApp
+                    ? AboutThisAppWidget(key: UniqueKey(),)
+                    : Container(),
+
+
 
                 // Spacer between Extras Button and Restore Defaults
                 (!_displayAudioSettings && !_displayThemesSettings)
@@ -251,7 +371,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           padding: const EdgeInsets.all(4),
                         ),
                         child: const Text('Restore Defaults',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1),
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1),
                             textAlign: TextAlign.center)
                     )
                 ),
@@ -262,6 +382,53 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
           ),
         ),
       ),
+    );
+  }
+}
+
+//////////////////////////////////////////
+// Widget for all FAQs (sub-submenu)
+//////////////////////////////////////////
+class FaqsWidget extends StatefulWidget {
+  const FaqsWidget({
+    required Key key,
+  }) : super(key: key);
+
+  @override
+  FaqsWidgetState createState() => FaqsWidgetState();
+}
+
+class FaqsWidgetState extends State<FaqsWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Text("Here are some Tips: ", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white),);
+  }
+}
+
+/////////////////////////////////////////////////
+// Widget for About This App Info (sub-submenu)
+/////////////////////////////////////////////////
+class AboutThisAppWidget extends StatefulWidget {
+  const AboutThisAppWidget({
+    required Key key,
+  }) : super(key: key);
+
+  @override
+  AboutThisAppWidgetState createState() => AboutThisAppWidgetState();
+}
+
+class AboutThisAppWidgetState extends State<AboutThisAppWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: 225,
+        child: Column(
+            children: [
+              Text("Thank you for downloading my first app.", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
+              SizedBox(height: 20),
+              Text("Email: app@gmail.com", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
+            ]
+        )
     );
   }
 }
@@ -434,12 +601,12 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                 title: Text(
                                   _possibleThemes[0],
                                   style: TextStyle(
-                                      color: textColorOverwrite
-                                          ? Colors.black
-                                          : Colors.white,
+                                      color: appCurrentlyInDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
                                       fontSize: _textFontSize),
                                 ),
-                                tileColor: Colors.blueGrey,
+                                tileColor: appCurrentlyInDarkMode ? Colors.black : Colors.white,
                                 shape: BeveledRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -527,8 +694,8 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                       fontSize: _textFontSize),
                                 ),
                                 tileColor: appCurrentlyInDarkMode
-                                    ? Colors.pink.shade200
-                                    : Colors.pink.shade600,
+                                    ? Colors.pink.shade600
+                                    : Colors.pink.shade200,
                                 shape: BeveledRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -610,7 +777,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                           : Colors.white,
                                       fontSize: _textFontSize),
                                 ),
-                                tileColor: Colors.orange,
+                                tileColor: appCurrentlyInDarkMode ? Colors.deepOrange.shade900 : Colors.deepOrangeAccent.shade200,
                                 shape: BeveledRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -710,7 +877,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
         /////////////////////////
         SizedBox(
           height: 45,
-          width: 350,
+          width: 300,
           child: ElevatedButton(
               onPressed: () => setState(() {
                 if (_displayTimerAudioSettings) {
@@ -736,7 +903,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
 
                   Icon(Icons.watch_later_outlined, color: primaryColor),
                   SizedBox(width: 20),
-                  Text('Timer', style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor)),
+                  Text('Timer', style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1, color: primaryColor)),
 
                   _displayTimerAudioSettings
                       ? Spacer(flex: 2)
@@ -768,7 +935,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
         ////////////////////////////
         SizedBox(
           height: 45,
-          width: 350,
+          width: 300,
           child: ElevatedButton(
               onPressed: () => setState(() {
                 if (_displayButtonAudioSettings) {
@@ -794,7 +961,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
 
                   Icon(Icons.touch_app_outlined, color: primaryColor),
                   SizedBox(width: 20),
-                  Text('Buttons',style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor)),
+                  Text('Buttons',style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1, color: primaryColor)),
 
                   _displayButtonAudioSettings
                       ? Spacer(flex: 2)

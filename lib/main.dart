@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:hiit_time/advanced_settings_menu.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:hiit_time/countdown_progress_indicator.dart';
 import 'package:hiit_time/Config/settings.dart';
@@ -317,10 +318,18 @@ class _MyAppState extends State<MyApp> {
                                 Animation animation,
                                 Animation secondaryAnimation) {
                               return Center(
-                                child: ExtrasMenu(key: UniqueKey(),), //TODO Continue building
+                                child: AdvancedSettingsMenu(key: UniqueKey()), //TODO Continue building
                               );
                             },
-                          );
+                          ).then((restartRequired) {
+                            if (restartRequired == true) {
+                              //
+                            }
+                            setState(() {
+                              updateSettingsFromMemory();
+                              // _controller.updateWorkoutMode(appCurrentlyInTimerMode);
+                            });
+                          });
                         });
                       },
                       child: const Text('HIIT Time',
@@ -540,8 +549,7 @@ class _MyAppState extends State<MyApp> {
                             }
                             setState(() {
                               updateSettingsFromMemory();
-                              _controller
-                                  .updateWorkoutMode(appCurrentlyInTimerMode);
+                              _controller.updateWorkoutMode(appCurrentlyInTimerMode);
                             });
                           });
                         },
