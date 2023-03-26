@@ -145,6 +145,9 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         } else {
                           _displayAudioSettings = true;
                           _displayThemesSettings = false;
+                          _displayLogs = false;
+                          _displayAboutThisApp = false;
+                          _displayFaqs = false;
                         }
                       }),
                       style: ElevatedButton.styleFrom(
@@ -185,6 +188,9 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           } else {
                             _displayThemesSettings = true;
                             _displayAudioSettings = false;
+                            _displayLogs = false;
+                            _displayAboutThisApp = false;
+                            _displayFaqs = false;
                           }
                         }),
                         style: ElevatedButton.styleFrom(
@@ -229,6 +235,8 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                             _displayLogs = true;
                             _displayAboutThisApp = false;
                             _displayFaqs = false;
+                            _displayAudioSettings = false;
+                            _displayThemesSettings = false;
                           }
                         }),
                         style: ElevatedButton.styleFrom(
@@ -270,6 +278,8 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                             _displayFaqs = true;
                             _displayLogs = false;
                             _displayAboutThisApp = false;
+                            _displayAudioSettings = false;
+                            _displayThemesSettings = false;
                           }
                         }),
                         style: ElevatedButton.styleFrom(
@@ -311,6 +321,8 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                             _displayAboutThisApp = true;
                             _displayLogs = false;
                             _displayFaqs = false;
+                            _displayAudioSettings = false;
+                            _displayThemesSettings = false;
                           }
                         }),
                         style: ElevatedButton.styleFrom(
@@ -335,8 +347,6 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                 _displayAboutThisApp
                     ? AboutThisAppWidget(key: UniqueKey(),)
                     : Container(),
-
-
 
                 // Spacer between Extras Button and Restore Defaults
                 (!_displayAudioSettings && !_displayThemesSettings)
