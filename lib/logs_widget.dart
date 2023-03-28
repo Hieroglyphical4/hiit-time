@@ -26,8 +26,6 @@ class LogsWidgetState extends State<LogsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO Display Pages based on options:
-    // Workout, Day, Muscle Group
     return Center(
         child: SingleChildScrollView(
             child: Column(
@@ -37,7 +35,6 @@ class LogsWidgetState extends State<LogsWidget> {
                 /// Create new Record Button
                 ElevatedButton(
                     onPressed: () {
-                      // TODO Launch Alert Dialog to fill out form to submit new DB record
                       /// Launch New Log Menu
                       showGeneralDialog(
                         context: context,
@@ -52,7 +49,7 @@ class LogsWidgetState extends State<LogsWidget> {
                             Animation animation,
                             Animation secondaryAnimation) {
                           return Center(
-                            child: NewLogWidget(key: UniqueKey()), //TODO Continue building
+                            child: NewLogWidget(key: UniqueKey()),
                           );
                         },
                       );
@@ -75,9 +72,13 @@ class LogsWidgetState extends State<LogsWidget> {
                 // SizedBox(height: 1, child: Container(color: Colors.grey)),
 
                 /// Main Filter Buttons
-                Row(
+                SizedBox(
+                  width: 350,
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Spacer(flex: 1),
+
                       /// ///////////////////
                       /// Filter by Exercise
                       /// ///////////////////
@@ -105,7 +106,7 @@ class LogsWidgetState extends State<LogsWidget> {
                         ),
                         SizedBox(height: 5),
                         Text('Exercise',
-                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1,
                               color: _mainFilterExercise ? Colors.blue
                               : textColorOverwrite
                                 ? Colors.black
@@ -113,7 +114,8 @@ class LogsWidgetState extends State<LogsWidget> {
                           ),),
                       ]),
 
-                      SizedBox(width: 20),
+                      Spacer(flex: 1),
+                      SizedBox(width: 5),
 
                       /// ////////////////
                       /// Filter by Date
@@ -142,7 +144,7 @@ class LogsWidgetState extends State<LogsWidget> {
                         ),
                         SizedBox(height: 5),
                         Text('Date',
-                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1,
                               color: _mainFilterDate ? Colors.blue
                                   : textColorOverwrite
                                     ? Colors.black
@@ -150,7 +152,7 @@ class LogsWidgetState extends State<LogsWidget> {
                           ),),
                       ]),
 
-                      SizedBox(width: 20),
+                      Spacer(flex: 1),
 
                       /// ////////////////////
                       /// Filter by BodyPart
@@ -179,14 +181,16 @@ class LogsWidgetState extends State<LogsWidget> {
                         ),
                         SizedBox(height: 5),
                         Text('Body Part',
-                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1,
                               color: _mainFilterBodyPart ? Colors.blue
                               : textColorOverwrite
                                 ? Colors.black
                                 : primaryColor
                           ),),
                       ]),
-                    ]
+
+                      Spacer(flex: 1),
+                    ]),
                 ),
 
                 SizedBox(height: 10),
@@ -208,7 +212,7 @@ class LogsWidgetState extends State<LogsWidget> {
                     ? BodyPartsWidget()
                     : Container(),
 
-                /// Prompt user to select a Filter
+                /// Prompt user to select a Category
                 (!_mainFilterExercise && !_mainFilterDate && !_mainFilterBodyPart)
                     ? Container(
                     decoration: BoxDecoration(
@@ -219,7 +223,7 @@ class LogsWidgetState extends State<LogsWidget> {
                     child: Column(mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: 25, width: 200),
-                        Text("Select a Filter",
+                        Text("Select a Category",
                           style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1,
                             color: textColorOverwrite ? Colors.black : primaryColor
                         ),),
@@ -257,8 +261,32 @@ class NewLogWidget extends StatefulWidget {
 
 class NewLogWidgetState extends State<NewLogWidget> {
   String? _selectedExercise;
+  String? _selectedDate;
+  String? _providedWeight;
+  String? _providedReps;
+  String? _providedSets;
 
-  List<String> dropdownItems = <String>['Bench Press', 'Deadlift', 'Squat', 'Add New or just dont'];
+  List<String> dropdownItems = <String>['Bench Press', 'Deadlift', 'Squat'];
+
+  // counts how many fields the user has supplied to determine if save button should show
+  int _userInputCount = 0;
+
+  // Create a function that shows the date picker dialog
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2022, 1),
+        lastDate: DateTime.now());
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        if (_selectedDate == null) {
+          ++_userInputCount;
+        }
+        _selectedDate = "${picked.month.toString().padLeft(2,'0')}/${picked.day.toString().padLeft(2,'0')}/${picked.year.toString()}";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -270,109 +298,211 @@ class NewLogWidgetState extends State<NewLogWidget> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Spacer(flex: 1),
+
               // Header
               Text("New Log",
                 style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
               SizedBox(height: 15),
               SizedBox(height: 1, child: Container(color: Colors.grey)),
-              SizedBox(height: 25),
-
-              /// Exercise Input
-              SizedBox(
-                height: 50,
-                width: 250,
-                child:Material(
-                  color: secondaryAccentColor,
-                  child: Center(
-                      child: DropdownButton<String>(
-                      hint: Align(
-                          alignment: Alignment.center,
-                          child: Text("Exercise",
-                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, color: secondaryColor),
-                          textAlign: TextAlign.center,
-                          )
-                      ),
-                      value: _selectedExercise,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedExercise = newValue!;
-                        });
-                      },
-                      items: dropdownItems.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      // icon: Container(),
-                      underline: Container(),
-                      dropdownColor: secondaryAccentColor,
-                      style: TextStyle(fontSize: 15, color: primaryColor),
-                      selectedItemBuilder: (BuildContext context) {
-                        return dropdownItems.map<Widget>((String item) {
-                          return Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            alignment: Alignment.center,
-                            child: Center(child: Text(item,
-                              style: TextStyle(color: primaryColor, fontSize: 18, fontWeight: FontWeight.w600),
-                            )),
-                          );
-                        }).toList();
-                      },
-                      )
-                  )
-                )
-              ),
-
               SizedBox(height: 20),
 
               Row(children: [
-                SizedBox(width: 50),
+                Spacer(flex: 1),
+                  /// ////////////////
+                  /// Exercise Input
+                  /// ////////////////
+                  SizedBox(
+                    height: 50,
+                    width: 190,
+                    child:Material(
+                      color: secondaryAccentColor,
+                      child: Center(
+                          child: DropdownButton<String>(
+                          hint: Padding(
+                              padding: EdgeInsets.fromLTRB(0.0, 9.0, 0.0, 0.0),
+                              child: Text("Exercise",
+                              style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, color: secondaryColor),
+                              textAlign: TextAlign.center,
+                              )
+                          ),
+                          value: _selectedExercise,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              if (_selectedExercise == null) {
+                                ++_userInputCount;
+                              }
+                              _selectedExercise = newValue!;
+                            });
+                          },
+                          items: dropdownItems.map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value,
+                                  style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, color: textColorOverwrite ? Colors.black : primaryColor, fontWeight: FontWeight.w600)
+                              ),
+                            );
+                          }).toList(),
+                          icon: Container(),
+                          underline: Container(),
+                          dropdownColor: secondaryAccentColor,
+                          selectedItemBuilder: (BuildContext context) {
+                            return dropdownItems.map<Widget>((String item) {
+                              return Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                alignment: Alignment.center,
+                                child: Center(child: Text(item,
+                                  style: TextStyle(fontFamily: 'AstroSpace', color: textColorOverwrite ? Colors.black : primaryColor, fontSize: 20, fontWeight: FontWeight.w600),
+                                )),
+                              );
+                            }).toList();
+                          },
+                          )
+                      )
+                    )
+                  ),
+                Spacer(flex: 1),
 
+                SizedBox(
+                  height: 50,
+                  width: 50,
+                  /////////////////////////////
+                  // Add Exercise Button    ///
+                  /////////////////////////////
+                  child: Material(
+                      color: secondaryColor,
+                      child: Center(
+                        child: IconButton(
+                            iconSize: 35,
+                            color: primaryColor,
+                            icon: const Icon(Icons.add_circle_outline),
+                            onPressed: () {
+                              HapticFeedback.mediumImpact();
+
+                              // Launch settings menu
+                              showGeneralDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                barrierLabel: MaterialLocalizations.of(context)
+                                    .modalBarrierDismissLabel,
+                                barrierColor: Colors.black45,
+                                transitionDuration: const Duration(milliseconds: 200),
+
+                                // ANY Widget can be passed here
+                                pageBuilder: (BuildContext buildContext,
+                                    Animation animation,
+                                    Animation secondaryAnimation) {
+                                  return Center(child: Text("Add New!"));
+                                },
+                              ).then((restartRequired) {
+                                if (restartRequired == true) {
+                                  // TODO Determine if Exercise Drop down needs to be refreshed
+                                }
+                              });
+                              },
+                        )
+                      )
+                  ),
+                ),
+
+                Spacer(flex: 1),
+              ]),
+
+              // SizedBox(height: 40),
+              Spacer(flex: 1),
+
+              /// Date and Weight
+              Row(children: [
+                Spacer(flex: 1),
+
+                /// ///////////////////
+                /// Date Input Fields
+                /// ///////////////////
                 Column(children: [
+                  Material(
+                      color: secondaryAccentColor,
+                      child: Center(
+                          child: SizedBox(
+                            height: 40,
+                            width: 110,
+                            child: Center(
+                                child: TextFormField(
+                                  readOnly: true, // set readOnly to true to disable editing of the text field
+                                  controller: TextEditingController(
+                                    text: _selectedDate == null ? '' : _selectedDate.toString(),
+                                  ),
+                                  style: TextStyle(
+                                      color: textColorOverwrite ? Colors.black : primaryColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  onTap: () => _selectDate(context),
+                                  onChanged: (value) {},
+                                  onFieldSubmitted: (value) {
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'mm/dd/yyyy',
+                                    hintStyle: TextStyle(
+                                      fontSize: 16,
+                                      color: secondaryColor,
+                                      fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                )),
+                          ))
+                  ),
+                  SizedBox(height: 5),
+                  Text("Date",
+                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+                ]),
 
-                  /// Weight Input
+                Spacer(flex: 1),
+
+                /// /////////////////////
+                /// Weight Input Fields
+                /// /////////////////////
+                Column(children: [
                   Material(
                     color: secondaryAccentColor,
                     child: Center(
                         child: SizedBox(
-                        height: 36,
-                        width: 75,
-                        child: Align(
-                            alignment: Alignment.center,
+                        height: 40,
+                        width: 90,
+                        child: Padding(
+                            padding: EdgeInsets.only(top: 12),
                             child: TextFormField(
                               style: TextStyle(
-                                  color: primaryColor,
+                                  color: textColorOverwrite ? Colors.black : primaryColor,
                                   fontSize: 30),
                               textAlign: TextAlign.center,
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
                                 if (value != '') {
-                                  // recordSettingsChanged('rest');
-                                  if (value.length > 2) {
-                                    // Prevent user from pushing 0 into minute section
-                                    if (value[0] == '0') {
-                                      // value = value.substring(1,3);
+                                  setState(() {
+                                    if (_providedWeight == null) {
+                                      ++_userInputCount;
                                     }
-
-                                    // restTextEditController.text = formatDuration(value);
-                                    // restTextEditController.selection =
-                                    //     TextSelection.collapsed(
-                                    //         offset: restTextEditController
-                                    //             .text.length);
-                                  }
+                                    _providedWeight = value;
+                                  });
                                 }
                                 if (value == '') {
                                   // Useful if the text field was added to and deleted
-                                  // clearSettingsChanged('rest');
+                                  setState(() {
+                                    --_userInputCount;
+                                    _providedWeight = null;
+                                  });
                                 }
-                                // _desiredRestTimeDuration = value;
                               },
                               onFieldSubmitted: (value) {
                                 FocusManager.instance.primaryFocus
                                     ?.unfocus();
                               },
                               decoration: InputDecoration(
+                                contentPadding: EdgeInsets.only(bottom: 12),
                                 hintText: '00',
                                 hintStyle: TextStyle(
                                   fontSize: 30,
@@ -391,12 +521,235 @@ class NewLogWidgetState extends State<NewLogWidget> {
                   Text("Weight",
                       style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
                 ]),
+
+                Spacer(flex: 1),
               ]),
 
-              SizedBox(height: 150),
+              // SizedBox(height: 40),
 
-            ],
-          )
+              Spacer(flex: 1),
+
+              /// Reps and Sets
+              Row(children: [
+                Spacer(flex: 1),
+
+                /// //////////////////
+                /// Reps Input Fields
+                /// //////////////////
+                Column(children: [
+                  Material(
+                      color: secondaryAccentColor,
+                      child: Center(
+                          child: SizedBox(
+                            height: 40,
+                            width: 75,
+                            child: Padding(
+                                padding: EdgeInsets.only(top: 12),
+                                child: TextFormField(
+                                  style: TextStyle(
+                                      color: textColorOverwrite ? Colors.black : primaryColor,
+                                      fontSize: 30),
+                                  textAlign: TextAlign.center,
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (value) {
+                                    if (value != '') {
+                                      setState(() {
+                                        if (_providedReps == null) {
+                                          ++_userInputCount;
+                                        }
+                                        _providedReps = value;
+                                      });
+                                    }
+                                    if (value == '') {
+                                      // Useful if the text field was added to and deleted
+                                      setState(() {
+                                        --_userInputCount;
+                                        _providedReps = null;
+                                      });
+                                    }
+                                  },
+                                  onFieldSubmitted: (value) {
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: '00',
+                                    contentPadding: EdgeInsets.only(bottom: 12),
+                                    hintStyle: TextStyle(
+                                      fontSize: 30,
+                                      color: secondaryColor,
+                                    ),
+                                  ),
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                    FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
+                                    LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                  ],
+                                )),
+                          ))
+                  ),
+                  SizedBox(height: 5),
+                  Text("Reps",
+                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+                ]),
+
+                Spacer(flex: 1),
+
+                /// ///////////////////
+                /// Sets Input Fields
+                /// ///////////////////
+                Column(children: [
+                  Material(
+                      color: secondaryAccentColor,
+                      child: Center(
+                          child: SizedBox(
+                            height: 40,
+                            width: 75,
+                            child: Padding(
+                                padding: EdgeInsets.only(top: 12),
+                                child: TextFormField(
+                                  style: TextStyle(
+                                      color: textColorOverwrite ? Colors.black : primaryColor,
+                                      fontSize: 20),
+                                  textAlign: TextAlign.center,
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (value) {
+                                    if (value != '') {
+                                      setState(() {
+                                        if (_providedSets == null) {
+                                          ++_userInputCount;
+                                        }
+                                        _providedSets = value;
+                                      });
+                                    }
+                                    if (value == '') {
+                                      // Useful if the text field was added to and deleted
+                                      setState(() {
+                                        --_userInputCount;
+                                        _providedSets = null;
+                                      });
+                                    }
+                                  },
+                                  onFieldSubmitted: (value) {
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: '00',
+                                    contentPadding: EdgeInsets.only(bottom: 12),
+                                    hintStyle: TextStyle(
+                                      fontSize: 30,
+                                      color: secondaryColor,
+                                    ),
+                                  ),
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                    FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
+                                    LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                  ],
+                                )),
+                          ))
+                  ),
+                  SizedBox(height: 5),
+                  Text("Sets",
+                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+                ]),
+
+                Spacer(flex: 1),
+              ]),
+
+              Spacer(flex: 1),
+
+              /// Save and Cancel Buttons
+              Row(children: [
+                Spacer(flex: 1),
+
+                /// Cancel Column
+                Material(
+                  color: secondaryColor,
+                    child: Column(
+                      children: [
+                        // Cancel Button
+                        IconButton(
+                          iconSize: 45,
+                          color: _userInputCount > 0
+                              ? Colors.red.shade400
+                              : primaryColor,
+                          icon: const Icon(Icons.highlight_off),
+                          onPressed: () {
+                            HapticFeedback.mediumImpact();
+                            if (_userInputCount > 0) {
+                              // widget.audio.setVolume(_appVolume);
+                              if (!appCurrentlyMuted && cancelButtonAudioCurrentlyEnabled) {
+                                // widget.audio.play(AssetSource(audioForCancelButton));
+                                // widget.audio.setReleaseMode(ReleaseMode.stop);
+                              }
+                            }
+                            Navigator.pop(context);
+                          },
+                        ),
+
+                        // Close/Cancel Text Description
+                        Text(
+                          _userInputCount > 0 ? 'Cancel' : 'Close',
+                          style: TextStyle(
+                            fontFamily: 'AstroSpace',
+                            color: _userInputCount > 0
+                                ? Colors.red.shade400
+                                : primaryColor,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ])),
+
+                Spacer(flex: 1),
+
+                /// Save Column
+                Material(
+                  color: secondaryColor,
+                  child: Column(
+                    children: [
+                      ////////////////
+                      /// Save Button
+                      ////////////////
+                      IconButton(
+                        iconSize: 45,
+                        color: primaryAccentColor,
+                        disabledColor: Colors.grey,
+                        icon: const Icon(Icons.check_circle),
+                        onPressed: _userInputCount == 5 ? () {
+                          // widget.audio.setVolume(_appVolume);
+                          // widget.audio.setReleaseMode(ReleaseMode.stop);
+                          // if (!appCurrentlyMuted && saveButtonAudioCurrentlyEnabled) {
+                          //   widget.audio.play(AssetSource(audioForSaveButton));
+                          //   widget.audio.setReleaseMode(ReleaseMode.stop);
+                          // }
+
+                          HapticFeedback.mediumImpact();
+                          Navigator.pop(context); // Close Settings menu
+                        }
+                            : null, // If all settings haven't updated, Disable Save Button
+                      ),
+
+                      /// Save Text Description
+                      Text(
+                        'Save',
+                        style: TextStyle(
+                          fontFamily: 'AstroSpace',
+                          color: _userInputCount == 5
+                              ? primaryAccentColor
+                              : Colors.grey,
+                          fontSize: 20,
+                        ),
+                      )
+                    ])
+                ),
+
+                Spacer(flex: 1),
+              ]),
+
+              Spacer(flex: 1),
+            ])
         )
     );
   }
