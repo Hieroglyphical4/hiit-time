@@ -318,7 +318,7 @@ class _MyAppState extends State<MyApp> {
                                 Animation animation,
                                 Animation secondaryAnimation) {
                               return Center(
-                                child: AdvancedSettingsMenu(key: UniqueKey()), //TODO Continue building
+                                child: AdvancedSettingsMenu(key: UniqueKey()),
                               );
                             },
                           ).then((restartRequired) {

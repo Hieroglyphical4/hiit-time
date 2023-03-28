@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'Config/settings.dart';
 
 //////////////////////////////////////////
@@ -37,6 +38,24 @@ class LogsWidgetState extends State<LogsWidget> {
                 ElevatedButton(
                     onPressed: () {
                       // TODO Launch Alert Dialog to fill out form to submit new DB record
+                      /// Launch New Log Menu
+                      showGeneralDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        barrierLabel: MaterialLocalizations.of(context)
+                            .modalBarrierDismissLabel,
+                        barrierColor: Colors.black45,
+                        transitionDuration: const Duration(milliseconds: 200),
+
+                        // ANY Widget can be passed here
+                        pageBuilder: (BuildContext buildContext,
+                            Animation animation,
+                            Animation secondaryAnimation) {
+                          return Center(
+                            child: NewLogWidget(key: UniqueKey()), //TODO Continue building
+                          );
+                        },
+                      );
                     },
                     child: Container(
                         width: 130,
@@ -224,6 +243,165 @@ class LogsWidgetState extends State<LogsWidget> {
   }
 }
 
+///////////////////////
+// Widget for New Log
+///////////////////////
+class NewLogWidget extends StatefulWidget {
+  const NewLogWidget({
+    super.key,
+  });
+
+  @override
+  NewLogWidgetState createState() => NewLogWidgetState();
+}
+
+class NewLogWidgetState extends State<NewLogWidget> {
+  String? _selectedExercise;
+
+  List<String> dropdownItems = <String>['Bench Press', 'Deadlift', 'Squat', 'Add New or just dont'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: 400,
+        width: 275,
+        color: secondaryColor,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Header
+              Text("New Log",
+                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+              SizedBox(height: 15),
+              SizedBox(height: 1, child: Container(color: Colors.grey)),
+              SizedBox(height: 25),
+
+              /// Exercise Input
+              SizedBox(
+                height: 50,
+                width: 250,
+                child:Material(
+                  color: secondaryAccentColor,
+                  child: Center(
+                      child: DropdownButton<String>(
+                      hint: Align(
+                          alignment: Alignment.center,
+                          child: Text("Exercise",
+                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, color: secondaryColor),
+                          textAlign: TextAlign.center,
+                          )
+                      ),
+                      value: _selectedExercise,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedExercise = newValue!;
+                        });
+                      },
+                      items: dropdownItems.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      // icon: Container(),
+                      underline: Container(),
+                      dropdownColor: secondaryAccentColor,
+                      style: TextStyle(fontSize: 15, color: primaryColor),
+                      selectedItemBuilder: (BuildContext context) {
+                        return dropdownItems.map<Widget>((String item) {
+                          return Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            alignment: Alignment.center,
+                            child: Center(child: Text(item,
+                              style: TextStyle(color: primaryColor, fontSize: 18, fontWeight: FontWeight.w600),
+                            )),
+                          );
+                        }).toList();
+                      },
+                      )
+                  )
+                )
+              ),
+
+              SizedBox(height: 20),
+
+              Row(children: [
+                SizedBox(width: 50),
+
+                Column(children: [
+
+                  /// Weight Input
+                  Material(
+                    color: secondaryAccentColor,
+                    child: Center(
+                        child: SizedBox(
+                        height: 36,
+                        width: 75,
+                        child: Align(
+                            alignment: Alignment.center,
+                            child: TextFormField(
+                              style: TextStyle(
+                                  color: primaryColor,
+                                  fontSize: 30),
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                if (value != '') {
+                                  // recordSettingsChanged('rest');
+                                  if (value.length > 2) {
+                                    // Prevent user from pushing 0 into minute section
+                                    if (value[0] == '0') {
+                                      // value = value.substring(1,3);
+                                    }
+
+                                    // restTextEditController.text = formatDuration(value);
+                                    // restTextEditController.selection =
+                                    //     TextSelection.collapsed(
+                                    //         offset: restTextEditController
+                                    //             .text.length);
+                                  }
+                                }
+                                if (value == '') {
+                                  // Useful if the text field was added to and deleted
+                                  // clearSettingsChanged('rest');
+                                }
+                                // _desiredRestTimeDuration = value;
+                              },
+                              onFieldSubmitted: (value) {
+                                FocusManager.instance.primaryFocus
+                                    ?.unfocus();
+                              },
+                              decoration: InputDecoration(
+                                hintText: '00',
+                                hintStyle: TextStyle(
+                                  fontSize: 30,
+                                  color: secondaryColor,
+                                ),
+                              ),
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
+                                LengthLimitingTextInputFormatter(4), // 4 digits at most
+                              ],
+                            )),
+                      ))
+                ),
+                  SizedBox(height: 5),
+                  Text("Weight",
+                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+                ]),
+              ]),
+
+              SizedBox(height: 150),
+
+            ],
+          )
+        )
+    );
+  }
+}
+
 //////////////////////////////
 // Widget for all Exercises
 //////////////////////////////
@@ -244,10 +422,10 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
 
   // Query: Select Unique Exercise name from Exercises (Select All?)
   List<Map> exampleMap = [
-    {'id': 1, 'name': 'Squat',  'bodyPart': 'Legs', 'cardio': false, 'selected': false},
-    {'id': 2, 'name': 'Bench Press',  'bodyPart': 'Chest', 'cardio': false, 'selected': false},
-    {'id': 3, 'name': 'Deadlift',  'bodyPart': 'Back', 'cardio': false, 'selected': false},
-    {'id': 4, 'name': 'Jump Rope',  'bodyPart': 'Cardio', 'cardio': true, 'selected': false}
+    {'id': 1, 'name': 'Bench Press',  'bodyPart': 'Chest', 'cardio': false, 'selected': false},
+    {'id': 2, 'name': 'Deadlift',  'bodyPart': 'Back', 'cardio': false, 'selected': false},
+    {'id': 3, 'name': 'Jump Rope',  'bodyPart': 'Cardio', 'cardio': true, 'selected': false},
+    {'id': 4, 'name': 'Squat',  'bodyPart': 'Legs', 'cardio': false, 'selected': false},
   ];
 
   // Query: SELECT * FROM workouts WHERE exerciseId = 1;
