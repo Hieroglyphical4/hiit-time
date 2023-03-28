@@ -24,52 +24,86 @@ class LogsWidgetState extends State<LogsWidget> {
   bool _mainFilterBodyPart = false;
   bool _mainFilterDate = false;
 
+  bool _displayNewLogsWidget = false;
+
   @override
   Widget build(BuildContext context) {
     return Center(
         child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: 25),
+                SizedBox(height: 5),
 
-                /// Create new Record Button
-                ElevatedButton(
-                    onPressed: () {
-                      /// Launch New Log Menu
-                      showGeneralDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        barrierLabel: MaterialLocalizations.of(context)
-                            .modalBarrierDismissLabel,
-                        barrierColor: Colors.black45,
-                        transitionDuration: const Duration(milliseconds: 200),
-
-                        // ANY Widget can be passed here
-                        pageBuilder: (BuildContext buildContext,
-                            Animation animation,
-                            Animation secondaryAnimation) {
-                          return Center(
-                            child: NewLogWidget(key: UniqueKey()),
-                          );
-                        },
-                      );
-                    },
-                    child: Container(
-                        width: 130,
-                        height: 40,
-                        child:
-                          Row(children: [
-                            Icon(Icons.add_circle_outline),
-                            Text(' New Log',
-                              style: TextStyle(fontFamily: 'AstroSpace',
-                                  fontSize: 20, color: primaryColor)
-                            )
-                          ])
+                /// Create New Log Button
+                Stack(
+                  children: [
+                    Container(
+                      height: 50,
+                      width: 175,
+                      decoration: BoxDecoration(
+                        color: _displayNewLogsWidget ? secondaryColor : secondaryAccentColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 9,
+                      left: 13,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _displayNewLogsWidget ? Colors.red.shade400 : primaryAccentColor,
+                            padding: const EdgeInsets.all(4),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              if (_displayNewLogsWidget) {
+                                _displayNewLogsWidget = false;
+                              } else {
+                                _displayNewLogsWidget = true;
+                              }
+                            });
+                          },
+                          child: Container(
+                              color: _displayNewLogsWidget ? Colors.red.shade400 : primaryAccentColor,
+                              width: 140,
+                              height: 40,
+                              child:
+                              _displayNewLogsWidget
+                                  ? Row(children: [
+                                Icon(Icons.highlight_off),
+                                Text(' Close',
+                                    style: TextStyle(fontFamily: 'AstroSpace',
+                                        fontSize: 20, color: primaryColor)
+                                )
+                              ])
+                                  : Row(children: [
+                                Icon(Icons.add_circle_outline),
+                                Text(' New Log',
+                                    style: TextStyle(fontFamily: 'AstroSpace',
+                                        fontSize: 20, color: primaryColor)
+                                )
+                              ])
+                          )
+                      ),
                     )
+                  ]
                 ),
 
-                SizedBox(height: 20),
-                // SizedBox(height: 1, child: Container(color: Colors.grey)),
+                _displayNewLogsWidget
+                    ? const NewLogWidget()
+                    : Container(),
+
+                // Grey Line
+                SizedBox(height: 10),
+                SizedBox(height: 1, child: Container(color: Colors.grey)),
+                SizedBox(height: 15),
+
+                Text("Categories",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, fontWeight: FontWeight.bold, color: primaryColor)
+                ),
+                SizedBox(height: 5),
 
                 /// Main Filter Buttons
                 SizedBox(
@@ -93,7 +127,11 @@ class LogsWidgetState extends State<LogsWidget> {
                             )),
                           child: ElevatedButton(
                             onPressed: () => setState(() {
-                              _mainFilterExercise = true;
+                              if (_mainFilterExercise) {
+                                _mainFilterExercise = false;
+                              } else {
+                                _mainFilterExercise = true;
+                              }
                               _mainFilterBodyPart = false;
                               _mainFilterDate = false;
                             }),
@@ -291,417 +329,368 @@ class NewLogWidgetState extends State<NewLogWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 400,
+        height: 450,
         width: 275,
         color: secondaryColor,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Spacer(flex: 1),
+              SizedBox(height: 10),
 
               // Header
               Text("New Log",
                 style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
-              SizedBox(height: 15),
+              SizedBox(height: 10),
               SizedBox(height: 1, child: Container(color: Colors.grey)),
-              SizedBox(height: 20),
+              SizedBox(height: 15),
 
               Row(children: [
-                Spacer(flex: 1),
+                  Spacer(flex: 1),
+
                   /// ////////////////
                   /// Exercise Input
                   /// ////////////////
                   SizedBox(
-                    height: 50,
-                    width: 190,
-                    child:Material(
-                      color: secondaryAccentColor,
-                      child: Center(
-                          child: DropdownButton<String>(
-                          hint: Padding(
-                              padding: EdgeInsets.fromLTRB(0.0, 9.0, 0.0, 0.0),
-                              child: Text("Exercise",
-                              style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, color: secondaryColor),
-                              textAlign: TextAlign.center,
-                              )
-                          ),
-                          value: _selectedExercise,
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              if (_selectedExercise == null) {
-                                ++_userInputCount;
-                              }
-                              _selectedExercise = newValue!;
-                            });
-                          },
-                          items: dropdownItems.map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value,
-                                  style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, color: textColorOverwrite ? Colors.black : primaryColor, fontWeight: FontWeight.w600)
-                              ),
-                            );
-                          }).toList(),
-                          icon: Container(),
-                          underline: Container(),
-                          dropdownColor: secondaryAccentColor,
-                          selectedItemBuilder: (BuildContext context) {
-                            return dropdownItems.map<Widget>((String item) {
-                              return Container(
-                                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                alignment: Alignment.center,
-                                child: Center(child: Text(item,
-                                  style: TextStyle(fontFamily: 'AstroSpace', color: textColorOverwrite ? Colors.black : primaryColor, fontSize: 20, fontWeight: FontWeight.w600),
-                                )),
-                              );
-                            }).toList();
-                          },
-                          )
-                      )
-                    )
-                  ),
-                Spacer(flex: 1),
-
-                SizedBox(
-                  height: 50,
-                  width: 50,
-                  /////////////////////////////
-                  // Add Exercise Button    ///
-                  /////////////////////////////
-                  child: Material(
-                      color: secondaryColor,
-                      child: Center(
-                        child: IconButton(
-                            iconSize: 35,
-                            color: primaryColor,
-                            icon: const Icon(Icons.add_circle_outline),
-                            onPressed: () {
-                              HapticFeedback.mediumImpact();
-
-                              // Launch settings menu
-                              showGeneralDialog(
-                                context: context,
-                                barrierDismissible: true,
-                                barrierLabel: MaterialLocalizations.of(context)
-                                    .modalBarrierDismissLabel,
-                                barrierColor: Colors.black45,
-                                transitionDuration: const Duration(milliseconds: 200),
-
-                                // ANY Widget can be passed here
-                                pageBuilder: (BuildContext buildContext,
-                                    Animation animation,
-                                    Animation secondaryAnimation) {
-                                  return Center(child: Text("Add New!"));
-                                },
-                              ).then((restartRequired) {
-                                if (restartRequired == true) {
-                                  // TODO Determine if Exercise Drop down needs to be refreshed
+                      height: 50,
+                      width: 190,
+                      child:Material(
+                        color: secondaryAccentColor,
+                        child: Center(
+                            child: DropdownButton<String>(
+                            hint: Padding(
+                                padding: EdgeInsets.fromLTRB(0.0, 9.0, 0.0, 0.0),
+                                child: Text("Exercise",
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 30, color: secondaryColor),
+                                textAlign: TextAlign.center,
+                                )
+                            ),
+                            value: _selectedExercise,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                if (_selectedExercise == null) {
+                                  ++_userInputCount;
                                 }
+                                _selectedExercise = newValue!;
                               });
-                              },
+                            },
+                            items: dropdownItems.map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value,
+                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, color: textColorOverwrite ? Colors.black : primaryColor, fontWeight: FontWeight.w600)
+                                ),
+                              );
+                            }).toList(),
+                            icon: Container(),
+                            underline: Container(),
+                            dropdownColor: secondaryAccentColor,
+                            selectedItemBuilder: (BuildContext context) {
+                              return dropdownItems.map<Widget>((String item) {
+                                return Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                  alignment: Alignment.center,
+                                  child: Center(child: Text(item,
+                                    style: TextStyle(fontFamily: 'AstroSpace', color: textColorOverwrite ? Colors.black : primaryColor, fontSize: 20, fontWeight: FontWeight.w600),
+                                  )),
+                                );
+                              }).toList();
+                            },
+                            )
                         )
                       )
-                  ),
-                ),
+                    ),
+                  SizedBox(
+                    height: 50,
+                    width: 50,
+                    //////////////////////////////
+                    /// Add Exercise Button    ///
+                    //////////////////////////////
+                    child: Material(
+                        color: secondaryAccentColor,
+                        child: Center(
+                          child: IconButton(
+                              iconSize: 35,
+                              color: primaryColor,
+                              icon: const Icon(Icons.add_circle_outline),
+                              onPressed: () {
+                                HapticFeedback.mediumImpact();
 
-                Spacer(flex: 1),
-              ]),
+                                // Launch settings menu
+                                showGeneralDialog(
+                                  context: context,
+                                  barrierDismissible: true,
+                                  barrierLabel: MaterialLocalizations.of(context)
+                                      .modalBarrierDismissLabel,
+                                  barrierColor: Colors.black45,
+                                  transitionDuration: const Duration(milliseconds: 200),
 
-              // SizedBox(height: 40),
-              Spacer(flex: 1),
-
-              /// Date and Weight
-              Row(children: [
-                Spacer(flex: 1),
-
-                /// ///////////////////
-                /// Date Input Fields
-                /// ///////////////////
-                Column(children: [
-                  Material(
-                      color: secondaryAccentColor,
-                      child: Center(
-                          child: SizedBox(
-                            height: 40,
-                            width: 110,
-                            child: Center(
-                                child: TextFormField(
-                                  readOnly: true, // set readOnly to true to disable editing of the text field
-                                  controller: TextEditingController(
-                                    text: _selectedDate == null ? '' : _selectedDate.toString(),
-                                  ),
-                                  style: TextStyle(
-                                      color: textColorOverwrite ? Colors.black : primaryColor,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  onTap: () => _selectDate(context),
-                                  onChanged: (value) {},
-                                  onFieldSubmitted: (value) {
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
+                                  // ANY Widget can be passed here
+                                  pageBuilder: (BuildContext buildContext,
+                                      Animation animation,
+                                      Animation secondaryAnimation) {
+                                    return Center(child: Text("Add New!"));
                                   },
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'mm/dd/yyyy',
-                                    hintStyle: TextStyle(
-                                      fontSize: 16,
-                                      color: secondaryColor,
-                                      fontWeight: FontWeight.bold
-                                    ),
-                                  ),
-                                )),
-                          ))
+                                ).then((restartRequired) {
+                                  if (restartRequired == true) {
+                                    // TODO Determine if Exercise Drop down needs to be refreshed
+                                  }
+                                });
+                                },
+                          )
+                        )
+                    ),
                   ),
-                  SizedBox(height: 5),
-                  Text("Date",
-                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
-                ]),
 
-                Spacer(flex: 1),
-
-                /// /////////////////////
-                /// Weight Input Fields
-                /// /////////////////////
-                Column(children: [
-                  Material(
-                    color: secondaryAccentColor,
-                    child: Center(
-                        child: SizedBox(
-                        height: 40,
-                        width: 90,
-                        child: Padding(
-                            padding: EdgeInsets.only(top: 12),
-                            child: TextFormField(
-                              style: TextStyle(
-                                  color: textColorOverwrite ? Colors.black : primaryColor,
-                                  fontSize: 30),
-                              textAlign: TextAlign.center,
-                              keyboardType: TextInputType.number,
-                              onChanged: (value) {
-                                if (value != '') {
-                                  setState(() {
-                                    if (_providedWeight == null) {
-                                      ++_userInputCount;
-                                    }
-                                    _providedWeight = value;
-                                  });
-                                }
-                                if (value == '') {
-                                  // Useful if the text field was added to and deleted
-                                  setState(() {
-                                    --_userInputCount;
-                                    _providedWeight = null;
-                                  });
-                                }
-                              },
-                              onFieldSubmitted: (value) {
-                                FocusManager.instance.primaryFocus
-                                    ?.unfocus();
-                              },
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.only(bottom: 12),
-                                hintText: '00',
-                                hintStyle: TextStyle(
-                                  fontSize: 30,
-                                  color: secondaryColor,
-                                ),
-                              ),
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
-                                LengthLimitingTextInputFormatter(4), // 4 digits at most
-                              ],
-                            )),
-                      ))
-                ),
-                  SizedBox(height: 5),
-                  Text("Weight",
-                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
-                ]),
-
-                Spacer(flex: 1),
+                  Spacer(flex: 1),
               ]),
 
-              // SizedBox(height: 40),
+              SizedBox(height: 20),
 
-              Spacer(flex: 1),
+              /// ///////////////////
+              /// Date Input Fields
+              /// ///////////////////
+              Column(children: [
+                SizedBox(
+                    height: 40,
+                    width: 120,
+                    child: Material(
+                      color: secondaryAccentColor,
+                      child: Padding(
+                          padding: EdgeInsets.only(bottom: 8),
+                          child: TextFormField(
+                            readOnly: true, // set readOnly to true to disable editing of the text field
+                            controller: TextEditingController(
+                              text: _selectedDate == null ? '' : _selectedDate.toString(),
+                            ),
+                            style: TextStyle(
+                                color: textColorOverwrite ? Colors.black : primaryColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold
+                            ),
+                            textAlign: TextAlign.center,
+                            onTap: () => _selectDate(context),
+                            onChanged: (value) {},
+                            onFieldSubmitted: (value) {
+                              FocusManager.instance.primaryFocus
+                                  ?.unfocus();
+                            },
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'mm/dd/yyyy',
+                              hintStyle: TextStyle(
+                                fontSize: 16,
+                                color: secondaryColor,
+                                fontWeight: FontWeight.bold
+                              ),
+                            ),
+                          )),
+                        )
+                ),
+                SizedBox(height: 5),
+                Text("Date",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+              ]),
+
+              SizedBox(height: 20),
+
+              /////////////////////////
+              /// Weight Input Field
+              /// /////////////////////
+              Column(children: [
+                SizedBox(
+                  height: 40,
+                  width: 75,
+                  child: Material(
+                    color: secondaryAccentColor,
+                    child: Padding(
+                        padding: EdgeInsets.only(top: 6),
+                        child: TextFormField(
+                          style: TextStyle(
+                              color: textColorOverwrite ? Colors.black : primaryColor,
+                              fontSize: 30),
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            if (value != '') {
+                              setState(() {
+                                if (_providedWeight == null) {
+                                  ++_userInputCount;
+                                }
+                                _providedWeight = value;
+                              });
+                            }
+                            if (value == '') {
+                              // Useful if the text field was added to and deleted
+                              setState(() {
+                                --_userInputCount;
+                                _providedWeight = null;
+                              });
+                            }
+                          },
+                          onFieldSubmitted: (value) {
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          },
+                          decoration: InputDecoration(
+                            hintText: '000',
+                            hintStyle: TextStyle(
+                              fontSize: 30,
+                              color: secondaryColor,
+                            ),
+                          ),
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly,
+                            // Only numbers can be entered
+                            FilteringTextInputFormatter.deny(RegExp('^0+')),
+                            // Filter leading 0s
+                            LengthLimitingTextInputFormatter(4),
+                            // 4 digits at most
+                          ],
+                        )
+                        ),
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text("Weight",
+                    style: TextStyle(
+                        fontFamily: 'AstroSpace',
+                        fontSize: 12,
+                        height: 1.1,
+                        color: primaryColor,
+                        decoration: TextDecoration.none)),
+              ]),
+
+              SizedBox(height: 15),
 
               /// Reps and Sets
               Row(children: [
-                Spacer(flex: 1),
+                  Spacer(flex: 1),
 
-                /// //////////////////
-                /// Reps Input Fields
-                /// //////////////////
-                Column(children: [
-                  Material(
-                      color: secondaryAccentColor,
-                      child: Center(
-                          child: SizedBox(
-                            height: 40,
-                            width: 75,
-                            child: Padding(
-                                padding: EdgeInsets.only(top: 12),
-                                child: TextFormField(
-                                  style: TextStyle(
-                                      color: textColorOverwrite ? Colors.black : primaryColor,
-                                      fontSize: 30),
-                                  textAlign: TextAlign.center,
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (value) {
-                                    if (value != '') {
-                                      setState(() {
-                                        if (_providedReps == null) {
-                                          ++_userInputCount;
-                                        }
-                                        _providedReps = value;
-                                      });
-                                    }
-                                    if (value == '') {
-                                      // Useful if the text field was added to and deleted
-                                      setState(() {
-                                        --_userInputCount;
-                                        _providedReps = null;
-                                      });
-                                    }
-                                  },
-                                  onFieldSubmitted: (value) {
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
-                                  decoration: InputDecoration(
-                                    hintText: '00',
-                                    contentPadding: EdgeInsets.only(bottom: 12),
-                                    hintStyle: TextStyle(
-                                      fontSize: 30,
-                                      color: secondaryColor,
+                  /// //////////////////
+                  /// Reps Input Fields
+                  /// //////////////////
+                  Column(children: [
+                    Material(
+                        color: secondaryAccentColor,
+                        child: Center(
+                            child: SizedBox(
+                              height: 40,
+                              width: 75,
+                              child: Padding(
+                                  padding: EdgeInsets.only(top: 6),
+                                  child: TextFormField(
+                                    style: TextStyle(
+                                        color: textColorOverwrite ? Colors.black : primaryColor,
+                                        fontSize: 30),
+                                    textAlign: TextAlign.center,
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) {
+                                      if (value != '') {
+                                        setState(() {
+                                          if (_providedReps == null) {
+                                            ++_userInputCount;
+                                          }
+                                          _providedReps = value;
+                                        });
+                                      }
+                                      if (value == '') {
+                                        // Useful if the text field was added to and deleted
+                                        setState(() {
+                                          --_userInputCount;
+                                          _providedReps = null;
+                                        });
+                                      }
+                                    },
+                                    onFieldSubmitted: (value) {
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText: '00',
+                                      hintStyle: TextStyle(
+                                        fontSize: 30,
+                                        color: secondaryColor,
+                                      ),
                                     ),
-                                  ),
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                    FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
-                                    LengthLimitingTextInputFormatter(4), // 4 digits at most
-                                  ],
-                                )),
-                          ))
-                  ),
-                  SizedBox(height: 5),
-                  Text("Reps",
-                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
-                ]),
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                      FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
+                                      LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                    ],
+                                  )),
+                            ))
+                    ),
+                    SizedBox(height: 5),
+                    Text("Reps",
+                        style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+                  ]),
 
-                Spacer(flex: 1),
+                  Spacer(flex: 1),
 
-                /// ///////////////////
-                /// Sets Input Fields
-                /// ///////////////////
-                Column(children: [
-                  Material(
-                      color: secondaryAccentColor,
-                      child: Center(
-                          child: SizedBox(
-                            height: 40,
-                            width: 75,
-                            child: Padding(
-                                padding: EdgeInsets.only(top: 12),
-                                child: TextFormField(
-                                  style: TextStyle(
-                                      color: textColorOverwrite ? Colors.black : primaryColor,
-                                      fontSize: 20),
-                                  textAlign: TextAlign.center,
-                                  keyboardType: TextInputType.number,
-                                  onChanged: (value) {
-                                    if (value != '') {
-                                      setState(() {
-                                        if (_providedSets == null) {
-                                          ++_userInputCount;
-                                        }
-                                        _providedSets = value;
-                                      });
-                                    }
-                                    if (value == '') {
-                                      // Useful if the text field was added to and deleted
-                                      setState(() {
-                                        --_userInputCount;
-                                        _providedSets = null;
-                                      });
-                                    }
-                                  },
-                                  onFieldSubmitted: (value) {
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                  },
-                                  decoration: InputDecoration(
-                                    hintText: '00',
-                                    contentPadding: EdgeInsets.only(bottom: 12),
-                                    hintStyle: TextStyle(
-                                      fontSize: 30,
-                                      color: secondaryColor,
+                  /// ///////////////////
+                  /// Sets Input Fields
+                  /// ///////////////////
+                  Column(children: [
+                    Material(
+                        color: secondaryAccentColor,
+                        child: Center(
+                            child: SizedBox(
+                              height: 40,
+                              width: 75,
+                              child: Padding(
+                                  padding: EdgeInsets.only(top: 6),
+                                  child: TextFormField(
+                                    style: TextStyle(
+                                        color: textColorOverwrite ? Colors.black : primaryColor,
+                                        fontSize: 30),
+                                    textAlign: TextAlign.center,
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) {
+                                      if (value != '') {
+                                        setState(() {
+                                          if (_providedSets == null) {
+                                            ++_userInputCount;
+                                          }
+                                          _providedSets = value;
+                                        });
+                                      }
+                                      if (value == '') {
+                                        // Useful if the text field was added to and deleted
+                                        setState(() {
+                                          --_userInputCount;
+                                          _providedSets = null;
+                                        });
+                                      }
+                                    },
+                                    onFieldSubmitted: (value) {
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText: '0',
+                                      hintStyle: TextStyle(
+                                        fontSize: 30,
+                                        color: secondaryColor,
+                                      ),
                                     ),
-                                  ),
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                    FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
-                                    LengthLimitingTextInputFormatter(4), // 4 digits at most
-                                  ],
-                                )),
-                          ))
-                  ),
-                  SizedBox(height: 5),
-                  Text("Sets",
-                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
-                ]),
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                      FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
+                                      LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                    ],
+                                  )),
+                            ))
+                    ),
+                    SizedBox(height: 5),
+                    Text("Sets",
+                        style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+                  ]),
 
-                Spacer(flex: 1),
+                  Spacer(flex: 1),
               ]),
-
-              Spacer(flex: 1),
 
               /// Save and Cancel Buttons
               Row(children: [
-                Spacer(flex: 1),
-
-                /// Cancel Column
-                Material(
-                  color: secondaryColor,
-                    child: Column(
-                      children: [
-                        // Cancel Button
-                        IconButton(
-                          iconSize: 45,
-                          color: _userInputCount > 0
-                              ? Colors.red.shade400
-                              : primaryColor,
-                          icon: const Icon(Icons.highlight_off),
-                          onPressed: () {
-                            HapticFeedback.mediumImpact();
-                            if (_userInputCount > 0) {
-                              // widget.audio.setVolume(_appVolume);
-                              if (!appCurrentlyMuted && cancelButtonAudioCurrentlyEnabled) {
-                                // widget.audio.play(AssetSource(audioForCancelButton));
-                                // widget.audio.setReleaseMode(ReleaseMode.stop);
-                              }
-                            }
-                            Navigator.pop(context);
-                          },
-                        ),
-
-                        // Close/Cancel Text Description
-                        Text(
-                          _userInputCount > 0 ? 'Cancel' : 'Close',
-                          style: TextStyle(
-                            fontFamily: 'AstroSpace',
-                            color: _userInputCount > 0
-                                ? Colors.red.shade400
-                                : primaryColor,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ])),
-
                 Spacer(flex: 1),
 
                 /// Save Column
@@ -748,7 +737,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
                 Spacer(flex: 1),
               ]),
 
-              Spacer(flex: 1),
+              SizedBox(height: 10),
             ])
         )
     );
