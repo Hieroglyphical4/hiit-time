@@ -1005,6 +1005,88 @@ class _EditExerciseDialogState extends State<EditExerciseDialog> {
   }
 }
 
+///////////////////////////////////
+// Widget for Edit Workout Dialog
+///////////////////////////////////
+class EditWorkoutDialog extends StatefulWidget {
+  final int workoutId;
+  EditWorkoutDialog(this.workoutId);
+
+  @override
+  _EditWorkoutDialogState createState() => _EditWorkoutDialogState();
+}
+
+class _EditWorkoutDialogState extends State<EditWorkoutDialog> {
+  late int workoutId;
+
+  @override
+  void initState() {
+    super.initState();
+    workoutId = widget.workoutId;
+  }
+
+  // TODO Build forward and back arrow to grab next and previous records.
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: Material(
+            color: secondaryColor,
+            child: SizedBox(
+                height: 200,
+                width: 210,
+                child: Column(
+                    children: [
+                      Divider(color: primaryColor),
+                      Container(
+                          width: 210,
+                          child: Text(' Edit Workout:',
+                            style: TextStyle(
+                              // backgroundColor: primaryAccentColor,
+                                color: textColorOverwrite ? Colors.black : primaryColor,
+                                fontSize: 20),
+                          )),
+
+                      Divider(color: primaryColor),
+
+                      SizedBox(height: 70),
+
+                      Row(children: [
+                        const Spacer(),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red.shade600,
+                            padding: const EdgeInsets.all(4),
+                          ),
+                          child: const Text("Cancel",
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop(true);
+                          },
+                        ),
+                        const Spacer(),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryAccentColor,
+                            padding: const EdgeInsets.all(4),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop(true);
+                          },
+                          child: const Text("Confirm",
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                          ),
+                        ),
+                        const Spacer(),
+                      ]),
+                      Divider(color: primaryColor),
+                    ])
+            ))
+    );
+  }
+}
+
 //////////////////////////////
 // Widget for all Exercises
 //////////////////////////////
@@ -1053,8 +1135,9 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                 columnWidths: const {
                   0: FlexColumnWidth(1),
                   1: FlexColumnWidth(1),
-                  2: FlexColumnWidth(1),
+                  2: FlexColumnWidth(1.5),
                   3: FlexColumnWidth(1),
+                  4: FlexColumnWidth(1),
                 },
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 children: [
@@ -1063,18 +1146,27 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                       TableCell(child:
                       Column(children: [
                         SizedBox(height: 5),
-                        Text('Date',
+                        Text('Edit',
                             style: TextStyle(fontFamily: 'AstroSpace',
-                                fontSize: 15, color: secondaryAccentColor)),
+                                fontSize: 16, color: secondaryAccentColor)),
                         Divider(color: secondaryAccentColor),
                       ])
                       ),
                       TableCell(child:
                         Column(children: [
                           SizedBox(height: 5),
+                          Text('Date',
+                              style: TextStyle(fontFamily: 'AstroSpace',
+                                  fontSize: 16, color: secondaryAccentColor)),
+                          Divider(color: secondaryAccentColor),
+                        ])
+                      ),
+                      TableCell(child:
+                        Column(children: [
+                          SizedBox(height: 5),
                           Text('Weight',
                             style: TextStyle(fontFamily: 'AstroSpace',
-                                fontSize: 15, color: secondaryAccentColor)),
+                                fontSize: 16, color: secondaryAccentColor)),
                           Divider(color: secondaryAccentColor),
                         ])
                       ),
@@ -1083,7 +1175,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                           SizedBox(height: 5),
                           Text('Reps',
                             style: TextStyle(fontFamily: 'AstroSpace',
-                                fontSize: 15, color: secondaryAccentColor)),
+                                fontSize: 16, color: secondaryAccentColor)),
                           Divider(color: secondaryAccentColor),
                         ])
                       ),
@@ -1092,7 +1184,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                           SizedBox(height: 5),
                           Text('Sets',
                             style: TextStyle(fontFamily: 'AstroSpace',
-                                fontSize: 15, color: secondaryAccentColor)),
+                                fontSize: 16, color: secondaryAccentColor)),
                           Divider(color: secondaryAccentColor),
                         ])
                       ),
@@ -1101,19 +1193,52 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                   for (var item in exampleDeadliftWorkoutMap)
                     TableRow(
                       children: [
+                            TableCell(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    HapticFeedback.mediumImpact();
+
+                                    // Launch Edit Workout Menu
+                                    showGeneralDialog(
+                                      context: context,
+                                      barrierDismissible: true,
+                                      barrierLabel: MaterialLocalizations.of(context)
+                                          .modalBarrierDismissLabel,
+                                      barrierColor: Colors.black45,
+                                      transitionDuration: const Duration(milliseconds: 200),
+
+                                      // ANY Widget can be passed here
+                                      pageBuilder: (BuildContext buildContext,
+                                          Animation animation,
+                                          Animation secondaryAnimation) {
+                                        return EditWorkoutDialog(item['id']);
+                                      },
+                                    ).then((restartRequired) {
+                                      if (restartRequired == true) {
+                                        // TODO Determine if updates needs to be refreshed
+                                      }
+                                    });
+
+                                  },
+                                  child: Column(children: [
+                                    Icon(Icons.edit, size: 16, color: primaryColor),
+                                    Divider(color: secondaryAccentColor)
+                                  ]))
+                            ),
                         TableCell(child:
-                        Column(children: [
-                          Text(("${DateTime.fromMillisecondsSinceEpoch(item['date']).month}/${DateTime.fromMillisecondsSinceEpoch(item['date']).day}"),
-                              style: TextStyle(fontFamily: 'AstroSpace',
-                                  fontSize: 12, color: primaryColor)),
-                          Divider(color: secondaryAccentColor)
-                        ])
+                          Column(children: [
+                            Text(("${DateTime.fromMillisecondsSinceEpoch(item['date']).month}/${DateTime.fromMillisecondsSinceEpoch(item['date']).day}"),
+                                style: TextStyle(fontFamily: 'AstroSpace',
+                                fontSize: 15, color: primaryColor)
+                            ),
+                            Divider(color: secondaryAccentColor)
+                          ])
                         ),
                         TableCell(child:
                           Column(children: [
                             Text(item['weight'].toString(),
                               style: TextStyle(fontFamily: 'AstroSpace',
-                              fontSize: 12, color: primaryColor)),
+                              fontSize: 15, color: primaryColor)),
                             Divider(color: secondaryAccentColor)
                           ])
                         ),
@@ -1121,7 +1246,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                           Column(children:[
                             Text(item['reps'].toString(),
                               style: TextStyle(fontFamily: 'AstroSpace',
-                              fontSize: 12, color: primaryColor)),
+                              fontSize: 15, color: primaryColor)),
                             Divider(color: secondaryAccentColor)
                           ])
                         ),
@@ -1129,14 +1254,15 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                           Column(children: [
                             Text(item['set'].toString(),
                               style: TextStyle(fontFamily: 'AstroSpace',
-                              fontSize: 12, color: primaryColor)),
+                              fontSize: 15, color: primaryColor)),
                             Divider(color: secondaryAccentColor)
                           ])
                           ),
                       ],
-                    ),
+                    )
                 ],
-          ));
+          )
+          );
         } else {
           // TODO Query Workouts Table on exerciseId = item['id']
           return Container(
@@ -1180,7 +1306,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                                     if (i == index) {
                                       HapticFeedback.mediumImpact();
 
-                                      // Launch settings menu
+                                      // Launch Edit Exercise Menu
                                       showGeneralDialog(
                                         context: context,
                                         barrierDismissible: true,
