@@ -34,6 +34,11 @@ class LogsWidgetState extends State<LogsWidget> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Center(
         child: SingleChildScrollView(
@@ -99,7 +104,7 @@ class LogsWidgetState extends State<LogsWidget> {
                 ),
 
                 _displayNewLogsWidget
-                    ? NewLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterSubmission)
+                    ? Container(child: NewLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterSubmission))
                     : Container(),
 
                 // Grey Line
@@ -331,7 +336,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 450,
+        height: 365,
         width: 275,
         color: secondaryColor,
         child: Center(
@@ -347,12 +352,15 @@ class NewLogWidgetState extends State<NewLogWidget> {
               SizedBox(height: 1, child: Container(color: Colors.grey)),
               SizedBox(height: 15),
 
+              /// ////////////////
+              /// Exercise Inputs
+              /// ////////////////
               Row(children: [
                   Spacer(flex: 1),
 
-                  /// ////////////////
-                  /// Exercise Input
-                  /// ////////////////
+                  /// ///////////////////
+                  /// Exercise Dropdown
+                  /// ///////////////////
                   SizedBox(
                       height: 50,
                       width: 190,
@@ -451,121 +459,131 @@ class NewLogWidgetState extends State<NewLogWidget> {
               SizedBox(height: 20),
 
               /// ///////////////////
-              /// Date Input Fields
-              /// ///////////////////
-              Column(children: [
-                SizedBox(
-                    height: 40,
-                    width: 120,
-                    child: Material(
-                      color: secondaryAccentColor,
-                      child: TextFormField(
-                            readOnly: true, // set readOnly to true to disable editing of the text field
-                            controller: TextEditingController(
-                              text: _selectedDate == null ? '' : _selectedDate.toString(),
-                            ),
-                            style: TextStyle(
-                                color: textColorOverwrite ? Colors.black : primaryColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold
-                            ),
-                            textAlign: TextAlign.center,
-                            onTap: () => _selectDate(context),
-                            onChanged: (value) {},
-                            onFieldSubmitted: (value) {
-                              FocusManager.instance.primaryFocus
-                                  ?.unfocus();
-                            },
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'mm/dd/yyyy',
-                              hintStyle: TextStyle(
-                                fontSize: 16,
-                                color: secondaryColor,
-                                fontWeight: FontWeight.bold
+              /// Date and Weight Inputs
+              /// ////////////////////
+              Row(
+                children: [
+                  Spacer(),
+                    /// ///////////////////
+                    /// Date Input Fields
+                    /// ///////////////////
+                    Column(children: [
+                      SizedBox(
+                          height: 40,
+                          width: 120,
+                          child: Material(
+                            color: secondaryAccentColor,
+                            child: TextFormField(
+                                  readOnly: true, // set readOnly to true to disable editing of the text field
+                                  controller: TextEditingController(
+                                    text: _selectedDate == null ? '' : _selectedDate.toString(),
+                                  ),
+                                  style: TextStyle(
+                                      color: textColorOverwrite ? Colors.black : primaryColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  onTap: () => _selectDate(context),
+                                  onChanged: (value) {},
+                                  onFieldSubmitted: (value) {
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'mm/dd/yyyy',
+                                    hintStyle: TextStyle(
+                                      fontSize: 16,
+                                      color: secondaryColor,
+                                      fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                )
+                              )
+                      ),
+                      SizedBox(height: 5),
+                      Text("Date",
+                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+                    ]),
+
+                  Spacer(),
+
+                  /////////////////////////
+                    /// Weight Input Field
+                    /// /////////////////////
+                    Column(children: [
+                      SizedBox(
+                        height: 40,
+                        width: 75,
+                        child: Material(
+                          color: secondaryAccentColor,
+                          child: Padding(
+                              padding: EdgeInsets.only(top: 12),
+                              child: TextFormField(
+                                style: TextStyle(
+                                    color: textColorOverwrite ? Colors.black : primaryColor,
+                                    fontSize: 30),
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.number,
+                                onChanged: (value) {
+                                  if (value != '') {
+                                    setState(() {
+                                      if (_providedWeight == null) {
+                                        ++_userInputCount;
+                                      }
+                                      _providedWeight = value;
+                                    });
+                                  }
+                                  if (value == '') {
+                                    // Useful if the text field was added to and deleted
+                                    setState(() {
+                                      --_userInputCount;
+                                      _providedWeight = null;
+                                    });
+                                  }
+                                },
+                                onFieldSubmitted: (value) {
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                },
+                                decoration: InputDecoration(
+                                  hintText: '000',
+                                  hintStyle: TextStyle(
+                                    fontSize: 30,
+                                    color: secondaryColor,
+                                  ),
+                                ),
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  // Only numbers can be entered
+                                  FilteringTextInputFormatter.deny(RegExp('^0+')),
+                                  // Filter leading 0s
+                                  LengthLimitingTextInputFormatter(4),
+                                  // 4 digits at most
+                                ],
+                              )
                               ),
-                            ),
-                          )
-                        )
-                ),
-                SizedBox(height: 5),
-                Text("Date",
-                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
-              ]),
-
-              SizedBox(height: 20),
-
-              /////////////////////////
-              /// Weight Input Field
-              /// /////////////////////
-              Column(children: [
-                SizedBox(
-                  height: 40,
-                  width: 75,
-                  child: Material(
-                    color: secondaryAccentColor,
-                    child: Padding(
-                        padding: EdgeInsets.only(top: 12),
-                        child: TextFormField(
-                          style: TextStyle(
-                              color: textColorOverwrite ? Colors.black : primaryColor,
-                              fontSize: 30),
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          onChanged: (value) {
-                            if (value != '') {
-                              setState(() {
-                                if (_providedWeight == null) {
-                                  ++_userInputCount;
-                                }
-                                _providedWeight = value;
-                              });
-                            }
-                            if (value == '') {
-                              // Useful if the text field was added to and deleted
-                              setState(() {
-                                --_userInputCount;
-                                _providedWeight = null;
-                              });
-                            }
-                          },
-                          onFieldSubmitted: (value) {
-                            FocusManager.instance.primaryFocus?.unfocus();
-                          },
-                          decoration: InputDecoration(
-                            hintText: '000',
-                            hintStyle: TextStyle(
-                              fontSize: 30,
-                              color: secondaryColor,
-                            ),
-                          ),
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly,
-                            // Only numbers can be entered
-                            FilteringTextInputFormatter.deny(RegExp('^0+')),
-                            // Filter leading 0s
-                            LengthLimitingTextInputFormatter(4),
-                            // 4 digits at most
-                          ],
-                        )
                         ),
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text("Weight",
-                    style: TextStyle(
-                        fontFamily: 'AstroSpace',
-                        fontSize: 12,
-                        height: 1.1,
-                        color: primaryColor,
-                        decoration: TextDecoration.none)),
-              ]),
+                      ),
+                      SizedBox(height: 5),
+                      Text("Weight",
+                          style: TextStyle(
+                              fontFamily: 'AstroSpace',
+                              fontSize: 12,
+                              height: 1.1,
+                              color: primaryColor,
+                              decoration: TextDecoration.none)),
+                    ]),
+
+                  Spacer(),
+                ]),
+
 
               SizedBox(height: 15),
 
               /// Reps and Sets
               Row(children: [
-                  Spacer(flex: 1),
+                  Spacer(),
 
                   /// //////////////////
                   /// Reps Input Fields
@@ -626,7 +644,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
                         style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
                   ]),
 
-                  Spacer(flex: 1),
+                  Spacer(),
 
                   /// ///////////////////
                   /// Sets Input Fields
@@ -687,7 +705,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
                         style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
                   ]),
 
-                  Spacer(flex: 1),
+                  Spacer(),
               ]),
 
               /// Save and Cancel Buttons
@@ -746,7 +764,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
 }
 
 ///////////////////////////////////
-// Widget for add Exercise Dialog
+// Widget for Add Exercise Dialog
 ///////////////////////////////////
 class AddExerciseDialog extends StatefulWidget {
   final int initialMaxExerciseStringLength;
@@ -757,12 +775,14 @@ class AddExerciseDialog extends StatefulWidget {
 }
 
 class _AddExerciseDialogState extends State<AddExerciseDialog> {
-  late int maxExerciseStringLength;
+  int maxExerciseStringLength = 15;
+  late int currentExerciseStringLength;
 
   @override
   void initState() {
     super.initState();
     maxExerciseStringLength = widget.initialMaxExerciseStringLength;
+    currentExerciseStringLength = maxExerciseStringLength;
   }
 
   @override
@@ -786,13 +806,13 @@ class _AddExerciseDialogState extends State<AddExerciseDialog> {
                         onChanged: (value) {
                           if (value != '') {
                             setState(() {
-                              maxExerciseStringLength = 15 - value.length;
+                              currentExerciseStringLength = maxExerciseStringLength - value.length;
                             });
                           }
                           if (value == '') {
                             // Useful if the text field was added to and deleted
                             setState(() {
-                              maxExerciseStringLength = 15;
+                              currentExerciseStringLength = maxExerciseStringLength;
                             });
                           }
                         },
@@ -807,12 +827,12 @@ class _AddExerciseDialogState extends State<AddExerciseDialog> {
                           ),
                         ),
                         inputFormatters: <TextInputFormatter>[
-                          LengthLimitingTextInputFormatter(25), // 25 characters at most
+                          LengthLimitingTextInputFormatter(maxExerciseStringLength), // 15 characters at most
                         ],
                       ),
                       SizedBox(height: 3),
 
-                      Text("Remaining Characters: $maxExerciseStringLength", style: TextStyle(fontSize: 12, color: primaryColor)),
+                      Text("Remaining Characters: $currentExerciseStringLength", style: TextStyle(fontSize: 12, color: primaryColor)),
 
                       SizedBox(height: 5),
                       Divider(color: primaryColor),
