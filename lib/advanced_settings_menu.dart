@@ -70,7 +70,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: secondaryAccentColor,
+      backgroundColor: secondaryColor,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: primaryAccentColor,
@@ -151,7 +151,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         }
                       }),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: secondaryColor,
+                        backgroundColor: secondaryAccentColor,
                         padding: const EdgeInsets.all(4),
                       ),
                       child: Text(_displayAudioSettings
@@ -159,7 +159,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           : 'Audio Settings       >',
                           style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
                               color: textColorOverwrite
-                                  ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                  ? Colors.black
                                   : alternateColorOverwrite ? Colors.black
                                   : appCurrentlyInDarkMode ? Colors.white : Colors.black
                           ),
@@ -194,7 +194,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           }
                         }),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryColor,
+                          backgroundColor: secondaryAccentColor,
                           padding: const EdgeInsets.all(4),
                         ),
                         child: Text(_displayThemesSettings
@@ -202,7 +202,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                             : 'Themes                      >',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
                                 color: textColorOverwrite
-                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    ? Colors.black
                                     : alternateColorOverwrite ? Colors.black
                                     : appCurrentlyInDarkMode ? Colors.white : Colors.black
                             ),
@@ -240,7 +240,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           }
                         }),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryColor,
+                          backgroundColor: secondaryAccentColor,
                           padding: const EdgeInsets.all(4),
                         ),
                         child: Text(_displayLogs
@@ -248,7 +248,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                             : 'Logs                             >',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
                                 color: textColorOverwrite
-                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    ? Colors.black
                                     : alternateColorOverwrite ? Colors.black
                                     : appCurrentlyInDarkMode ? Colors.white : Colors.black
                             ),
@@ -283,7 +283,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           }
                         }),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryColor,
+                          backgroundColor: secondaryAccentColor,
                           padding: const EdgeInsets.all(4),
                         ),
                         child: Text(_displayFaqs
@@ -291,7 +291,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                             : 'FAQs                             >',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
                                 color: textColorOverwrite
-                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    ? Colors.black
                                     : alternateColorOverwrite ? Colors.black
                                     : appCurrentlyInDarkMode ? Colors.white : Colors.black
                             ),
@@ -326,7 +326,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           }
                         }),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryColor,
+                          backgroundColor: secondaryAccentColor,
                           padding: const EdgeInsets.all(4),
                         ),
                         child: Text(_displayAboutThisApp
@@ -334,7 +334,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                             : 'About This App         >',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
                                 color: textColorOverwrite
-                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    ? Colors.black
                                     : alternateColorOverwrite ? Colors.black
                                     : appCurrentlyInDarkMode ? Colors.white : Colors.black
                             ),
@@ -616,7 +616,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                           : Colors.black,
                                       fontSize: _textFontSize),
                                 ),
-                                tileColor: appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                tileColor: secondaryAccentColor,
                                 shape: BeveledRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -704,8 +704,8 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                       fontSize: _textFontSize),
                                 ),
                                 tileColor: appCurrentlyInDarkMode
-                                    ? Colors.pink.shade600
-                                    : Colors.pink.shade200,
+                                    ? Colors.pink.shade200
+                                    : Colors.pink.shade600,
                                 shape: BeveledRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -787,7 +787,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                           : Colors.white,
                                       fontSize: _textFontSize),
                                 ),
-                                tileColor: appCurrentlyInDarkMode ? Colors.deepOrange.shade900 : Colors.deepOrangeAccent.shade200,
+                                tileColor: appCurrentlyInDarkMode ?  Colors.deepOrangeAccent.shade200 : Colors.deepOrange.shade900,
                                 shape: BeveledRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
@@ -897,7 +897,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
                 }
               }),
               style: ElevatedButton.styleFrom(
-                backgroundColor: secondaryColor,
+                backgroundColor: secondaryAccentColor,
                 padding: const EdgeInsets.all(4),
               ),
               child: Row(
@@ -955,7 +955,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
                 }
               }),
               style: ElevatedButton.styleFrom(
-                backgroundColor: secondaryColor,
+                backgroundColor: secondaryAccentColor,
                 padding: const EdgeInsets.all(4),
               ),
               child: Row(
@@ -1757,8 +1757,9 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 325,
-        color: secondaryColor,
+        height: 350,
+        width: 325,
+        color: secondaryAccentColor,
         child: Center(
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1768,60 +1769,55 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                     textAlign: TextAlign.center,
                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 38, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
                 const SizedBox(height: 10),
+                Divider(color: primaryColor),
+                const SizedBox(height: 10),
 
                 ///////////////////////////
                 // Dynamically create rows
                 ///////////////////////////
                 Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: _options.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Card(
-                            child: GestureDetector(
-                              // This is activated when the user clicks on the text field
-                              onTap: () {
-                                setState(() {
-                                  _selectedOption = _options[index];
-                                  var desiredAsset = getAudioAssetFromMap();
-                                  setChosenAudioAsset(desiredAsset);
-
-                                  if (_parentWidget == '3-2-1     Countdown') {
-                                    // We need to break the desired asset down into 3 with spaces
-                                    playAudioWithDelay(desiredAsset);
-                                  } else {
-                                    // There is only one asset to play:
-                                    _audioPlayer.play(AssetSource(desiredAsset));
-                                  }
-                                });
-                              },
-                              child: ListTile(
-                                tileColor: primaryColor,
-                                title: Text(_options[index], style: TextStyle(color: secondaryColor, fontSize: 18)),
-                                leading: Radio<String>(
-                                  value: _options[index],
-                                  groupValue: _selectedOption,
-                                  onChanged: (String? value) {
-                                    // This is activated when the user clicks on a new Radio Button
+                    child: SizedBox(
+                        width: 250,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _options.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Card(
+                              child: GestureDetector(
+                                  // This is activated when the user clicks on the text field
+                                  onTap: () {
                                     setState(() {
-                                      _selectedOption = value;
-                                      var desiredAsset = getAudioAssetFromMap();
-                                      setChosenAudioAsset(desiredAsset);
 
-                                      if (_parentWidget == '3-2-1     Countdown') {
-                                        // We need to break the desired asset down into 3 with spaces
-                                        playAudioWithDelay(desiredAsset);
-                                      } else {
-                                        // There is only one asset to play:
-                                        _audioPlayer.play(AssetSource(desiredAsset));
-                                      }
                                     });
                                   },
+                                  child: ListTile(
+                                      tileColor: primaryColor,
+                                      title: Text(_options[index], style: TextStyle(color: secondaryAccentColor, fontSize: 18)),
+                                      leading: Radio<String>(
+                                        value: _options[index],
+                                        groupValue: _selectedOption,
+                                        onChanged: (String? value) {
+                                          // This is activated when the user clicks on a new Radio Button
+                                          setState(() {
+                                            _selectedOption = value;
+                                            var desiredAsset = getAudioAssetFromMap();
+                                            setChosenAudioAsset(desiredAsset);
+
+                                            if (_parentWidget == '3-2-1     Countdown') {
+                                              // We need to break the desired asset down into 3 with spaces
+                                              playAudioWithDelay(desiredAsset);
+                                            } else {
+                                              // There is only one asset to play:
+                                              _audioPlayer.play(AssetSource(desiredAsset));
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    )
                                 ),
-                              )
-                            ),
-                        );
-                      },
+                            );
+                          },
+                        )
                     ),
                   ),
                 const SizedBox(height: 20),

@@ -53,7 +53,7 @@ class LogsWidgetState extends State<LogsWidget> {
                       height: 50,
                       width: 175,
                       decoration: BoxDecoration(
-                        color: _displayNewLogsWidget ? secondaryColor : secondaryAccentColor,
+                        color: _displayNewLogsWidget ? secondaryColor : secondaryColor,
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(10),
                           topRight: Radius.circular(10),
@@ -104,7 +104,7 @@ class LogsWidgetState extends State<LogsWidget> {
                 ),
 
                 _displayNewLogsWidget
-                    ? NewLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterSubmission)
+                    ? NewLogEditLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterSubmission, header: 'New Log')
                     : Container(),
 
                 // Grey Line
@@ -291,18 +291,31 @@ class LogsWidgetState extends State<LogsWidget> {
 ///////////////////////
 // Widget for New Log
 ///////////////////////
-class NewLogWidget extends StatefulWidget {
+class NewLogEditLogWidget extends StatefulWidget {
   final Function() closeNewLogsMenu;
-  const NewLogWidget({
+  String header;   // Either New Log or Edit Log
+
+
+  NewLogEditLogWidget({
     super.key,
-    required this.closeNewLogsMenu
+    required this.closeNewLogsMenu,
+    required this.header
   });
 
   @override
-  NewLogWidgetState createState() => NewLogWidgetState();
+  NewLogEditLogWidgetState createState() => NewLogEditLogWidgetState();
 }
 
-class NewLogWidgetState extends State<NewLogWidget> {
+class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
+  // These are Edit Mode Variables and are the log Initial Values
+  late bool _editMode;
+  String? _currentExercise;
+  String? _currentDate;
+  String? _currentWeight;
+  String? _currentReps;
+  String? _currentSets;
+
+  // These are the variables used to store users provided values
   String? _selectedExercise;
   String? _selectedDate;
   String? _providedWeight;
@@ -334,11 +347,30 @@ class NewLogWidgetState extends State<NewLogWidget> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.header == 'New Log') {
+      // New Log Setup Stuff
+      _editMode = false;
+    } else {
+      // Edit Mode Setup Stuff
+      _editMode = true;
+
+      // TODO Initialize Vars
+      _currentExercise = 'Deadlift';
+      _currentDate = 'cur';
+      _currentWeight = 'cur';
+      _currentReps = 'cur';
+      _currentSets = 'cur';
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
         height: 365,
         width: 275,
-        color: secondaryColor,
+        color: secondaryAccentColor,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -346,7 +378,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
               SizedBox(height: 10),
 
               // Header
-              Text("New Log",
+              Text(widget.header,
                 style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
               SizedBox(height: 10),
               SizedBox(height: 1, child: Container(color: Colors.grey)),
@@ -365,7 +397,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
                       height: 50,
                       width: 190,
                       child:Material(
-                        color: secondaryAccentColor,
+                        color: primaryColor,
                         child: Center(
                             child: DropdownButton<String>(
                             hint: Padding(
@@ -373,9 +405,13 @@ class NewLogWidgetState extends State<NewLogWidget> {
                                 child: Row(children:[
                                   SizedBox(width: 10),
                                   Icon(Icons.arrow_drop_down, size: 25, color: secondaryColor),
-                                  Text(" Exercise",
-                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 22, color: secondaryColor),
-                                    textAlign: TextAlign.center),
+                                  _editMode
+                                      ? Text(_currentExercise!,
+                                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 22, color: secondaryColor),
+                                      textAlign: TextAlign.center)
+                                     : Text(" Exercise",
+                                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 22, color: secondaryColor),
+                                      textAlign: TextAlign.center),
                                 ])
                             ),
                             value: _selectedExercise,
@@ -404,7 +440,11 @@ class NewLogWidgetState extends State<NewLogWidget> {
                                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                                   alignment: Alignment.center,
                                   child: Center(child: Text(item,
-                                    style: TextStyle(fontFamily: 'AstroSpace', color: textColorOverwrite ? Colors.black : primaryColor, fontSize: 20, fontWeight: FontWeight.w600),
+                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, fontWeight: FontWeight.w600,
+                                        color: textColorOverwrite
+                                            ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                            : alternateColorOverwrite ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                            : primaryAccentColor),
                                   )),
                                 );
                               }).toList();
@@ -421,11 +461,11 @@ class NewLogWidgetState extends State<NewLogWidget> {
                     height: 50,
                     width: 50,
                     child: Material(
-                        color: secondaryAccentColor,
+                        color: primaryColor,
                         child: Center(
                           child: IconButton(
                               iconSize: 35,
-                              color: primaryColor,
+                              color: secondaryColor,
                               icon: const Icon(Icons.add_circle_outline),
                               onPressed: () {
                                 HapticFeedback.mediumImpact();
@@ -473,14 +513,17 @@ class NewLogWidgetState extends State<NewLogWidget> {
                           height: 40,
                           width: 100,
                           child: Material(
-                            color: secondaryAccentColor,
+                            color: primaryColor,
                             child: TextFormField(
                                   readOnly: true, // set readOnly to true to disable editing of the text field
                                   controller: TextEditingController(
                                     text: _selectedDate == null ? '' : _selectedDate.toString(),
                                   ),
                                   style: TextStyle(
-                                      color: textColorOverwrite ? Colors.black : primaryColor,
+                                      color: textColorOverwrite
+                                          ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                          : alternateColorOverwrite ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                          : primaryAccentColor,
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold
                                   ),
@@ -493,7 +536,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
                                   },
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'mm/dd/yyyy',
+                                    hintText: _editMode ? _currentDate : 'mm/dd/yyyy',
                                     hintStyle: TextStyle(
                                       fontSize: 16,
                                       color: secondaryColor,
@@ -518,12 +561,15 @@ class NewLogWidgetState extends State<NewLogWidget> {
                         height: 40,
                         width: 100,
                         child: Material(
-                          color: secondaryAccentColor,
+                          color: primaryColor,
                           child: Padding(
                               padding: EdgeInsets.only(top: 17),
                               child: TextFormField(
                                 style: TextStyle(
-                                    color: textColorOverwrite ? Colors.black : primaryColor,
+                                    color: textColorOverwrite
+                                        ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                        : alternateColorOverwrite ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                        : primaryAccentColor,
                                     fontSize: 25),
                                 textAlign: TextAlign.center,
                                 keyboardType: TextInputType.number,
@@ -548,7 +594,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
                                   FocusManager.instance.primaryFocus?.unfocus();
                                 },
                                 decoration: InputDecoration(
-                                  hintText: '000',
+                                  hintText: _editMode ? _currentWeight : '000',
                                   hintStyle: TextStyle(
                                     fontSize: 25,
                                     color: secondaryColor,
@@ -588,7 +634,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
                   /// //////////////////
                   Column(children: [
                     Material(
-                        color: secondaryAccentColor,
+                        color: primaryColor,
                         child: Center(
                             child: SizedBox(
                               height: 40,
@@ -597,7 +643,10 @@ class NewLogWidgetState extends State<NewLogWidget> {
                                   padding: EdgeInsets.only(top: 17),
                                   child: TextFormField(
                                     style: TextStyle(
-                                        color: textColorOverwrite ? Colors.black : primaryColor,
+                                        color: textColorOverwrite
+                                            ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                            : alternateColorOverwrite ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                            : primaryAccentColor,
                                         fontSize: 25),
                                     textAlign: TextAlign.center,
                                     keyboardType: TextInputType.number,
@@ -623,7 +672,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
                                           ?.unfocus();
                                     },
                                     decoration: InputDecoration(
-                                      hintText: '00',
+                                      hintText: _editMode ? _currentReps : '00',
                                       hintStyle: TextStyle(
                                         fontSize: 25,
                                         color: secondaryColor,
@@ -649,7 +698,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
                   /// ///////////////////
                   Column(children: [
                     Material(
-                        color: secondaryAccentColor,
+                        color: primaryColor,
                         child: Center(
                             child: SizedBox(
                               height: 40,
@@ -658,7 +707,10 @@ class NewLogWidgetState extends State<NewLogWidget> {
                                   padding: EdgeInsets.only(top: 17),
                                   child: TextFormField(
                                     style: TextStyle(
-                                        color: textColorOverwrite ? Colors.black : primaryColor,
+                                        color: textColorOverwrite
+                                            ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                            : alternateColorOverwrite ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                            : primaryAccentColor,
                                         fontSize: 25),
                                     textAlign: TextAlign.center,
                                     keyboardType: TextInputType.number,
@@ -684,7 +736,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
                                           ?.unfocus();
                                     },
                                     decoration: InputDecoration(
-                                      hintText: '0',
+                                      hintText: _editMode ? _currentSets : '0',
                                       hintStyle: TextStyle(
                                         fontSize: 25,
                                         color: secondaryColor,
@@ -706,13 +758,67 @@ class NewLogWidgetState extends State<NewLogWidget> {
                   Spacer(),
               ]),
 
-              /// Save and Cancel Buttons
+              /// Delete And Save Buttons
               Row(children: [
-                Spacer(flex: 1),
+
+                _editMode
+                  ? Spacer()
+                  : Container(),
+
+                /// Delete Column
+                _editMode
+                    ? Material(
+                    color: secondaryAccentColor,
+                    child: Column(
+                        children: [
+                          SizedBox(height: 15),
+                          //////////////////
+                          /// Delete Button
+                          //////////////////
+                          GestureDetector(
+                              onLongPress: () {
+                                HapticFeedback.mediumImpact();
+
+                                // widget.closeNewLogsMenu();
+                                Navigator.of(context).pop(true);
+                              },
+                              child: IconButton(
+                                  iconSize: 45,
+                                  color: Colors.red.shade600,
+                                  icon: const Icon(Icons.delete_forever),
+                                  onPressed: () {
+                                    // null
+                                  }
+                                )),
+
+                          /// Delete Text Description
+                          Column(children:[
+                            Text(
+                              'Hold to',
+                              style: TextStyle(
+                                fontFamily: 'AstroSpace',
+                                color: Colors.red.shade600,
+                                fontSize: 20,
+                              ),
+                            ),
+                            Text(
+                              'Delete',
+                              style: TextStyle(
+                                fontFamily: 'AstroSpace',
+                                color: Colors.red.shade600,
+                                fontSize: 20,
+                              ),
+                            )
+                          ])
+                        ])
+                )
+                    :  Container(),
+
+                Spacer(),
 
                 /// Save Column
                 Material(
-                  color: secondaryColor,
+                  color: secondaryAccentColor,
                   child: Column(
                     children: [
                       ////////////////
@@ -751,7 +857,7 @@ class NewLogWidgetState extends State<NewLogWidget> {
                     ])
                 ),
 
-                Spacer(flex: 1),
+                Spacer(),
               ]),
 
               SizedBox(height: 15),
@@ -919,7 +1025,7 @@ class _EditExerciseDialogState extends State<EditExerciseDialog> {
                       Divider(color: primaryColor),
                       Container(
                           width: 210,
-                          child: Text(' Edit Exercise:',
+                          child: Text(' Edit Exercise Name:',
                         style: TextStyle(
                           // backgroundColor: primaryAccentColor,
                           color: textColorOverwrite ? Colors.black : primaryColor,
@@ -1130,12 +1236,12 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
         if ((item['name'] == 'Deadlift')) {
           return Container(
             width: 275,
-            color: secondaryColor,
+            color: primaryColor,
               child: Table(
                 columnWidths: const {
                   0: FlexColumnWidth(1),
-                  1: FlexColumnWidth(1),
-                  2: FlexColumnWidth(1.5),
+                  1: FlexColumnWidth(1.5),
+                  2: FlexColumnWidth(1),
                   3: FlexColumnWidth(1),
                   4: FlexColumnWidth(1),
                 },
@@ -1144,21 +1250,17 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                   TableRow(
                     children: [
                       TableCell(child:
-                      Column(children: [
-                        SizedBox(height: 5),
-                        Text('Edit',
-                            style: TextStyle(fontFamily: 'AstroSpace',
-                                fontSize: 16, color: secondaryAccentColor)),
-                        Divider(color: secondaryAccentColor),
-                      ])
-                      ),
-                      TableCell(child:
                         Column(children: [
                           SizedBox(height: 5),
                           Text('Date',
                               style: TextStyle(fontFamily: 'AstroSpace',
-                                  fontSize: 16, color: secondaryAccentColor)),
-                          Divider(color: secondaryAccentColor),
+                                  fontSize: 16, color: textColorOverwrite
+                                      ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                      : secondaryAccentColor
+                              )),
+                          Divider(color: textColorOverwrite
+                              ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                              : secondaryAccentColor),
                         ])
                       ),
                       TableCell(child:
@@ -1166,8 +1268,12 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                           SizedBox(height: 5),
                           Text('Weight',
                             style: TextStyle(fontFamily: 'AstroSpace',
-                                fontSize: 16, color: secondaryAccentColor)),
-                          Divider(color: secondaryAccentColor),
+                                fontSize: 16, color: textColorOverwrite
+                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    : secondaryAccentColor)),
+                          Divider(color: textColorOverwrite
+                              ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                              : secondaryAccentColor),
                         ])
                       ),
                       TableCell(child:
@@ -1175,8 +1281,12 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                           SizedBox(height: 5),
                           Text('Reps',
                             style: TextStyle(fontFamily: 'AstroSpace',
-                                fontSize: 16, color: secondaryAccentColor)),
-                          Divider(color: secondaryAccentColor),
+                                fontSize: 16, color: textColorOverwrite
+                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    : secondaryAccentColor)),
+                          Divider(color: textColorOverwrite
+                              ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                              : secondaryAccentColor),
                         ])
                       ),
                       TableCell(child:
@@ -1184,8 +1294,25 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                           SizedBox(height: 5),
                           Text('Sets',
                             style: TextStyle(fontFamily: 'AstroSpace',
-                                fontSize: 16, color: secondaryAccentColor)),
-                          Divider(color: secondaryAccentColor),
+                                fontSize: 16, color: textColorOverwrite
+                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    : secondaryAccentColor)),
+                          Divider(color: textColorOverwrite
+                              ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                              : secondaryAccentColor),
+                        ])
+                      ),
+                      TableCell(child:
+                        Column(children: [
+                          SizedBox(height: 5),
+                          Text('Edit',
+                              style: TextStyle(fontFamily: 'AstroSpace',
+                                  fontSize: 16, color: textColorOverwrite
+                                      ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                      : secondaryAccentColor)),
+                          Divider(color: textColorOverwrite
+                              ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                              : secondaryAccentColor),
                         ])
                       ),
                     ],
@@ -1193,71 +1320,88 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                   for (var item in exampleDeadliftWorkoutMap)
                     TableRow(
                       children: [
-                            TableCell(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    HapticFeedback.mediumImpact();
-
-                                    // Launch Edit Workout Menu
-                                    showGeneralDialog(
-                                      context: context,
-                                      barrierDismissible: true,
-                                      barrierLabel: MaterialLocalizations.of(context)
-                                          .modalBarrierDismissLabel,
-                                      barrierColor: Colors.black45,
-                                      transitionDuration: const Duration(milliseconds: 200),
-
-                                      // ANY Widget can be passed here
-                                      pageBuilder: (BuildContext buildContext,
-                                          Animation animation,
-                                          Animation secondaryAnimation) {
-                                        return EditWorkoutDialog(item['id']);
-                                      },
-                                    ).then((restartRequired) {
-                                      if (restartRequired == true) {
-                                        // TODO Determine if updates needs to be refreshed
-                                      }
-                                    });
-
-                                  },
-                                  child: Column(children: [
-                                    Icon(Icons.edit, size: 16, color: primaryColor),
-                                    Divider(color: secondaryAccentColor)
-                                  ]))
-                            ),
                         TableCell(child:
                           Column(children: [
                             Text(("${DateTime.fromMillisecondsSinceEpoch(item['date']).month}/${DateTime.fromMillisecondsSinceEpoch(item['date']).day}"),
                                 style: TextStyle(fontFamily: 'AstroSpace',
-                                fontSize: 15, color: primaryColor)
+                                fontSize: 15, color: secondaryColor)
                             ),
-                            Divider(color: secondaryAccentColor)
+                            Divider(color: textColorOverwrite
+                                ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                : secondaryAccentColor)
                           ])
                         ),
                         TableCell(child:
                           Column(children: [
                             Text(item['weight'].toString(),
                               style: TextStyle(fontFamily: 'AstroSpace',
-                              fontSize: 15, color: primaryColor)),
-                            Divider(color: secondaryAccentColor)
+                              fontSize: 15, color: secondaryColor)),
+                            Divider(color: textColorOverwrite
+                                ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                : secondaryAccentColor)
                           ])
                         ),
                         TableCell(child:
                           Column(children:[
                             Text(item['reps'].toString(),
                               style: TextStyle(fontFamily: 'AstroSpace',
-                              fontSize: 15, color: primaryColor)),
-                            Divider(color: secondaryAccentColor)
+                              fontSize: 15, color: secondaryColor)),
+                            Divider(color: textColorOverwrite
+                                ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                : secondaryAccentColor)
                           ])
                         ),
                         TableCell(child:
                           Column(children: [
                             Text(item['set'].toString(),
                               style: TextStyle(fontFamily: 'AstroSpace',
-                              fontSize: 15, color: primaryColor)),
-                            Divider(color: secondaryAccentColor)
+                              fontSize: 15, color: secondaryColor)),
+                            Divider(color: textColorOverwrite
+                                ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                : secondaryAccentColor)
                           ])
                           ),
+                        TableCell(
+                            child: GestureDetector(
+                                onTap: () {
+                                  HapticFeedback.mediumImpact();
+
+                                  // Launch Edit Workout Menu
+                                  showGeneralDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    barrierLabel: MaterialLocalizations.of(context)
+                                        .modalBarrierDismissLabel,
+                                    barrierColor: Colors.black45,
+                                    transitionDuration: const Duration(milliseconds: 200),
+
+                                    // ANY Widget can be passed here
+                                    pageBuilder: (BuildContext buildContext,
+                                        Animation animation,
+                                        Animation secondaryAnimation) {
+                                      // return EditWorkoutDialog(item['id']);
+                                      return Center(
+                                          child: SizedBox(
+                                              width: 300,
+                                              height: 400,
+                                              child: NewLogEditLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterSubmission, header: 'Edit Mode')
+                                          ));
+
+                                    },
+                                  ).then((restartRequired) {
+                                    if (restartRequired == true) {
+                                      // TODO Determine if updates needs to be refreshed
+                                    }
+                                  });
+
+                                },
+                                child: Column(children: [
+                                  Icon(Icons.edit, size: 16, color: secondaryColor),
+                                  Divider(color: textColorOverwrite
+                                      ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                      : secondaryAccentColor)
+                                ]))
+                        ),
                       ],
                     )
                 ],
@@ -1283,6 +1427,12 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
     return Container();
   }
 
+  void closeNewLogsMenuAfterSubmission() {
+    setState(() {
+      // _displayNewLogsWidget = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1297,9 +1447,12 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                   return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Row(children: [
-                          /// Edit Exercise Button
-                              IconButton(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            /// Edit Exercise Button
+                            exampleMap[index]['selected']
+                              ? IconButton(
                                 splashRadius: 20,
                                 onPressed: () => setState(() {
                                   for (int i = 0; i < exampleMap.length; i++) {
@@ -1329,8 +1482,10 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                                     }
                                   }
                                 }),
-                                icon: Icon(Icons.edit),
-                              ),
+                                icon: Icon(Icons.edit, color: primaryColor),
+                              )
+                              : Container(),
+
                             Container(
                             width: 225,
                             height: 40,
@@ -1351,15 +1506,15 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                                 }
                               }),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: exampleMap[index]['selected'] ? Colors.blue : secondaryColor,
+                                backgroundColor: exampleMap[index]['selected'] ? Colors.blue : secondaryAccentColor,
                                 padding: const EdgeInsets.all(4),
                               ),
                               child: Text(exampleMap[index]['name'],
                                 style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
-                                    color: primaryColor
+                                    color: textColorOverwrite ? Colors.black : primaryColor
                                 ),),
                             ),
-                          )
+                          ),
                   ]),
 
                         // If current index is selected, render it's widget
