@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Config/settings.dart';
+import 'Database/database_helper.dart';
 
 //////////////////////////////////////////
 // Widget for all User Logs (sub-submenu)
@@ -30,6 +31,9 @@ class LogsWidgetState extends State<LogsWidget> {
 
     setState(() {
       _displayNewLogsWidget = false;
+      _mainFilterExercise = false;
+      _mainFilterBodyPart = false;
+      _mainFilterDate = false;
     });
   }
 
@@ -104,7 +108,7 @@ class LogsWidgetState extends State<LogsWidget> {
                 ),
 
                 _displayNewLogsWidget
-                    ? NewLogEditLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterSubmission, header: 'New Log')
+                    ? NewLogEditLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterSubmission, header: 'New Log', id: null)
                     : Container(),
 
                 // Grey Line
@@ -288,18 +292,19 @@ class LogsWidgetState extends State<LogsWidget> {
   }
 }
 
-///////////////////////
-// Widget for New Log
-///////////////////////
+///////////////////////////////////
+// Widget for New & Edit Log
+///////////////////////////////////
 class NewLogEditLogWidget extends StatefulWidget {
   final Function() closeNewLogsMenu;
-  String header;   // Either New Log or Edit Log
-
+  String header; // Either New Log or Edit Log
+  final id; // Id of Workout Record
 
   NewLogEditLogWidget({
     super.key,
     required this.closeNewLogsMenu,
-    required this.header
+    required this.header,
+    required this.id
   });
 
   @override
@@ -307,6 +312,9 @@ class NewLogEditLogWidget extends StatefulWidget {
 }
 
 class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
+  // Text Displayed on Dropdown Menu
+  String? _selectedExercise;
+
   // These are Edit Mode Variables and are the log Initial Values
   late bool _editMode;
   String? _currentExercise;
@@ -316,15 +324,17 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
   String? _currentSets;
 
   // These are the variables used to store users provided values
-  String? _selectedExercise;
-  String? _selectedDate;
+  String? _providedExercise;
+  String? _providedDate;
   String? _providedWeight;
   String? _providedReps;
   String? _providedSets;
 
+  // Config Var to limit string lengths
   int maxExerciseStringLength = 15;
 
-  List<String> dropdownItems = <String>['Bench Press', 'Deadlift', 'Squat'];
+  // Initialize dropdown menu to avoid errors
+  List<String> dropdownItems = <String>[''];
 
   // counts how many fields the user has supplied to determine if save button should show
   int _userInputCount = 0;
@@ -336,12 +346,12 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
         initialDate: DateTime.now(),
         firstDate: DateTime(2022, 1),
         lastDate: DateTime.now());
-    if (picked != null && picked != _selectedDate) {
+    if (picked != null && picked != _providedDate) {
       setState(() {
-        if (_selectedDate == null) {
+        if (_providedDate == null) {
           ++_userInputCount;
         }
-        _selectedDate = "${picked.month.toString().padLeft(2,'0')}/${picked.day.toString().padLeft(2,'0')}/${picked.year.toString()}";
+        _providedDate = "${picked.month.toString().padLeft(2,'0')}/${picked.day.toString().padLeft(2,'0')}/${picked.year.toString()}";
       });
     }
   }
@@ -349,6 +359,8 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
   @override
   void initState() {
     super.initState();
+    getExercises();
+
     if (widget.header == 'New Log') {
       // New Log Setup Stuff
       _editMode = false;
@@ -357,12 +369,63 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
       _editMode = true;
 
       // TODO Initialize Vars
-      _currentExercise = 'Deadlift';
-      _currentDate = 'cur';
-      _currentWeight = 'cur';
-      _currentReps = 'cur';
-      _currentSets = 'cur';
+      getCurrentWorkoutFields();
     }
+  }
+
+  // Initialize Items in Dropdown menu
+  Future<void> getExercises() async {
+    final items = await DatabaseHelper.instance.getUniqueExerciseNames();
+
+    setState(() {
+      dropdownItems = items;
+    });
+  }
+
+  // Initialize TextFields in Edit Log Widget
+  Future<void> getCurrentWorkoutFields() async {
+    final workout = await DatabaseHelper.instance.getWorkout(widget.id);
+    final Map<String, dynamic> workoutFields = workout.first;
+
+    setState(() {
+      _currentExercise = workoutFields['exerciseName'];
+      _currentDate = workoutFields['date'];
+      _currentWeight = workoutFields['weight'].toString();
+      _currentReps = workoutFields['reps'].toString();
+      _currentSets = workoutFields['sets'].toString();
+    });
+  }
+
+  // Insert new workout record
+  Future<int> insertWeightedWorkout() async {
+    Map<String, dynamic> data = {
+      'exerciseId' : '', // will be updated in database_helper
+      'date': _providedDate,
+      'weight': _providedWeight,
+      'reps': _providedReps,
+      'sets': _providedSets,
+    };
+
+    return await DatabaseHelper.instance.insertWeightedWorkout('weighted_workouts', data, _providedExercise!);
+  }
+
+  // Insert new workout record
+  Future<int> updateWeightedWorkout() async {
+    Map<String, dynamic> data = {
+      'exerciseId' : '', // will be updated in database_helper
+      'date': _providedDate ?? _currentDate,
+      'weight': _providedWeight ?? _currentWeight,
+      'reps': _providedReps ?? _currentReps,
+      'sets': _providedSets ?? _currentSets,
+    };
+
+    var exercise = _providedExercise ?? _currentExercise;
+
+    return await DatabaseHelper.instance.updateWeightedWorkout(data, exercise!, widget.id);
+  }
+
+  deleteWeightedWorkout() async {
+    return await DatabaseHelper.instance.delete('weighted_workouts', widget.id);
   }
 
   @override
@@ -395,7 +458,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                   /// ///////////////////
                   SizedBox(
                       height: 50,
-                      width: 190,
+                      width: 210,
                       child:Material(
                         color: primaryColor,
                         child: Center(
@@ -404,13 +467,20 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                 padding: EdgeInsets.fromLTRB(0.0, 9.0, 0.0, 0.0),
                                 child: Row(children:[
                                   SizedBox(width: 10),
-                                  Icon(Icons.arrow_drop_down, size: 25, color: secondaryColor),
+                                  Icon(Icons.arrow_drop_down, size: 25, color: appCurrentlyInDarkMode ? Colors.black : Colors.white),
                                   _editMode
                                       ? Text(_currentExercise!,
-                                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 22, color: secondaryColor),
+                                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16,
+                                          color: (_providedExercise == _currentExercise)
+                                              ? primaryAccentColor
+                                              : appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                      ),
                                       textAlign: TextAlign.center)
                                      : Text(" Exercise",
-                                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 22, color: secondaryColor),
+                                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16,
+                                          color: (_providedExercise != _currentExercise)
+                                              ? primaryAccentColor
+                                              : appCurrentlyInDarkMode ? Colors.black : Colors.white),
                                       textAlign: TextAlign.center),
                                 ])
                             ),
@@ -421,13 +491,14 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                   ++_userInputCount;
                                 }
                                 _selectedExercise = newValue!;
+                                _providedExercise = newValue;
                               });
                             },
                             items: dropdownItems.map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(value,
-                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, color: textColorOverwrite ? Colors.black : primaryColor, fontWeight: FontWeight.w600)
+                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16, color: textColorOverwrite ? Colors.black : primaryColor, fontWeight: FontWeight.w600)
                                 ),
                               );
                             }).toList(),
@@ -440,11 +511,11 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                                   alignment: Alignment.center,
                                   child: Center(child: Text(item,
-                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, fontWeight: FontWeight.w600,
-                                        color: textColorOverwrite
-                                            ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                            : alternateColorOverwrite ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                            : primaryAccentColor),
+                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16, fontWeight: FontWeight.w600,
+                                        color: (_providedExercise != _currentExercise)
+                                            ? primaryAccentColor
+                                            : appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    ),
                                   )),
                                 );
                               }).toList();
@@ -483,11 +554,16 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                   pageBuilder: (BuildContext buildContext,
                                       Animation animation,
                                       Animation secondaryAnimation) {
-                                    return AddExerciseDialog(maxExerciseStringLength);
+                                    return AddExerciseEditExerciseDialog(
+                                        initialMaxExerciseStringLength: maxExerciseStringLength,
+                                        header: 'Add Exercise',
+                                        initialExerciseName: '',
+                                    );
                                   },
                                 ).then((restartRequired) {
                                   if (restartRequired == true) {
-                                    // TODO Determine if Exercise Drop down needs to be refreshed
+                                    // Refresh exercise dropdown menu
+                                    widget.closeNewLogsMenu();
                                   }
                                 });
                                 },
@@ -501,132 +577,133 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
 
               SizedBox(height: 20),
 
-              /// Date and Weight Inputs
-              Row(
-                children: [
-                  Spacer(),
-                    /// ///////////////////
-                    /// Date Input Fields
-                    /// ///////////////////
-                    Column(children: [
-                      SizedBox(
+              // Only show input fields after exercise is selected
+              (_providedExercise == null && _currentExercise == null)
+                  ? SizedBox(height: 131)
+                  : Column (children:[
+                /// Date and Weight Inputs
+                Row(
+                  children: [
+                    Spacer(),
+                      /// ///////////////////
+                      /// Date Input Fields
+                      /// ///////////////////
+                      Column(children: [
+                        SizedBox(
+                            height: 40,
+                            width: 100,
+                            child: Material(
+                              color: primaryColor,
+                              child: TextFormField(
+                                    readOnly: true, // set readOnly to true to disable editing of the text field
+                                    controller: TextEditingController(
+                                      text: _providedDate == null ? '' : _providedDate.toString(),
+                                    ),
+                                    style: TextStyle(
+                                        color: (_providedDate != _currentDate)
+                                            ? primaryAccentColor
+                                            : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    onTap: () => _selectDate(context),
+                                    onChanged: (value) {},
+                                    onFieldSubmitted: (value) {
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: _editMode ? _currentDate : 'mm/dd/yyyy',
+                                      hintStyle: TextStyle(
+                                        fontSize: 16,
+                                        color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                        fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                  )
+                                )
+                        ),
+                        SizedBox(height: 5),
+                        Text("Date",
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+                      ]),
+
+                    Spacer(),
+
+                    /////////////////////////
+                      /// Weight Input Field
+                      /// /////////////////////
+                      Column(children: [
+                        SizedBox(
                           height: 40,
                           width: 100,
                           child: Material(
                             color: primaryColor,
-                            child: TextFormField(
-                                  readOnly: true, // set readOnly to true to disable editing of the text field
-                                  controller: TextEditingController(
-                                    text: _selectedDate == null ? '' : _selectedDate.toString(),
-                                  ),
+                            child: Padding(
+                                padding: EdgeInsets.only(top: 17),
+                                child: TextFormField(
                                   style: TextStyle(
-                                      color: textColorOverwrite
-                                          ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                          : alternateColorOverwrite ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                          : primaryAccentColor,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold
-                                  ),
+                                      color: (_providedWeight != _currentWeight)
+                                          ? primaryAccentColor
+                                            : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                      fontSize: 25),
                                   textAlign: TextAlign.center,
-                                  onTap: () => _selectDate(context),
-                                  onChanged: (value) {},
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (value) {
+                                    if (value != '') {
+                                      setState(() {
+                                        if (_providedWeight == null) {
+                                          ++_userInputCount;
+                                        }
+                                        _providedWeight = value;
+                                      });
+                                    }
+                                    if (value == '') {
+                                      // Useful if the text field was added to and deleted
+                                      setState(() {
+                                        --_userInputCount;
+                                        _providedWeight = null;
+                                      });
+                                    }
+                                  },
                                   onFieldSubmitted: (value) {
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
+                                    FocusManager.instance.primaryFocus?.unfocus();
                                   },
                                   decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: _editMode ? _currentDate : 'mm/dd/yyyy',
+                                    hintText: _editMode ? _currentWeight : '000',
                                     hintStyle: TextStyle(
-                                      fontSize: 16,
-                                      color: secondaryColor,
-                                      fontWeight: FontWeight.bold
+                                      fontSize: 25,
+                                      color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
                                     ),
                                   ),
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                    FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
+                                    LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                  ],
                                 )
-                              )
-                      ),
-                      SizedBox(height: 5),
-                      Text("Date",
-                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
-                    ]),
-
-                  Spacer(),
-
-                  /////////////////////////
-                    /// Weight Input Field
-                    /// /////////////////////
-                    Column(children: [
-                      SizedBox(
-                        height: 40,
-                        width: 100,
-                        child: Material(
-                          color: primaryColor,
-                          child: Padding(
-                              padding: EdgeInsets.only(top: 17),
-                              child: TextFormField(
-                                style: TextStyle(
-                                    color: textColorOverwrite
-                                        ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                        : alternateColorOverwrite ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                        : primaryAccentColor,
-                                    fontSize: 25),
-                                textAlign: TextAlign.center,
-                                keyboardType: TextInputType.number,
-                                onChanged: (value) {
-                                  if (value != '') {
-                                    setState(() {
-                                      if (_providedWeight == null) {
-                                        ++_userInputCount;
-                                      }
-                                      _providedWeight = value;
-                                    });
-                                  }
-                                  if (value == '') {
-                                    // Useful if the text field was added to and deleted
-                                    setState(() {
-                                      --_userInputCount;
-                                      _providedWeight = null;
-                                    });
-                                  }
-                                },
-                                onFieldSubmitted: (value) {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                },
-                                decoration: InputDecoration(
-                                  hintText: _editMode ? _currentWeight : '000',
-                                  hintStyle: TextStyle(
-                                    fontSize: 25,
-                                    color: secondaryColor,
-                                  ),
                                 ),
-                                inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.digitsOnly,
-                                  // Only numbers can be entered
-                                  FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
-                                  LengthLimitingTextInputFormatter(4), // 4 digits at most
-                                ],
-                              )
-                              ),
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 5),
-                      Text("Weight",
-                          style: TextStyle(
-                              fontFamily: 'AstroSpace',
-                              fontSize: 12,
-                              height: 1.1,
-                              color: primaryColor,
-                              decoration: TextDecoration.none)),
-                    ]),
+                        SizedBox(height: 5),
+                        Text("Weight",
+                            style: TextStyle(
+                                fontFamily: 'AstroSpace',
+                                fontSize: 12,
+                                height: 1.1,
+                                color: primaryColor,
+                                decoration: TextDecoration.none)),
+                      ]),
 
-                  Spacer(),
-                ]),
+                    Spacer(),
+                  ]),
 
-              SizedBox(height: 15),
+                SizedBox(height: 15),
 
-              /// Reps and Sets
-              Row(children: [
+                /// Reps and Sets
+                Row(children: [
                   Spacer(),
 
                   /// //////////////////
@@ -643,10 +720,9 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                   padding: EdgeInsets.only(top: 17),
                                   child: TextFormField(
                                     style: TextStyle(
-                                        color: textColorOverwrite
-                                            ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                            : alternateColorOverwrite ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                            : primaryAccentColor,
+                                        color: (_providedReps != _currentReps)
+                                            ? primaryAccentColor
+                                            : appCurrentlyInDarkMode ? Colors.black : Colors.white,
                                         fontSize: 25),
                                     textAlign: TextAlign.center,
                                     keyboardType: TextInputType.number,
@@ -707,10 +783,9 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                   padding: EdgeInsets.only(top: 17),
                                   child: TextFormField(
                                     style: TextStyle(
-                                        color: textColorOverwrite
-                                            ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                            : alternateColorOverwrite ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                            : primaryAccentColor,
+                                        color: (_providedSets != _currentSets)
+                                            ? primaryAccentColor
+                                            : appCurrentlyInDarkMode ? Colors.black : Colors.white,
                                         fontSize: 25),
                                     textAlign: TextAlign.center,
                                     keyboardType: TextInputType.number,
@@ -757,6 +832,8 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
 
                   Spacer(),
               ]),
+              ]),
+
 
               /// Delete And Save Buttons
               Row(children: [
@@ -779,7 +856,8 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                               onLongPress: () {
                                 HapticFeedback.mediumImpact();
 
-                                // widget.closeNewLogsMenu();
+                                deleteWeightedWorkout();
+                                widget.closeNewLogsMenu();
                                 Navigator.of(context).pop(true);
                               },
                               child: IconButton(
@@ -829,7 +907,25 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                         color: primaryAccentColor,
                         disabledColor: Colors.grey,
                         icon: const Icon(Icons.check_circle),
-                        onPressed: _userInputCount == 5 ? () {
+                        onPressed: _editMode
+                            ? _userInputCount > 0 ? () {
+                          /// Edit Mode
+                          // widget.audio.setVolume(_appVolume);
+                          // widget.audio.setReleaseMode(ReleaseMode.stop);
+                          // if (!appCurrentlyMuted && saveButtonAudioCurrentlyEnabled) {
+                          //   widget.audio.play(AssetSource(audioForSaveButton));
+                          //   widget.audio.setReleaseMode(ReleaseMode.stop);
+                          // }
+                          // TODO Update Weight Record
+
+                          updateWeightedWorkout();
+                          HapticFeedback.mediumImpact();
+                          widget.closeNewLogsMenu();
+                          Navigator.of(context).pop(true);
+                        }
+                                : null
+                            : _userInputCount == 5 ? () {
+                          /// New Log Mode
                           // widget.audio.setVolume(_appVolume);
                           // widget.audio.setReleaseMode(ReleaseMode.stop);
                           // if (!appCurrentlyMuted && saveButtonAudioCurrentlyEnabled) {
@@ -837,10 +933,13 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                           //   widget.audio.setReleaseMode(ReleaseMode.stop);
                           // }
 
+
+                          insertWeightedWorkout();
                           HapticFeedback.mediumImpact();
                           widget.closeNewLogsMenu();
                         }
-                            : null, // If all settings haven't updated, Disable Save Button
+                                : null,
+                         // If all settings haven't updated, Disable Save Button
                       ),
 
                       /// Save Text Description
@@ -867,27 +966,67 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
   }
 }
 
-///////////////////////////////////
-// Widget for Add Exercise Dialog
-///////////////////////////////////
-class AddExerciseDialog extends StatefulWidget {
+////////////////////////////////////////////
+// Widget for Add & Edit Exercise Dialog
+////////////////////////////////////////////
+class AddExerciseEditExerciseDialog extends StatefulWidget {
   final int initialMaxExerciseStringLength;
-  AddExerciseDialog(this.initialMaxExerciseStringLength);
+  String header;
+  final String initialExerciseName;
+
+  AddExerciseEditExerciseDialog({
+      required this.initialMaxExerciseStringLength,
+      required this.header,
+      required this.initialExerciseName,
+      super.key,
+  });
 
   @override
-  _AddExerciseDialogState createState() => _AddExerciseDialogState();
+  AddExerciseEditExerciseDialogState createState() => AddExerciseEditExerciseDialogState();
 }
 
-class _AddExerciseDialogState extends State<AddExerciseDialog> {
+class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDialog> {
   int maxExerciseStringLength = 15;
   late int currentExerciseStringLength;
+  late String initialExerciseName;
   String newExerciseName = '';
+
+  int maxBodyPartStringLength = 15;
+  late int currentBodyPartStringLength;
+  late String initialBodyPartName;
+  String newBodyPartName = '';
+
+
+  bool cardioExercise = false;
+  late bool editMode;
 
   @override
   void initState() {
     super.initState();
     maxExerciseStringLength = widget.initialMaxExerciseStringLength;
     currentExerciseStringLength = maxExerciseStringLength;
+
+    currentBodyPartStringLength = maxBodyPartStringLength;
+
+    if (widget.header == 'Add Exercise') {
+      editMode = false;
+    } else {
+      editMode = true;
+    }
+  }
+
+  void _changeCardioOrWeightWorkout(bool value) {
+    setState(() {
+      if (cardioExercise) {
+        cardioExercise = false;
+      } else{
+        cardioExercise = true;
+      }
+    });
+  }
+
+  Future<void> insertNewExerciseAndBodyPartsRecord(String exercise, String bodypart, bool isCardio) async {
+    await DatabaseHelper.instance.insertExerciseWithBodyPartName(exercise, bodypart, isCardio);
   }
 
   @override
@@ -895,94 +1034,184 @@ class _AddExerciseDialogState extends State<AddExerciseDialog> {
    return Center(
         child: Material(
             color: secondaryColor,
-            child: SizedBox(
-                height: 200,
-                width: 210,
-                child: Column(
-                    children: [
-                      Divider(color: primaryColor),
-                      Container(
-                          width: 210,
-                          child: Text(' Add Exercise:',
+            child: SingleChildScrollView(
+                child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                      left: 20,
+                      right: 20,
+                      top: 20,
+                    ),
+                    child:SizedBox(
+                    height: 350,
+                    width: 210,
+                    child: Column(
+                        children: [
+                          /// Header
+                          Divider(color: primaryColor),
+                          Container(
+                              width: 210,
+                              child: Text(' ${widget.header}:',
+                                style: TextStyle(
+                                  // backgroundColor: primaryAccentColor,
+                                    color: textColorOverwrite ? Colors.black : primaryColor,
+                                    fontSize: 20),
+                              )),
+                          Divider(color: primaryColor),
+
+                          /// Cardio Toggle
+                          Row(children: [
+                            Spacer(),
+                            Text('Cardio',
+                                style: TextStyle(color: cardioExercise ? textColorOverwrite ? Colors.black : primaryColor
+                                    : Colors.grey, fontSize: 18)
+                            ),
+                            Switch(
+                              value: !cardioExercise,
+                              onChanged: _changeCardioOrWeightWorkout,
+                            ),
+                            Text('Weighted',
+                                style: TextStyle(color: cardioExercise ? Colors.grey
+                                    : textColorOverwrite ? Colors.black : primaryColor, fontSize: 18)
+                            ),
+                            Spacer(),
+                          ]),
+
+                          /// Body Part
+                          TextFormField(
                             style: TextStyle(
-                              // backgroundColor: primaryAccentColor,
                                 color: textColorOverwrite ? Colors.black : primaryColor,
-                                fontSize: 20),
-                          )),
+                                fontSize: 25),
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.text,
+                            onChanged: (value) {
+                              newBodyPartName = value;
 
-                      Divider(color: primaryColor),
-                      TextFormField(
-                        style: TextStyle(
-                            color: textColorOverwrite ? Colors.black : primaryColor,
-                            fontSize: 25),
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.text,
-                        onChanged: (value) {
-                          newExerciseName = value;
+                              if (value != '') {
+                                setState(() {
+                                  currentBodyPartStringLength = maxBodyPartStringLength - value.length;
+                                });
+                              }
+                              if (value == '') {
+                                // Useful if the text field was added to and deleted
+                                setState(() {
+                                  currentBodyPartStringLength = maxBodyPartStringLength;
+                                });
+                              }
+                            },
+                            onFieldSubmitted: (value) {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            },
+                            decoration: const InputDecoration(
+                              hintText: 'ex: chest',
+                              hintStyle: TextStyle(
+                                fontSize: 20,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            inputFormatters: <TextInputFormatter>[
+                              LengthLimitingTextInputFormatter(maxBodyPartStringLength), // 15 characters at most
+                            ],
+                          ),
+                          SizedBox(height: 3),
+                          Text('Body Part',
+                              style: TextStyle(
+                                fontFamily: 'AstroSpace',
+                                color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
+                                fontSize: 12)
+                          ),
 
-                          if (value != '') {
-                            setState(() {
-                              currentExerciseStringLength = maxExerciseStringLength - value.length;
-                            });
-                          }
-                          if (value == '') {
-                            // Useful if the text field was added to and deleted
-                            setState(() {
-                              currentExerciseStringLength = maxExerciseStringLength;
-                            });
-                          }
-                        },
-                        onFieldSubmitted: (value) {
-                          FocusManager.instance.primaryFocus?.unfocus();
-                        },
-                        decoration: const InputDecoration(
-                          hintText: 'exercise',
-                          hintStyle: TextStyle(
-                            fontSize: 20,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        inputFormatters: <TextInputFormatter>[
-                          LengthLimitingTextInputFormatter(maxExerciseStringLength), // 15 characters at most
-                        ],
-                      ),
-                      SizedBox(height: 3),
+                          SizedBox(height: 10),
 
-                      Text("Remaining Characters: $currentExerciseStringLength", style: TextStyle(fontSize: 12, color: primaryColor)),
-                      SizedBox(height: 10),
+                          Divider(color: primaryColor),
 
-                      Row(children: [
-                        const Spacer(),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red.shade600,
-                            padding: const EdgeInsets.all(4),
+                          /// Exercise Name Field
+                          TextFormField(
+                            style: TextStyle(
+                                color: textColorOverwrite ? Colors.black : primaryColor,
+                                fontSize: 25),
+                            textAlign: TextAlign.center,
+                            keyboardType: TextInputType.text,
+                            onChanged: (value) {
+                              newExerciseName = value;
+
+                              if (value != '') {
+                                setState(() {
+                                  currentExerciseStringLength = maxExerciseStringLength - value.length;
+                                });
+                              }
+                              if (value == '') {
+                                // Useful if the text field was added to and deleted
+                                setState(() {
+                                  currentExerciseStringLength = maxExerciseStringLength;
+                                });
+                              }
+                            },
+                            onFieldSubmitted: (value) {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            },
+                            decoration: const InputDecoration(
+                              hintText: 'ex: squat',
+                              hintStyle: TextStyle(
+                                fontSize: 20,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            inputFormatters: <TextInputFormatter>[
+                              LengthLimitingTextInputFormatter(maxExerciseStringLength), // 15 characters at most
+                            ],
                           ),
-                          child: const Text("Cancel",
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                          SizedBox(height: 3),
+                          Text('Exercise Name',
+                              style: TextStyle(
+                                  fontFamily: 'AstroSpace',
+                                  color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
+                                  fontSize: 12)
                           ),
-                          onPressed: () {
-                            Navigator.of(context).pop(true);
-                          },
-                        ),
-                        const Spacer(),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: newExerciseName.isNotEmpty ? primaryAccentColor : secondaryColor,
-                            padding: const EdgeInsets.all(4),
-                          ),
-                          child: const Text("Confirm",
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
-                          ),
-                          onPressed: newExerciseName.isNotEmpty ? () {
-                            Navigator.of(context).pop(true);
-                          } : null,
-                        ),
-                        const Spacer(),
-                      ]),
-                      Divider(color: primaryColor),
-                    ])
-            ))
+
+                          SizedBox(height: 10),
+
+                          /// Cancel and Confirm Buttons
+                          Row(children: [
+                            const Spacer(),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red.shade600,
+                                padding: const EdgeInsets.all(4),
+                              ),
+                              child: const Text("Cancel",
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+                              },
+                            ),
+                            const Spacer(),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: newExerciseName.isNotEmpty ? primaryAccentColor : secondaryColor,
+                                padding: const EdgeInsets.all(4),
+                              ),
+                              child: const Text("Confirm",
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                              ),
+                              onPressed: newExerciseName.isNotEmpty ? () {
+
+                                if (editMode == false) {
+                                  insertNewExerciseAndBodyPartsRecord(newExerciseName, newBodyPartName, cardioExercise);
+                                } else {
+                                  // TODO Create update statement
+                                }
+                                Navigator.of(context).pop(true);
+                              } : null,
+                            ),
+                            const Spacer(),
+                          ]),
+                          Divider(color: primaryColor),
+                        ])
+                ))
+            )
+        )
     );
   }
 }
@@ -1070,10 +1299,8 @@ class _EditExerciseDialogState extends State<EditExerciseDialog> {
                           LengthLimitingTextInputFormatter(maxExerciseStringLength), // 15 characters at most
                         ],
                       ),
-                      SizedBox(height: 3),
 
-                      Text("Remaining Characters: $currentExerciseStringLength", style: TextStyle(fontSize: 12, color: primaryColor)),
-                      SizedBox(height: 10),
+                      SizedBox(height: 25),
 
                       Row(children: [
                         const Spacer(),
@@ -1206,43 +1433,32 @@ class ExercisesWidget extends StatefulWidget {
 }
 
 class ExercisesWidgetState extends State<ExercisesWidget> {
-  // Tables:
-  // Exercises: {id, name, bodyPart, cardio}
-  // WeightWorkouts: {id, exercise_id, weight, reps, sets, date}      | weights
-  // CardioWorkouts: {id, exercise_id, distance, time, date}          | cardio
+  // List<Map> exampleMap = [
+  //   {'id': 1, 'name': 'Bench Press',  'bodyPart': 'Chest', 'cardio': false, 'selected': false},
+  //   {'id': 2, 'name': 'Deadlift',  'bodyPart': 'Back', 'cardio': false, 'selected': false},
+  //   {'id': 3, 'name': 'Jump Rope',  'bodyPart': 'Cardio', 'cardio': true, 'selected': false},
+  //   {'id': 4, 'name': 'Squat',  'bodyPart': 'Legs', 'cardio': false, 'selected': false},
+  // ];
 
-  // Query: Select Unique Exercise name from Exercises (Select All?)
-  List<Map> exampleMap = [
-    {'id': 1, 'name': 'Bench Press',  'bodyPart': 'Chest', 'cardio': false, 'selected': false},
-    {'id': 2, 'name': 'Deadlift',  'bodyPart': 'Back', 'cardio': false, 'selected': false},
-    {'id': 3, 'name': 'Jump Rope',  'bodyPart': 'Cardio', 'cardio': true, 'selected': false},
-    {'id': 4, 'name': 'Squat',  'bodyPart': 'Legs', 'cardio': false, 'selected': false},
-  ];
-
-  // Query: SELECT * FROM workouts WHERE exerciseId = 1;
-  List<Map> exampleDeadliftWorkoutMap = [
-    {'id': 1, 'exercise_id': 3,  'weight': 100, 'reps': 8, 'set': 3, 'date': DateTime(2023, 3, 3).millisecondsSinceEpoch},
-    {'id': 2, 'exercise_id': 3,  'weight': 110, 'reps': 6, 'set': 3, 'date': DateTime(2023, 3, 10).millisecondsSinceEpoch},
-    {'id': 3, 'exercise_id': 3,  'weight': 115, 'reps': 4, 'set': 3, 'date': DateTime(2023, 3, 17).millisecondsSinceEpoch},
-    {'id': 4, 'exercise_id': 3,  'weight': 115, 'reps': 6, 'set': 3, 'date': DateTime(2023, 3, 24).millisecondsSinceEpoch}
-  ];
+  List<Map> exerciseMap = [];
+  List<Map> workoutMap = [];
+  late String selectedExercise;
 
   // This Widget is shown whenever an individual exercise is selected
   Widget buildTableForSelectedExercise() {
-    for (var item in exampleMap) {
+    for (var item in exerciseMap) {
       if (item['selected'] == true) {
         // todo Remove temp setup looking just for deadlift
         // TODO Run if logic on Cardio = true/false
-        if ((item['name'] == 'Deadlift')) {
           return Container(
             width: 275,
             color: primaryColor,
               child: Table(
                 columnWidths: const {
-                  0: FlexColumnWidth(1),
+                  0: FlexColumnWidth(1.2),
                   1: FlexColumnWidth(1.5),
-                  2: FlexColumnWidth(1),
-                  3: FlexColumnWidth(1),
+                  2: FlexColumnWidth(1.2),
+                  3: FlexColumnWidth(1.2),
                   4: FlexColumnWidth(1),
                 },
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
@@ -1317,12 +1533,12 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                       ),
                     ],
                   ),
-                  for (var item in exampleDeadliftWorkoutMap)
+                  for (var item in workoutMap)
                     TableRow(
                       children: [
                         TableCell(child:
                           Column(children: [
-                            Text(("${DateTime.fromMillisecondsSinceEpoch(item['date']).month}/${DateTime.fromMillisecondsSinceEpoch(item['date']).day}"),
+                            Text(("${(item['date']).substring(0, 5)}"),
                                 style: TextStyle(fontFamily: 'AstroSpace',
                                 fontSize: 15, color: secondaryColor)
                             ),
@@ -1353,7 +1569,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                         ),
                         TableCell(child:
                           Column(children: [
-                            Text(item['set'].toString(),
+                            Text(item['sets'].toString(),
                               style: TextStyle(fontFamily: 'AstroSpace',
                               fontSize: 15, color: secondaryColor)),
                             Divider(color: textColorOverwrite
@@ -1384,7 +1600,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                                           child: SizedBox(
                                               width: 300,
                                               height: 400,
-                                              child: NewLogEditLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterSubmission, header: 'Edit Mode')
+                                              child: NewLogEditLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterSubmission, header: 'Edit Mode', id: item['id'])
                                           ));
 
                                     },
@@ -1407,21 +1623,6 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                 ],
           )
           );
-        } else {
-          // TODO Query Workouts Table on exerciseId = item['id']
-          return Container(
-              width: 200,
-              height: 100,
-              child: Column(mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 5),
-                    Text(item['name'] + ' selected',
-                        style: TextStyle(fontFamily: 'AstroSpace',
-                            fontSize: 15, color: primaryColor)),
-                    SizedBox(height: 5)
-                  ])
-          );
-        }
       }
     }
     return Container();
@@ -1429,8 +1630,32 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
 
   void closeNewLogsMenuAfterSubmission() {
     setState(() {
-      // _displayNewLogsWidget = false;
+      for (int i = 0; i < exerciseMap.length; i++) {
+          exerciseMap[i]['selected'] = false;
+      }
     });
+  }
+
+  Future<void> getExercises() async {
+    final items = await DatabaseHelper.instance.getMapOfUniqueExerciseNames();
+
+    setState(() {
+      exerciseMap = items;
+    });
+  }
+
+  Future<void> getWorkouts() async {
+    final items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise);
+
+    setState(() {
+      workoutMap = items;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getExercises();
   }
 
   @override
@@ -1442,7 +1667,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(child: ListView.builder(
-                itemCount: exampleMap.length,
+                itemCount: exerciseMap.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -1451,11 +1676,11 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             /// Edit Exercise Button
-                            exampleMap[index]['selected']
+                            exerciseMap[index]['selected']
                               ? IconButton(
                                 splashRadius: 20,
                                 onPressed: () => setState(() {
-                                  for (int i = 0; i < exampleMap.length; i++) {
+                                  for (int i = 0; i < exerciseMap.length; i++) {
                                     if (i == index) {
                                       HapticFeedback.mediumImpact();
 
@@ -1472,7 +1697,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                                         pageBuilder: (BuildContext buildContext,
                                             Animation animation,
                                             Animation secondaryAnimation) {
-                                          return EditExerciseDialog(exampleMap[i]['name']);
+                                          return EditExerciseDialog(exerciseMap[i]['name']);
                                         },
                                       ).then((restartRequired) {
                                         if (restartRequired == true) {
@@ -1491,25 +1716,27 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                             height: 40,
                             decoration: BoxDecoration(
                                 border: Border.all(
-                                  color: exampleMap[index]['selected'] ? primaryColor : Colors.transparent,
+                                  color: exerciseMap[index]['selected'] ? primaryColor : Colors.transparent,
                                   width: 4,
                                 )),
                             child: ElevatedButton(
                               onPressed: () => setState(() {
                                 // Only allow one Exercise Submenu active at a time:
-                                for (int i = 0; i < exampleMap.length; i++) {
+                                for (int i = 0; i < exerciseMap.length; i++) {
                                   if (i == index) {
-                                    exampleMap[i]['selected'] = !exampleMap[i]['selected'];
+                                    selectedExercise = exerciseMap[i]['name'];
+                                    getWorkouts();
+                                    exerciseMap[i]['selected'] = !exerciseMap[i]['selected'];
                                   } else {
-                                    exampleMap[i]['selected'] = false;
+                                    exerciseMap[i]['selected'] = false;
                                   }
                                 }
                               }),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: exampleMap[index]['selected'] ? Colors.blue : secondaryAccentColor,
+                                backgroundColor: exerciseMap[index]['selected'] ? Colors.blue : secondaryAccentColor,
                                 padding: const EdgeInsets.all(4),
                               ),
-                              child: Text(exampleMap[index]['name'],
+                              child: Text(exerciseMap[index]['name'],
                                 style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
                                     color: textColorOverwrite ? Colors.black : primaryColor
                                 ),),
@@ -1518,7 +1745,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                   ]),
 
                         // If current index is selected, render it's widget
-                        exampleMap[index]['selected']
+                        exerciseMap[index]['selected']
                             ? Column(children: [SizedBox(height: 5), buildTableForSelectedExercise(), SizedBox(height: 5),])
                             : SizedBox(height: 10),
                         ]);
@@ -1545,10 +1772,59 @@ class DatesWidgetState extends State<DatesWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      SizedBox(height: 50),
-      Text("Hello from Dates Widget"),
-      SizedBox(height: 50),
-    ],);
+      // SizedBox(height: 50),
+      // ElevatedButton(
+      //   child: Text('Insert Exercise Solo'),
+      //   onPressed: () async {
+      //     await DatabaseHelper.instance.insertUnique('exercises', {'name': 'Pushups', 'bodyPartId': 0, 'isCardio': 0});
+      //   },
+      // ),
+      // SizedBox(height: 50),
+      // ElevatedButton(
+      //   child: Text('INSERT Exercise With body part'),
+      //   onPressed: () async {
+      //     await DatabaseHelper.instance.insertExerciseWithBodyPartName('Pushups', 'Chest', false);
+      //   },
+      // ),
+      // SizedBox(height: 50),
+      // ElevatedButton(
+      //   child: Text('Read Exercises'),
+      //   onPressed: () async {
+      //     final data2 = await DatabaseHelper.instance.query('exercises');
+      //     print(data2);
+      //   },
+      // ),
+      // SizedBox(height: 50),
+      // ElevatedButton(
+      //   child: Text('Read Workouts'),
+      //   onPressed: () async {
+      //     final data2 = await DatabaseHelper.instance.query('weighted_workouts');
+      //     print(data2);
+      //   },
+      // ),
+      // SizedBox(height: 50),
+      // ElevatedButton(
+      //   child: Text('Read Data'),
+      //   onPressed: () async {
+      //     final data1 = await DatabaseHelper.instance.query('body_parts');
+      //     print('Body Parts: ');
+      //     print(data1);
+      //     final data2 = await DatabaseHelper.instance.query('exercises');
+      //     print('Exercises: ');
+      //     print(data2);
+      //     final data3 = await DatabaseHelper.instance.query('weighted_workouts');
+      //     print('weighted_workouts: ');
+      //     print(data3);
+      //   },
+      // ),
+      // SizedBox(height: 50),
+      // ElevatedButton(
+      //   child: Text('Delete Data'),
+      //   onPressed: () async {
+      //     final data = await DatabaseHelper.instance.delete('exercises', 1);
+      //   },
+      // ),
+    ]);
   }
 }
 

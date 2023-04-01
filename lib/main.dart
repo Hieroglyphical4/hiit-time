@@ -1,6 +1,3 @@
-import 'dart:async';
-import 'dart:ui';
-
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:hiit_time/advanced_settings_menu.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
@@ -11,14 +8,18 @@ import 'package:hiit_time/settings_menu.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'extras_menu.dart';
+import 'Database/database_helper.dart';
+import 'dart:async';
+import 'dart:ui';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Service Used to keep timer running in background
   initializeService();
+
+  // Initialize the database
+  await DatabaseHelper.instance.database;
 
   runApp(FutureBuilder(
       future: getSavedUserSettings(),
