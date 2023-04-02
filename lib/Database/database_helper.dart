@@ -56,9 +56,21 @@ class DatabaseHelper {
     ''');
   }
 
+  /// Setter
   Future<int> insert(String table, Map<String, dynamic> data) async {
     final db = await database;
     return await db.insert(table, data);
+  }
+
+  /// Getter:
+  Future<int?> getIdByName(String table, String name) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(table, where: 'lower(name) = ?', whereArgs: [name.toLowerCase()]);
+
+    if (maps.isEmpty) {
+      return null;
+    }
+    return maps.first['id'];
   }
 
   // Used to insert a record with a unique NAME
@@ -77,25 +89,16 @@ class DatabaseHelper {
   ///   Requires body_parts entry
   Future<int> insertExerciseWithBodyPartName(String exerciseName, String bodyPartName, bool isCardio) async {
     final db = await database;
-    int? bodyPartId = await _getBodyPartIdByName(bodyPartName);
+    int? bodyPartId = await getIdByName('body_parts', bodyPartName);
 
     if (bodyPartId == null) {
       // The body part doesn't exist yet, so insert it
-      final bodyPart = {'name': bodyPartName};
+      final bodyPart = {'name': bodyPartName.toLowerCase()};
       bodyPartId = await insert('body_parts', bodyPart);
     }
 
-    final exercise = {'name': exerciseName, 'bodyPartId': bodyPartId, 'isCardio': isCardio ? 1 : 0};
+    final exercise = {'name': exerciseName.toLowerCase(), 'bodyPartId': bodyPartId, 'isCardio': isCardio ? 1 : 0};
     return await insertUnique('Exercises', exercise);
-  }
-  Future<int?> _getBodyPartIdByName(String name) async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('body_parts', where: 'lower(name) = ?', whereArgs: [name.toLowerCase()]);
-
-    if (maps.isEmpty) {
-      return null;
-    }
-    return maps.first['id'];
   }
 
   /// Create new Weighted Workout Record
@@ -120,7 +123,7 @@ class DatabaseHelper {
   /// Used to populate DropDown Menus of Exercises
   Future<List<String>> getUniqueExerciseNames() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.rawQuery('SELECT DISTINCT name FROM exercises ORDER BY name ASC');
+    final List<Map<String, dynamic>> maps = await db.rawQuery('SELECT DISTINCT name FROM exercises ORDER BY lower(name) ASC');
     return List<String>.from(maps.map((map) => map['name'] as String));
   }
 
@@ -154,12 +157,58 @@ class DatabaseHelper {
       ''', [id]);
   }
 
+  // Get an Exercise's associated BodyPart
+  Future<String?> getBodyPartByExerciseName(String exerciseName) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT body_parts.name
+    FROM exercises 
+    JOIN body_parts ON exercises.bodyPartId = body_parts.id
+    WHERE exercises.name = ? 
+  ''', [exerciseName]);
+    if (maps.isNotEmpty) {
+      return maps.first['name'] as String?;
+    } else {
+      return null;
+    }
+  }
+
   Future<int> updateWeightedWorkout(Map<String, dynamic> data, String exerciseName, int id) async {
     final db = await database;
     int? exerciseId = await _getExerciseIdByName(exerciseName);
     data['exerciseId'] = exerciseId;
 
     return await db.update('weighted_workouts', data, where: 'id = ?', whereArgs: [id]);
+  }
+
+  // This update may require an insert on BodyPart Table
+  Future<int> updateExercise(String exerciseName, String bodyPartName, String initialExerciseName) async {
+    final db = await database;
+    int? exerciseId = await _getExerciseIdByName(initialExerciseName);
+
+    // Check if BodyPart update is necessary:
+    int? bodyPartId = await getIdByName('body_parts', bodyPartName);
+
+    if (bodyPartId == null) {
+      // The body part doesn't exist yet, so insert it
+      final bodyPart = {'name': bodyPartName.toLowerCase()};
+      bodyPartId = await insert('body_parts', bodyPart);
+    }
+
+    Map<String, dynamic> data = {
+      'name': exerciseName,
+      'bodyPartId': bodyPartId,
+    };
+
+    return await db.update('exercises', data, where: 'id = ?', whereArgs: [exerciseId]);
+  }
+
+  // Delete a Give Exercise from the Database
+  Future<int> deleteExercise(String exerciseName) async {
+    final db = await database;
+    int? exerciseId = await _getExerciseIdByName(exerciseName);
+
+    return await db.delete('exercises', where: 'id = ?', whereArgs: [exerciseId]);
   }
 
   // Used for Selects
