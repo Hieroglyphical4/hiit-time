@@ -265,7 +265,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       color: Colors.transparent,
       home: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: Container(
           color: secondaryColor,
           child: Center(

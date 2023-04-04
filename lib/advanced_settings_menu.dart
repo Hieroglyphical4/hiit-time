@@ -99,7 +99,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                 : Colors.white
             ),
             onPressed: () {
-              // Launch Extras Menu
+              // Launch Plate Calculator
               showGeneralDialog(
                 context: context,
                 barrierDismissible: true,

@@ -49,8 +49,10 @@ class DatabaseHelper {
         exerciseId INTEGER NOT NULL,
         date INTEGER NOT NULL,
         weight INTEGER NOT NULL,
-        reps INTEGER NOT NULL,
-        sets INTEGER NOT NULL,
+        rep1 INTEGER NOT NULL,
+        rep2 INTEGER NOT NULL,
+        rep3 INTEGER NOT NULL,
+        rep4 INTEGER NOT NULL,
         FOREIGN KEY (exerciseId) REFERENCES exercises (id)
       );
     ''');

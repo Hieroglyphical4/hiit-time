@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hiit_time/plate_calculator.dart';
 import 'Config/settings.dart';
 import 'Database/database_helper.dart';
 
@@ -297,7 +298,7 @@ class LogsWidgetState extends State<LogsWidget> {
 ///////////////////////////////////
 // Widget for New & Edit Log
 ///////////////////////////////////
-class NewLogEditLogWidget extends StatefulWidget {
+class NewLogEditLogWidget extends StatefulWidget with WidgetsBindingObserver{
   final Function() closeNewLogsMenu;
   String header; // Either New Log or Edit Log
   final id; // Id of Workout Record
@@ -313,7 +314,7 @@ class NewLogEditLogWidget extends StatefulWidget {
   NewLogEditLogWidgetState createState() => NewLogEditLogWidgetState();
 }
 
-class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
+class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> with SingleTickerProviderStateMixin {
   // Text Displayed on Dropdown Menu
   String? _selectedExercise;
 
@@ -322,21 +323,32 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
   String? _currentExercise;
   String? _currentDate;
   String? _currentWeight;
-  String? _currentReps;
-  String? _currentSets;
+  int _currentRepsSet1 = 0;
+  int _currentRepsSet2 = 0;
+  int _currentRepsSet3 = 0;
+  int _currentRepsSet4 = 0;
 
   // These are the variables used to store users provided values
   String? _providedExercise;
   String? _providedDate;
   String? _providedWeight;
-  String? _providedReps;
-  String? _providedSets;
+  int _providedRepsSet1 = 0;
+  int _providedRepsSet2 = 0;
+  int _providedRepsSet3 = 0;
+  int _providedRepsSet4 = 0;
 
   // Initialize dropdown menu to avoid errors
   List<String> dropdownItems = <String>[''];
 
   // counts how many fields the user has supplied to determine if save button should show
-  int _userInputCount = 0;
+  bool _exerciseProvided = false;
+  bool _dateProvided = false;
+  bool _weightProvided = false;
+  bool _firstRepsProvided = false;
+  bool _secondRepsProvided = false;
+  bool _thirdRepsProvided = false;
+  bool _fourthRepsProvided = false;
+
 
   // Create a function that shows the date picker dialog
   Future<void> _selectDate(BuildContext context) async {
@@ -348,7 +360,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
     if (picked != null && picked != _providedDate) {
       setState(() {
         if (_providedDate == null) {
-          ++_userInputCount;
+          _dateProvided = true;
         }
         _providedDate = "${picked.month.toString().padLeft(2,'0')}/${picked.day.toString().padLeft(2,'0')}/${picked.year.toString()}";
       });
@@ -367,9 +379,14 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
       // Edit Mode Setup Stuff
       _editMode = true;
 
-      // TODO Initialize Vars
+      // Initialize Vars
       getCurrentWorkoutFields();
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   // Initialize Items in Dropdown menu
@@ -390,19 +407,33 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
       _currentExercise = workoutFields['exerciseName'];
       _currentDate = workoutFields['date'];
       _currentWeight = workoutFields['weight'].toString();
-      _currentReps = workoutFields['reps'].toString();
-      _currentSets = workoutFields['sets'].toString();
+      _currentRepsSet1 = workoutFields['rep1'];
+      _currentRepsSet2 = workoutFields['rep2'];
+      _currentRepsSet3 = workoutFields['rep3'];
+      _currentRepsSet4 = workoutFields['rep4'];
     });
   }
 
   // Insert new workout record
   Future<int> insertWeightedWorkout() async {
+
+    // Prevent later sets from being stored if previous ones were cancelled:
+    if (_providedRepsSet2 == 0) {
+      _providedRepsSet3 = 0;
+      _providedRepsSet4 = 0;
+    }
+    if (_providedRepsSet3 == 0) {
+      _providedRepsSet4 = 0;
+    }
+
     Map<String, dynamic> data = {
       'exerciseId' : '', // will be updated in database_helper
       'date': _providedDate,
       'weight': _providedWeight,
-      'reps': _providedReps,
-      'sets': _providedSets,
+      'rep1': _providedRepsSet1,
+      'rep2': _providedRepsSet2,
+      'rep3': _providedRepsSet3,
+      'rep4': _providedRepsSet4,
     };
 
     return await DatabaseHelper.instance.insertWeightedWorkout('weighted_workouts', data, _providedExercise!);
@@ -410,12 +441,27 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
 
   // Insert new workout record
   Future<int> updateWeightedWorkout() async {
+
+    // Prevent later sets from being stored if previous ones were cancelled:
+    if (_secondRepsProvided && _providedRepsSet2 == 0) {
+      _providedRepsSet3 = 0;
+      _currentRepsSet3 = 0;
+      _providedRepsSet4 = 0;
+      _currentRepsSet4 = 0;
+    }
+    if (_thirdRepsProvided && _providedRepsSet3 == 0) {
+      _providedRepsSet4 = 0;
+      _currentRepsSet4 = 0;
+    }
+
     Map<String, dynamic> data = {
       'exerciseId' : '', // will be updated in database_helper
       'date': _providedDate ?? _currentDate,
       'weight': _providedWeight ?? _currentWeight,
-      'reps': _providedReps ?? _currentReps,
-      'sets': _providedSets ?? _currentSets,
+      'rep1': _firstRepsProvided ? _providedRepsSet1 : _currentRepsSet1,
+      'rep2': _secondRepsProvided ? _providedRepsSet2 : _currentRepsSet2,
+      'rep3': _thirdRepsProvided ? _providedRepsSet3 : _currentRepsSet3,
+      'rep4': _fourthRepsProvided ? _providedRepsSet4 : _currentRepsSet4,
     };
 
     var exercise = _providedExercise ?? _currentExercise;
@@ -430,14 +476,14 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 365,
-        width: 275,
+      width: 300,
         color: secondaryAccentColor,
         child: Center(
-          child: Column(
+          child: SingleChildScrollView(
+              child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 10),
+              SizedBox(height: 15),
 
               // Header
               Text(widget.header,
@@ -488,7 +534,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                             onChanged: (String? newValue) {
                               setState(() {
                                 if (_selectedExercise == null) {
-                                  ++_userInputCount;
+                                  _exerciseProvided = true;
                                 }
                                 _selectedExercise = newValue!;
                                 _providedExercise = newValue;
@@ -591,7 +637,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                       /// ///////////////////
                       Column(children: [
                         SizedBox(
-                            height: 40,
+                            height: 45,
                             width: 100,
                             child: Material(
                               color: primaryColor,
@@ -640,7 +686,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                       /// /////////////////////
                       Column(children: [
                         SizedBox(
-                          height: 40,
+                          height: 45,
                           width: 100,
                           child: Material(
                             color: primaryColor,
@@ -658,7 +704,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                     if (value != '') {
                                       setState(() {
                                         if (_providedWeight == null) {
-                                          ++_userInputCount;
+                                          _weightProvided = true;
                                         }
                                         _providedWeight = value;
                                       });
@@ -666,8 +712,8 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                     if (value == '') {
                                       // Useful if the text field was added to and deleted
                                       setState(() {
-                                        --_userInputCount;
                                         _providedWeight = null;
+                                        _weightProvided = false;
                                       });
                                     }
                                   },
@@ -702,25 +748,25 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
 
                 SizedBox(height: 15),
 
-                /// Reps and Sets
+                /// Reps 1st and 2nd
                 Row(children: [
                   Spacer(),
 
                   /// //////////////////
-                  /// Reps Input Fields
+                  /// Reps Input Fields (1st set)
                   /// //////////////////
                   Column(children: [
                     Material(
                         color: primaryColor,
                         child: Center(
                             child: SizedBox(
-                              height: 40,
+                              height: 45,
                               width: 100,
                               child: Padding(
                                   padding: EdgeInsets.only(top: 17),
                                   child: TextFormField(
                                     style: TextStyle(
-                                        color: (_providedReps != _currentReps)
+                                        color: (_providedRepsSet1 != _currentRepsSet1)
                                             ? primaryAccentColor
                                             : appCurrentlyInDarkMode ? Colors.black : Colors.white,
                                         fontSize: 25),
@@ -729,17 +775,17 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                     onChanged: (value) {
                                       if (value != '') {
                                         setState(() {
-                                          if (_providedReps == null) {
-                                            ++_userInputCount;
+                                          if (!_firstRepsProvided) {
+                                            _firstRepsProvided = true;
                                           }
-                                          _providedReps = value;
+                                          _providedRepsSet1 = int.parse(value);
                                         });
                                       }
                                       if (value == '') {
                                         // Useful if the text field was added to and deleted
                                         setState(() {
-                                          --_userInputCount;
-                                          _providedReps = null;
+                                          _providedRepsSet1 = 0;
+                                          _firstRepsProvided = false;
                                         });
                                       }
                                     },
@@ -748,7 +794,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           ?.unfocus();
                                     },
                                     decoration: InputDecoration(
-                                      hintText: _editMode ? _currentReps : '00',
+                                      hintText: _editMode ? _currentRepsSet1.toString() : '00',
                                       hintStyle: TextStyle(
                                         fontSize: 25,
                                         color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
@@ -757,13 +803,13 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                     inputFormatters: <TextInputFormatter>[
                                       FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
                                       FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
-                                      LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                      LengthLimitingTextInputFormatter(2), // 4 digits at most
                                     ],
                                   )),
                             ))
                     ),
                     SizedBox(height: 5),
-                    Text("Reps",
+                    Text("Reps (1st)",
                         style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, decoration: TextDecoration.none,
                             color: textColorOverwrite ? Colors.black : primaryColor
                         )),
@@ -771,21 +817,22 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
 
                   Spacer(),
 
-                  /// ///////////////////
-                  /// Sets Input Fields
-                  /// ///////////////////
-                  Column(children: [
+                  /// //////////////////
+                  /// Reps Input Fields (2nd set)
+                  /// //////////////////
+                  (_providedRepsSet1 > 0 || _currentRepsSet1 > 0)
+                    ? Column(children: [
                     Material(
                         color: primaryColor,
                         child: Center(
                             child: SizedBox(
-                              height: 40,
+                              height: 45,
                               width: 100,
                               child: Padding(
                                   padding: EdgeInsets.only(top: 17),
                                   child: TextFormField(
                                     style: TextStyle(
-                                        color: (_providedSets != _currentSets)
+                                        color: (_providedRepsSet2 != _currentRepsSet2)
                                             ? primaryAccentColor
                                             : appCurrentlyInDarkMode ? Colors.black : Colors.white,
                                         fontSize: 25),
@@ -794,17 +841,15 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                     onChanged: (value) {
                                       if (value != '') {
                                         setState(() {
-                                          if (_providedSets == null) {
-                                            ++_userInputCount;
-                                          }
-                                          _providedSets = value;
+                                          _providedRepsSet2 = int.parse(value);
+                                          _secondRepsProvided = true;
                                         });
                                       }
                                       if (value == '') {
                                         // Useful if the text field was added to and deleted
                                         setState(() {
-                                          --_userInputCount;
-                                          _providedSets = null;
+                                          _providedRepsSet2 = 0;
+                                          _secondRepsProvided = false;
                                         });
                                       }
                                     },
@@ -813,7 +858,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           ?.unfocus();
                                     },
                                     decoration: InputDecoration(
-                                      hintText: _editMode ? _currentSets : '0',
+                                      hintText: _editMode ? _currentRepsSet2.toString() : '00',
                                       hintStyle: TextStyle(
                                         fontSize: 25,
                                         color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
@@ -821,27 +866,163 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                     ),
                                     inputFormatters: <TextInputFormatter>[
                                       FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                      FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
-                                      LengthLimitingTextInputFormatter(4), // 4 digits at most
+                                      LengthLimitingTextInputFormatter(2), // 4 digits at most
                                     ],
                                   )),
                             ))
                     ),
                     SizedBox(height: 5),
-                    Text("Sets",
+                    Text("Reps (2nd)",
                         style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, decoration: TextDecoration.none,
                             color: textColorOverwrite ? Colors.black : primaryColor
                         )),
-                  ]),
+                  ])
+                    : SizedBox(width: 100),
+
 
                   Spacer(),
               ]),
-              ]),
 
+                SizedBox(height: 15),
+
+                /// Reps 3rd and 4th
+                Row(children: [
+                  Spacer(),
+
+                  /// //////////////////
+                  /// Reps Input Fields (3rd set)
+                  /// //////////////////
+                  (_providedRepsSet2 > 0 || _currentRepsSet2 > 0)
+                      ? Column(children: [
+                    Material(
+                        color: primaryColor,
+                        child: Center(
+                            child: SizedBox(
+                              height: 45,
+                              width: 100,
+                              child: Padding(
+                                  padding: EdgeInsets.only(top: 17),
+                                  child: TextFormField(
+                                    style: TextStyle(
+                                        color: (_providedRepsSet3 != _currentRepsSet3)
+                                            ? primaryAccentColor
+                                            : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                        fontSize: 25),
+                                    textAlign: TextAlign.center,
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) {
+                                      if (value != '') {
+                                        setState(() {
+                                          _providedRepsSet3 = int.parse(value);
+                                          _thirdRepsProvided = true;
+                                        });
+                                      }
+                                      if (value == '') {
+                                        // Useful if the text field was added to and deleted
+                                        setState(() {
+                                          _providedRepsSet3 = 0;
+                                          _thirdRepsProvided = false;
+                                        });
+                                      }
+                                    },
+                                    onFieldSubmitted: (value) {
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText: _editMode ? _currentRepsSet3.toString() : '00',
+                                      hintStyle: TextStyle(
+                                        fontSize: 25,
+                                        color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                      ),
+                                    ),
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                      LengthLimitingTextInputFormatter(2), // 4 digits at most
+                                    ],
+                                  )),
+                            ))
+                    ),
+                    SizedBox(height: 5),
+                    Text("Reps (3rd)",
+                        style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, decoration: TextDecoration.none,
+                            color: textColorOverwrite ? Colors.black : primaryColor
+                        )),
+                  ])
+                      : SizedBox(width: 100),
+
+
+                  Spacer(),
+
+                  /// //////////////////
+                  /// Reps Input Fields (4th set)
+                  /// //////////////////
+                  (_providedRepsSet3 > 0 || _currentRepsSet3 > 0)
+                      ? Column(children: [
+                    Material(
+                        color: primaryColor,
+                        child: Center(
+                            child: SizedBox(
+                              height: 45,
+                              width: 100,
+                              child: Padding(
+                                  padding: EdgeInsets.only(top: 17),
+                                  child: TextFormField(
+                                    // focusNode: _focusNode2,
+                                    style: TextStyle(
+                                        color: (_providedRepsSet4 != _currentRepsSet4)
+                                            ? primaryAccentColor
+                                            : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                        fontSize: 25),
+                                    textAlign: TextAlign.center,
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (value) {
+                                      if (value != '') {
+                                        setState(() {
+                                          _providedRepsSet4 = int.parse(value);
+                                          _fourthRepsProvided = true;
+                                        });
+                                      }
+                                      if (value == '') {
+                                        // Useful if the text field was added to and deleted
+                                        setState(() {
+                                          _providedRepsSet4 = 0;
+                                          _fourthRepsProvided = false;
+                                        });
+                                      }
+                                    },
+                                    onFieldSubmitted: (value) {
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText: _editMode ? _currentRepsSet4.toString() : '00',
+                                      hintStyle: TextStyle(
+                                        fontSize: 25,
+                                        color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                      ),
+                                    ),
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                      LengthLimitingTextInputFormatter(2), // 4 digits at most
+                                    ],
+                                  )),
+                            ))
+                    ),
+                    SizedBox(height: 5),
+                    Text("Reps (4th)",
+                        style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, decoration: TextDecoration.none,
+                            color: textColorOverwrite ? Colors.black : primaryColor
+                        )),
+                  ])
+                      : SizedBox(width: 100),
+
+                  Spacer(),
+                ]),
+              ]),
 
               /// Delete And Save Buttons
               Row(children: [
-
                 _editMode
                   ? Spacer()
                   : Container(),
@@ -852,7 +1033,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                     color: secondaryAccentColor,
                     child: Column(
                         children: [
-                          SizedBox(height: 15),
+                          SizedBox(height: 5),
                           //////////////////
                           /// Delete Button
                           //////////////////
@@ -880,7 +1061,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                               style: TextStyle(
                                 fontFamily: 'AstroSpace',
                                 color: Colors.red.shade600,
-                                fontSize: 20,
+                                fontSize: 18,
                               ),
                             ),
                             Text(
@@ -888,7 +1069,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                               style: TextStyle(
                                 fontFamily: 'AstroSpace',
                                 color: Colors.red.shade600,
-                                fontSize: 20,
+                                fontSize: 18,
                               ),
                             )
                           ])
@@ -912,7 +1093,8 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                         disabledColor: Colors.grey,
                         icon: const Icon(Icons.check_circle),
                         onPressed: _editMode
-                            ? _userInputCount > 0 ? () {
+                            ? (_exerciseProvided || _dateProvided || _weightProvided ||
+                            _firstRepsProvided || _secondRepsProvided || _thirdRepsProvided || _fourthRepsProvided) ? () {
                           /// Edit Mode
                           // widget.audio.setVolume(_appVolume);
                           // widget.audio.setReleaseMode(ReleaseMode.stop);
@@ -928,7 +1110,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                           Navigator.of(context).pop(true);
                         }
                                 : null
-                            : _userInputCount == 5 ? () {
+                            : (_exerciseProvided && _dateProvided && _weightProvided && _firstRepsProvided) ? () {
                           /// New Log Mode
                           // widget.audio.setVolume(_appVolume);
                           // widget.audio.setReleaseMode(ReleaseMode.stop);
@@ -951,7 +1133,12 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                         'Save',
                         style: TextStyle(
                           fontFamily: 'AstroSpace',
-                          color: _userInputCount == 5
+                          color: _editMode
+                          ? (_exerciseProvided || _dateProvided || _weightProvided ||
+                              _firstRepsProvided || _secondRepsProvided || _thirdRepsProvided || _fourthRepsProvided)
+                              ? primaryAccentColor
+                              : Colors.grey
+                          : (_exerciseProvided && _dateProvided && _weightProvided && _firstRepsProvided)
                               ? primaryAccentColor
                               : Colors.grey,
                           fontSize: 20,
@@ -966,6 +1153,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
               SizedBox(height: 15),
             ])
         )
+    )
     );
   }
 }
@@ -1322,6 +1510,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
       if (item['selected'] == true) {
         // Check if selected item has Items to build a table from
         if (workoutMap.isEmpty) {
+          /// No Logs Found
           return Column(children: [
               Text('No logs found.',
                 style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16, color: primaryColor, height: 1.1),
@@ -1346,7 +1535,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                     ]),
                     onPressed: () {},
                     onLongPress: () {
-                      // TODO Fire DATABASE Event to delete Exercise
+                      // Fire DATABASE Event to delete Exercise
                       deleteExercise();
                       widget.closeSubMenus();
                     },
@@ -1356,18 +1545,24 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
             SizedBox(height: 15),
           ]);
         } else {
-          // There are Items, build table
+          /// There are Items, build table
           // TODO Run if logic on Cardio = true/false
           return Container(
-              width: 280,
-              color: primaryColor,
+              width: 288,
+              // color: secondaryColor,
+              decoration: BoxDecoration(
+                color: secondaryColor,
+                border: Border.all(
+                  color: primaryColor,
+                  width: 1,
+                ),
+              ),
               child: Table(
                 columnWidths: const {
-                  0: FlexColumnWidth(1.3),
-                  1: FlexColumnWidth(1.6),
-                  2: FlexColumnWidth(1.3),
-                  3: FlexColumnWidth(1.3),
-                  4: FlexColumnWidth(1),
+                  0: FlexColumnWidth(1.4),  // Date
+                  1: FlexColumnWidth(1.6),  // Weight
+                  2: FlexColumnWidth(2.9),  // Reps
+                  4: FlexColumnWidth(1),   // Edit
                 },
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 children: [
@@ -1379,7 +1574,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                         Text('Date',
                             style: TextStyle(fontFamily: 'AstroSpace',
                                 fontSize: 15, color: textColorOverwrite
-                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    ? appCurrentlyInDarkMode ? Colors.white : Colors.black
                                     : secondaryAccentColor
                             )),
                         Divider(color: textColorOverwrite
@@ -1393,10 +1588,10 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                         Text('Weight',
                             style: TextStyle(fontFamily: 'AstroSpace',
                                 fontSize: 15, color: textColorOverwrite
-                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    ? appCurrentlyInDarkMode ? Colors.white : Colors.black
                                     : secondaryAccentColor)),
                         Divider(color: textColorOverwrite
-                            ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                            ? appCurrentlyInDarkMode ? Colors.white : Colors.black
                             : secondaryAccentColor),
                       ])
                       ),
@@ -1406,23 +1601,10 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                         Text('Reps',
                             style: TextStyle(fontFamily: 'AstroSpace',
                                 fontSize: 15, color: textColorOverwrite
-                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    ? appCurrentlyInDarkMode ? Colors.white : Colors.black
                                     : secondaryAccentColor)),
                         Divider(color: textColorOverwrite
-                            ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                            : secondaryAccentColor),
-                      ])
-                      ),
-                      TableCell(child:
-                      Column(children: [
-                        SizedBox(height: 5),
-                        Text('Sets',
-                            style: TextStyle(fontFamily: 'AstroSpace',
-                                fontSize: 15, color: textColorOverwrite
-                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                    : secondaryAccentColor)),
-                        Divider(color: textColorOverwrite
-                            ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                            ? appCurrentlyInDarkMode ? Colors.white : Colors.black
                             : secondaryAccentColor),
                       ])
                       ),
@@ -1432,10 +1614,10 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                         Text('Edit',
                             style: TextStyle(fontFamily: 'AstroSpace',
                                 fontSize: 15, color: textColorOverwrite
-                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                    ? appCurrentlyInDarkMode ? Colors.white : Colors.black
                                     : secondaryAccentColor)),
                         Divider(color: textColorOverwrite
-                            ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                            ? appCurrentlyInDarkMode ? Colors.white : Colors.black
                             : secondaryAccentColor),
                       ])
                       ),
@@ -1448,11 +1630,11 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                         Column(children: [
                           Text(("${(item['date']).substring(0, 5)}"),
                               style: TextStyle(fontFamily: 'AstroSpace',
-                                  fontSize: 16, color: secondaryColor)
+                                  fontSize: 16, color: primaryColor)
                           ),
                           SizedBox(height: 2),
                           Divider(color: textColorOverwrite
-                              ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                              ? appCurrentlyInDarkMode ? Colors.white : Colors.black
                               : secondaryAccentColor)
                         ])
                         ),
@@ -1460,30 +1642,84 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                         Column(children: [
                           Text(item['weight'].toString(),
                               style: TextStyle(fontFamily: 'AstroSpace',
-                                  fontSize: 17, color: secondaryColor)),
+                                  fontSize: 17, color: primaryColor)),
                           Divider(color: textColorOverwrite
-                              ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                              ? appCurrentlyInDarkMode ? Colors.white : Colors.black
                               : secondaryAccentColor)
                         ])
                         ),
                         TableCell(child:
-                        Column(children:[
-                          Text(item['reps'].toString(),
-                              style: TextStyle(fontFamily: 'AstroSpace',
-                                  fontSize: 17, color: secondaryColor)),
-                          Divider(color: textColorOverwrite
-                              ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                              : secondaryAccentColor)
-                        ])
-                        ),
-                        TableCell(child:
-                        Column(children: [
-                          Text(item['sets'].toString(),
-                              style: TextStyle(fontFamily: 'AstroSpace',
-                                  fontSize: 17, color: secondaryColor)),
-                          Divider(color: textColorOverwrite
-                              ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                              : secondaryAccentColor)
+                        Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children:[
+                              // Dynamically show reps
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                Text(item['rep1'].toString(),
+                                  style: TextStyle(fontFamily: 'AstroSpace',
+                                      fontSize: 17, color: primaryColor)
+                                ),
+
+                                // Check if there is a 2nd rep for this log
+                                item['rep2'] > 0
+                                  ? Row(children: [
+                                      Text('|',
+                                          style: TextStyle(fontFamily: 'AstroSpace',
+                                              fontSize: 19, color: textColorOverwrite
+                                                  ? appCurrentlyInDarkMode ? Colors.white : Colors.black
+                                                  : secondaryAccentColor)
+                                      ),
+
+                                      Text(item['rep2'].toString(),
+                                        style: TextStyle(fontFamily: 'AstroSpace',
+                                            fontSize: 17, color: primaryColor)
+                                        )
+                                  ])
+                                    : Container(),
+
+                                // Check if there is a 3rd rep for this log
+                                item['rep3'] > 0
+                                    ? Row(children: [
+                                  Text('|',
+                                      style: TextStyle(fontFamily: 'AstroSpace',
+                                          fontSize: 19, color: textColorOverwrite
+                                              ? appCurrentlyInDarkMode ? Colors.white : Colors.black
+                                              : secondaryAccentColor)
+                                  ),
+                                  Text(item['rep3'].toString(),
+                                      style: TextStyle(fontFamily: 'AstroSpace',
+                                          fontSize: 17, color: primaryColor)
+                                  )
+                                ])
+                                    : Container(),
+
+                                // Check if there is a 4th rep for this log
+                                item['rep4'] > 0
+                                    ? Row(children: [
+                                  Text('|',
+                                      style: TextStyle(fontFamily: 'AstroSpace',
+                                          fontSize: 19, color: textColorOverwrite
+                                              ? appCurrentlyInDarkMode ? Colors.white : Colors.black
+                                              : secondaryAccentColor)
+                                  ),
+                                  Text(item['rep4'].toString(),
+                                      style: TextStyle(fontFamily: 'AstroSpace',
+                                          fontSize: 17, color: primaryColor)
+                                  )
+                                ])
+                                    : Container(),
+                              ]),
+
+
+                              // Bottom Divider
+                              Divider(color: textColorOverwrite
+                                  ? appCurrentlyInDarkMode ? Colors.white : Colors.black
+                                  : secondaryAccentColor),
+
+                              item['rep2'] > 0
+                                ? SizedBox(height: 2)
+                                : Container(),
                         ])
                         ),
                         TableCell(
@@ -1504,12 +1740,63 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                                     pageBuilder: (BuildContext buildContext,
                                         Animation animation,
                                         Animation secondaryAnimation) {
-                                      return Center(
-                                          child: SizedBox(
-                                              width: 300,
-                                              height: 400,
-                                              child: NewLogEditLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterSubmission, header: 'Edit Mode', id: item['id'])
-                                          ));
+
+                                      return Scaffold(
+                                          backgroundColor: secondaryColor,
+                                          resizeToAvoidBottomInset: true,
+                                          appBar: AppBar(
+                                            backgroundColor: primaryAccentColor,
+                                            centerTitle: true,
+                                            title: Text('Advanced Settings', style: TextStyle(
+                                                color: textColorOverwrite
+                                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                                    : alternateColorOverwrite ? Colors.black
+                                                    : Colors.white
+                                            ),
+                                            ),
+                                            leading: IconButton(
+                                              icon: Icon(Icons.arrow_back, color: textColorOverwrite
+                                                  ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                                  : alternateColorOverwrite ? Colors.black
+                                                  : Colors.white),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                            actions: [
+                                              IconButton(
+                                                icon: Icon(Icons.calculate_outlined, color: textColorOverwrite
+                                                    ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                                    : alternateColorOverwrite ? Colors.black
+                                                    : Colors.white
+                                                ),
+                                                onPressed: () {
+                                                  // Launch Plate Calculator
+                                                  showGeneralDialog(
+                                                    context: context,
+                                                    barrierDismissible: true,
+                                                    barrierLabel: MaterialLocalizations.of(context)
+                                                        .modalBarrierDismissLabel,
+                                                    barrierColor: Colors.black45,
+                                                    transitionDuration: const Duration(milliseconds: 200),
+
+                                                    // ANY Widget can be passed here
+                                                    pageBuilder: (BuildContext buildContext,
+                                                        Animation animation,
+                                                        Animation secondaryAnimation) {
+                                                      return Center(
+                                                        child: PlateCalculator(key: UniqueKey()),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                          body: Center(child:
+                                            NewLogEditLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterSubmission, header: 'Edit Log', id: item['id'])
+                                          )
+                                          );
 
                                     },
                                   ).then((restartRequired) {
@@ -1520,9 +1807,9 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
 
                                 },
                                 child: Column(children: [
-                                  Icon(Icons.edit, size: 20, color: secondaryColor),
+                                  Icon(Icons.edit, size: 20, color: primaryColor),
                                   Divider(color: textColorOverwrite
-                                      ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                      ? appCurrentlyInDarkMode ? Colors.white : Colors.black
                                       : secondaryAccentColor),
                                   SizedBox(height: 1),
                                 ]))
