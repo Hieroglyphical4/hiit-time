@@ -298,7 +298,7 @@ class LogsWidgetState extends State<LogsWidget> {
 ///////////////////////////////////
 // Widget for New & Edit Log
 ///////////////////////////////////
-class NewLogEditLogWidget extends StatefulWidget with WidgetsBindingObserver{
+class NewLogEditLogWidget extends StatefulWidget {
   final Function() closeNewLogsMenu;
   String header; // Either New Log or Edit Log
   final id; // Id of Workout Record
@@ -314,7 +314,7 @@ class NewLogEditLogWidget extends StatefulWidget with WidgetsBindingObserver{
   NewLogEditLogWidgetState createState() => NewLogEditLogWidgetState();
 }
 
-class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> with SingleTickerProviderStateMixin {
+class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
   // Text Displayed on Dropdown Menu
   String? _selectedExercise;
 
@@ -476,7 +476,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> with SingleTic
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 300,
+      width: _editMode ? null : 275,
         color: secondaryAccentColor,
         child: Center(
           child: SingleChildScrollView(
@@ -484,12 +484,16 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> with SingleTic
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SizedBox(height: 15),
-
               // Header
               Text(widget.header,
                 style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
                     color: textColorOverwrite ? Colors.black : primaryColor, decoration: TextDecoration.none)),
-              SizedBox(height: 10),
+
+              _editMode
+                ? SizedBox(height: 25)
+                  : SizedBox(height: 10),
+
+              // SizedBox(height: 10),
               SizedBox(height: 1, child: Container(color: Colors.grey)),
               SizedBox(height: 15),
 
@@ -1020,6 +1024,10 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> with SingleTic
                   Spacer(),
                 ]),
               ]),
+
+              _editMode
+                  ? SizedBox(height: 15)
+                  : SizedBox(height: 5),
 
               /// Delete And Save Buttons
               Row(children: [
