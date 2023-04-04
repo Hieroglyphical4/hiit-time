@@ -1,8 +1,8 @@
+import 'Config/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hiit_time/plate_calculator.dart';
-import 'Config/settings.dart';
 import 'Database/database_helper.dart';
+import 'package:hiit_time/plate_calculator.dart';
 
 //////////////////////////////////////////
 // Widget for all User Logs (sub-submenu)
@@ -485,17 +485,19 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
             children: [
               SizedBox(height: 15),
               // Header
-              Text(widget.header,
-                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
-                    color: textColorOverwrite ? Colors.black : primaryColor, decoration: TextDecoration.none)),
-
               _editMode
                 ? SizedBox(height: 25)
-                  : SizedBox(height: 10),
+                : Column(children: [
+                  Text(widget.header,
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
+                        color: textColorOverwrite ? Colors.black : primaryColor, decoration: TextDecoration.none)
+                  ),
+                  SizedBox(height: 1, child: Container(color: Colors.grey)),
+                  SizedBox(height: 15),
+              ]),
 
               // SizedBox(height: 10),
-              SizedBox(height: 1, child: Container(color: Colors.grey)),
-              SizedBox(height: 15),
+
 
               /// ////////////////
               /// Exercise Inputs
@@ -1268,215 +1270,202 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                 child: Padding(
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).viewInsets.bottom,
-                      left: 20,
-                      right: 20,
-                      top: 20,
                     ),
                     child:SizedBox(
-                        height: 350,
+                        height: editMode ? 310 : 350,
                         width: 210,
-                        child: Column(
-                            children: [
-                              /// Header
-                              Divider(color: primaryColor),
-                              Container(
-                                  width: 210,
-                                  child: Text(' ${widget.header}:',
-                                    style: TextStyle(
-                                      // backgroundColor: primaryAccentColor,
-                                        color: textColorOverwrite ? Colors.black : primaryColor,
-                                        fontSize: 20),
-                                  )),
-                              Divider(color: primaryColor),
+                        child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: primaryColor,
+                                  width: 1,
+                                )
+                            ),
+                            child:Column(
+                              children: [
+                                /// Header
+                                // Divider(color: primaryColor),
+                                SizedBox(height: 10),
+                                Container(
+                                    width: 210,
+                                    child: Text(' ${widget.header}:',
+                                      style: TextStyle(
+                                        // backgroundColor: primaryAccentColor,
+                                          color: textColorOverwrite ? Colors.black : primaryColor,
+                                          fontSize: 20),
+                                    )),
+                                Divider(color: primaryColor),
 
-                              /// Cardio Toggle
-                              editMode
-                                  ? Container()
-                                  : Row(children: [
-                                Spacer(),
-                                Text('Cardio',
-                                    style: TextStyle(color: cardioExercise ? textColorOverwrite ? Colors.black : primaryColor
-                                        : Colors.grey, fontSize: 18)
-                                ),
-                                Switch(
-                                  value: !cardioExercise,
-                                  onChanged: _changeCardioOrWeightWorkout,
-                                ),
-                                Text('Weighted',
-                                    style: TextStyle(color: cardioExercise ? Colors.grey
-                                        : textColorOverwrite ? Colors.black : primaryColor, fontSize: 18)
-                                ),
-                                Spacer(),
-                              ]),
-
-                              SizedBox(height: 15),
-
-                              /// Body Part
-                              TextFormField(
-                                style: TextStyle(
-                                    color: primaryAccentColor,
-                                    fontSize: 22
-                                ),
-                                textAlign: TextAlign.center,
-                                keyboardType: TextInputType.text,
-                                onChanged: (value) {
-                                  newBodyPartName = value.toLowerCase();
-                                  checkConfirmButtonState();
-
-                                  if (value != '') {
-                                    setState(() {
-                                      // currentBodyPartStringLength = maxBodyPartStringLength - value.length;
-                                    });
-                                  }
-                                  if (value == '') {
-                                    // Useful if the text field was added to and deleted
-                                    setState(() {
-                                      // currentBodyPartStringLength = maxBodyPartStringLength;
-                                    });
-                                  }
-                                },
-                                onFieldSubmitted: (value) {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                },
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  hintText: editMode ? currentBodyPartName : 'ex: chest',
-                                  hintStyle: TextStyle(
-                                    fontSize: 20,
-                                    color: editMode ? Colors.black : Colors.grey,
+                                /// Cardio Toggle
+                                editMode
+                                    ? Container()
+                                    : Row(children: [
+                                  Spacer(),
+                                  Text('Cardio',
+                                      style: TextStyle(color: cardioExercise ? textColorOverwrite ? Colors.black : primaryColor
+                                          : Colors.grey, fontSize: 18)
                                   ),
-                                ),
-                                inputFormatters: <TextInputFormatter>[
-                                  LengthLimitingTextInputFormatter(maxBodyPartStringLength), // 15 characters at most
-                                ],
-                              ),
-                              SizedBox(height: 3),
-                              Text('Body Part',
+                                  Switch(
+                                    value: !cardioExercise,
+                                    onChanged: _changeCardioOrWeightWorkout,
+                                  ),
+                                  Text('Weighted',
+                                      style: TextStyle(color: cardioExercise ? Colors.grey
+                                          : textColorOverwrite ? Colors.black : primaryColor, fontSize: 18)
+                                  ),
+                                  Spacer(),
+                                ]),
+
+                                SizedBox(height: 15),
+
+                                /// Body Part
+                                TextFormField(
                                   style: TextStyle(
-                                      fontFamily: 'AstroSpace',
-                                      color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
-                                      fontSize: 12)
-                              ),
-
-                              SizedBox(height: 15),
-
-                              /// Exercise Name Field
-                              TextFormField(
-                                style: TextStyle(
-                                    color: primaryAccentColor,
-                                    fontSize: 22),
-                                textAlign: TextAlign.center,
-                                keyboardType: TextInputType.text,
-                                onChanged: (value) {
-                                  newExerciseName = value.toLowerCase();
-                                  checkConfirmButtonState();
-
-                                  if (value != '') {
-                                    setState(() {
-                                      // currentExerciseStringLength = maxExerciseStringLength - value.length;
-                                    });
-                                  }
-                                  if (value == '') {
-                                    // Useful if the text field was added to and deleted
-                                    setState(() {
-                                      // currentExerciseStringLength = maxExerciseStringLength;
-                                    });
-                                  }
-                                },
-                                onFieldSubmitted: (value) {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                },
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  hintText: editMode ? currentExerciseName : 'ex: squat',
-                                  hintStyle: TextStyle(
-                                    fontSize: 20,
-                                    color: editMode ? Colors.black : Colors.grey,
+                                      color: primaryAccentColor,
+                                      fontSize: 22
                                   ),
-                                ),
-                                inputFormatters: <TextInputFormatter>[
-                                  LengthLimitingTextInputFormatter(maxExerciseStringLength), // 15 characters at most
-                                ],
-                              ),
-                              SizedBox(height: 3),
-                              Text('Exercise Name',
-                                  style: TextStyle(
-                                      fontFamily: 'AstroSpace',
-                                      color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
-                                      fontSize: 12)
-                              ),
+                                  textAlign: TextAlign.center,
+                                  keyboardType: TextInputType.text,
+                                  onChanged: (value) {
+                                    newBodyPartName = value.toLowerCase();
+                                    checkConfirmButtonState();
 
-                              editMode ? SizedBox(height: 30)
-                                  : SizedBox(height: 10),
-
-                              /// Cancel and Confirm Buttons
-                              Row(children: [
-                                const Spacer(),
-
-                                /// Cancel Button
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red.shade600,
-                                    padding: const EdgeInsets.all(4),
-                                  ),
-                                  child: const Text("Cancel",
-                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.of(context).pop(false);
-                                  },
-                                ),
-                                const Spacer(),
-
-                                /// Confirm Button
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: enableConfirmButton ? primaryAccentColor : secondaryColor,
-                                    padding: const EdgeInsets.all(4),
-                                  ),
-                                  onPressed: enableConfirmButton
-                                      ? () {
-                                    if (editMode) {
-                                      /// Edit Mode
-                                      String exerciseName = newExerciseName.isNotEmpty ? newExerciseName : currentExerciseName;
-                                      String bodyPartName = newBodyPartName.isNotEmpty ? newBodyPartName : currentBodyPartName;
-                                      updateExerciseAndBodyPartsRecord(exerciseName, bodyPartName);
-                                      Navigator.of(context).pop(true);
-                                      widget.closeNewLogsMenu(); // TODO Activate
-                                    } else {
-                                      /// New Log Mode
-                                      insertNewExerciseAndBodyPartsRecord(newExerciseName, newBodyPartName, cardioExercise);
-                                      Navigator.of(context).pop(true);
+                                    if (value != '') {
+                                      setState(() {
+                                        // currentBodyPartStringLength = maxBodyPartStringLength - value.length;
+                                      });
                                     }
-                                  } : null,
-                                  child: const Text("Confirm",
-                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
-                                  )
+                                    if (value == '') {
+                                      // Useful if the text field was added to and deleted
+                                      setState(() {
+                                        // currentBodyPartStringLength = maxBodyPartStringLength;
+                                      });
+                                    }
+                                  },
+                                  onFieldSubmitted: (value) {
+                                    FocusManager.instance.primaryFocus?.unfocus();
+                                  },
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    hintText: editMode ? currentBodyPartName : 'ex: chest',
+                                    hintStyle: TextStyle(
+                                      fontSize: 20,
+                                      color: editMode ? Colors.black : Colors.grey,
+                                    ),
+                                  ),
+                                  inputFormatters: <TextInputFormatter>[
+                                    LengthLimitingTextInputFormatter(maxBodyPartStringLength), // 15 characters at most
+                                  ],
                                 ),
-                                const Spacer(),
-                              ]),
-                              Divider(color: primaryColor),
+                                SizedBox(height: 3),
+                                Text('Body Part',
+                                    style: TextStyle(
+                                        fontFamily: 'AstroSpace',
+                                        color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
+                                        fontSize: 12)
+                                ),
 
-                              // editMode
-                              //     ? ElevatedButton(
-                              //       style: ElevatedButton.styleFrom(
-                              //         backgroundColor: Colors.red.shade600,
-                              //         padding: const EdgeInsets.all(4),
-                              //       ),
-                              //       child: Text("Hold to Delete",
-                              //         style: TextStyle(fontFamily: 'AstroSpace', color: primaryColor, fontSize: 14, height: 1.1),
-                              //       ),
-                              //       onPressed: () {},
-                              //       onLongPress: () {
-                              //         // TODO Fire DATABASE Event to delete Exercise
-                              //         Navigator.of(context).pop(false);
-                              //       },
-                              //     )
-                              //     : Container(),
-                              // SizedBox(height: 10),
-                            ])
+                                SizedBox(height: 15),
+
+                                /// Exercise Name Field
+                                TextFormField(
+                                  style: TextStyle(
+                                      color: primaryAccentColor,
+                                      fontSize: 22),
+                                  textAlign: TextAlign.center,
+                                  keyboardType: TextInputType.text,
+                                  onChanged: (value) {
+                                    newExerciseName = value.toLowerCase();
+                                    checkConfirmButtonState();
+
+                                    if (value != '') {
+                                      setState(() {
+                                        // currentExerciseStringLength = maxExerciseStringLength - value.length;
+                                      });
+                                    }
+                                    if (value == '') {
+                                      // Useful if the text field was added to and deleted
+                                      setState(() {
+                                        // currentExerciseStringLength = maxExerciseStringLength;
+                                      });
+                                    }
+                                  },
+                                  onFieldSubmitted: (value) {
+                                    FocusManager.instance.primaryFocus?.unfocus();
+                                  },
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    hintText: editMode ? currentExerciseName : 'ex: squat',
+                                    hintStyle: TextStyle(
+                                      fontSize: 20,
+                                      color: editMode ? Colors.black : Colors.grey,
+                                    ),
+                                  ),
+                                  inputFormatters: <TextInputFormatter>[
+                                    LengthLimitingTextInputFormatter(maxExerciseStringLength), // 15 characters at most
+                                  ],
+                                ),
+                                SizedBox(height: 3),
+                                Text('Exercise Name',
+                                    style: TextStyle(
+                                        fontFamily: 'AstroSpace',
+                                        color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
+                                        fontSize: 12)
+                                ),
+
+                                editMode ? SizedBox(height: 30)
+                                    : SizedBox(height: 10),
+
+                                /// Cancel and Confirm Buttons
+                                Row(children: [
+                                  const Spacer(),
+
+                                  /// Cancel Button
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red.shade600,
+                                      padding: const EdgeInsets.all(4),
+                                    ),
+                                    child: const Text("Cancel",
+                                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop(false);
+                                    },
+                                  ),
+                                  const Spacer(),
+
+                                  /// Confirm Button
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: enableConfirmButton ? primaryAccentColor : secondaryColor,
+                                      padding: const EdgeInsets.all(4),
+                                    ),
+                                    onPressed: enableConfirmButton
+                                        ? () {
+                                      if (editMode) {
+                                        /// Edit Mode
+                                        String exerciseName = newExerciseName.isNotEmpty ? newExerciseName : currentExerciseName;
+                                        String bodyPartName = newBodyPartName.isNotEmpty ? newBodyPartName : currentBodyPartName;
+                                        updateExerciseAndBodyPartsRecord(exerciseName, bodyPartName);
+                                        Navigator.of(context).pop(true);
+                                        widget.closeNewLogsMenu(); // TODO Activate
+                                      } else {
+                                        /// New Log Mode
+                                        insertNewExerciseAndBodyPartsRecord(newExerciseName, newBodyPartName, cardioExercise);
+                                        Navigator.of(context).pop(true);
+                                      }
+                                    } : null,
+                                    child: const Text("Confirm",
+                                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                                    )
+                                  ),
+                                  const Spacer(),
+                                ]),
+                              ])
+                        )
                     ))
             )
         )
@@ -1556,8 +1545,8 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
           /// There are Items, build table
           // TODO Run if logic on Cardio = true/false
           return Container(
-              width: 288,
-              // color: secondaryColor,
+              width: 290,
+              padding: EdgeInsets.symmetric(horizontal: 3),
               decoration: BoxDecoration(
                 color: secondaryColor,
                 border: Border.all(
@@ -1569,7 +1558,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                 columnWidths: const {
                   0: FlexColumnWidth(1.4),  // Date
                   1: FlexColumnWidth(1.6),  // Weight
-                  2: FlexColumnWidth(2.9),  // Reps
+                  2: FlexColumnWidth(3),  // Reps
                   4: FlexColumnWidth(1),   // Edit
                 },
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
@@ -1582,11 +1571,11 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                         Text('Date',
                             style: TextStyle(fontFamily: 'AstroSpace',
                                 fontSize: 15, color: textColorOverwrite
-                                    ? appCurrentlyInDarkMode ? Colors.white : Colors.black
+                                    ? primaryColor
                                     : secondaryAccentColor
                             )),
                         Divider(color: textColorOverwrite
-                            ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                            ? primaryColor
                             : secondaryAccentColor),
                       ])
                       ),
@@ -1755,7 +1744,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                                           appBar: AppBar(
                                             backgroundColor: primaryAccentColor,
                                             centerTitle: true,
-                                            title: Text('Advanced Settings', style: TextStyle(
+                                            title: Text('Edit Log', style: TextStyle(
                                                 color: textColorOverwrite
                                                     ? appCurrentlyInDarkMode ? Colors.black : Colors.white
                                                     : alternateColorOverwrite ? Colors.black

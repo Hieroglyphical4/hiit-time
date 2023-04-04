@@ -616,7 +616,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                           : Colors.black,
                                       fontSize: _textFontSize),
                                 ),
-                                tileColor: secondaryAccentColor,
+                                tileColor: Colors.blueGrey,
                                 shape: BeveledRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
