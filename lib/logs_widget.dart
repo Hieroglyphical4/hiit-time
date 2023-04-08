@@ -1340,7 +1340,7 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                       bottom: MediaQuery.of(context).viewInsets.bottom,
                     ),
                     child:SizedBox(
-                        height: editMode ? 310 : 350,
+                        height: editMode ? 230 : 250,
                         width: 210,
                         child: Container(
                             decoration: BoxDecoration(
