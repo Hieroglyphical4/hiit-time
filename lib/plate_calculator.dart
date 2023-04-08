@@ -34,7 +34,7 @@ class PlateCalculatorState extends State<PlateCalculator> {
     buttons = [
       NumberedPlateButton(
         key: _childWidgetKey55,
-        number: '55',
+        number: '35',
         count: 0,
         onPressed: changePlateCount,
       ),
@@ -46,13 +46,13 @@ class PlateCalculatorState extends State<PlateCalculator> {
       ),
       NumberedPlateButton(
         key: _childWidgetKey35,
-        number: '35',
+        number: '55',
         count: 0,
         onPressed: changePlateCount,
       ),
       NumberedPlateButton(
         key: _childWidgetKey25,
-        number: '25',
+        number: '10',
         count: 0,
         onPressed: changePlateCount,
       ),
@@ -64,19 +64,19 @@ class PlateCalculatorState extends State<PlateCalculator> {
       ),
       NumberedPlateButton(
         key: _childWidgetKey10,
-        number: '10',
+        number: '25',
         count: 0,
         onPressed: changePlateCount
       ),
       NumberedPlateButton(
         key: _childWidgetKey5,
-        number: '5',
+        number: '1',
         count: 0,
         onPressed: changePlateCount,
       ),
       NumberedPlateButton(
         key: _childWidgetKey1,
-        number: '1',
+        number: '5',
         count: 0,
         onPressed: changePlateCount,
       ),
@@ -144,89 +144,85 @@ class PlateCalculatorState extends State<PlateCalculator> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: secondaryColor,
-      title: Container(
-        height: 30,
-        color: secondaryColor,
-          child: Center(
-              child: Text('Plate Calculator',
-              style: TextStyle(
-                color: primaryColor,
-                fontSize: 25))
-          )
-      ),
-      content: Container(
+    return Container(
         color: secondaryColor,
         width: 250,
-        height: 440,
-        child:Center(
-          child: Column(
-          children: [
-            SizedBox(height: 1, child: Container(color: Colors.grey)),
-            SizedBox(height: 20),
-            ////////////////////////////////////
-            // Weight Calculation Text Field
-            ////////////////////////////////////
-            Row(mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(width: 30),
-                  Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: primaryColor,
-                    width: 2,
-                  ),
+        height: 470,
+        child: Material(
+          color:  secondaryColor,
+          child: Center(
+            child: Column(
+              children: [
+                SizedBox(height: 10),
+                Text('Plate Calculator',
+                    style: TextStyle(fontFamily: 'AstroSpace', color: primaryColor, fontSize: 16, height: 1.1)
                 ),
-                child: SizedBox(
-                  width: 75,
-                  height: 40,
-                  child: Center(child:
-                  Text(userRequestedWeight,
-                    style: TextStyle(
+                SizedBox(height: 10),
+                SizedBox(height: 1, child: Container(color: Colors.grey)),
+                SizedBox(height: 20),
+                ////////////////////////////////////
+                // Weight Calculation Text Field
+                ////////////////////////////////////
+                Row(mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(width: 30),
+                      Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
                         color: primaryColor,
-                        fontSize: 30),
-                    textAlign: TextAlign.center,
-                  )
-                  ),
-                )
-              ),
-                  SizedBox(width: 10),
-                  Align(alignment: Alignment.bottomCenter,
-                      child:Text('lb.',
-                      style: TextStyle(
-                          color: primaryColor,
-                          fontSize: 22)
-                  ))
-            ]),
-
-            SizedBox(height: 10),
-
-            /// Create All the Plate Buttons
-            Column(children: rows),
-
-            SizedBox(height: 20),
-
-            /// Clear All provided input
-            Container(
-                width: 125,
-                height: 40,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: secondaryAccentColor,
-                      padding: const EdgeInsets.all(4),
+                        width: 2,
+                      ),
                     ),
-                  onPressed: resetCounts,
-                  child: Text('Clear',
-                      style: TextStyle(
-                        color: textColorOverwrite ? Colors.black : Colors.white,
-                        fontSize: 20.0,
-                  )),
-            )
-            ),
-          ])
+                    child: SizedBox(
+                      width: 75,
+                      height: 40,
+                      child: Center(child:
+                      Text(userRequestedWeight,
+                        style: TextStyle(
+                            color: primaryColor,
+                            fontSize: 30),
+                        textAlign: TextAlign.center,
+                      )
+                      ),
+                    )
+                  ),
+                      SizedBox(width: 10),
+                      Align(alignment: Alignment.bottomCenter,
+                          child:Text('lb.',
+                          style: TextStyle(
+                              color: primaryColor,
+                              fontSize: 22)
+                      ))
+                ]),
+
+                SizedBox(height: 10),
+
+                /// Create All the Plate Buttons
+                Column(children: rows),
+
+                SizedBox(height: 10),
+
+                /// Clear All provided input
+                Container(
+                    width: 125,
+                    height: 40,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: secondaryAccentColor,
+                          padding: const EdgeInsets.all(4),
+                        ),
+                      onPressed: resetCounts,
+                      child: Text('Clear',
+                          style: TextStyle(
+                            color: textColorOverwrite ? Colors.black : Colors.white,
+                            fontSize: 20.0,
+                      )),
+                )
+                ),
+              ])
+          )
         )
-      ),
+      );
       // actions: [
         // ElevatedButton(
         //   child: Text('Close'),
@@ -235,7 +231,6 @@ class PlateCalculatorState extends State<PlateCalculator> {
         //   },
         // ),
       // ],
-    );
   }
 }
 

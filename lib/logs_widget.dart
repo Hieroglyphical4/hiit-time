@@ -16,26 +16,29 @@ class LogsWidget extends StatefulWidget {
   LogsWidgetState createState() => LogsWidgetState();
 }
 
-// TODO 3 images to select the main filter: Exercise, Body Part, Date
+// TODO 3 images to select the main filter: Cardio, Date, Weighted
 // Within that body:
 // 	1) Group By: Radio buttons (remaining 2 menus)
 // 	2) Sort By: Drop down Menu (Name, Date)
 
 class LogsWidgetState extends State<LogsWidget> {
-  bool _mainFilterExercise = false;
-  bool _mainFilterBodyPart = false;
+  bool _mainFilterWeights = false;
+  bool _mainFilterCardio = false;
   bool _mainFilterDate = false;
   bool _displayNewLogsWidget = false;
 
-  void closeNewLogsMenuAfterSubmission() {
+  void updateTablesAfterSubmission() {
     // TODO Display popup message of submission
-    // TODO Instead of closing the big category menus, close smaller ones
+    // TODO Instead of closing menus, lets update the tables
 
     setState(() {
       _displayNewLogsWidget = false;
-      _mainFilterExercise = false;
-      _mainFilterBodyPart = false;
-      _mainFilterDate = false;
+      // _mainFilterWeights = false;
+      // _mainFilterCardio = false;
+      // _mainFilterDate = false;
+      if (_mainFilterWeights) {
+        // TODO Update table here:
+      }
     });
   }
 
@@ -111,7 +114,7 @@ class LogsWidgetState extends State<LogsWidget> {
                 ),
 
                 _displayNewLogsWidget
-                    ? NewLogEditLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterSubmission, header: 'New Log', id: null)
+                    ? NewLogEditLogWidget(closeNewLogsMenu: updateTablesAfterSubmission, header: 'New Log', id: null)
                     : Container(),
 
                 // Grey Line
@@ -127,38 +130,38 @@ class LogsWidgetState extends State<LogsWidget> {
                     children: [
                       Spacer(flex: 1),
 
-                      /// ///////////////////
-                      /// Filter by Exercise
-                      /// ///////////////////
+                      /// ////////////////////
+                      /// Filter by Cardio
+                      /// ////////////////////
                       Column(children: [
-                          Container(
+                        Container(
                           height: 65,
                           width: 65,
                           decoration: BoxDecoration(
-                            border: Border.all(
-                              color: _mainFilterExercise ? primaryColor : Colors.transparent,
-                              width: 4,
-                            )),
+                              border: Border.all(
+                                color: _mainFilterCardio ? primaryColor : Colors.transparent,
+                                width: 4,
+                              )),
                           child: ElevatedButton(
                             onPressed: () => setState(() {
-                              _mainFilterExercise = !_mainFilterExercise;
-                              _mainFilterBodyPart = false;
+                              _mainFilterCardio = !_mainFilterCardio;
+                              _mainFilterWeights = false;
                               _mainFilterDate = false;
                             }),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: _mainFilterExercise ? Colors.blue : secondaryColor,
+                              backgroundColor: _mainFilterCardio ? Colors.blue : secondaryColor,
                               padding: const EdgeInsets.all(4),
                             ),
-                            child: Icon(Icons.paragliding_outlined, color: primaryColor, size: 30),
+                            child: Icon(Icons.directions_run, color: primaryColor, size: 30),
                           ),
                         ),
                         SizedBox(height: 5),
-                        Text('Exercise',
+                        Text('Cardio',
                           style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1,
-                              color: _mainFilterExercise ? Colors.blue
-                              : textColorOverwrite
-                                ? Colors.black
-                                : primaryColor
+                              color: _mainFilterCardio ? Colors.blue
+                                  : textColorOverwrite
+                                  ? Colors.black
+                                  : primaryColor
                           ),),
                       ]),
 
@@ -180,8 +183,8 @@ class LogsWidgetState extends State<LogsWidget> {
                           child: ElevatedButton(
                             onPressed: () => setState(() {
                               _mainFilterDate = !_mainFilterDate;
-                              _mainFilterExercise = false;
-                              _mainFilterBodyPart = false;
+                              _mainFilterWeights = false;
+                              _mainFilterCardio = false;
                             }),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _mainFilterDate ? Colors.blue : secondaryColor,
@@ -202,38 +205,38 @@ class LogsWidgetState extends State<LogsWidget> {
 
                       Spacer(flex: 1),
 
-                      /// ////////////////////
-                      /// Filter by BodyPart
-                      /// ////////////////////
+                      /// ///////////////////
+                      /// Filter by Exercise
+                      /// ///////////////////
                       Column(children: [
                         Container(
                           height: 65,
                           width: 65,
                           decoration: BoxDecoration(
                               border: Border.all(
-                                color: _mainFilterBodyPart ? primaryColor : Colors.transparent,
+                                color: _mainFilterWeights ? primaryColor : Colors.transparent,
                                 width: 4,
                               )),
                           child: ElevatedButton(
                             onPressed: () => setState(() {
-                              _mainFilterBodyPart = !_mainFilterBodyPart;
-                              _mainFilterExercise = false;
+                              _mainFilterWeights = !_mainFilterWeights;
+                              _mainFilterCardio = false;
                               _mainFilterDate = false;
                             }),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: _mainFilterBodyPart ? Colors.blue : secondaryColor,
+                              backgroundColor: _mainFilterWeights ? Colors.blue : secondaryColor,
                               padding: const EdgeInsets.all(4),
                             ),
-                            child: Icon(Icons.face, color: primaryColor, size: 30),
+                            child: Icon(Icons.fitness_center, color: primaryColor, size: 30),
                           ),
                         ),
                         SizedBox(height: 5),
-                        Text('Body Part',
+                        Text('Weights',
                           style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1,
-                              color: _mainFilterBodyPart ? Colors.blue
-                              : textColorOverwrite
-                                ? Colors.black
-                                : primaryColor
+                              color: _mainFilterWeights ? Colors.blue
+                                  : textColorOverwrite
+                                  ? Colors.black
+                                  : primaryColor
                           ),),
                       ]),
 
@@ -245,23 +248,23 @@ class LogsWidgetState extends State<LogsWidget> {
                 SizedBox(height: 1, child: Container(color: Colors.grey)),
                 SizedBox(height: 15),
 
-                // Determine if Exercise Widget should show:
-                _mainFilterExercise
-                  ? ExercisesWidget(closeSubMenus: closeNewLogsMenuAfterSubmission)
-                  : Container(),
+                // Determine if Cardio Widget should show:
+                _mainFilterCardio
+                    ? CardioWidget()
+                    : Container(),
 
                 // Determine if Date Widget should show:
                 _mainFilterDate
                     ? DatesWidget()
                     : Container(),
 
-                // Determine if BodyPart Widget should show:
-                _mainFilterBodyPart
-                    ? BodyPartsWidget()
+                // Determine if Weights Widget should show:
+                _mainFilterWeights
+                    ? WeightsWidget(updateTables: updateTablesAfterSubmission)
                     : Container(),
 
                 /// Prompt user to select a Category
-                (!_mainFilterExercise && !_mainFilterDate && !_mainFilterBodyPart)
+                (!_mainFilterWeights && !_mainFilterDate)
                     ? Container(
                     decoration: BoxDecoration(
                         border: Border.all(
@@ -349,6 +352,32 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
   bool _thirdRepsProvided = false;
   bool _fourthRepsProvided = false;
 
+  // Shows and Hides the Hint text for fields you type into
+  bool _weightHintTextShowing = true;
+  bool _firstRepsHintTextShowing = true;
+  bool _secondRepsHintTextShowing = true;
+  bool _thirdRepsHintTextShowing = true;
+  bool _fourthRepsHintTextShowing = true;
+
+  FocusNode _weightFocusNode = FocusNode();
+  FocusNode _firstRepsFocusNode = FocusNode();
+  FocusNode _secondRepsFocusNode = FocusNode();
+  FocusNode _thirdRepsFocusNode = FocusNode();
+  FocusNode _fourthRepsFocusNode = FocusNode();
+
+  _handleFocusChange(FocusNode focusNode, String textField) {
+    if (!focusNode.hasFocus) {
+      print("Inside If too!");
+      setState(() {
+        textField == 'weight' ? _weightHintTextShowing = true : null;
+        textField == 'first' ? _firstRepsHintTextShowing = true : null;
+        textField == 'second' ? _secondRepsHintTextShowing = true : null;
+        textField == 'third' ? _thirdRepsHintTextShowing = true : null;
+        textField == 'fourth' ? _fourthRepsHintTextShowing = true : null;
+      });
+    }
+  }
+
 
   // Create a function that shows the date picker dialog
   Future<void> _selectDate(BuildContext context) async {
@@ -381,11 +410,23 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
 
       // Initialize Vars
       getCurrentWorkoutFields();
+
+      // Init Listeners:
+      _weightFocusNode.addListener(() => _handleFocusChange(_weightFocusNode, 'weight'));
+      _firstRepsFocusNode.addListener(() => _handleFocusChange(_firstRepsFocusNode, 'first'));
+      _secondRepsFocusNode.addListener(() => _handleFocusChange(_secondRepsFocusNode, 'second'));
+      _thirdRepsFocusNode.addListener(() => _handleFocusChange(_thirdRepsFocusNode, 'third'));
+      _fourthRepsFocusNode.addListener(() => _handleFocusChange(_fourthRepsFocusNode, 'fourth'));
     }
   }
 
   @override
   void dispose() {
+    _weightFocusNode.dispose();
+    _firstRepsFocusNode.dispose();
+    _secondRepsFocusNode.dispose();
+    _thirdRepsFocusNode.dispose();
+    _fourthRepsFocusNode.dispose();
     super.dispose();
   }
 
@@ -610,7 +651,6 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                       closeNewLogsMenu: widget.closeNewLogsMenu,
                                         header: 'Add Exercise',
                                         initialExerciseName: '',
-                                        initialBodyPartName: '',
                                     );
                                   },
                                 ).then((restartRequired) {
@@ -688,17 +728,18 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                     Spacer(),
 
                     /////////////////////////
-                      /// Weight Input Field
-                      /// /////////////////////
-                      Column(children: [
+                    /// Weight Input Field
+                    /// /////////////////////
+                    Column(children: [
                         SizedBox(
                           height: 45,
                           width: 100,
                           child: Material(
                             color: primaryColor,
                             child: Padding(
-                                padding: EdgeInsets.only(top: 17),
+                                padding: EdgeInsets.only(top: 20),
                                 child: TextFormField(
+                                  focusNode: _weightFocusNode,
                                   style: TextStyle(
                                       color: (_providedWeight != _currentWeight)
                                           ? primaryAccentColor
@@ -706,6 +747,11 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                       fontSize: 25),
                                   textAlign: TextAlign.center,
                                   keyboardType: TextInputType.number,
+                                  onTap: () {
+                                      setState(() {
+                                        _weightHintTextShowing = false;
+                                      });
+                                  },
                                   onChanged: (value) {
                                     if (value != '') {
                                       setState(() {
@@ -727,7 +773,9 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                     FocusManager.instance.primaryFocus?.unfocus();
                                   },
                                   decoration: InputDecoration(
-                                    hintText: _editMode ? _currentWeight : '000',
+                                    hintText: _weightHintTextShowing
+                                        ? _editMode ? _currentWeight : '000'
+                                        : '',
                                     hintStyle: TextStyle(
                                       fontSize: 25,
                                       color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
@@ -769,8 +817,9 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                               height: 45,
                               width: 100,
                               child: Padding(
-                                  padding: EdgeInsets.only(top: 17),
+                                  padding: EdgeInsets.only(top: 20),
                                   child: TextFormField(
+                                    focusNode: _firstRepsFocusNode,
                                     style: TextStyle(
                                         color: (_providedRepsSet1 != _currentRepsSet1)
                                             ? primaryAccentColor
@@ -778,6 +827,11 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                         fontSize: 25),
                                     textAlign: TextAlign.center,
                                     keyboardType: TextInputType.number,
+                                    onTap: () {
+                                      setState(() {
+                                        _firstRepsHintTextShowing = false;
+                                      });
+                                    },
                                     onChanged: (value) {
                                       if (value != '') {
                                         setState(() {
@@ -800,7 +854,9 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           ?.unfocus();
                                     },
                                     decoration: InputDecoration(
-                                      hintText: _editMode ? _currentRepsSet1.toString() : '00',
+                                      hintText: _firstRepsHintTextShowing
+                                          ? _editMode ? _currentRepsSet1.toString() : '00'
+                                          : '',
                                       hintStyle: TextStyle(
                                         fontSize: 25,
                                         color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
@@ -835,8 +891,9 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                               height: 45,
                               width: 100,
                               child: Padding(
-                                  padding: EdgeInsets.only(top: 17),
+                                  padding: EdgeInsets.only(top: 20),
                                   child: TextFormField(
+                                    focusNode: _secondRepsFocusNode,
                                     style: TextStyle(
                                         color: (_providedRepsSet2 != _currentRepsSet2)
                                             ? primaryAccentColor
@@ -844,6 +901,11 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                         fontSize: 25),
                                     textAlign: TextAlign.center,
                                     keyboardType: TextInputType.number,
+                                    onTap: () {
+                                      setState(() {
+                                        _secondRepsHintTextShowing = false;
+                                      });
+                                    },
                                     onChanged: (value) {
                                       if (value != '') {
                                         setState(() {
@@ -864,7 +926,9 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           ?.unfocus();
                                     },
                                     decoration: InputDecoration(
-                                      hintText: _editMode ? _currentRepsSet2.toString() : '00',
+                                      hintText: _secondRepsHintTextShowing
+                                          ? _editMode ? _currentRepsSet2.toString() : '00'
+                                          : '',
                                       hintStyle: TextStyle(
                                         fontSize: 25,
                                         color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
@@ -907,8 +971,9 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                               height: 45,
                               width: 100,
                               child: Padding(
-                                  padding: EdgeInsets.only(top: 17),
+                                  padding: EdgeInsets.only(top: 20),
                                   child: TextFormField(
+                                    focusNode: _thirdRepsFocusNode,
                                     style: TextStyle(
                                         color: (_providedRepsSet3 != _currentRepsSet3)
                                             ? primaryAccentColor
@@ -916,6 +981,11 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                         fontSize: 25),
                                     textAlign: TextAlign.center,
                                     keyboardType: TextInputType.number,
+                                    onTap: () {
+                                      setState(() {
+                                        _thirdRepsHintTextShowing = false;
+                                      });
+                                    },
                                     onChanged: (value) {
                                       if (value != '') {
                                         setState(() {
@@ -936,7 +1006,9 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           ?.unfocus();
                                     },
                                     decoration: InputDecoration(
-                                      hintText: _editMode ? _currentRepsSet3.toString() : '00',
+                                      hintText: _thirdRepsHintTextShowing
+                                          ? _editMode ? _currentRepsSet3.toString() : '00'
+                                          : '',
                                       hintStyle: TextStyle(
                                         fontSize: 25,
                                         color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
@@ -972,9 +1044,9 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                               height: 45,
                               width: 100,
                               child: Padding(
-                                  padding: EdgeInsets.only(top: 17),
+                                  padding: EdgeInsets.only(top: 20),
                                   child: TextFormField(
-                                    // focusNode: _focusNode2,
+                                    focusNode: _fourthRepsFocusNode,
                                     style: TextStyle(
                                         color: (_providedRepsSet4 != _currentRepsSet4)
                                             ? primaryAccentColor
@@ -982,6 +1054,11 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                         fontSize: 25),
                                     textAlign: TextAlign.center,
                                     keyboardType: TextInputType.number,
+                                    onTap: () {
+                                      setState(() {
+                                        _fourthRepsHintTextShowing = false;
+                                      });
+                                    },
                                     onChanged: (value) {
                                       if (value != '') {
                                         setState(() {
@@ -1002,7 +1079,9 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           ?.unfocus();
                                     },
                                     decoration: InputDecoration(
-                                      hintText: _editMode ? _currentRepsSet4.toString() : '00',
+                                      hintText: _fourthRepsHintTextShowing
+                                          ? _editMode ? _currentRepsSet4.toString() : '00'
+                                          : '',
                                       hintStyle: TextStyle(
                                         fontSize: 25,
                                         color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
@@ -1175,13 +1254,11 @@ class AddExerciseEditExerciseDialog extends StatefulWidget {
   final Function() closeNewLogsMenu;
   String header;
   final String initialExerciseName;
-  final String initialBodyPartName;
 
   AddExerciseEditExerciseDialog({
       required this.closeNewLogsMenu,
       required this.header,
       required this.initialExerciseName,
-      required this.initialBodyPartName,
       super.key,
   });
 
@@ -1199,14 +1276,9 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
   late String initialExerciseName;
   String newExerciseName = '';
 
-  int maxBodyPartStringLength = 15;
-  late String initialBodyPartName;
-  String newBodyPartName = '';
-
   // Provided Variables are displayed in edit mode and represent current settings
   late bool editMode;
   String currentExerciseName = '';
-  String currentBodyPartName = '';
 
 
   @override
@@ -1218,7 +1290,6 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
     } else {
       editMode = true;
       currentExerciseName = widget.initialExerciseName;
-      currentBodyPartName = widget.initialBodyPartName;
     }
   }
 
@@ -1232,12 +1303,12 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
     });
   }
 
-  Future<void> insertNewExerciseAndBodyPartsRecord(String exercise, String bodypart, bool isCardio) async {
-    await DatabaseHelper.instance.insertExerciseWithBodyPartName(exercise, bodypart, isCardio);
+  Future<void> insertNewExerciseRecord(String exercise, bool isCardio) async {
+    await DatabaseHelper.instance.insertExercise(exercise, isCardio);
   }
 
-  Future<void> updateExerciseAndBodyPartsRecord(String exercise, String bodypart) async {
-    await DatabaseHelper.instance.updateExercise(exercise, bodypart, widget.initialExerciseName);
+  Future<void> updateExerciseRecord(String exercise) async {
+    await DatabaseHelper.instance.updateExercise(exercise, widget.initialExerciseName);
   }
 
   checkConfirmButtonState() {
@@ -1247,9 +1318,6 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
       if (editMode) {
         /// editMode
         if (newExerciseName.isNotEmpty && (newExerciseName.toLowerCase() != currentExerciseName)) {
-          enableConfirmButton = true;
-        }
-        if (newBodyPartName.isNotEmpty && (newBodyPartName.toLowerCase() != currentBodyPartName)) {
           enableConfirmButton = true;
         }
       } else {
@@ -1315,56 +1383,6 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                   ),
                                   Spacer(),
                                 ]),
-
-                                SizedBox(height: 15),
-
-                                /// Body Part
-                                TextFormField(
-                                  style: TextStyle(
-                                      color: primaryAccentColor,
-                                      fontSize: 22
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  keyboardType: TextInputType.text,
-                                  onChanged: (value) {
-                                    newBodyPartName = value.toLowerCase();
-                                    checkConfirmButtonState();
-
-                                    if (value != '') {
-                                      setState(() {
-                                        // currentBodyPartStringLength = maxBodyPartStringLength - value.length;
-                                      });
-                                    }
-                                    if (value == '') {
-                                      // Useful if the text field was added to and deleted
-                                      setState(() {
-                                        // currentBodyPartStringLength = maxBodyPartStringLength;
-                                      });
-                                    }
-                                  },
-                                  onFieldSubmitted: (value) {
-                                    FocusManager.instance.primaryFocus?.unfocus();
-                                  },
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    hintText: editMode ? currentBodyPartName : 'ex: chest',
-                                    hintStyle: TextStyle(
-                                      fontSize: 20,
-                                      color: editMode ? Colors.black : Colors.grey,
-                                    ),
-                                  ),
-                                  inputFormatters: <TextInputFormatter>[
-                                    LengthLimitingTextInputFormatter(maxBodyPartStringLength), // 15 characters at most
-                                  ],
-                                ),
-                                SizedBox(height: 3),
-                                Text('Body Part',
-                                    style: TextStyle(
-                                        fontFamily: 'AstroSpace',
-                                        color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
-                                        fontSize: 12)
-                                ),
 
                                 SizedBox(height: 15),
 
@@ -1448,13 +1466,12 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                       if (editMode) {
                                         /// Edit Mode
                                         String exerciseName = newExerciseName.isNotEmpty ? newExerciseName : currentExerciseName;
-                                        String bodyPartName = newBodyPartName.isNotEmpty ? newBodyPartName : currentBodyPartName;
-                                        updateExerciseAndBodyPartsRecord(exerciseName, bodyPartName);
+                                        updateExerciseRecord(exerciseName);
                                         Navigator.of(context).pop(true);
                                         widget.closeNewLogsMenu(); // TODO Activate
                                       } else {
                                         /// New Log Mode
-                                        insertNewExerciseAndBodyPartsRecord(newExerciseName, newBodyPartName, cardioExercise);
+                                        insertNewExerciseRecord(newExerciseName, cardioExercise);
                                         Navigator.of(context).pop(true);
                                       }
                                     } : null,
@@ -1473,32 +1490,31 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
   }
 }
 
-//////////////////////////////
-// Widget for all Exercises
-//////////////////////////////
-class ExercisesWidget extends StatefulWidget {
-  final Function() closeSubMenus;
-  const ExercisesWidget({
-    required this.closeSubMenus,
+//////////////////////////////////////
+// Widget for all Weighted Exercises
+/////////////////////////////////////
+class WeightsWidget extends StatefulWidget {
+  final Function() updateTables;
+  const WeightsWidget({
+    required this.updateTables,
     super.key,
   });
 
   @override
-  ExercisesWidgetState createState() => ExercisesWidgetState();
+  WeightsWidgetState createState() => WeightsWidgetState();
 }
 
-class ExercisesWidgetState extends State<ExercisesWidget> {
+class WeightsWidgetState extends State<WeightsWidget> {
   // List<Map> exampleMap = [
-  //   {'id': 1, 'name': 'Bench Press',  'bodyPart': 'Chest', 'cardio': false, 'selected': false},
-  //   {'id': 2, 'name': 'Deadlift',  'bodyPart': 'Back', 'cardio': false, 'selected': false},
-  //   {'id': 3, 'name': 'Jump Rope',  'bodyPart': 'Cardio', 'cardio': true, 'selected': false},
-  //   {'id': 4, 'name': 'Squat',  'bodyPart': 'Legs', 'cardio': false, 'selected': false},
+  //   {'id': 1, 'name': 'Bench Press',  'cardio': false, 'selected': false},
+  //   {'id': 2, 'name': 'Deadlift',  'cardio': false, 'selected': false},
+  //   {'id': 3, 'name': 'Jump Rope', 'cardio': true, 'selected': false},
+  //   {'id': 4, 'name': 'Squat', 'cardio': false, 'selected': false},
   // ];
 
   List<Map> exerciseMap = [];
   List<Map> workoutMap = [];
   late String selectedExercise;
-  late String selectedBodyPartName;
   bool subMenuOpen = false;
 
   // This Widget is shown whenever an individual exercise is selected
@@ -1534,7 +1550,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                     onLongPress: () {
                       // Fire DATABASE Event to delete Exercise
                       deleteExercise();
-                      widget.closeSubMenus();
+                      // widget.updateTables();
                     },
                   )
               ),
@@ -1546,7 +1562,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
           // TODO Run if logic on Cardio = true/false
           return Container(
               width: 290,
-              padding: EdgeInsets.symmetric(horizontal: 3),
+              padding: EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 color: secondaryColor,
                 border: Border.all(
@@ -1791,7 +1807,7 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                                             ],
                                           ),
                                           body: Center(child:
-                                            NewLogEditLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterSubmission, header: 'Edit Log', id: item['id'])
+                                            NewLogEditLogWidget(closeNewLogsMenu: closeNewLogsMenuAfterNewExerciseSubmission, header: 'Edit Log', id: item['id'])
                                           )
                                           );
 
@@ -1822,8 +1838,9 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
     return Container();
   }
 
-  void closeNewLogsMenuAfterSubmission() {
-    widget.closeSubMenus();
+  void closeNewLogsMenuAfterNewExerciseSubmission() {
+    // widget.updateTables();
+    getExercises();
     setState(() {
       for (int i = 0; i < exerciseMap.length; i++) {
           exerciseMap[i]['selected'] = false;
@@ -1844,14 +1861,6 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
 
     setState(() {
       workoutMap = items;
-    });
-  }
-
-  Future<void> getBodyPartName() async {
-    final item = await DatabaseHelper.instance.getBodyPartByExerciseName(selectedExercise);
-
-    setState(() {
-      selectedBodyPartName = item!;
     });
   }
 
@@ -1906,10 +1915,9 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                                             Animation secondaryAnimation) {
                                           // return EditExerciseDialog(exerciseMap[i]['name']);
                                           return AddExerciseEditExerciseDialog(
-                                            closeNewLogsMenu: closeNewLogsMenuAfterSubmission,
+                                            closeNewLogsMenu: closeNewLogsMenuAfterNewExerciseSubmission,
                                               header: 'Edit Exercise',
                                               initialExerciseName: exerciseMap[i]['name'],
-                                              initialBodyPartName: selectedBodyPartName,
                                           );
                                         },
                                       ).then((restartRequired) {
@@ -1942,8 +1950,6 @@ class ExercisesWidgetState extends State<ExercisesWidget> {
                                     selectedExercise = exerciseMap[i]['name'];
                                     subMenuOpen = exerciseMap[i]['selected'];
 
-                                    // Set Body Part Name for Active Exercise in case Edit is called
-                                    getBodyPartName();
                                     getWorkouts();
                                   } else {
                                     exerciseMap[i]['selected'] = false;
@@ -2046,24 +2052,24 @@ class DatesWidgetState extends State<DatesWidget> {
   }
 }
 
-//////////////////////////////
-// Widget for all Body Parts
-//////////////////////////////
-class BodyPartsWidget extends StatefulWidget {
-  const BodyPartsWidget({
+////////////////////////////////////
+// Widget for all Cardio Exercises
+////////////////////////////////////
+class CardioWidget extends StatefulWidget {
+  const CardioWidget({
     super.key,
   });
 
   @override
-  BodyPartsWidgetState createState() => BodyPartsWidgetState();
+  CardioWidgetState createState() => CardioWidgetState();
 }
 
-class BodyPartsWidgetState extends State<BodyPartsWidget> {
+class CardioWidgetState extends State<CardioWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
       SizedBox(height: 50),
-      Text("Hello from Body Parts Widget"),
+      Text("Hello from Cardio Widget"),
       SizedBox(height: 50),
     ],);
   }
