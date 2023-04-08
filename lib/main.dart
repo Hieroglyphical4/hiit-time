@@ -78,6 +78,7 @@ Future<void> onStart(ServiceInstance service) async {
 
   Timer.periodic(const Duration(seconds: 1), (timer) async {
     servicePlayer.play(AssetSource('sounds/Silence.mp3'));
+    servicePlayer.play(AssetSource('sounds/Silence.mp3')); // 2nd added in a (foolish) attempt to prevent the very rare instances of app timing out
   });
 }
 
