@@ -1,7 +1,9 @@
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:hiit_time/advanced_settings_menu.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:hiit_time/Config/notification_controller.dart';
 import 'package:hiit_time/countdown_progress_indicator.dart';
+import 'package:hiit_time/advanced_settings_menu.dart';
 import 'package:hiit_time/Config/settings.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:hiit_time/settings_menu.dart';
@@ -12,11 +14,19 @@ import 'Database/database_helper.dart';
 import 'dart:async';
 import 'dart:ui';
 
+// Initialize the audio player
+final audioPlayer = AudioPlayer();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Service Used to keep timer running in background
   initializeService();
+
+  // Initialize Notifications
+  final AwesomeNotifications awesomeNotifications = AwesomeNotifications();
+  NotificationController.initializeLocalNotifications(awesomeNotifications);
+
 
   // Initialize the database
   await DatabaseHelper.instance.database;
@@ -36,6 +46,8 @@ void main() async {
 
           return MaterialApp(
             home: MyApp(
+              audioPlayer: audioPlayer,
+              notifications: awesomeNotifications,
               workDuration: returnedWorkTime,
               restDuration: returnedRestTime,
               timeModAdd: returnedTimeModAdd,
@@ -49,6 +61,10 @@ void main() async {
       }));
 }
 
+Future<void> stopAudio() async {
+  await audioPlayer.stop();
+}
+
 Future<void> initializeService() async {
   final service = FlutterBackgroundService();
 
@@ -58,7 +74,8 @@ Future<void> initializeService() async {
       onStart: onStart,
 
       // auto start service
-      autoStart: true,
+      autoStart: false,
+      autoStartOnBoot: false,
       isForegroundMode: false,
 
       initialNotificationTitle: 'AWESOME SERVICE',
@@ -70,19 +87,21 @@ Future<void> initializeService() async {
 
   service.startService();
 }
-
 Future<void> onStart(ServiceInstance service) async {
   // Only available for flutter 3.0.0 and later
   DartPluginRegistrant.ensureInitialized();
   var servicePlayer = AudioPlayer();
 
   Timer.periodic(const Duration(seconds: 1), (timer) async {
-    servicePlayer.play(AssetSource('sounds/Silence.mp3'));
-    servicePlayer.play(AssetSource('sounds/Silence.mp3')); // 2nd added in a (foolish) attempt to prevent the very rare instances of app timing out
+    await servicePlayer.play(AssetSource('sounds/Silence.mp3'));
+    await servicePlayer.stop();
   });
 }
 
 class MyApp extends StatefulWidget {
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  var audioPlayer;
+  var notifications;
   var workDuration;
   var restDuration;
   var timeModAdd;
@@ -91,6 +110,8 @@ class MyApp extends StatefulWidget {
 
   MyApp({
     Key? key,
+    this.audioPlayer,
+    this.notifications,
     this.workDuration,
     this.restDuration,
     this.timeModAdd,
@@ -113,7 +134,8 @@ class _MyAppState extends State<MyApp> {
   var _timerInRestMode = false;
   var _orientation = 0;
   var _intervalLap = 1;
-  final _audioPlayer = AudioPlayer();
+  late AudioPlayer _audioPlayer;
+  late AwesomeNotifications _notificationsPlugin;
 
   // Second Audio player added for overlapping audio
   final _audioPlayer2 = AudioPlayer();
@@ -126,6 +148,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _audioPlayer = widget.audioPlayer;
+    _notificationsPlugin = widget.notifications;
     _duration = widget.workDuration ?? defaultWorkDuration;
     _restDuration = widget.restDuration ?? defaultRestDuration;
     _timerModifierValueAdd = widget.timeModAdd ?? defaultTimeModifyValueAdd;
@@ -139,6 +163,9 @@ class _MyAppState extends State<MyApp> {
   void dispose() {
     _audioPlayer.dispose();
     _audioPlayer2.dispose();
+    audioPlayer.dispose();
+    _notificationsPlugin.cancelAll(); // TODO Prolly unnecessary /w the next line
+    AwesomeNotifications().cancelAll();
     super.dispose();
   }
 
@@ -264,6 +291,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: MyApp.navigatorKey,
       color: Colors.transparent,
       home: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -404,6 +432,7 @@ class _MyAppState extends State<MyApp> {
                               : secondaryColor,
                           initialPosition: 0,
                           audioPlayer: _audioPlayer,
+                          notifications: _notificationsPlugin,
                           isRunning: _isRunning,
                           duration: _duration,
                           restDuration: _restDuration,

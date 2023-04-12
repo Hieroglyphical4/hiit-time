@@ -32,7 +32,7 @@ class DatabaseHelper {
       CREATE TABLE exercises(
         id INTEGER PRIMARY KEY,
         name TEXT,
-        isCardio INTEGER,
+        isCardio INTEGER
       )
     ''');
     await db.execute('''
