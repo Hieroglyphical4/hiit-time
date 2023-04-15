@@ -1293,17 +1293,34 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
   // Provided Variables are displayed in edit mode and represent current settings
   late bool editMode;
   String currentExerciseName = '';
+  bool _hintTextShowing = true;
+  FocusNode _hintTextFocusNode = FocusNode();
 
 
   @override
   void initState() {
     super.initState();
+    _hintTextFocusNode.addListener(() => _handleFocusChange(_hintTextFocusNode, 'weight'));
 
     if (widget.header == 'Add Exercise') {
       editMode = false;
     } else {
       editMode = true;
       currentExerciseName = widget.initialExerciseName;
+    }
+  }
+
+  @override
+  void dispose() {
+    _hintTextFocusNode.dispose();
+    super.dispose();
+  }
+
+  _handleFocusChange(FocusNode focusNode, String textField) {
+    if (!focusNode.hasFocus) {
+      setState(() {
+        _hintTextShowing = true;
+      });
     }
   }
 
@@ -1402,6 +1419,10 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
 
                                 /// Exercise Name Field
                                 TextFormField(
+                                  focusNode: _hintTextFocusNode,
+                                  onTap: () {
+                                    _hintTextShowing = false;
+                                  },
                                   style: TextStyle(
                                       color: primaryAccentColor,
                                       fontSize: 22),
@@ -1429,7 +1450,9 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                   decoration: InputDecoration(
                                     filled: true,
                                     fillColor: Colors.white,
-                                    hintText: editMode ? currentExerciseName : 'ex: squat',
+                                    hintText: _hintTextShowing ?
+                                      editMode ? currentExerciseName : 'ex: squat'
+                                      : '',
                                     hintStyle: TextStyle(
                                       fontSize: 20,
                                       color: editMode ? Colors.black : Colors.grey,
@@ -1894,7 +1917,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: subMenuOpen ? 400 : 200,
+        height: subMenuOpen ? 500 : 300,
         width: 300,
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1987,7 +2010,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                         // If current index is selected, render it's widget
                         exerciseMap[index]['selected']
                             ? Column(children: [SizedBox(height: 5), buildTableForSelectedExercise(), SizedBox(height: 5),])
-                            : SizedBox(height: 10),
+                            : SizedBox(height: 4),
                         ]);
                 },
               )),
