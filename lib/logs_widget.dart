@@ -670,7 +670,12 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                 ).then((restartRequired) {
                                   if (restartRequired == true) {
                                     // Refresh exercise dropdown menu
-                                    widget.closeNewLogsMenu(); // TODO Update this
+                                    if (_editMode) {
+                                      Navigator.of(context).pop(true);
+                                      widget.closeNewLogsMenu();
+                                    } else {
+                                      widget.closeNewLogsMenu();
+                                    }
                                   }
                                 });
                                 },
