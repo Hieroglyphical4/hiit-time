@@ -1300,7 +1300,7 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
   @override
   void initState() {
     super.initState();
-    _hintTextFocusNode.addListener(() => _handleFocusChange(_hintTextFocusNode, 'weight'));
+    _hintTextFocusNode.addListener(() => _handleFocusChange(_hintTextFocusNode));
 
     if (widget.header == 'Add Exercise') {
       editMode = false;
@@ -1316,7 +1316,7 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
     super.dispose();
   }
 
-  _handleFocusChange(FocusNode focusNode, String textField) {
+  _handleFocusChange(FocusNode focusNode) {
     if (!focusNode.hasFocus) {
       setState(() {
         _hintTextShowing = true;
