@@ -401,11 +401,16 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
         firstDate: DateTime(2022, 1),
         lastDate: DateTime.now());
     if (picked != null && picked != _providedDate) {
+      // We are grabbing the current time so that if workouts are on the same day,
+      //    they will be shown on the table in the order they were entered
+      final DateTime currentTime = DateTime.now();
+      final String timestamp =
+          "${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}:${currentTime.second.toString().padLeft(2, '0')}";
       setState(() {
         if (_providedDate == null) {
           _dateProvided = true;
         }
-        _providedDate = "${picked.month.toString().padLeft(2,'0')}/${picked.day.toString().padLeft(2,'0')}/${picked.year.toString()}";
+        _providedDate = "${picked.month.toString().padLeft(2,'0')}/${picked.day.toString().padLeft(2,'0')}/${picked.year.toString()} $timestamp";
       });
     }
   }
@@ -709,7 +714,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                               child: TextFormField(
                                     readOnly: true, // set readOnly to true to disable editing of the text field
                                     controller: TextEditingController(
-                                      text: _providedDate == null ? '' : _providedDate.toString(),
+                                      text: _providedDate == null ? '' : _providedDate.toString().split(' ')[0],
                                     ),
                                     style: TextStyle(
                                         color: (_providedDate != _currentDate)
@@ -727,7 +732,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                     },
                                     decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      hintText: _editMode ? _currentDate : 'mm/dd/yyyy',
+                                      hintText: _editMode ? _currentDate.toString().split(' ')[0] : 'mm/dd/yyyy',
                                       hintStyle: TextStyle(
                                         fontSize: 16,
                                         color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
