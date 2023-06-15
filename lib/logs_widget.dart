@@ -397,7 +397,13 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
+        initialDate: _currentDate != null ?
+              DateTime(
+                  int.parse((_currentDate!).substring(6, 11)), // year
+                  int.parse((_currentDate!).substring(0, 2)),  // month
+                  int.parse((_currentDate!).substring(3, 5))   // day
+              )
+            : DateTime.now(),
         firstDate: DateTime(2022, 1),
         lastDate: DateTime.now());
 
