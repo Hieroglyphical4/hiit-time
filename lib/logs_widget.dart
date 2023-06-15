@@ -400,17 +400,34 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
         initialDate: DateTime.now(),
         firstDate: DateTime(2022, 1),
         lastDate: DateTime.now());
+
     if (picked != null && picked != _providedDate) {
       // We are grabbing the current time so that if workouts are on the same day,
       //    they will be shown on the table in the order they were entered
       final DateTime currentTime = DateTime.now();
       final String timestamp =
           "${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}:${currentTime.second.toString().padLeft(2, '0')}";
+
+      // Setup Month
+      var _month = picked.month.toString().padLeft(2,'0');
+      if (_month.startsWith('0')) {
+        // Remove Leading 0s in the date for proper table formatting/spacing
+        _month = _month.substring(1);
+      }
+
+      // Setup Day
+      var _day = picked.day.toString().padLeft(2,'0');
+      if (_day.startsWith('0')) {
+        // Remove Leading 0s in the date for proper table formatting/spacing
+        _day = _day.substring(1);
+      }
+
       setState(() {
         if (_providedDate == null) {
           _dateProvided = true;
         }
-        _providedDate = "${picked.month.toString().padLeft(2,'0')}/${picked.day.toString().padLeft(2,'0')}/${picked.year.toString()} $timestamp";
+
+        _providedDate = "$_month/$_day/${picked.year.toString()} $timestamp";
       });
     }
   }
@@ -1692,7 +1709,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                       children: [
                         TableCell(child:
                         Column(children: [
-                          Text(("${(item['date']).substring(0, 5)}"),
+                          Text(("${(item['date']).split('/').sublist(0, 2).join('/')}"),
                               style: TextStyle(fontFamily: 'AstroSpace',
                                   fontSize: 16, color: primaryColor)
                           ),
