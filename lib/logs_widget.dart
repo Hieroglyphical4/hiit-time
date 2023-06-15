@@ -408,26 +408,12 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
       final String timestamp =
           "${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}:${currentTime.second.toString().padLeft(2, '0')}";
 
-      // Setup Month
-      var _month = picked.month.toString().padLeft(2,'0');
-      if (_month.startsWith('0')) {
-        // Remove Leading 0s in the date for proper table formatting/spacing
-        _month = _month.substring(1);
-      }
-
-      // Setup Day
-      var _day = picked.day.toString().padLeft(2,'0');
-      if (_day.startsWith('0')) {
-        // Remove Leading 0s in the date for proper table formatting/spacing
-        _day = _day.substring(1);
-      }
-
       setState(() {
         if (_providedDate == null) {
           _dateProvided = true;
         }
 
-        _providedDate = "$_month/$_day/${picked.year.toString()} $timestamp";
+        _providedDate = "${picked.month.toString().padLeft(2,'0')}/${picked.day.toString().padLeft(2,'0')}/${picked.year.toString()} $timestamp";
       });
     }
   }
@@ -1709,7 +1695,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                       children: [
                         TableCell(child:
                         Column(children: [
-                          Text(("${(item['date']).split('/').sublist(0, 2).join('/')}"),
+                          Text(formatDateForTable(item['date']),
                               style: TextStyle(fontFamily: 'AstroSpace',
                                   fontSize: 16, color: primaryColor)
                           ),
@@ -1904,6 +1890,23 @@ class WeightsWidgetState extends State<WeightsWidget> {
       }
     }
     return Container();
+  }
+
+  formatDateForTable(date) {
+    var dateArray = date.split('/');
+    var _month = dateArray[0];
+    var _day = dateArray[1];
+
+    if (_month.startsWith('0')) {
+      // Remove Leading 0s in the month for proper table formatting/spacing
+      _month = _month.substring(1);
+    }
+    if (_day.startsWith('0')) {
+      // Remove Leading 0s in the day for proper table formatting/spacing
+      _day = _day.substring(1);
+    }
+
+    return "$_month/$_day";
   }
 
   Future<void> getExercises() async {
