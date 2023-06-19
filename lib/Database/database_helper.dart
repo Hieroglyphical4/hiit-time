@@ -185,7 +185,7 @@ class DatabaseHelper {
       ''', [id]);
   }
 
-  // Used for Selects on Cardio Workouts Table
+  // To determine if an Exercise is Cardio
   Future<Object?> isExerciseCardio(String exerciseName) async {
     final db = await database;
     final exercisesQuery = await db.rawQuery('''
