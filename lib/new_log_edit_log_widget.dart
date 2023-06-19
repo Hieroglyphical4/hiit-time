@@ -166,8 +166,6 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
   // Initialize Items in Dropdown menu
   Future<void> getExercises() async {
     final items = await DatabaseHelper.instance.getUniqueExerciseNames();
-    print('Here are the exercises from the WORKING drop down');
-    print(items);
 
     setState(() {
       dropdownItems = items;
@@ -344,7 +342,11 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
       // When clicked into, the hint text should disappear
     if (hintTextShowing) {
       if (_editMode) {
-        hintText = formatTime(currentValue);
+        if (widget.exerciseType=='Cardio') {
+          hintText = formatTime(currentValue);
+        } else {
+          hintText = currentValue.toString();
+        }
       } else {
         if (widget.exerciseType=='Cardio') {
           hintText = '00:00';
