@@ -22,7 +22,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
     );
   }
@@ -45,6 +45,17 @@ class DatabaseHelper {
         rep2 INTEGER NOT NULL,
         rep3 INTEGER NOT NULL,
         rep4 INTEGER NOT NULL,
+        FOREIGN KEY (exerciseId) REFERENCES exercises (id)
+      );
+    ''');
+    await db.execute('''
+      CREATE TABLE cardio_workouts(
+        id INTEGER PRIMARY KEY,
+        exerciseId INTEGER NOT NULL,
+        date INTEGER NOT NULL,
+        workTime INTEGER NOT NULL,
+        restTime INTEGER NOT NULL,
+        intervals INTEGER NOT NULL,
         FOREIGN KEY (exerciseId) REFERENCES exercises (id)
       );
     ''');
@@ -87,15 +98,16 @@ class DatabaseHelper {
     return await insertUnique('Exercises', exercise);
   }
 
-  /// Create new Weighted Workout Record
-  ///   Requires exercises entry
-  Future<int> insertWeightedWorkout(String table, Map<String, dynamic> data, String exerciseName) async {
+  /// Create new Workout Record
+  ///   Requires previous exercises entry
+  Future<int> insertWorkout(String table, Map<String, dynamic> data, String exerciseName) async {
     final db = await database;
     int? exerciseId = await _getExerciseIdByName(exerciseName);
     data['exerciseId'] = exerciseId;
 
     return await db.insert(table, data);
   }
+
   Future<int?> _getExerciseIdByName(String name) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('exercises', where: 'lower(name) = ?', whereArgs: [name.toLowerCase()]);
@@ -109,31 +121,50 @@ class DatabaseHelper {
   /// Used to populate DropDown Menus of Exercises
   Future<List<String>> getUniqueExerciseNames() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.rawQuery('SELECT DISTINCT name FROM exercises ORDER BY lower(name) ASC');
-    return List<String>.from(maps.map((map) => map['name'] as String));
+    final List<Map<String, dynamic>> exercisesQuery = await db.rawQuery('SELECT DISTINCT name FROM exercises ORDER BY lower(name) ASC');
+    return List<String>.from(exercisesQuery.map((map) => map['name'] as String));
   }
 
-  Future<List<Map<String, dynamic>>> getMapOfUniqueExerciseNames() async {
+  Future<List<Map<String, dynamic>>> getMapOfUniqueWeightedExerciseNames() async {
     final db = await database;
     final List<Map<String, dynamic>> maps =
-    await db.rawQuery('SELECT DISTINCT name FROM exercises ORDER BY name ASC');
+    await db.rawQuery('SELECT DISTINCT name FROM exercises WHERE isCardio = 0 ORDER BY name ASC');
     return maps.map((map) => {'name': map['name'], 'selected': false}).toList();
   }
 
-  Future<List<Map<String, dynamic>>> getMapOfWorkoutsUsingExerciseName(String exerciseName) async {
+  Future<List<Map<String, dynamic>>> getMapOfUniqueCardioExerciseNames() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps =
+    await db.rawQuery('SELECT DISTINCT name FROM exercises WHERE isCardio = 1 ORDER BY name ASC');
+    return maps.map((map) => {'name': map['name'], 'selected': false}).toList();
+  }
+
+  Future<List<Map<String, dynamic>>> getMapOfWorkoutsUsingExerciseName(String exerciseName, bool isCardio) async {
     final db = await database;
     int? exerciseId = await _getExerciseIdByName(exerciseName);
-    final List<Map<String, dynamic>> maps = await db.query(
-        'weighted_workouts',
-        where: 'exerciseId = ?',
-        whereArgs: [exerciseId],
-        orderBy: 'date DESC'
-    );
+    List<Map<String, dynamic>> maps;
+
+    if (isCardio) {
+      maps = await db.query(
+          'cardio_workouts',
+          where: 'exerciseId = ?',
+          whereArgs: [exerciseId],
+          orderBy: 'date DESC'
+      );
+    } else {
+      maps = await db.query(
+          'weighted_workouts',
+          where: 'exerciseId = ?',
+          whereArgs: [exerciseId],
+          orderBy: 'date DESC'
+      );
+    }
+
     return maps;
   }
 
-  // Used for Selects
-  Future<List<Map<String, dynamic>>> getWorkout(int id) async {
+  // Used for Selects on Weighted Workouts Table
+  Future<List<Map<String, dynamic>>> getWeightedWorkout(int id) async {
     final db = await database;
     return await db.rawQuery('''
       SELECT weighted_workouts.*, exercises.name as exerciseName
@@ -143,12 +174,35 @@ class DatabaseHelper {
       ''', [id]);
   }
 
-  Future<int> updateWeightedWorkout(Map<String, dynamic> data, String exerciseName, int id) async {
+  // Used for Selects on Cardio Workouts Table
+  Future<List<Map<String, dynamic>>> getCardioWorkout(int id) async {
+    final db = await database;
+    return await db.rawQuery('''
+      SELECT cardio_workouts.*, exercises.name as exerciseName
+      FROM cardio_workouts
+      INNER JOIN exercises ON cardio_workouts.exerciseId = exercises.id
+      WHERE cardio_workouts.id = ?
+      ''', [id]);
+  }
+
+  // Used for Selects on Cardio Workouts Table
+  Future<Object?> isExerciseCardio(String exerciseName) async {
+    final db = await database;
+    final exercisesQuery = await db.rawQuery('''
+      SELECT isCardio
+      FROM exercises
+      WHERE exercises.name = ?
+      ''', [exerciseName]);
+
+    return exercisesQuery.first['isCardio'];
+  }
+
+  Future<int> updateWorkout(Map<String, dynamic> data, String exerciseName, int id, String table) async {
     final db = await database;
     int? exerciseId = await _getExerciseIdByName(exerciseName);
     data['exerciseId'] = exerciseId;
 
-    return await db.update('weighted_workouts', data, where: 'id = ?', whereArgs: [id]);
+    return await db.update(table, data, where: 'id = ?', whereArgs: [id]);
   }
 
   Future<int> updateExercise(String exerciseName, String initialExerciseName) async {

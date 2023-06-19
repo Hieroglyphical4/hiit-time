@@ -89,6 +89,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
     _workTimeFocusNode.dispose();
     _subTimeFocusNode.dispose();
     _addTimeFocusNode.dispose();
+    restTextEditController.dispose();
+    workTextEditController.dispose();
+    subTimetextEditController.dispose();
+    addTimeTextEditController.dispose();
     super.dispose();
   }
 
@@ -1034,13 +1038,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         ),
                                       ),
                                       inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.digitsOnly,
-                                        // Only numbers can be entered
+                                        FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
                                         FilteringTextInputFormatter.deny(
-                                            RegExp('^0+')),
-                                        // Filter leading 0s
-                                        LengthLimitingTextInputFormatter(4),
-                                        // 4 digits at most
+                                            RegExp('^0+')),  // Filter leading 0s
+                                        LengthLimitingTextInputFormatter(4), // 4 digits at most
                                         // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
                                       ],
                                     )),
