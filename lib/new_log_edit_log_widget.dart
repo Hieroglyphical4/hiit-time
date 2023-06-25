@@ -438,76 +438,155 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                         /// Exercise Dropdown
                         /// ///////////////////
                         SizedBox(
-                            height: 50,
-                            width: 210,
-                            child:Material(
-                                color: primaryColor,
-                                child: Center(
-                                    child: DropdownButton<String>(
-                                      hint: Padding(
-                                          padding: EdgeInsets.fromLTRB(0.0, 9.0, 0.0, 0.0),
-                                          child: Row(children:[
-                                            SizedBox(width: 10),
-                                            Icon(Icons.arrow_drop_down, size: 25, color: appCurrentlyInDarkMode ? Colors.black : Colors.white),
-                                            _editMode
-                                                ? Text(_currentExerciseText,
-                                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16,
-                                                    color: (_providedExercise == _currentExercise)
-                                                        ? primaryAccentColor
-                                                        : appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                                ),
-                                                textAlign: TextAlign.center)
-                                                : Text(" Exercise",
-                                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16,
-                                                    color: (_providedExercise != _currentExercise)
-                                                        ? primaryAccentColor
-                                                        : appCurrentlyInDarkMode ? Colors.black : Colors.white),
-                                                textAlign: TextAlign.center),
-                                          ])
+                          height: 50,
+                          width: 210,
+                          child: Material(
+                            color: primaryColor,
+                            child: Center(
+                              child: DropdownButton<String>(
+                                menuMaxHeight: 420,
+                                hint: Padding(
+                                  padding: EdgeInsets.fromLTRB(0.0, 9.0, 0.0, 0.0),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(width: 10),
+                                      Icon(
+                                        Icons.arrow_drop_down,
+                                        size: 25,
+                                        color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
                                       ),
-                                      value: _selectedExercise,
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          if (_selectedExercise == null) {
-                                            _exerciseProvided = true;
-                                          }
-                                          _selectedExercise = newValue!;
-                                          _providedExercise = newValue;
-                                          /////////////////////////////////////
-                                          // TODO update widget.exerciseType
-                                          /////////////////////////////////////
-                                          setExerciseType(_selectedExercise!);
-                                        });
-                                      },
-                                      items: dropdownItems.map<DropdownMenuItem<String>>((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value,
-                                              style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16, color: textColorOverwrite ? Colors.black : primaryColor, fontWeight: FontWeight.w600)
-                                          ),
-                                        );
-                                      }).toList(),
-                                      icon: Container(),
-                                      underline: Container(),
-                                      dropdownColor: secondaryAccentColor,
-                                      selectedItemBuilder: (BuildContext context) {
-                                        return dropdownItems.map<Widget>((String item) {
-                                          return Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                            alignment: Alignment.center,
-                                            child: Center(child: Text(item,
-                                              style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16, fontWeight: FontWeight.w600,
-                                                  color: (_providedExercise != _currentExercise)
-                                                      ? primaryAccentColor
-                                                      : appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                      _editMode
+                                          ? Text(
+                                        _currentExerciseText,
+                                        style: TextStyle(
+                                          fontFamily: 'AstroSpace',
+                                          fontSize: 16,
+                                          color: (_providedExercise == _currentExercise)
+                                              ? primaryAccentColor
+                                              : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      )
+                                          : Text(
+                                        " Exercise",
+                                        style: TextStyle(
+                                          fontFamily: 'AstroSpace',
+                                          fontSize: 16,
+                                          color: (_providedExercise != _currentExercise)
+                                              ? primaryAccentColor
+                                              : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                value: _selectedExercise,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    if (_selectedExercise == null) {
+                                      _exerciseProvided = true;
+                                    }
+                                    _selectedExercise = newValue!;
+                                    _providedExercise = newValue;
+                                    setExerciseType(_selectedExercise!);
+                                  });
+                                },
+                                items: [
+                                  for (String value in dropdownItems)
+                                    if (value == '--CardioExercisesBegin')
+                                      // This value was manually added to the list of items to denote where a divider belongs
+                                      DropdownMenuItem<String>(
+                                        enabled: false,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              padding: EdgeInsets.only(top: 6),
+                                              child: Text(
+                                                'Cardio:',
+                                                style: TextStyle(
+                                                  fontFamily: 'AstroSpace',
+                                                  fontSize: 18,
+                                                  color: primaryAccentColor,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                               ),
-                                            )),
-                                          );
-                                        }).toList();
-                                      },
-                                    )
-                                )
-                            )
+                                            ),
+                                            Divider(color: primaryColor),
+                                          ],
+                                        ),
+                                      )
+                                    else if (value == '--WeightedExercisesBegin')
+                                    // This value was manually added to the list of items to denote where a divider belongs
+                                      DropdownMenuItem<String>(
+                                        enabled: false,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              padding: EdgeInsets.only(top: 6),
+                                              child: Text(
+                                                'Weighted:',
+                                                style: TextStyle(
+                                                  fontFamily: 'AstroSpace',
+                                                  fontSize: 18,
+                                                  color: primaryAccentColor,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                            Divider(color: primaryColor),
+                                          ],
+                                        ),
+                                      )
+                                    else
+                                      DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(
+                                          value,
+                                          style: TextStyle(
+                                            fontFamily: 'AstroSpace',
+                                            fontSize: 16,
+                                            color: textColorOverwrite ? Colors.black : primaryColor,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                ],
+                                icon: Container(),
+                                underline: Container(),
+                                dropdownColor: secondaryAccentColor,
+                                selectedItemBuilder: (BuildContext context) {
+                                  return dropdownItems.map<Widget>((String item) {
+                                    if (item == '--CardioExercisesBegin') {
+                                      return Container();
+                                    } else if (item == '--WeightedExercisesBegin') {
+                                      return Container();
+                                    } else {
+                                      return Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                        alignment: Alignment.center,
+                                        child: Center(
+                                          child: Text(
+                                            item,
+                                            style: TextStyle(
+                                              fontFamily: 'AstroSpace',
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              color: (_providedExercise != _currentExercise)
+                                                  ? primaryAccentColor
+                                                  : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  }).toList();
+                                },
+                              ),
+                            ),
+                          ),
                         ),
 
                         //////////////////////////////

@@ -121,8 +121,23 @@ class DatabaseHelper {
   /// Used to populate DropDown Menus of Exercises
   Future<List<String>> getUniqueExerciseNames() async {
     final db = await database;
-    final List<Map<String, dynamic>> exercisesQuery = await db.rawQuery('SELECT DISTINCT name FROM exercises ORDER BY lower(name) ASC');
-    return List<String>.from(exercisesQuery.map((map) => map['name'] as String));
+    // Each Section of workouts will begin with a Header
+    List<String> exerciseNameList = ['--CardioExercisesBegin'];
+
+    // Add Cardio exercise to the list first
+    final List<Map<String, dynamic>> cardioExerciseQuery = await db.rawQuery(
+        'SELECT DISTINCT name FROM exercises WHERE isCardio = 1 ORDER BY lower(name) ASC'
+    );
+    exerciseNameList.addAll(cardioExerciseQuery.map<String>((exercise) => exercise['name'].toString()));
+
+    // Add Weighted Exercise Second
+    exerciseNameList.add('--WeightedExercisesBegin');
+    final List<Map<String, dynamic>> weightedExerciseQuery = await db.rawQuery(
+        'SELECT DISTINCT name FROM exercises WHERE isCardio = 0 ORDER BY lower(name) ASC'
+    );
+    exerciseNameList.addAll(weightedExerciseQuery.map<String>((exercise) => exercise['name'].toString()));
+
+    return exerciseNameList;
   }
 
   Future<List<Map<String, dynamic>>> getMapOfUniqueWeightedExerciseNames() async {
