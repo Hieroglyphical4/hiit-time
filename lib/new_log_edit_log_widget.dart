@@ -527,7 +527,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             Container(
                                               padding: EdgeInsets.only(top: 6),
                                               child: Text(
-                                                'Weighted:',
+                                                'Weights:',
                                                 style: TextStyle(
                                                   fontFamily: 'AstroSpace',
                                                   fontSize: 18,
