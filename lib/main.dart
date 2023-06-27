@@ -1,21 +1,35 @@
-import 'dart:async';
-import 'dart:ui';
-
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:native_device_orientation/native_device_orientation.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:hiit_time/Config/notification_controller.dart';
 import 'package:hiit_time/countdown_progress_indicator.dart';
+import 'package:hiit_time/advanced_settings_menu.dart';
 import 'package:hiit_time/Config/settings.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:hiit_time/settings_menu.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'Database/database_helper.dart';
+import 'dart:async';
+import 'dart:ui';
+
+// Initialize the audio player
+final audioPlayer = AudioPlayer();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Service Used to keep timer running in background
   initializeService();
+
+  // Initialize Notifications
+  final AwesomeNotifications awesomeNotifications = AwesomeNotifications();
+  NotificationController.initializeLocalNotifications(awesomeNotifications);
+
+
+  // Initialize the database
+  await DatabaseHelper.instance.database;
 
   runApp(FutureBuilder(
       future: getSavedUserSettings(),
@@ -32,6 +46,8 @@ void main() async {
 
           return MaterialApp(
             home: MyApp(
+              audioPlayer: audioPlayer,
+              notifications: awesomeNotifications,
               workDuration: returnedWorkTime,
               restDuration: returnedRestTime,
               timeModAdd: returnedTimeModAdd,
@@ -45,6 +61,10 @@ void main() async {
       }));
 }
 
+Future<void> stopAudio() async {
+  await audioPlayer.stop();
+}
+
 Future<void> initializeService() async {
   final service = FlutterBackgroundService();
 
@@ -54,7 +74,8 @@ Future<void> initializeService() async {
       onStart: onStart,
 
       // auto start service
-      autoStart: true,
+      autoStart: false,
+      autoStartOnBoot: false,
       isForegroundMode: false,
 
       initialNotificationTitle: 'AWESOME SERVICE',
@@ -66,18 +87,21 @@ Future<void> initializeService() async {
 
   service.startService();
 }
-
 Future<void> onStart(ServiceInstance service) async {
   // Only available for flutter 3.0.0 and later
   DartPluginRegistrant.ensureInitialized();
   var servicePlayer = AudioPlayer();
 
   Timer.periodic(const Duration(seconds: 1), (timer) async {
-    servicePlayer.play(AssetSource('sounds/Silence.mp3'));
+    await servicePlayer.play(AssetSource('sounds/Silence.mp3'));
+    await servicePlayer.stop();
   });
 }
 
 class MyApp extends StatefulWidget {
+  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  var audioPlayer;
+  var notifications;
   var workDuration;
   var restDuration;
   var timeModAdd;
@@ -86,6 +110,8 @@ class MyApp extends StatefulWidget {
 
   MyApp({
     Key? key,
+    this.audioPlayer,
+    this.notifications,
     this.workDuration,
     this.restDuration,
     this.timeModAdd,
@@ -108,7 +134,8 @@ class _MyAppState extends State<MyApp> {
   var _timerInRestMode = false;
   var _orientation = 0;
   var _intervalLap = 1;
-  final _audioPlayer = AudioPlayer();
+  late AudioPlayer _audioPlayer;
+  late AwesomeNotifications _notificationsPlugin;
 
   // Second Audio player added for overlapping audio
   final _audioPlayer2 = AudioPlayer();
@@ -121,6 +148,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _audioPlayer = widget.audioPlayer;
+    _notificationsPlugin = widget.notifications;
     _duration = widget.workDuration ?? defaultWorkDuration;
     _restDuration = widget.restDuration ?? defaultRestDuration;
     _timerModifierValueAdd = widget.timeModAdd ?? defaultTimeModifyValueAdd;
@@ -134,6 +163,9 @@ class _MyAppState extends State<MyApp> {
   void dispose() {
     _audioPlayer.dispose();
     _audioPlayer2.dispose();
+    audioPlayer.dispose();
+    _notificationsPlugin.cancelAll(); // TODO Prolly unnecessary /w the next line
+    AwesomeNotifications().cancelAll();
     super.dispose();
   }
 
@@ -259,9 +291,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: MyApp.navigatorKey,
       color: Colors.transparent,
       home: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: Container(
           color: secondaryColor,
           child: Center(
@@ -278,6 +311,7 @@ class _MyAppState extends State<MyApp> {
                         setTurnsFromOrientation(currentOrientation);
                         return Center(child: Container());
                       }),
+                  SizedBox(height: 5),
                   ///////////////////////
                   //  HIIT Time Header //
                   ///////////////////////
@@ -300,9 +334,32 @@ class _MyAppState extends State<MyApp> {
                         HapticFeedback.mediumImpact();
 
                         setState(() {
-                          // TODO Change functionality to launch About App Page
-                          // appInTimerModeDefault = !appInTimerModeDefault;
-                          // _controller.updateWorkoutMode(appInTimerModeDefault);
+                          /// Launch Extras Menu
+                          showGeneralDialog(
+                            context: context,
+                            barrierDismissible: true,
+                            barrierLabel: MaterialLocalizations.of(context)
+                                .modalBarrierDismissLabel,
+                            barrierColor: Colors.black45,
+                            transitionDuration: const Duration(milliseconds: 200),
+
+                            // ANY Widget can be passed here
+                            pageBuilder: (BuildContext buildContext,
+                                Animation animation,
+                                Animation secondaryAnimation) {
+                              return Center(
+                                child: AdvancedSettingsMenu(key: UniqueKey()),
+                              );
+                            },
+                          ).then((restartRequired) {
+                            if (restartRequired == true) {
+                              //
+                            }
+                            setState(() {
+                              updateSettingsFromMemory();
+                              // _controller.updateWorkoutMode(appCurrentlyInTimerMode);
+                            });
+                          });
                         });
                       },
                       child: const Text('HIIT Time',
@@ -375,6 +432,7 @@ class _MyAppState extends State<MyApp> {
                               : secondaryColor,
                           initialPosition: 0,
                           audioPlayer: _audioPlayer,
+                          notifications: _notificationsPlugin,
                           isRunning: _isRunning,
                           duration: _duration,
                           restDuration: _restDuration,
@@ -522,8 +580,7 @@ class _MyAppState extends State<MyApp> {
                             }
                             setState(() {
                               updateSettingsFromMemory();
-                              _controller
-                                  .updateWorkoutMode(appCurrentlyInTimerMode);
+                              _controller.updateWorkoutMode(appCurrentlyInTimerMode);
                             });
                           });
                         },
@@ -571,13 +628,15 @@ class _MyAppState extends State<MyApp> {
                                 _timerModifierValueAdd > 59
                                     ? '+${changeDurationFromSecondsToMinutes(_timerModifierValueAdd)}'
                                     : '+${_timerModifierValueAdd}s',
-                                style: TextStyle(fontSize: 20, color: textColorOverwrite ? Colors.black : Colors.white)),
+                                style: TextStyle(fontSize: 20, color: textColorOverwrite ? Colors.black : Colors.white)
+                            ),
                           ),
                         ),
                       )
                     ],
                   ),
 
+                  // Spacer between config and restart buttons
                   const SizedBox(height: 25),
 
                   //////////////////////

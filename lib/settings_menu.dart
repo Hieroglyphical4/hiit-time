@@ -50,14 +50,23 @@ class _SettingsMenuState extends State<SettingsMenu> {
   late int _timeModSub;
   late double _appVolume;
 
-  // User Stored boolean Settings:
-
   // Booleans to track changes to Settings
   bool _settingsChanged = false;
   bool _restSettingChanged = false;
   bool _workSettingChanged = false;
   bool _subTimeSettingChanged = false;
   bool _addTimeSettingChanged = false;
+
+  // Shows and Hides the Hint text for fields you type into
+  bool _restTimeHintTextShowing = true;
+  bool _workTimeHintTextShowing = true;
+  bool _subTimeHintTextShowing = true;
+  bool _addTimeHintTextShowing = true;
+
+  FocusNode _restTimeFocusNode = FocusNode();
+  FocusNode _workTimeFocusNode = FocusNode();
+  FocusNode _subTimeFocusNode = FocusNode();
+  FocusNode _addTimeFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -67,6 +76,35 @@ class _SettingsMenuState extends State<SettingsMenu> {
     _timeModAdd = widget.timeModAdd ?? defaultTimeModifyValueAdd;
     _timeModSub = widget.timeModSub ?? defaultTimeModifyValueSub;
     _appVolume = widget.appVolume ?? defaultVolume;
+
+    _restTimeFocusNode.addListener(() => _handleFocusChange(_restTimeFocusNode, 'restTime'));
+    _workTimeFocusNode.addListener(() => _handleFocusChange(_workTimeFocusNode, 'workTime'));
+    _subTimeFocusNode.addListener(() => _handleFocusChange(_subTimeFocusNode, 'subTime'));
+    _addTimeFocusNode.addListener(() => _handleFocusChange(_addTimeFocusNode, 'addTime'));
+  }
+
+  @override
+  void dispose() {
+    _restTimeFocusNode.dispose();
+    _workTimeFocusNode.dispose();
+    _subTimeFocusNode.dispose();
+    _addTimeFocusNode.dispose();
+    restTextEditController.dispose();
+    workTextEditController.dispose();
+    subTimetextEditController.dispose();
+    addTimeTextEditController.dispose();
+    super.dispose();
+  }
+
+  _handleFocusChange(FocusNode focusNode, String textField) {
+    if (!focusNode.hasFocus) {
+      setState(() {
+        textField == 'restTime' ? _restTimeHintTextShowing = true : null;
+        textField == 'workTime' ? _workTimeHintTextShowing = true : null;
+        textField == 'subTime' ? _subTimeHintTextShowing = true : null;
+        textField == 'addTime' ? _addTimeHintTextShowing = true : null;
+      });
+    }
   }
 
   void recordSettingsChanged(String setting) {
@@ -303,6 +341,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                 SizedBox(
                                   width: 115,
                                   child: (TextFormField(
+                                    focusNode: _restTimeFocusNode,
                                     controller: restTextEditController,
                                     style: TextStyle(
                                         color: primaryAccentColor,
@@ -310,6 +349,11 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     textAlign: TextAlign.center,
                                     textDirection: TextDirection.rtl,
                                     keyboardType: TextInputType.number,
+                                    onTap: () {
+                                      setState(() {
+                                        _restTimeHintTextShowing = false;
+                                      });
+                                    },
                                     onChanged: (value) {
                                       if (value != '') {
                                         recordSettingsChanged('rest');
@@ -337,10 +381,11 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                           ?.unfocus();
                                     },
                                     decoration: InputDecoration(
-                                      hintText: _restTime > 59
-                                          ? changeDurationFromSecondsToMinutes(
-                                          _restTime)
-                                          : _restTime.toString(),
+                                      hintText: _restTimeHintTextShowing
+                                        ? _restTime > 59
+                                          ? changeDurationFromSecondsToMinutes(_restTime)
+                                          : _restTime.toString()
+                                        : '', // Hide Hint Text when selected
                                       hintStyle: TextStyle(
                                         fontSize: 30,
                                         color: appCurrentlyInTimerMode
@@ -397,12 +442,18 @@ class _SettingsMenuState extends State<SettingsMenu> {
                             SizedBox(
                               width: 115,
                               child: (TextFormField(
+                                focusNode: _workTimeFocusNode,
                                 controller: workTextEditController,
                                 style: TextStyle(
                                     color: primaryAccentColor, fontSize: 30),
                                 textAlign: TextAlign.center,
                                 textDirection: TextDirection.rtl,
                                 keyboardType: TextInputType.number,
+                                onTap: () {
+                                  setState(() {
+                                    _workTimeHintTextShowing = false;
+                                    });
+                                },
                                 onChanged: (value) {
                                   if (value != '') {
                                     // Only record changes if not filtered (leading 0)
@@ -426,10 +477,12 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   FocusManager.instance.primaryFocus?.unfocus();
                                 },
                                 decoration: InputDecoration(
-                                  hintText: _workTime > 59
-                                      ? changeDurationFromSecondsToMinutes(
-                                      _workTime)
-                                      : _workTime.toString(),
+                                  hintText: _workTimeHintTextShowing
+                                    ? _workTime > 59
+                                        ? changeDurationFromSecondsToMinutes(
+                                        _workTime)
+                                        : _workTime.toString()
+                                    : '',
                                   hintStyle: TextStyle(
                                       fontSize: 30, color: primaryColor),
                                   enabledBorder: OutlineInputBorder(
@@ -615,6 +668,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   SizedBox(
                                     width: 100,
                                     child: (TextFormField(
+                                      focusNode: _subTimeFocusNode,
                                       controller: subTimetextEditController,
                                       style: TextStyle(
                                           color: primaryAccentColor,
@@ -622,6 +676,11 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       textAlign: TextAlign.center,
                                       textDirection: TextDirection.rtl,
                                       keyboardType: TextInputType.number,
+                                      onTap: () {
+                                        setState(() {
+                                          _subTimeHintTextShowing = false;
+                                        });
+                                      },
                                       onChanged: (value) {
                                         if (value != '') {
                                           // Only record changes if not filtered (leading 0)
@@ -648,10 +707,12 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                             ?.unfocus();
                                       },
                                       decoration: InputDecoration(
-                                        hintText: _timeModSub > 59
-                                            ? changeDurationFromSecondsToMinutes(
-                                            _timeModSub)
-                                            : _timeModSub.toString(),
+                                        hintText: _subTimeHintTextShowing
+                                          ? _timeModSub > 59
+                                              ? changeDurationFromSecondsToMinutes(
+                                              _timeModSub)
+                                              : _timeModSub.toString()
+                                          : '',
                                         hintStyle: TextStyle(
                                             fontSize: 20, color: primaryColor),
                                         enabledBorder: OutlineInputBorder(
@@ -918,6 +979,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   SizedBox(
                                     width: 100,
                                     child: (TextFormField(
+                                      focusNode: _addTimeFocusNode,
                                       controller: addTimeTextEditController,
                                       style: TextStyle(
                                           color: primaryAccentColor,
@@ -925,6 +987,11 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       textAlign: TextAlign.center,
                                       textDirection: TextDirection.rtl,
                                       keyboardType: TextInputType.number,
+                                      onTap: () {
+                                        setState(() {
+                                          _addTimeHintTextShowing = false;
+                                        });
+                                      },
                                       onChanged: (value) {
                                         if (value != '') {
                                           // Only record changes if not filtered (leading 0)
@@ -950,10 +1017,12 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                             ?.unfocus();
                                       },
                                       decoration: InputDecoration(
-                                        hintText: _timeModAdd > 59
-                                            ? changeDurationFromSecondsToMinutes(
-                                            _timeModAdd)
-                                            : _timeModAdd.toString(),
+                                        hintText: _addTimeHintTextShowing
+                                          ? _timeModAdd > 59
+                                              ? changeDurationFromSecondsToMinutes(
+                                              _timeModAdd)
+                                              : _timeModAdd.toString()
+                                          : '',
                                         hintStyle: TextStyle(
                                             fontSize: 20, color: primaryColor),
                                         iconColor: primaryColor,
@@ -969,13 +1038,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         ),
                                       ),
                                       inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.digitsOnly,
-                                        // Only numbers can be entered
+                                        FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
                                         FilteringTextInputFormatter.deny(
-                                            RegExp('^0+')),
-                                        // Filter leading 0s
-                                        LengthLimitingTextInputFormatter(4),
-                                        // 4 digits at most
+                                            RegExp('^0+')),  // Filter leading 0s
+                                        LengthLimitingTextInputFormatter(4), // 4 digits at most
                                         // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
                                       ],
                                     )),

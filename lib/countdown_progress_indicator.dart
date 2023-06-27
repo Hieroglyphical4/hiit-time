@@ -1,10 +1,12 @@
-import 'dart:async';
-import 'dart:typed_data';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:hiit_time/Config/settings.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:async';
+
+import 'Config/notification_controller.dart';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 /// Create a Circular countdown indicator
 class CountDownProgressIndicator extends StatefulWidget {
@@ -64,6 +66,9 @@ class CountDownProgressIndicator extends StatefulWidget {
   // Manages audio output
   var audioPlayer;
 
+  // Manages Notifications for Background Timer
+  var notifications;
+
   // Refreshes the timer when coming back to a running app
   final Function(int, int, bool, int) reestablishRunningTimer;
 
@@ -77,6 +82,7 @@ class CountDownProgressIndicator extends StatefulWidget {
     this.timerInRestMode,
     this.controller,
     this.audioPlayer,
+    this.notifications,
     this.isRunning,
     this.onComplete,
     this.timeTextStyle,
@@ -110,7 +116,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
 
   // Variables used when app is minimized or locked
   var appCurrentlyLive = true;  // False if Phone locked or App Minimized
-  final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  late AwesomeNotifications _notificationsPlugin;
   late Timer _backgroundTimer;
   late int backgroundTimerDuration = widget.duration;
   late int backgroundTimerAltDuration = widget.restDuration;
@@ -134,9 +140,9 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   @override
   void initState() {
     super.initState();
-    initNotifications();
 
     _audioPlayer = widget.audioPlayer;
+    _notificationsPlugin = widget.notifications;
     _tenSecondQuePlayed = false;
     _threeSecondQuePlayed = false;
     _twoSecondQuePlayed = false;
@@ -255,23 +261,8 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   }
 
   Future<void> cancelNotificationAndTimer() async {
-    await flutterLocalNotificationsPlugin.cancelAll();
+    await _notificationsPlugin.cancelAll();
     _backgroundTimer.cancel(); // TODO Set boolean to determine if this is running
-
-    // var activeNotifications = await flutterLocalNotificationsPlugin
-    //     .resolvePlatformSpecificImplementation<
-    //     AndroidFlutterLocalNotificationsPlugin>()
-    //     ?.getActiveNotifications();
-    //
-    // for (var notification in activeNotifications!) {
-    //   if (notification.id == 1) {
-    //     // Cancel notification windows when the user closes the app
-    //     _backgroundTimer.cancel();
-    //
-    //     await flutterLocalNotificationsPlugin.cancel(1);
-    //     break;
-    //   }
-    // }
   }
 
 // This method is called when the phone locks or minimizes the app
@@ -335,12 +326,16 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
     final settings = await getSavedUserSettings();
     final int savedWorkDuration = int.parse(settings['workDuration']);
     final int savedRestDuration = int.parse(settings['restDuration']);
+    int progress = 0; // TODO Get progress calculated
+    NotificationController.startListeningNotificationEvents();
+
 
     // With the timer running in the background, keep track of audio ques and timer flips
     _backgroundTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
       String header;
       if (widget.appInTimerMode) {
         header = 'Timer Mode';
+        progress = savedWorkDuration - backgroundTimerDuration;
       } else {
         if (widget.timerInRestMode) {
           header = 'Rest Interval: ${widget.intervalLap}';
@@ -350,20 +345,28 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
       }
       var timeFormatted = changeDurationFromSecondsToMinutes(backgroundTimerDuration);
 
-      await flutterLocalNotificationsPlugin.show(
-        1,
-        header,
-        timeFormatted,
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-              'hiit_time_channel_id',
-              'Hiit Time Channel',
-              icon: 'mipmap/ic_launcher', // ic_bg_service_small
-              ongoing: false,
-              enableVibration: false,
-              vibrationPattern: null
-          ),
-        ),
+      await _notificationsPlugin.createNotification(
+          content: NotificationContent(
+              id: 4,
+              channelKey: 'hiit_time_channel_id',
+              title: header,
+              body: timeFormatted,
+              badge: 0,
+              locked: true,
+              // "A small step for a man, but a giant leap to Flutter's community!",
+              // bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
+              // largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
+              //'asset://assets/images/balloons-in-sky.jpg',
+              notificationLayout: NotificationLayout.Default,
+
+              // TODO Get Progress bar working:
+              // notificationLayout: NotificationLayout.ProgressBar,
+              // progress: progress,
+              payload: {
+                'notificationId': '1234567890'
+              }),
+          // schedule: NotificationCalendar.fromDate(
+          //     date: DateTime.now().add(const Duration(seconds: 10)))
       );
 
       if (backgroundTimerDuration > 0) {
@@ -414,6 +417,32 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
           /// App in Timer Mode
           //////////////////////
           if (widget.isRunning && _timerAlarmPlayed == false) {
+            /// Show Timer Expired Notification
+            await _notificationsPlugin.createNotification(
+              content: NotificationContent(
+                  id: 4,
+                  channelKey: 'hiit_time_channel_id',
+                  title: header,
+                  body: 'Time Expired',
+                  category: NotificationCategory.Alarm,
+                  notificationLayout: NotificationLayout.BigText,
+                  payload: {
+                    'notificationId': '1234567890'
+                  }),
+              actionButtons: [
+                NotificationActionButton(
+                    key: 'stop_timer',
+                    label: 'Stop',
+                    actionType: ActionType.KeepOnTop,
+                    isDangerousOption: true,
+                    autoDismissible: false,
+                    showInCompactView: false
+                )
+              ],
+              // schedule: NotificationCalendar.fromDate(
+              //     date: DateTime.now().add(const Duration(seconds: 10)))
+            );
+
             if (!appCurrentlyMuted && timerAlarmCurrentlyEnabled) {
               _audioPlayer.setReleaseMode(ReleaseMode.loop);
               _audioPlayer.play(AssetSource(audioForTimerAlarm));
@@ -469,31 +498,6 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
         }
       }
     });
-  }
-
-  // Gets permission from user to display notifications
-  void initNotifications() async {
-    var android = const AndroidInitializationSettings('@mipmap/ic_launcher');
-    var platform = InitializationSettings(android: android);
-
-    flutterLocalNotificationsPlugin.initialize(platform);
-    flutterLocalNotificationsPlugin.cancelAll();
-
-    // Create notification channel
-    var androidChannel = AndroidNotificationChannel(
-      'hiit_time_channel_id',
-      'Hiit Time Channel',
-      description: 'Channel Description',
-      importance: Importance.low,
-      playSound: false,
-      enableVibration: false,
-      vibrationPattern: Int64List.fromList([]),
-    );
-
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(androidChannel);
   }
 
   // To go from seconds to mm:ss
