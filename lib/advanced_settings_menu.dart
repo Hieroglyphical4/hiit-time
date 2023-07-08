@@ -429,7 +429,7 @@ class TipsWidgetState extends State<TipsWidget> {
               child: Center(
                   child: Column(children: [
                     SizedBox(
-                        height: 325,
+                        height: 360,
                         width: 300,
                         /////////////////////////////////////////////////////
                         /// These are the individual pages that show Tips
@@ -445,14 +445,14 @@ class TipsWidgetState extends State<TipsWidget> {
                           children: [
                             /// Timer Tip Page
                             Center(
-                              child: SingleChildScrollView(
-                                  child: Column(
+                              child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SizedBox(height: 15),
                                   Text("Timer", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
                                   Divider(color: primaryColor),
-                                  Text("Timer vs Interval Mode?",
+                                  Spacer(),
+                                  Text("Timer vs Interval Mode:",
                                       style: TextStyle(fontSize: 22, color: primaryAccentColor)
                                   ),
                                   SizedBox(height: 12),
@@ -492,9 +492,9 @@ class TipsWidgetState extends State<TipsWidget> {
                                   ),
 
                                   SizedBox(height: 25),
-                                  // Spacer(),
+                                  Spacer(),
                                 ]
-                              ))
+                              )
                             ),
 
                             /// Settings Tip Page
@@ -506,16 +506,19 @@ class TipsWidgetState extends State<TipsWidget> {
                                       Text("Settings", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
                                       Divider(color: primaryColor),
                                       Spacer(),
-                                      Text("Quick Navigation", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
+                                      Text("Quick Navigation:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
                                       SizedBox(height: 5),
                                       Text("Access 'Advanced Settings' from the Timer by clicking the 'HIIT Time' header.",
                                           style: TextStyle(fontSize: 18, color: primaryColor)
                                       ),
-                                      SizedBox(height: 5),
+
+                                      SizedBox(height: 8),
                                       Divider(color: primaryColor),
+                                      SizedBox(height: 8),
+
                                       Text("Unending Timer:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
                                       SizedBox(height: 5),
-                                      Text("Create a single looping Timer in Interval mode by setting the Rest Time to 0.",
+                                      Text("Create a single looping Timer in Interval Mode by setting the Rest Time to 0.",
                                           style: TextStyle(fontSize: 18, color: primaryColor)
                                       ),
                                       SizedBox(height: 25),
@@ -532,6 +535,40 @@ class TipsWidgetState extends State<TipsWidget> {
                                       SizedBox(height: 15),
                                       Text("Logs", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
                                       Divider(color: primaryColor),
+                                      Spacer(),
+                                      Text("Getting Started:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
+                                      SizedBox(height: 5),
+                                      Text("Before saving a New Log in the Logs menu, you must first add an Exercise.",
+                                          style: TextStyle(fontSize: 18, color: primaryColor)
+                                      ),
+
+                                      Spacer(),
+                                      Divider(color: primaryColor),
+                                      Spacer(),
+
+                                      Text("Adding Exercises:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
+                                      SizedBox(height: 5),
+                                      RichText(
+                                        text: TextSpan(
+                                          style: TextStyle(fontSize: 18, color: primaryColor),
+                                          children: [
+                                            TextSpan(
+                                              text: "To add a New Exercise, navigate to the Logs menu, open the New Log widget and click the ",
+                                            ),
+                                            WidgetSpan(
+                                              child: Icon(
+                                                Icons.add_circle_outline,
+                                                color: primaryAccentColor,
+                                                size: 22,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: " icon in the Exercise Dropdown Menu.",
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
                                       Spacer(),
                                     ]
                                 )
