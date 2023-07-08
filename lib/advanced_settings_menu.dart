@@ -21,7 +21,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
   bool _displayThemesSettings = false;
   bool _displayLogs = false;
   bool _displayAboutThisApp = false;
-  bool _displayFaqs = false;
+  bool _displayTips = false;
 
   Future<bool> _confirmRestoreDefaults() async {
     bool confirmed = await showDialog(
@@ -147,7 +147,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           _displayThemesSettings = false;
                           _displayLogs = false;
                           _displayAboutThisApp = false;
-                          _displayFaqs = false;
+                          _displayTips = false;
                         }
                       }),
                       style: ElevatedButton.styleFrom(
@@ -190,7 +190,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                             _displayAudioSettings = false;
                             _displayLogs = false;
                             _displayAboutThisApp = false;
-                            _displayFaqs = false;
+                            _displayTips = false;
                           }
                         }),
                         style: ElevatedButton.styleFrom(
@@ -234,7 +234,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           } else {
                             _displayLogs = true;
                             _displayAboutThisApp = false;
-                            _displayFaqs = false;
+                            _displayTips = false;
                             _displayAudioSettings = false;
                             _displayThemesSettings = false;
                           }
@@ -265,17 +265,17 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                 SizedBox(height: 20),
 
                 ///////////////////////////
-                // FAQs Button
+                // Tips Button
                 ///////////////////////////
                 SizedBox(
                     height: 60,
                     width: 350,
                     child: ElevatedButton(
                         onPressed: () => setState(() {
-                          if (_displayFaqs) {
-                            _displayFaqs = false;
+                          if (_displayTips) {
+                            _displayTips = false;
                           } else {
-                            _displayFaqs = true;
+                            _displayTips = true;
                             _displayLogs = false;
                             _displayAboutThisApp = false;
                             _displayAudioSettings = false;
@@ -286,9 +286,9 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           backgroundColor: secondaryAccentColor,
                           padding: const EdgeInsets.all(4),
                         ),
-                        child: Text(_displayFaqs
-                            ? '-             FAQs             -'
-                            : 'FAQs                             >',
+                        child: Text(_displayTips
+                            ? '-             Tips             -'
+                            : 'Tips                             >',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
                                 color: textColorOverwrite
                                     ? Colors.black
@@ -300,9 +300,9 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                     )
                 ),
 
-                // Determine if FAQ Widget should show:
-                _displayFaqs
-                    ? FaqsWidget(key: UniqueKey(),)
+                // Determine if Tip Widget should show:
+                _displayTips
+                    ? TipsWidget(key: UniqueKey(),)
                     : Container(),
 
                 SizedBox(height: 20),
@@ -320,7 +320,7 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           } else {
                             _displayAboutThisApp = true;
                             _displayLogs = false;
-                            _displayFaqs = false;
+                            _displayTips = false;
                             _displayAudioSettings = false;
                             _displayThemesSettings = false;
                           }
@@ -397,21 +397,200 @@ class _AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 }
 
 //////////////////////////////////////////
-// Widget for all FAQs (sub-submenu)
+// Widget for all Tips (sub-submenu)
 //////////////////////////////////////////
-class FaqsWidget extends StatefulWidget {
-  const FaqsWidget({
+class TipsWidget extends StatefulWidget {
+  const TipsWidget({
     required Key key,
   }) : super(key: key);
 
   @override
-  FaqsWidgetState createState() => FaqsWidgetState();
+  TipsWidgetState createState() => TipsWidgetState();
 }
 
-class FaqsWidgetState extends State<FaqsWidget> {
+class TipsWidgetState extends State<TipsWidget> {
+  late PageController _pageController;
+  final List<String> _pages = ['Timer', 'Settings', 'Logs'];
+
+  // Indicates what page the user is currently looking at
+  int _currentPageIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _currentPageIndex);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Text("Here are some Tips: ", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white),);
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return Container(
+              child: Center(
+                  child: Column(children: [
+                    SizedBox(
+                        height: 360,
+                        width: 300,
+                        /////////////////////////////////////////////////////
+                        /// These are the individual pages that show Tips
+                        /////////////////////////////////////////////////////
+                        child: PageView(
+                          controller: _pageController,
+                          onPageChanged: (index) {
+                            setState(() {
+                              _currentPageIndex = index;
+                            });
+                          },
+                          // Each of these Children represent a Page
+                          children: [
+                            /// Timer Tip Page
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SizedBox(height: 15),
+                                  Text("Timer", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
+                                  Divider(color: primaryColor),
+                                  Spacer(),
+                                  Text("Timer vs Interval Mode:",
+                                      style: TextStyle(fontSize: 22, color: primaryAccentColor)
+                                  ),
+                                  SizedBox(height: 12),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: 'Timer Mode: ',
+                                      style: TextStyle(fontSize: 19, color: primaryAccentColor), // Change color here
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: "Only uses 'Work Time' and ends at 0.",
+                                          style: TextStyle(fontSize: 18, color: primaryColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: 'Interval Mode: ',
+                                      style: TextStyle(fontSize: 19, color: primaryAccentColor), // Change color here
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                          text: "Uses both 'Work Time' and 'Rest Time' to continuously loop.",
+                                          style: TextStyle(fontSize: 18, color: primaryColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  SizedBox(height: 5),
+                                  Divider(color: primaryColor),
+
+                                  Text("Time to Setup:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
+                                  SizedBox(height: 5),
+                                  Text("Use the +Time button after setting up your phone for extra time to get in position.",
+                                      style: TextStyle(fontSize: 18, color: primaryColor)
+                                  ),
+
+                                  SizedBox(height: 25),
+                                  Spacer(),
+                                ]
+                              )
+                            ),
+
+                            /// Settings Tip Page
+                            Center(
+                                child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(height: 15),
+                                      Text("Settings", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
+                                      Divider(color: primaryColor),
+                                      Spacer(),
+                                      Text("Quick Navigation:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
+                                      SizedBox(height: 5),
+                                      Text("Access 'Advanced Settings' from the Timer by clicking the 'HIIT Time' header.",
+                                          style: TextStyle(fontSize: 18, color: primaryColor)
+                                      ),
+
+                                      SizedBox(height: 8),
+                                      Divider(color: primaryColor),
+                                      SizedBox(height: 8),
+
+                                      Text("Unending Timer:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
+                                      SizedBox(height: 5),
+                                      Text("Create a single looping Timer in Interval Mode by setting the Rest Time to 0.",
+                                          style: TextStyle(fontSize: 18, color: primaryColor)
+                                      ),
+                                      SizedBox(height: 25),
+                                      Spacer(),
+                                    ]
+                                )
+                            ),
+
+                            /// Logs Tip Page
+                            Center(
+                                child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(height: 15),
+                                      Text("Logs", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
+                                      Divider(color: primaryColor),
+                                      Spacer(),
+                                      Text("Getting Started:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
+                                      SizedBox(height: 5),
+                                      Text("Before saving a New Log in the Logs menu, you must first add an Exercise.",
+                                          style: TextStyle(fontSize: 18, color: primaryColor)
+                                      ),
+
+                                      Spacer(),
+                                      Divider(color: primaryColor),
+                                      Spacer(),
+
+                                      Text("Adding Exercises:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
+                                      SizedBox(height: 5),
+                                      RichText(
+                                        text: TextSpan(
+                                          style: TextStyle(fontSize: 18, color: primaryColor),
+                                          children: [
+                                            TextSpan(
+                                              text: "To add a New Exercise, navigate to the Logs menu, open the New Log widget and click the ",
+                                            ),
+                                            WidgetSpan(
+                                              child: Icon(
+                                                Icons.add_circle_outline,
+                                                color: primaryAccentColor,
+                                                size: 22,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: " icon in the Exercise Dropdown Menu.",
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Spacer(),
+                                    ]
+                                )
+                            ),
+                          ],
+                        )),
+                    PageIndicator(
+                      currentPageIndex: _currentPageIndex,
+                      pages: _pages,
+                      onPageSelected: (int pageIndex) {
+                        _pageController.animateToPage(
+                          pageIndex,
+                          duration: Duration(milliseconds: 400),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 15),
+                    SizedBox(height: 1, child: Container(color: Colors.grey)),
+                    const SizedBox(height: 15),
+                  ])));
+        });
   }
 }
 
@@ -431,12 +610,45 @@ class AboutThisAppWidgetState extends State<AboutThisAppWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: 225,
+        width: 300,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Thank you for downloading my first app.", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
-              SizedBox(height: 20),
-              Text("Email: app@gmail.com", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
+              SizedBox(height: 10),
+              Divider(color: primaryColor),
+              Text("Thank you for downloading my first app! ", textAlign: TextAlign.center, style: TextStyle(fontSize: 20, color: textColorOverwrite ? Colors.black : Colors.white)),
+              Divider(color: primaryColor),
+              SizedBox(height: 15),
+
+              Text("Origin: ", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
+              SizedBox(height: 4),
+
+              Text("I created this app because I needed a timer that was easy to setup and interact with during workouts. "
+                  "After failing to find a quality, Ad-Free option on the app store, I decided to create my own.",
+                  style: TextStyle(fontSize: 21, color: textColorOverwrite ? Colors.black : Colors.white)
+              ),
+              SizedBox(height: 8),
+              Text("Logs were eventually added so that (other than a music app) HIIT Time is the only app needed while at the gym.",
+                  style: TextStyle(fontSize: 21, color: textColorOverwrite ? Colors.black : Colors.white)
+              ),
+              SizedBox(height: 8),
+              Text("I have no plans to add random ads as I feel they severely degrade the quality of apps. If you want to support my work, please consider purchasing a Theme!",
+                  style: TextStyle(fontSize: 21, color: textColorOverwrite ? Colors.black : Colors.white)
+              ),
+              Divider(color: primaryColor),
+
+
+
+              SizedBox(height: 10),
+              Text("Please send any comments, issues, questions or feedback to the address below.", textAlign: TextAlign.center, style: TextStyle(fontSize: 19, color: textColorOverwrite ? Colors.black : Colors.white)),
+              SizedBox(height: 15),
+
+              Divider(color: primaryColor),
+              Text("Email:", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
+              SizedBox(height: 4),
+              SelectableText("HiitTimeApp@gmail.com", style: TextStyle(fontSize: 25, color: textColorOverwrite ? Colors.black : Colors.white)),
+              SizedBox(height: 5),
+              Divider(color: primaryColor),
             ]
         )
     );
@@ -540,7 +752,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   _currentPageIndex = index;
                 });
               },
-              // Each of these Children represents a Page
+              // Each of these Children represent a Page
               children: [
                 ////////////////////////
                 /// Default Theme Page
@@ -804,7 +1016,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
             )),
         PageIndicator(
           currentPageIndex: _currentPageIndex,
-          possibleThemes: _possibleThemes,
+          pages: _possibleThemes,
           onPageSelected: (int pageIndex) {
             _pageController.animateToPage(
               pageIndex,
@@ -826,12 +1038,12 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 ///////////////////////////////////////////////////////////////////
 class PageIndicator extends StatelessWidget {
   final int currentPageIndex;
-  final List<String> possibleThemes;
+  final List<String> pages;
   final ValueChanged<int> onPageSelected;
 
   PageIndicator({
     required this.currentPageIndex,
-    required this.possibleThemes,
+    required this.pages,
     required this.onPageSelected,
   });
 
@@ -840,7 +1052,7 @@ class PageIndicator extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        for (int i = 0; i < possibleThemes.length; i++)
+        for (int i = 0; i < pages.length; i++)
           GestureDetector(
             onTap: () => onPageSelected(i),
             child: Padding(
