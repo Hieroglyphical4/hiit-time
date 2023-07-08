@@ -154,7 +154,7 @@ class DatabaseHelper {
     return maps.map((map) => {'name': map['name'], 'selected': false}).toList();
   }
 
-  Future<List<Map<String, dynamic>>> getMapOfWorkoutsUsingExerciseName(String exerciseName, bool isCardio) async {
+  Future<List<Map<String, dynamic>>> getMapOfWorkoutsUsingExerciseName(String exerciseName, bool isCardio, String sortOrder) async {
     final db = await database;
     int? exerciseId = await _getExerciseIdByName(exerciseName);
     List<Map<String, dynamic>> maps;
@@ -164,14 +164,14 @@ class DatabaseHelper {
           'cardio_workouts',
           where: 'exerciseId = ?',
           whereArgs: [exerciseId],
-          orderBy: 'date DESC'
+          orderBy: sortOrder
       );
     } else {
       maps = await db.query(
           'weighted_workouts',
           where: 'exerciseId = ?',
           whereArgs: [exerciseId],
-          orderBy: 'date DESC'
+          orderBy: sortOrder
       );
     }
 

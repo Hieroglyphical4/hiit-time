@@ -611,6 +611,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
   List<Map> weightedWorkoutMap = [];
   late String selectedExercise;
   bool subMenuOpen = false;
+  bool newestItemsFirst = true;
 
   // This Widget is shown whenever an individual exercise is selected
   Widget buildTableForSelectedExercise() {
@@ -654,7 +655,6 @@ class WeightsWidgetState extends State<WeightsWidget> {
           ]);
         } else {
           /// There are Items, build table
-          // TODO Run if logic on Cardio = true/false
           return Container(
               width: 290,
               padding: EdgeInsets.symmetric(horizontal: 5),
@@ -974,7 +974,13 @@ class WeightsWidgetState extends State<WeightsWidget> {
   }
 
   Future<void> getWorkouts() async {
-    final items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, false);
+    List<Map<String, dynamic>> items;
+
+    if (newestItemsFirst) {
+      items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, false, 'date DESC');
+    } else {
+      items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, false, 'date ASC');
+    }
 
     setState(() {
       weightedWorkoutMap = items;
@@ -997,8 +1003,47 @@ class WeightsWidgetState extends State<WeightsWidget> {
         height: subMenuOpen ? 500 : 300,
         width: 300,
         child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              Divider(color: primaryColor),
+              Row(children: [
+                Text("Sort By: ", style: TextStyle(fontFamily: 'AstroSpace',
+                      fontSize: 16, color: primaryColor)
+              ),
+                SizedBox(width: 30),
+                DropdownButton<String>(
+                  dropdownColor: secondaryAccentColor,
+                  value: newestItemsFirst ? 'Newest First' : 'Oldest First',
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue == 'Newest First') {
+                        newestItemsFirst = true;
+                      } else {
+                        newestItemsFirst = false;
+                      }
+
+                      if (subMenuOpen) {
+                        getWorkouts();
+                      }
+                    });
+                  },
+                  items: <String>[
+                    'Newest First',
+                    'Oldest First',
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                          value,
+                          style: TextStyle(fontFamily: 'AstroSpace',
+                              fontSize: 16, color: primaryColor)
+                      ),
+                    );
+                  }).toList(),
+                )
+              ]),
+              Divider(color: primaryColor),
+
               Expanded(child: ListView.builder(
                 itemCount: exerciseMap.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -1119,6 +1164,7 @@ class CardioWidgetState extends State<CardioWidget> {
   List<Map> cardioWorkoutMap = [];
   late String selectedExercise;
   bool subMenuOpen = false;
+  bool newestItemsFirst = true;
 
   // This Widget is shown whenever an individual exercise is selected
   Widget buildTableForSelectedExercise() {
@@ -1463,7 +1509,12 @@ class CardioWidgetState extends State<CardioWidget> {
   }
 
   Future<void> getWorkouts() async {
-    final items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, true);
+    List<Map<String, dynamic>> items;
+    if (newestItemsFirst) {
+      items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, true, 'date DESC');
+    } else {
+      items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, true, 'date ASC');
+    }
 
     setState(() {
       cardioWorkoutMap = items;
@@ -1488,6 +1539,46 @@ class CardioWidgetState extends State<CardioWidget> {
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+
+              Divider(color: primaryColor),
+              Row(children: [
+                Text("Sort By: ", style: TextStyle(fontFamily: 'AstroSpace',
+                    fontSize: 16, color: primaryColor)
+                ),
+                SizedBox(width: 30),
+                DropdownButton<String>(
+                  dropdownColor: secondaryAccentColor,
+                  value: newestItemsFirst ? 'Newest First' : 'Oldest First',
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue == 'Newest First') {
+                        newestItemsFirst = true;
+                      } else {
+                        newestItemsFirst = false;
+                      }
+
+                      if (subMenuOpen) {
+                        getWorkouts();
+                      }
+                    });
+                  },
+                  items: <String>[
+                    'Newest First',
+                    'Oldest First',
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                          value,
+                          style: TextStyle(fontFamily: 'AstroSpace',
+                              fontSize: 16, color: primaryColor)
+                      ),
+                    );
+                  }).toList(),
+                )
+              ]),
+              Divider(color: primaryColor),
+
               Expanded(child: ListView.builder(
                 itemCount: exerciseMap.length,
                 itemBuilder: (BuildContext context, int index) {
