@@ -611,7 +611,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
   List<Map> weightedWorkoutMap = [];
   late String selectedExercise;
   bool subMenuOpen = false;
-  bool newestItemsFirst = true;
+  bool newestItemsFirst = sortLogByNewest;
 
   // This Widget is shown whenever an individual exercise is selected
   Widget buildTableForSelectedExercise() {
@@ -1018,8 +1018,12 @@ class WeightsWidgetState extends State<WeightsWidget> {
                     setState(() {
                       if (newValue == 'Newest First') {
                         newestItemsFirst = true;
+                        sortLogByNewest = true;
+                        setBooleanSetting('sortLogByNewest', true);
                       } else {
                         newestItemsFirst = false;
+                        sortLogByNewest = false;
+                        setBooleanSetting('sortLogByNewest', false);
                       }
 
                       if (subMenuOpen) {
@@ -1164,7 +1168,7 @@ class CardioWidgetState extends State<CardioWidget> {
   List<Map> cardioWorkoutMap = [];
   late String selectedExercise;
   bool subMenuOpen = false;
-  bool newestItemsFirst = true;
+  bool newestItemsFirst = sortLogByNewest;
 
   // This Widget is shown whenever an individual exercise is selected
   Widget buildTableForSelectedExercise() {
@@ -1537,7 +1541,7 @@ class CardioWidgetState extends State<CardioWidget> {
         height: subMenuOpen ? 500 : 300,
         width: 300,
         child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
 
               Divider(color: primaryColor),
@@ -1553,8 +1557,12 @@ class CardioWidgetState extends State<CardioWidget> {
                     setState(() {
                       if (newValue == 'Newest First') {
                         newestItemsFirst = true;
+                        sortLogByNewest = true;
+                        setBooleanSetting('sortLogByNewest', true);
                       } else {
                         newestItemsFirst = false;
+                        sortLogByNewest = false;
+                        setBooleanSetting('sortLogByNewest', false);
                       }
 
                       if (subMenuOpen) {

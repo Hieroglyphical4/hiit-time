@@ -26,6 +26,8 @@ bool saveButtonAudioEnabledDefault = true;
 bool cancelButtonAudioEnabledDefault = true;
 bool switchButtonAudioEnabledDefault = true;
 
+bool sortLogByNewestDefault = true;
+
 /// Audio Related Default Settings:
 var audioAlertWorkModeStartedDefault = assetSalliWork;
 var audioAlertRestModeStartedDefault = assetSalliRest;
@@ -59,6 +61,8 @@ bool restartButtonAudioCurrentlyEnabled = restartButtonAudioEnabledDefault;
 bool saveButtonAudioCurrentlyEnabled = saveButtonAudioEnabledDefault;
 bool cancelButtonAudioCurrentlyEnabled = cancelButtonAudioEnabledDefault;
 bool switchButtonAudioCurrentlyEnabled = switchButtonAudioEnabledDefault;
+
+bool sortLogByNewest = sortLogByNewestDefault;
 
 double appCurrentVolume = defaultVolume;
 
@@ -134,6 +138,8 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   tenSecondWarningCurrentlyEnabled = prefs.getBool('tenSecondWarningEnabled') ?? tenSecondWarningEnabledDefault;
   alertWorkModeStartedCurrentlyEnabled = prefs.getBool('alertWorkModeStartedEnabled') ?? alertWorkModeStartedEnabledDefault;
   alertRestModeStartedCurrentlyEnabled = prefs.getBool('alertRestModeStartedEnabled') ?? alertRestModeStartedEnabledDefault;
+
+  sortLogByNewest = prefs.getBool('sortLogByNewest') ?? sortLogByNewestDefault;
 
   restartButtonAudioCurrentlyEnabled = prefs.getBool('restartButtonAudioEnabled') ?? restartButtonAudioEnabledDefault;
   saveButtonAudioCurrentlyEnabled = prefs.getBool('saveButtonAudioEnabled') ?? saveButtonAudioEnabledDefault;
