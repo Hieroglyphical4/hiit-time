@@ -610,12 +610,44 @@ class AboutThisAppWidgetState extends State<AboutThisAppWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: 225,
+        width: 300,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Thank you for downloading my first app.", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
-              SizedBox(height: 20),
-              Text("Email: app@gmail.com", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
+              SizedBox(height: 10),
+              Divider(color: primaryColor),
+              Text("Thank you for downloading my first app! ", style: TextStyle(fontSize: 20, color: textColorOverwrite ? Colors.black : Colors.white)),
+              Divider(color: primaryColor),
+              SizedBox(height: 15),
+
+              Text("Origin: ", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
+
+              Text("I created this app because I needed a timer that was easy to setup and interact with during workouts. "
+                  "After failing to find a quality, Ad-Free option on the app store, I decided to create my own.",
+                  style: TextStyle(fontSize: 21, color: textColorOverwrite ? Colors.black : Colors.white)
+              ),
+              SizedBox(height: 8),
+              Text("Logs were eventually added so that (other than a music app) HIIT Time is the only app needed while at the gym.",
+                  style: TextStyle(fontSize: 21, color: textColorOverwrite ? Colors.black : Colors.white)
+              ),
+              SizedBox(height: 8),
+              Text("I have no plans to add random ads as I feel they severely degrade the quality of apps. If you want to support my work, please consider purchasing a Theme!",
+                  style: TextStyle(fontSize: 21, color: textColorOverwrite ? Colors.black : Colors.white)
+              ),
+              Divider(color: primaryColor),
+
+
+
+              SizedBox(height: 10),
+              Text("Please send any comments, issues, questions or feedback to the address below.", style: TextStyle(fontSize: 19, color: textColorOverwrite ? Colors.black : Colors.white)),
+              SizedBox(height: 15),
+
+              Divider(color: primaryColor),
+              Text("Email:", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
+              SizedBox(height: 4),
+              SelectableText("HiitTimeApp@gmail.com", style: TextStyle(fontSize: 25, color: textColorOverwrite ? Colors.black : Colors.white)),
+              SizedBox(height: 5),
+              Divider(color: primaryColor),
             ]
         )
     );
