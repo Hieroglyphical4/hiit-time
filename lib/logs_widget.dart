@@ -81,7 +81,7 @@ class LogsWidgetState extends State<LogsWidget> {
                       ),
                     ),
                     Positioned(
-                      top: 9,
+                      top: 4,
                       left: 14,
                       child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -100,7 +100,7 @@ class LogsWidgetState extends State<LogsWidget> {
                           child: Container(
                               color: _displayNewLogsWidget ? Colors.red.shade400 : primaryAccentColor,
                               width: 140,
-                              height: 40,
+                              height: 35,
                               child:
                               _displayNewLogsWidget
                                   ? Row(children: [
