@@ -154,26 +154,46 @@ class DatabaseHelper {
     return maps.map((map) => {'name': map['name'], 'selected': false}).toList();
   }
 
-  Future<List<Map<String, dynamic>>> getMapOfWorkoutsUsingExerciseName(String exerciseName, bool isCardio, String sortOrder) async {
+  Future<List<Map<String, dynamic>>> getMapOfWorkoutsUsingExerciseName(String exerciseName, bool isCardio, String sortOrder, [String? latestDate]) async {
     final db = await database;
     int? exerciseId = await _getExerciseIdByName(exerciseName);
     List<Map<String, dynamic>> maps;
 
-    if (isCardio) {
-      maps = await db.query(
-          'cardio_workouts',
-          where: 'exerciseId = ?',
-          whereArgs: [exerciseId],
-          orderBy: sortOrder
-      );
+    if (latestDate == null) {
+      if (isCardio) {
+        maps = await db.query(
+            'cardio_workouts',
+            where: 'exerciseId = ?',
+            whereArgs: [exerciseId],
+            orderBy: sortOrder
+        );
+      } else {
+        maps = await db.query(
+            'weighted_workouts',
+            where: 'exerciseId = ?',
+            whereArgs: [exerciseId],
+            orderBy: sortOrder
+        );
+      }
     } else {
-      maps = await db.query(
-          'weighted_workouts',
-          where: 'exerciseId = ?',
-          whereArgs: [exerciseId],
-          orderBy: sortOrder
-      );
+      // Filter by date
+      if (isCardio) {
+        maps = await db.query(
+            'cardio_workouts',
+            where: 'exerciseId = ? AND date > ?',
+            whereArgs: [exerciseId, latestDate],
+            orderBy: sortOrder
+        );
+      } else {
+        maps = await db.query(
+            'weighted_workouts',
+            where: 'exerciseId = ? AND date > ?',
+            whereArgs: [exerciseId, latestDate],
+            orderBy: sortOrder
+        );
+      }
     }
+
 
     return maps;
   }

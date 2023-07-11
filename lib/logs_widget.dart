@@ -612,6 +612,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
   late String selectedExercise;
   bool subMenuOpen = false;
   bool newestItemsFirst = sortLogByNewest;
+  int currentTimeline = 0;
 
   // This Widget is shown whenever an individual exercise is selected
   Widget buildTableForSelectedExercise() {
@@ -625,31 +626,34 @@ class WeightsWidgetState extends State<WeightsWidget> {
                 style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16, color: primaryColor, height: 1.1),
               ),
               SizedBox(height: 5),
-              Container(
-                width: 175,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red.shade600,
-                      padding: const EdgeInsets.all(4),
-                    ),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                      Text("Hold to Delete",
-                        style: TextStyle(fontFamily: 'AstroSpace', color: primaryColor, fontSize: 14, height: 1.1),
-                      ),
-                      Text(selectedExercise,
-                        style: TextStyle(fontFamily: 'AstroSpace', color: primaryColor, fontSize: 14, height: 1.1),
-                      )
-                    ]),
-                    onPressed: () {},
-                    onLongPress: () {
-                      // Fire DATABASE Event to delete Exercise
-                      deleteExercise();
-                      widget.closeMenus();
-                    },
+
+              currentTimeline == 0
+                  ? Container(
+                      width: 175,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red.shade600,
+                            padding: const EdgeInsets.all(4),
+                          ),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                            Text("Hold to Delete",
+                              style: TextStyle(fontFamily: 'AstroSpace', color: primaryColor, fontSize: 14, height: 1.1),
+                            ),
+                            Text(selectedExercise,
+                              style: TextStyle(fontFamily: 'AstroSpace', color: primaryColor, fontSize: 14, height: 1.1),
+                            )
+                          ]),
+                          onPressed: () {},
+                          onLongPress: () {
+                            // Fire DATABASE Event to delete Exercise
+                            deleteExercise();
+                            widget.closeMenus();
+                          },
+                        )
                   )
-              ),
+                  : Container(),
 
             SizedBox(height: 15),
           ]);
@@ -956,6 +960,18 @@ class WeightsWidgetState extends State<WeightsWidget> {
     return "$_month/$_day";
   }
 
+  setTimeline(months) {
+    setState(() {
+      if (currentTimeline == months) {
+        currentTimeline = 0;
+      } else {
+        currentTimeline = months;
+      }
+    });
+
+    getWorkouts();
+  }
+
   Future<void> getExercises() async {
     final items = await DatabaseHelper.instance.getMapOfUniqueWeightedExerciseNames();
 
@@ -976,15 +992,40 @@ class WeightsWidgetState extends State<WeightsWidget> {
   Future<void> getWorkouts() async {
     List<Map<String, dynamic>> items;
 
-    if (newestItemsFirst) {
-      items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, false, 'date DESC');
+    if (currentTimeline == 0) {
+      // This logic block indicates we should grab all records as there is no restraint on how far back we should search
+        if (newestItemsFirst) {
+          items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, false, 'date DESC');
+        } else {
+          items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, false, 'date ASC');
+        }
     } else {
-      items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, false, 'date ASC');
+      // With a timeline set, we will set a date that will filter older records
+      var latestDate = DateTime.now();
+
+      if (currentTimeline == 12) {
+        latestDate = DateTime(latestDate.year - 1);
+      } else {
+        latestDate = latestDate.subtract(Duration(days: (30 * currentTimeline)));
+      }
+
+      // Format the date so it can be queried against Database records
+      String formattedDate = '${_padZero(latestDate.month)}/${_padZero(latestDate.day)}/${latestDate.year} 00:00:00';
+
+      if (newestItemsFirst) {
+        items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, false, 'date DESC', formattedDate);
+      } else {
+        items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, false, 'date ASC', formattedDate);
+      }
     }
 
     setState(() {
       weightedWorkoutMap = items;
     });
+  }
+
+  static String _padZero(int value) {
+    return value.toString().padLeft(2, '0');
   }
 
   Future<void> deleteExercise() async {
@@ -1000,54 +1041,11 @@ class WeightsWidgetState extends State<WeightsWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: subMenuOpen ? 500 : 300,
+        height: subMenuOpen ? 550 : 300,
         width: 300,
         child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Divider(color: primaryColor),
-              Row(children: [
-                Text("Sort By: ", style: TextStyle(fontFamily: 'AstroSpace',
-                      fontSize: 16, color: primaryColor)
-              ),
-                SizedBox(width: 30),
-                DropdownButton<String>(
-                  dropdownColor: secondaryAccentColor,
-                  value: newestItemsFirst ? 'Newest First' : 'Oldest First',
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      if (newValue == 'Newest First') {
-                        newestItemsFirst = true;
-                        sortLogByNewest = true;
-                        setBooleanSetting('sortLogByNewest', true);
-                      } else {
-                        newestItemsFirst = false;
-                        sortLogByNewest = false;
-                        setBooleanSetting('sortLogByNewest', false);
-                      }
-
-                      if (subMenuOpen) {
-                        getWorkouts();
-                      }
-                    });
-                  },
-                  items: <String>[
-                    'Newest First',
-                    'Oldest First',
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                          value,
-                          style: TextStyle(fontFamily: 'AstroSpace',
-                              fontSize: 16, color: primaryColor)
-                      ),
-                    );
-                  }).toList(),
-                )
-              ]),
-              Divider(color: primaryColor),
-
               Expanded(child: ListView.builder(
                 itemCount: exerciseMap.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -1135,7 +1133,139 @@ class WeightsWidgetState extends State<WeightsWidget> {
 
                         // If current index is selected, render it's widget
                         exerciseMap[index]['selected']
-                            ? Column(children: [SizedBox(height: 5), buildTableForSelectedExercise(), SizedBox(height: 5),])
+                            ? Column(children: [
+
+                                Divider(color: primaryColor),
+                                Column(children: [
+                                  Row(children: [
+                                    Text("Months: ", style: TextStyle(fontFamily: 'AstroSpace',
+                                        fontSize: 16, color: primaryColor)
+                                    ),
+
+                                    // 1 Month Button
+                                    Container(
+                                        width: 45,
+                                        height: 45,
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: currentTimeline == 1 ? primaryAccentColor : secondaryColor,
+                                            padding: const EdgeInsets.all(4),
+                                          ),
+                                          onPressed: () => setTimeline(1),
+                                          child: Text('1',
+                                              style: TextStyle(
+                                                color: textColorOverwrite ? Colors.black : Colors.white,
+                                                fontSize: 20.0,
+                                              )),
+                                        )
+                                    ),
+
+                                    // 3 Month Button
+                                    Container(
+                                        width: 45,
+                                        height: 45,
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: currentTimeline == 3 ? primaryAccentColor : secondaryColor,
+                                            padding: const EdgeInsets.all(4),
+                                          ),
+                                          onPressed: () => setTimeline(3),
+                                          child: Text('3',
+                                              style: TextStyle(
+                                                color: textColorOverwrite ? Colors.black : Colors.white,
+                                                fontSize: 20.0,
+                                              )),
+                                        )
+                                    ),
+
+                                    // 6 Month Button
+                                    Container(
+                                        width: 45,
+                                        height: 45,
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: currentTimeline == 6 ? primaryAccentColor : secondaryColor,
+                                            padding: const EdgeInsets.all(4),
+                                          ),
+                                          onPressed: () => setTimeline(6),
+                                          child: Text('6',
+                                              style: TextStyle(
+                                                color: textColorOverwrite ? Colors.black : Colors.white,
+                                                fontSize: 20.0,
+                                              )),
+                                        )
+                                    ),
+
+                                    // 12 Month Button
+                                    Container(
+                                        width: 45,
+                                        height: 45,
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: currentTimeline == 12 ? primaryAccentColor : secondaryColor,
+                                            padding: const EdgeInsets.all(4),
+                                          ),
+                                          onPressed: () => setTimeline(12),
+                                          child: Text('12',
+                                              style: TextStyle(
+                                                color: textColorOverwrite ? Colors.black : Colors.white,
+                                                fontSize: 20.0,
+                                              )),
+                                        )
+                                    ),
+                                  ]),
+
+                                  Divider(color: primaryColor),
+
+                                  /// Sort By Section
+                                  Row(children: [
+                                      Text("Sort By: ", style: TextStyle(fontFamily: 'AstroSpace',
+                                          fontSize: 16, color: primaryColor)
+                                      ),
+                                      SizedBox(width: 30),
+                                      DropdownButton<String>(
+                                        dropdownColor: secondaryAccentColor,
+                                        value: newestItemsFirst ? 'Newest First' : 'Oldest First',
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            if (newValue == 'Newest First') {
+                                              newestItemsFirst = true;
+                                              sortLogByNewest = true;
+                                              setBooleanSetting('sortLogByNewest', true);
+                                            } else {
+                                              newestItemsFirst = false;
+                                              sortLogByNewest = false;
+                                              setBooleanSetting('sortLogByNewest', false);
+                                            }
+
+                                            if (subMenuOpen) {
+                                              getWorkouts();
+                                            }
+                                          });
+                                        },
+                                        items: <String>[
+                                          'Newest First',
+                                          'Oldest First',
+                                        ].map<DropdownMenuItem<String>>((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(
+                                                value,
+                                                style: TextStyle(fontFamily: 'AstroSpace',
+                                                    fontSize: 16, color: primaryColor)
+                                            ),
+                                          );
+                                        }).toList(),
+                                      )
+                                    ])
+                                ]),
+                                Divider(color: primaryColor),
+
+                                /// Table Here
+                                SizedBox(height: 5),
+                                buildTableForSelectedExercise(),
+                                SizedBox(height: 5),
+                            ])
                             : SizedBox(height: 4),
                         ]);
                 },
@@ -1169,6 +1299,7 @@ class CardioWidgetState extends State<CardioWidget> {
   late String selectedExercise;
   bool subMenuOpen = false;
   bool newestItemsFirst = sortLogByNewest;
+  int currentTimeline = 0;
 
   // This Widget is shown whenever an individual exercise is selected
   Widget buildTableForSelectedExercise() {
@@ -1182,31 +1313,34 @@ class CardioWidgetState extends State<CardioWidget> {
               style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16, color: primaryColor, height: 1.1),
             ),
             SizedBox(height: 5),
-            Container(
-                width: 175,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade600,
-                    padding: const EdgeInsets.all(4),
-                  ),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("Hold to Delete",
-                          style: TextStyle(fontFamily: 'AstroSpace', color: primaryColor, fontSize: 14, height: 1.1),
-                        ),
-                        Text(selectedExercise,
-                          style: TextStyle(fontFamily: 'AstroSpace', color: primaryColor, fontSize: 14, height: 1.1),
-                        )
-                      ]),
-                  onPressed: () {},
-                  onLongPress: () {
-                    // Fire DATABASE Event to delete Exercise
-                    deleteExercise();
-                    widget.closeMenus();
-                  },
+
+            currentTimeline == 0
+              ? Container(
+                    width: 175,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red.shade600,
+                        padding: const EdgeInsets.all(4),
+                      ),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("Hold to Delete",
+                              style: TextStyle(fontFamily: 'AstroSpace', color: primaryColor, fontSize: 14, height: 1.1),
+                            ),
+                            Text(selectedExercise,
+                              style: TextStyle(fontFamily: 'AstroSpace', color: primaryColor, fontSize: 14, height: 1.1),
+                            )
+                          ]),
+                      onPressed: () {},
+                      onLongPress: () {
+                        // Fire DATABASE Event to delete Exercise
+                        deleteExercise();
+                        widget.closeMenus();
+                      },
+                    )
                 )
-            ),
+            : Container(),
 
             SizedBox(height: 15),
           ]);
@@ -1495,6 +1629,18 @@ class CardioWidgetState extends State<CardioWidget> {
     return timeFormatted;
   }
 
+  setTimeline(months) {
+    setState(() {
+      if (currentTimeline == months) {
+        currentTimeline = 0;
+      } else {
+        currentTimeline = months;
+      }
+    });
+
+    getWorkouts();
+  }
+
   Future<void> getExercises() async {
     final items = await DatabaseHelper.instance.getMapOfUniqueCardioExerciseNames();
 
@@ -1514,15 +1660,41 @@ class CardioWidgetState extends State<CardioWidget> {
 
   Future<void> getWorkouts() async {
     List<Map<String, dynamic>> items;
-    if (newestItemsFirst) {
-      items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, true, 'date DESC');
+
+    if (currentTimeline == 0) {
+      // This logic block indicates we should grab all records as there is no restraint on how far back we should search
+      if (newestItemsFirst) {
+        items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, true, 'date DESC');
+      } else {
+        items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, true, 'date ASC');
+      }
     } else {
-      items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, true, 'date ASC');
+      // With a timeline set, we will set a date that will filter older records
+      var latestDate = DateTime.now();
+
+      if (currentTimeline == 12) {
+        latestDate = DateTime(latestDate.year - 1);
+      } else {
+        latestDate = latestDate.subtract(Duration(days: (30 * currentTimeline)));
+      }
+
+      // Format the date so it can be queried against Database records
+      String formattedDate = '${_padZero(latestDate.month)}/${_padZero(latestDate.day)}/${latestDate.year} 00:00:00';
+
+      if (newestItemsFirst) {
+        items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, true, 'date DESC', formattedDate);
+      } else {
+        items = await DatabaseHelper.instance.getMapOfWorkoutsUsingExerciseName(selectedExercise, true, 'date ASC', formattedDate);
+      }
     }
 
     setState(() {
       cardioWorkoutMap = items;
     });
+  }
+
+  static String _padZero(int value) {
+    return value.toString().padLeft(2, '0');
   }
 
   Future<void> deleteExercise() async {
@@ -1543,50 +1715,6 @@ class CardioWidgetState extends State<CardioWidget> {
         child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-
-              Divider(color: primaryColor),
-              Row(children: [
-                Text("Sort By: ", style: TextStyle(fontFamily: 'AstroSpace',
-                    fontSize: 16, color: primaryColor)
-                ),
-                SizedBox(width: 30),
-                DropdownButton<String>(
-                  dropdownColor: secondaryAccentColor,
-                  value: newestItemsFirst ? 'Newest First' : 'Oldest First',
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      if (newValue == 'Newest First') {
-                        newestItemsFirst = true;
-                        sortLogByNewest = true;
-                        setBooleanSetting('sortLogByNewest', true);
-                      } else {
-                        newestItemsFirst = false;
-                        sortLogByNewest = false;
-                        setBooleanSetting('sortLogByNewest', false);
-                      }
-
-                      if (subMenuOpen) {
-                        getWorkouts();
-                      }
-                    });
-                  },
-                  items: <String>[
-                    'Newest First',
-                    'Oldest First',
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                          value,
-                          style: TextStyle(fontFamily: 'AstroSpace',
-                              fontSize: 16, color: primaryColor)
-                      ),
-                    );
-                  }).toList(),
-                )
-              ]),
-              Divider(color: primaryColor),
-
               Expanded(child: ListView.builder(
                 itemCount: exerciseMap.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -1674,7 +1802,139 @@ class CardioWidgetState extends State<CardioWidget> {
 
                         // If current index is selected, render it's widget
                         exerciseMap[index]['selected']
-                            ? Column(children: [SizedBox(height: 5), buildTableForSelectedExercise(), SizedBox(height: 5),])
+                            ? Column(children: [
+                          Divider(color: primaryColor),
+                          Column(children: [
+                            Row(children: [
+                              Text("Months: ", style: TextStyle(fontFamily: 'AstroSpace',
+                                  fontSize: 16, color: primaryColor)
+                              ),
+
+                              // 1 Month Button
+                              Container(
+                                  width: 45,
+                                  height: 45,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: currentTimeline == 1 ? primaryAccentColor : secondaryColor,
+                                      padding: const EdgeInsets.all(4),
+                                    ),
+                                    onPressed: () => setTimeline(1),
+                                    child: Text('1',
+                                        style: TextStyle(
+                                          color: textColorOverwrite ? Colors.black : Colors.white,
+                                          fontSize: 20.0,
+                                        )),
+                                  )
+                              ),
+
+                              // 3 Month Button
+                              Container(
+                                  width: 45,
+                                  height: 45,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: currentTimeline == 3 ? primaryAccentColor : secondaryColor,
+                                      padding: const EdgeInsets.all(4),
+                                    ),
+                                    onPressed: () => setTimeline(3),
+                                    child: Text('3',
+                                        style: TextStyle(
+                                          color: textColorOverwrite ? Colors.black : Colors.white,
+                                          fontSize: 20.0,
+                                        )),
+                                  )
+                              ),
+
+                              // 6 Month Button
+                              Container(
+                                  width: 45,
+                                  height: 45,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: currentTimeline == 6 ? primaryAccentColor : secondaryColor,
+                                      padding: const EdgeInsets.all(4),
+                                    ),
+                                    onPressed: () => setTimeline(6),
+                                    child: Text('6',
+                                        style: TextStyle(
+                                          color: textColorOverwrite ? Colors.black : Colors.white,
+                                          fontSize: 20.0,
+                                        )),
+                                  )
+                              ),
+
+                              // 12 Month Button
+                              Container(
+                                  width: 45,
+                                  height: 45,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: currentTimeline == 12 ? primaryAccentColor : secondaryColor,
+                                      padding: const EdgeInsets.all(4),
+                                    ),
+                                    onPressed: () => setTimeline(12),
+                                    child: Text('12',
+                                        style: TextStyle(
+                                          color: textColorOverwrite ? Colors.black : Colors.white,
+                                          fontSize: 20.0,
+                                        )),
+                                  )
+                              ),
+                            ]),
+
+                            Divider(color: primaryColor),
+
+                            /// Sort By Section
+                            Row(children: [
+                              Text("Sort By: ", style: TextStyle(fontFamily: 'AstroSpace',
+                                  fontSize: 16, color: primaryColor)
+                              ),
+                              SizedBox(width: 30),
+                              DropdownButton<String>(
+                                dropdownColor: secondaryAccentColor,
+                                value: newestItemsFirst ? 'Newest First' : 'Oldest First',
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    if (newValue == 'Newest First') {
+                                      newestItemsFirst = true;
+                                      sortLogByNewest = true;
+                                      setBooleanSetting('sortLogByNewest', true);
+                                    } else {
+                                      newestItemsFirst = false;
+                                      sortLogByNewest = false;
+                                      setBooleanSetting('sortLogByNewest', false);
+                                    }
+
+                                    if (subMenuOpen) {
+                                      getWorkouts();
+                                    }
+                                  });
+                                },
+                                items: <String>[
+                                  'Newest First',
+                                  'Oldest First',
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(
+                                        value,
+                                        style: TextStyle(fontFamily: 'AstroSpace',
+                                            fontSize: 16, color: primaryColor)
+                                    ),
+                                  );
+                                }).toList(),
+                              )
+                            ])
+                          ]),
+                          Divider(color: primaryColor),
+
+
+                          /// Table Here
+                                  SizedBox(height: 5),
+                                  buildTableForSelectedExercise(),
+                                  SizedBox(height: 5),
+                        ])
                             : SizedBox(height: 4),
                       ]);
                 },
