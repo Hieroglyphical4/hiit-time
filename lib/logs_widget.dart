@@ -1710,7 +1710,7 @@ class CardioWidgetState extends State<CardioWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: subMenuOpen ? 500 : 300,
+        height: subMenuOpen ? 550 : 300,
         width: 300,
         child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
