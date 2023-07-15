@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Config/settings.dart';
 
-////////////////////////////////////////////////
-// Widget for all Button Audio related Settings (sub-submenu)
-////////////////////////////////////////////////
+///////////////////////////////////
+// Widget for The Plate Calculator
+///////////////////////////////////
 class PlateCalculator extends StatefulWidget {
   const PlateCalculator({
     required Key key,
@@ -17,11 +17,9 @@ class PlateCalculator extends StatefulWidget {
 class PlateCalculatorState extends State<PlateCalculator> {
   final weightTextEditController = TextEditingController();
   String userRequestedWeight = '00';
-  bool calculatingFromTextField = false;
+  bool inLbMode = true;
   late var buttons;
   List<Widget> rows = [];
-  List<GlobalKey<NumberedPlateButtonState>> buttonKeys = [];
-
 
   @override
   void initState() {
@@ -33,7 +31,7 @@ class PlateCalculatorState extends State<PlateCalculator> {
   void initializeButtons() {
     buttons = [
       NumberedPlateButton(
-        key: _childWidgetKey55,
+        key: _childWidgetKey35,
         number: '35',
         count: 0,
         onPressed: changePlateCount,
@@ -45,13 +43,13 @@ class PlateCalculatorState extends State<PlateCalculator> {
         onPressed: changePlateCount,
       ),
       NumberedPlateButton(
-        key: _childWidgetKey35,
+        key: _childWidgetKey55,
         number: '55',
         count: 0,
         onPressed: changePlateCount,
       ),
       NumberedPlateButton(
-        key: _childWidgetKey25,
+        key: _childWidgetKey10,
         number: '10',
         count: 0,
         onPressed: changePlateCount,
@@ -63,54 +61,24 @@ class PlateCalculatorState extends State<PlateCalculator> {
         onPressed: changePlateCount,
       ),
       NumberedPlateButton(
-        key: _childWidgetKey10,
+        key: _childWidgetKey25,
         number: '25',
         count: 0,
         onPressed: changePlateCount
       ),
       NumberedPlateButton(
-        key: _childWidgetKey5,
+        key: _childWidgetKey1,
         number: '1',
         count: 0,
         onPressed: changePlateCount,
       ),
       NumberedPlateButton(
-        key: _childWidgetKey1,
+        key: _childWidgetKey5,
         number: '5',
         count: 0,
         onPressed: changePlateCount,
       ),
     ];
-    for (var button in buttons) {
-      buttonKeys.add(GlobalKey<NumberedPlateButtonState>());
-    }
-  }
-
-  // When the user clicks a plate, increase the shown count
-  void changePlateCount(String weight, bool increase, int count) {
-    setState(() {
-      if (increase) {
-        userRequestedWeight = (int.parse(userRequestedWeight) + int.parse(weight)).toString();
-      } else {
-        // decrease weight
-        userRequestedWeight = (int.parse(userRequestedWeight) - (int.parse(weight) * count)).toString();
-      }
-    });
-  }
-
-  // Clear all button counts to 0
-  void resetCounts() {
-    setState(() {
-      userRequestedWeight = '00';
-      _childWidgetKey55.currentState?.resetPlateCount();
-      _childWidgetKey45.currentState?.resetPlateCount();
-      _childWidgetKey35.currentState?.resetPlateCount();
-      _childWidgetKey25.currentState?.resetPlateCount();
-      _childWidgetKey15.currentState?.resetPlateCount();
-      _childWidgetKey10.currentState?.resetPlateCount();
-      _childWidgetKey5.currentState?.resetPlateCount();
-      _childWidgetKey1.currentState?.resetPlateCount();
-    });
   }
 
   // Dynamically create rows for each button so we can call children: rows later
@@ -141,13 +109,74 @@ class PlateCalculatorState extends State<PlateCalculator> {
     }
   }
 
+  // When the user clicks a plate, increase the shown count
+  void changePlateCount(String weight, bool increase, int count) {
+    int roundTo = 1;
+    if (inLbMode) {
+      roundTo = 0;
+    }
+
+    setState(() {
+        if (increase) {
+          userRequestedWeight = (double.parse(userRequestedWeight) + double.parse(weight)).toStringAsFixed(roundTo);
+        } else {
+          // decrease weight
+          userRequestedWeight = (double.parse(userRequestedWeight) - (double.parse(weight) * count)).toStringAsFixed(roundTo);
+        }
+    });
+  }
+
+  // Clear all button counts to 0
+  void resetCounts() {
+    setState(() {
+      userRequestedWeight = '00';
+
+      for (var button in buttons) {
+        button.key.currentState?.resetPlateCount();
+      }
+    });
+  }
+
+  void setCalculatorToLb() {
+    setState(() {
+      if (inLbMode == false) {
+        inLbMode = true;
+        userRequestedWeight = '00';
+
+        for (var button in buttons) {
+          button.key.currentState?.convertToLb();
+          userRequestedWeight =  (
+              double.parse(userRequestedWeight) +
+                  button.key.currentState?.calculateCurrentValue()
+          ).toStringAsFixed(0);
+        }
+      }
+    });
+  }
+
+  void setCalculatorToKg() {
+    setState(() {
+      if (inLbMode) {
+        inLbMode = false;
+        userRequestedWeight = '00';
+
+        for (var button in buttons) {
+          button.key.currentState?.convertToKg();
+          userRequestedWeight = (
+              double.parse(userRequestedWeight) +
+                  button.key.currentState?.calculateCurrentValue()
+          ).toStringAsFixed(1);
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
         color: secondaryColor,
         width: 250,
-        height: 470,
+        height: 475,
         child: Material(
           color:  secondaryColor,
           child: Center(
@@ -165,34 +194,66 @@ class PlateCalculatorState extends State<PlateCalculator> {
                 ////////////////////////////////////
                 Row(mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(width: 30),
+
+                      /// KG Button
                       Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: primaryColor,
-                        width: 2,
+                          width: 45,
+                          height: 45,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: inLbMode ? secondaryColor : primaryAccentColor,
+                              padding: const EdgeInsets.all(4),
+                            ),
+                            onPressed: setCalculatorToKg,
+                            child: Text('kg.',
+                                style: TextStyle(
+                                  color: textColorOverwrite ? Colors.black : Colors.white,
+                                  fontSize: 20.0,
+                                )),
+                          )
                       ),
-                    ),
-                    child: SizedBox(
-                      width: 75,
-                      height: 40,
-                      child: Center(child:
-                      Text(userRequestedWeight,
-                        style: TextStyle(
+                      SizedBox(width: 15),
+
+                      /// Calculated Weight Window
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
                             color: primaryColor,
-                            fontSize: 30),
-                        textAlign: TextAlign.center,
-                      )
+                            width: 2,
+                          ),
+                        ),
+                          child: SizedBox(
+                            width: 100,
+                            height: 40,
+                            child: Center(child:
+                            Text(userRequestedWeight,
+                              style: TextStyle(
+                                  color: primaryColor,
+                                  fontSize: 30),
+                              textAlign: TextAlign.center,
+                            )
+                            ),
+                          )
                       ),
-                    )
-                  ),
-                      SizedBox(width: 10),
-                      Align(alignment: Alignment.bottomCenter,
-                          child:Text('lb.',
-                          style: TextStyle(
-                              color: primaryColor,
-                              fontSize: 22)
-                      ))
+
+                      /// LB Button
+                      SizedBox(width: 15),
+                      Container(
+                          width: 45,
+                          height: 45,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: inLbMode ? primaryAccentColor : secondaryColor,
+                              padding: const EdgeInsets.all(4),
+                            ),
+                            onPressed: setCalculatorToLb,
+                            child: Text('lb.',
+                                style: TextStyle(
+                                  color: textColorOverwrite ? Colors.black : Colors.white,
+                                  fontSize: 20.0,
+                                )),
+                          )
+                      ),
                 ]),
 
                 SizedBox(height: 10),
@@ -234,7 +295,7 @@ class PlateCalculatorState extends State<PlateCalculator> {
   }
 }
 
-/// Keys setup for each button to enable enteraction between parent and child widgets
+/// Keys setup for each button to enable interaction between parent and child widgets
 final GlobalKey<NumberedPlateButtonState> _childWidgetKey55 = GlobalKey<NumberedPlateButtonState>();
 final GlobalKey<NumberedPlateButtonState> _childWidgetKey45 = GlobalKey<NumberedPlateButtonState>();
 final GlobalKey<NumberedPlateButtonState> _childWidgetKey35 = GlobalKey<NumberedPlateButtonState>();
@@ -245,7 +306,7 @@ final GlobalKey<NumberedPlateButtonState> _childWidgetKey5 = GlobalKey<NumberedP
 final GlobalKey<NumberedPlateButtonState> _childWidgetKey1 = GlobalKey<NumberedPlateButtonState>();
 
 class NumberedPlateButton extends StatefulWidget {
-  final String number;
+  String number;
   final Function(String, bool, int)? onPressed;
   var count;
 
@@ -275,6 +336,7 @@ class NumberedPlateButtonState extends State<NumberedPlateButton> {
     });
   }
 
+  // Everytime a plate button is pressed we will increase the count associated with that button
   void increasePlateCount() {
     setState(() {
       widget.count++;
@@ -288,6 +350,24 @@ class NumberedPlateButtonState extends State<NumberedPlateButton> {
       widget.onPressed!(widget.number, false, widget.count);
       widget.count = 0;
     });
+  }
+
+  void convertToKg() {
+    double convertedResult = int.parse(widget.number) * .453;
+    double roundedResult = (convertedResult * 100).round() / 100;
+    setState(() {
+      widget.number = roundedResult.toStringAsFixed(1);
+    });
+  }
+
+  void convertToLb() {
+    setState(() {
+      widget.number = (double.parse(widget.number) * 2.204).round().toString();
+    });
+  }
+
+  double calculateCurrentValue() {
+    return double.parse(widget.number) * widget.count;
   }
 
 
