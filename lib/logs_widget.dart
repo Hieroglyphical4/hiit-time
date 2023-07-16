@@ -105,15 +105,17 @@ class LogsWidgetState extends State<LogsWidget> {
                               _displayNewLogsWidget
                                   ? Row(children: [
                                 Icon(Icons.highlight_off),
+                                SizedBox(width: 5),
                                 Text(' Close',
                                     style: TextStyle(fontFamily: 'AstroSpace',
-                                        fontSize: 20, color: primaryColor)
+                                        fontSize: 18, color: primaryColor)
                                 )
                               ])
                                   : Row(children: [
                                 Icon(Icons.add_circle_outline, color: textColorOverwrite ? Colors.black : primaryColor),
+                                SizedBox(width: 5),
                                 Text(' New Log',
-                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20,
+                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18,
                                         color: textColorOverwrite ? Colors.black : primaryColor
                                     )
                                 )
@@ -152,8 +154,8 @@ class LogsWidgetState extends State<LogsWidget> {
                       /// ////////////////////
                       Column(children: [
                         Container(
-                          height: 65,
-                          width: 65,
+                          height: 80,
+                          width: 80,
                           decoration: BoxDecoration(
                               border: Border.all(
                                 color: _mainFilterCardio ? primaryColor : Colors.transparent,
@@ -169,21 +171,20 @@ class LogsWidgetState extends State<LogsWidget> {
                               backgroundColor: _mainFilterCardio ? Colors.blue : secondaryColor,
                               padding: const EdgeInsets.all(4),
                             ),
-                            child: Icon(Icons.directions_run, color: primaryColor, size: 30),
+                            child: Column(mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.directions_run, color: primaryColor, size: 30),
+                                  SizedBox(height: 10),
+                                  Text('Cardio',
+                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13, height: 1.1,
+                                        color: primaryColor
+                                    ),),
+                                ]),
                           ),
                         ),
-                        SizedBox(height: 5),
-                        Text('Cardio',
-                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1,
-                              color: _mainFilterCardio ? Colors.blue
-                                  : textColorOverwrite
-                                  ? Colors.black
-                                  : primaryColor
-                          ),),
                       ]),
 
                       Spacer(flex: 1),
-                      SizedBox(width: 5),
 
                       /// ////////////////
                       /// Config Menu
@@ -220,8 +221,8 @@ class LogsWidgetState extends State<LogsWidget> {
                       /// ///////////////////
                       Column(children: [
                         Container(
-                          height: 65,
-                          width: 65,
+                          height: 80,
+                          width: 80,
                           decoration: BoxDecoration(
                               border: Border.all(
                                 color: _mainFilterWeights ? primaryColor : Colors.transparent,
@@ -237,17 +238,18 @@ class LogsWidgetState extends State<LogsWidget> {
                               backgroundColor: _mainFilterWeights ? Colors.blue : secondaryColor,
                               padding: const EdgeInsets.all(4),
                             ),
-                            child: Icon(Icons.fitness_center, color: primaryColor, size: 30),
+                            child: Column(mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                              Icon(Icons.fitness_center, color: primaryColor, size: 30),
+                              SizedBox(height: 10),
+                              Text('Weights',
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13, height: 1.1,
+                                    color: primaryColor
+                                ),),
+                            ]),
                           ),
                         ),
-                        SizedBox(height: 5),
-                        Text('Weights',
-                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1,
-                              color: _mainFilterWeights ? Colors.blue
-                                  : textColorOverwrite
-                                  ? Colors.black
-                                  : primaryColor
-                          ),),
+
                       ]),
 
                       Spacer(flex: 1),
@@ -617,7 +619,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
           return Column(children: [
             SizedBox(height: 10),
               Text('No logs found.',
-                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, color: primaryColor, height: 1.1),
+                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, color: primaryColor, height: 1.1),
               ),
               SizedBox(height: 10),
 
@@ -1049,49 +1051,9 @@ class WeightsWidgetState extends State<WeightsWidget> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            /// Edit Exercise Button
-                            exerciseMap[index]['selected']
-                              ? IconButton(
-                                splashRadius: 20,
-                                onPressed: () => setState(() {
-                                  for (int i = 0; i < exerciseMap.length; i++) {
-                                    if (i == index) {
-                                      HapticFeedback.mediumImpact();
-
-                                      // Launch Edit Exercise Menu
-                                      showGeneralDialog(
-                                        context: context,
-                                        barrierDismissible: true,
-                                        barrierLabel: MaterialLocalizations.of(context)
-                                            .modalBarrierDismissLabel,
-                                        barrierColor: Colors.black45,
-                                        transitionDuration: const Duration(milliseconds: 200),
-
-                                        // ANY Widget can be passed here
-                                        pageBuilder: (BuildContext buildContext,
-                                            Animation animation,
-                                            Animation secondaryAnimation) {
-                                          return AddExerciseEditExerciseDialog(
-                                            closeNewLogsMenu: widget.closeMenus,
-                                              header: 'Edit Exercise',
-                                              initialExerciseName: exerciseMap[i]['name'],
-                                          );
-                                        },
-                                      ).then((restartRequired) {
-                                        if (restartRequired == true) {
-                                          // TODO Determine if updates needs to be refreshed
-                                        }
-                                      });
-                                    }
-                                  }
-                                }),
-                                icon: Icon(Icons.edit, color: primaryColor),
-                              )
-                              : Container(),
-
                             /// Each Exercise Row
                             Container(
-                            width: 250,
+                            width: exerciseMap[index]['selected'] ? 195 : 250,
                             height: 50,
                             decoration: BoxDecoration(
                                 border: Border.all(
@@ -1118,11 +1080,51 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                 padding: const EdgeInsets.all(4),
                               ),
                               child: Text(exerciseMap[index]['name'],
-                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16, height: 1.1,
                                     color: textColorOverwrite ? Colors.black : primaryColor
                                 ),),
                             ),
                           ),
+
+                            /// Edit Exercise Button
+                            exerciseMap[index]['selected']
+                                ? IconButton(
+                              splashRadius: 20,
+                              onPressed: () => setState(() {
+                                for (int i = 0; i < exerciseMap.length; i++) {
+                                  if (i == index) {
+                                    HapticFeedback.mediumImpact();
+
+                                    // Launch Edit Exercise Menu
+                                    showGeneralDialog(
+                                      context: context,
+                                      barrierDismissible: true,
+                                      barrierLabel: MaterialLocalizations.of(context)
+                                          .modalBarrierDismissLabel,
+                                      barrierColor: Colors.black45,
+                                      transitionDuration: const Duration(milliseconds: 200),
+
+                                      // ANY Widget can be passed here
+                                      pageBuilder: (BuildContext buildContext,
+                                          Animation animation,
+                                          Animation secondaryAnimation) {
+                                        return AddExerciseEditExerciseDialog(
+                                          closeNewLogsMenu: widget.closeMenus,
+                                          header: 'Edit Exercise',
+                                          initialExerciseName: exerciseMap[i]['name'],
+                                        );
+                                      },
+                                    ).then((restartRequired) {
+                                      if (restartRequired == true) {
+                                        // TODO Determine if updates needs to be refreshed
+                                      }
+                                    });
+                                  }
+                                }
+                              }),
+                              icon: Icon(Icons.edit, color: primaryColor),
+                            )
+                                : Container(),
                   ]),
 
                         // If current index is selected, render it's widget
@@ -1133,7 +1135,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                 Column(children: [
                                   Row(children: [
                                     Text("Months: ", style: TextStyle(fontFamily: 'AstroSpace',
-                                        fontSize: 16, color: primaryColor)
+                                        fontSize: 14, color: primaryColor)
                                     ),
 
                                     // 1 Month Button
@@ -1209,10 +1211,6 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                     ),
                                   ]),
 
-                                  // Divider(color: primaryColor),
-                                  SizedBox(height: 10),
-                                  SizedBox(height: 1, width: 225, child: Container(color: primaryColor)),
-
                                   /// Sort By Section
                                   Row(mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
@@ -1249,7 +1247,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                             child: Text(
                                                 value,
                                                 style: TextStyle(fontFamily: 'AstroSpace',
-                                                    fontSize: 16, color: primaryAccentColor)
+                                                    fontSize: 14, color: primaryAccentColor)
                                             ),
                                           );
                                         }).toList(),
@@ -1308,7 +1306,7 @@ class CardioWidgetState extends State<CardioWidget> {
           return Column(children: [
             SizedBox(height: 10),
             Text('No logs found.',
-              style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, color: primaryColor, height: 1.1),
+              style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, color: primaryColor, height: 1.1),
             ),
             SizedBox(height: 10),
 
@@ -1721,6 +1719,42 @@ class CardioWidgetState extends State<CardioWidget> {
                         Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              /// Each Exercise Row
+                              Container(
+                                width: exerciseMap[index]['selected'] ? 195 : 250,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: exerciseMap[index]['selected'] ? primaryColor : Colors.transparent,
+                                      width: 4,
+                                    )),
+                                child: ElevatedButton(
+                                  onPressed: () => setState(() {
+                                    // Only allow one Exercise Submenu active at a time:
+                                    for (int i = 0; i < exerciseMap.length; i++) {
+                                      if (i == index) {
+                                        exerciseMap[i]['selected'] = !exerciseMap[i]['selected'];
+                                        selectedExercise = exerciseMap[i]['name'];
+                                        subMenuOpen = exerciseMap[i]['selected'];
+
+                                        getWorkouts();
+                                      } else {
+                                        exerciseMap[i]['selected'] = false;
+                                      }
+                                    }
+                                  }),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: exerciseMap[index]['selected'] ? Colors.blue : secondaryAccentColor,
+                                    padding: const EdgeInsets.all(4),
+                                  ),
+                                  child: Text(exerciseMap[index]['name'],
+                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16, height: 1.1,
+                                        color: textColorOverwrite ? Colors.black : primaryColor
+                                    ),),
+                                ),
+                              ),
+
+
                               /// Edit Exercise Button
                               exerciseMap[index]['selected']
                                   ? IconButton(
@@ -1760,41 +1794,6 @@ class CardioWidgetState extends State<CardioWidget> {
                                 icon: Icon(Icons.edit, color: primaryColor),
                               )
                                   : Container(),
-
-                              /// Each Exercise Row
-                              Container(
-                                width: 250,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: exerciseMap[index]['selected'] ? primaryColor : Colors.transparent,
-                                      width: 4,
-                                    )),
-                                child: ElevatedButton(
-                                  onPressed: () => setState(() {
-                                    // Only allow one Exercise Submenu active at a time:
-                                    for (int i = 0; i < exerciseMap.length; i++) {
-                                      if (i == index) {
-                                        exerciseMap[i]['selected'] = !exerciseMap[i]['selected'];
-                                        selectedExercise = exerciseMap[i]['name'];
-                                        subMenuOpen = exerciseMap[i]['selected'];
-
-                                        getWorkouts();
-                                      } else {
-                                        exerciseMap[i]['selected'] = false;
-                                      }
-                                    }
-                                  }),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: exerciseMap[index]['selected'] ? Colors.blue : secondaryAccentColor,
-                                    padding: const EdgeInsets.all(4),
-                                  ),
-                                  child: Text(exerciseMap[index]['name'],
-                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
-                                        color: textColorOverwrite ? Colors.black : primaryColor
-                                    ),),
-                                ),
-                              ),
                             ]),
 
                         // If current index is selected, render it's widget
@@ -1804,7 +1803,7 @@ class CardioWidgetState extends State<CardioWidget> {
                           Column(children: [
                             Row(children: [
                               Text("Months: ", style: TextStyle(fontFamily: 'AstroSpace',
-                                  fontSize: 16, color: primaryColor)
+                                  fontSize: 14, color: primaryColor)
                               ),
 
                               // 1 Month Button
@@ -1916,7 +1915,7 @@ class CardioWidgetState extends State<CardioWidget> {
                                     child: Text(
                                         value,
                                         style: TextStyle(fontFamily: 'AstroSpace',
-                                            fontSize: 16, color: primaryAccentColor)
+                                            fontSize: 14, color: primaryAccentColor)
                                     ),
                                   );
                                 }).toList(),
