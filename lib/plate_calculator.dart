@@ -111,10 +111,7 @@ class PlateCalculatorState extends State<PlateCalculator> {
 
   // When the user clicks a plate, increase the shown count
   void changePlateCount(String weight, bool increase, int count) {
-    int roundTo = 1;
-    if (inLbMode) {
-      roundTo = 0;
-    }
+    int roundTo = inLbMode ? 0 : 1;
 
     setState(() {
         if (increase) {

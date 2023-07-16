@@ -20,7 +20,7 @@ class LogsWidget extends StatefulWidget {
 class LogsWidgetState extends State<LogsWidget> {
   bool _mainFilterWeights = false;
   bool _mainFilterCardio = false;
-  bool _mainFilterDate = false;
+  bool _mainConfigMenu = false;
   bool _displayNewLogsWidget = false;
 
   final GlobalKey<WeightsWidgetState> _keyWeights = GlobalKey<WeightsWidgetState>();
@@ -35,7 +35,7 @@ class LogsWidgetState extends State<LogsWidget> {
       _displayNewLogsWidget = false;
       // _mainFilterWeights = false;
       // _mainFilterCardio = false;
-      // _mainFilterDate = false;
+      // _mainConfigMenu = false;
 
       _keyWeights.currentState?.getExercises();
       _keyCardio.currentState?.getExercises();
@@ -49,7 +49,7 @@ class LogsWidgetState extends State<LogsWidget> {
       _displayNewLogsWidget = false;
       _mainFilterWeights = false;
       _mainFilterCardio = false;
-      _mainFilterDate = false;
+      _mainConfigMenu = false;
     });
   }
 
@@ -163,7 +163,7 @@ class LogsWidgetState extends State<LogsWidget> {
                             onPressed: () => setState(() {
                               _mainFilterCardio = !_mainFilterCardio;
                               _mainFilterWeights = false;
-                              _mainFilterDate = false;
+                              _mainConfigMenu = false;
                             }),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _mainFilterCardio ? Colors.blue : secondaryColor,
@@ -186,38 +186,31 @@ class LogsWidgetState extends State<LogsWidget> {
                       SizedBox(width: 5),
 
                       /// ////////////////
-                      /// Filter by Date
+                      /// Config Menu
                       /// ////////////////
                       Column(children: [
                         Container(
-                          height: 65,
-                          width: 65,
+                          height: 50,
+                          width: 50,
                           decoration: BoxDecoration(
                               border: Border.all(
-                                color: _mainFilterDate ? primaryColor : Colors.transparent,
+                                color: _mainConfigMenu ? primaryColor : Colors.transparent,
                                 width: 4,
                               )),
                           child: ElevatedButton(
                             onPressed: () => setState(() {
-                              _mainFilterDate = !_mainFilterDate;
+                              _mainConfigMenu = !_mainConfigMenu;
                               _mainFilterWeights = false;
                               _mainFilterCardio = false;
                             }),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: _mainFilterDate ? Colors.blue : secondaryColor,
+                              backgroundColor: _mainConfigMenu ? Colors.blue : secondaryColor,
                               padding: const EdgeInsets.all(4),
                             ),
-                            child: Icon(Icons.date_range, color: primaryColor, size: 30),
+                            child: Icon(Icons.settings, color: primaryColor, size: 30),
                           ),
                         ),
                         SizedBox(height: 5),
-                        Text('Date',
-                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1,
-                              color: _mainFilterDate ? Colors.blue
-                                  : textColorOverwrite
-                                    ? Colors.black
-                                    : primaryColor
-                          ),),
                       ]),
 
                       Spacer(flex: 1),
@@ -238,7 +231,7 @@ class LogsWidgetState extends State<LogsWidget> {
                             onPressed: () => setState(() {
                               _mainFilterWeights = !_mainFilterWeights;
                               _mainFilterCardio = false;
-                              _mainFilterDate = false;
+                              _mainConfigMenu = false;
                             }),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _mainFilterWeights ? Colors.blue : secondaryColor,
@@ -271,8 +264,8 @@ class LogsWidgetState extends State<LogsWidget> {
                     : Container(),
 
                 // Determine if Date Widget should show:
-                _mainFilterDate
-                    ? DatesWidget()
+                _mainConfigMenu
+                    ? LogsConfigWidget()
                     : Container(),
 
                 // Determine if Weights Widget should show:
@@ -281,7 +274,7 @@ class LogsWidgetState extends State<LogsWidget> {
                     : Container(),
 
                 /// Prompt user to select a Category
-                (!_mainFilterWeights && !_mainFilterDate && !_mainFilterCardio)
+                (!_mainFilterWeights && !_mainConfigMenu && !_mainFilterCardio)
                     ? Container(
                     decoration: BoxDecoration(
                         border: Border.all(
@@ -622,10 +615,11 @@ class WeightsWidgetState extends State<WeightsWidget> {
         if (weightedWorkoutMap.isEmpty) {
           /// No Logs Found
           return Column(children: [
+            SizedBox(height: 10),
               Text('No logs found.',
-                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16, color: primaryColor, height: 1.1),
+                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, color: primaryColor, height: 1.1),
               ),
-              SizedBox(height: 5),
+              SizedBox(height: 10),
 
               currentTimeline == 0
                   ? Container(
@@ -1154,7 +1148,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                           onPressed: () => setTimeline(1),
                                           child: Text('1',
                                               style: TextStyle(
-                                                color: textColorOverwrite ? Colors.black : Colors.white,
+                                                color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
                                                 fontSize: 20.0,
                                               )),
                                         )
@@ -1172,7 +1166,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                           onPressed: () => setTimeline(3),
                                           child: Text('3',
                                               style: TextStyle(
-                                                color: textColorOverwrite ? Colors.black : Colors.white,
+                                                color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
                                                 fontSize: 20.0,
                                               )),
                                         )
@@ -1190,7 +1184,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                           onPressed: () => setTimeline(6),
                                           child: Text('6',
                                               style: TextStyle(
-                                                color: textColorOverwrite ? Colors.black : Colors.white,
+                                                color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
                                                 fontSize: 20.0,
                                               )),
                                         )
@@ -1208,21 +1202,24 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                           onPressed: () => setTimeline(12),
                                           child: Text('12',
                                               style: TextStyle(
-                                                color: textColorOverwrite ? Colors.black : Colors.white,
+                                                color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
                                                 fontSize: 20.0,
                                               )),
                                         )
                                     ),
                                   ]),
 
-                                  Divider(color: primaryColor),
+                                  // Divider(color: primaryColor),
+                                  SizedBox(height: 10),
+                                  SizedBox(height: 1, width: 225, child: Container(color: primaryColor)),
 
                                   /// Sort By Section
-                                  Row(children: [
-                                      Text("Sort By: ", style: TextStyle(fontFamily: 'AstroSpace',
-                                          fontSize: 16, color: primaryColor)
-                                      ),
-                                      SizedBox(width: 30),
+                                  Row(mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                      // Text("Sort By: ", style: TextStyle(fontFamily: 'AstroSpace',
+                                      //     fontSize: 16, color: primaryColor)
+                                      // ),
+                                      // SizedBox(width: 30),
                                       DropdownButton<String>(
                                         dropdownColor: secondaryAccentColor,
                                         value: newestItemsFirst ? 'Newest First' : 'Oldest First',
@@ -1252,7 +1249,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                             child: Text(
                                                 value,
                                                 style: TextStyle(fontFamily: 'AstroSpace',
-                                                    fontSize: 16, color: primaryColor)
+                                                    fontSize: 16, color: primaryAccentColor)
                                             ),
                                           );
                                         }).toList(),
@@ -1309,10 +1306,11 @@ class CardioWidgetState extends State<CardioWidget> {
         if (cardioWorkoutMap.isEmpty) {
           /// No Logs Found
           return Column(children: [
+            SizedBox(height: 10),
             Text('No logs found.',
-              style: TextStyle(fontFamily: 'AstroSpace', fontSize: 16, color: primaryColor, height: 1.1),
+              style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, color: primaryColor, height: 1.1),
             ),
-            SizedBox(height: 5),
+            SizedBox(height: 10),
 
             currentTimeline == 0
               ? Container(
@@ -1346,7 +1344,6 @@ class CardioWidgetState extends State<CardioWidget> {
           ]);
         } else {
           /// There are Items, build table
-          // TODO Run if logic on Cardio = true/false
           return Container(
               width: 290,
               padding: EdgeInsets.symmetric(horizontal: 5),
@@ -1822,7 +1819,7 @@ class CardioWidgetState extends State<CardioWidget> {
                                     onPressed: () => setTimeline(1),
                                     child: Text('1',
                                         style: TextStyle(
-                                          color: textColorOverwrite ? Colors.black : Colors.white,
+                                          color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
                                           fontSize: 20.0,
                                         )),
                                   )
@@ -1840,7 +1837,7 @@ class CardioWidgetState extends State<CardioWidget> {
                                     onPressed: () => setTimeline(3),
                                     child: Text('3',
                                         style: TextStyle(
-                                          color: textColorOverwrite ? Colors.black : Colors.white,
+                                          color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
                                           fontSize: 20.0,
                                         )),
                                   )
@@ -1858,7 +1855,7 @@ class CardioWidgetState extends State<CardioWidget> {
                                     onPressed: () => setTimeline(6),
                                     child: Text('6',
                                         style: TextStyle(
-                                          color: textColorOverwrite ? Colors.black : Colors.white,
+                                          color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
                                           fontSize: 20.0,
                                         )),
                                   )
@@ -1876,21 +1873,20 @@ class CardioWidgetState extends State<CardioWidget> {
                                     onPressed: () => setTimeline(12),
                                     child: Text('12',
                                         style: TextStyle(
-                                          color: textColorOverwrite ? Colors.black : Colors.white,
+                                          color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
                                           fontSize: 20.0,
                                         )),
                                   )
                               ),
                             ]),
 
-                            Divider(color: primaryColor),
-
                             /// Sort By Section
-                            Row(children: [
-                              Text("Sort By: ", style: TextStyle(fontFamily: 'AstroSpace',
-                                  fontSize: 16, color: primaryColor)
-                              ),
-                              SizedBox(width: 30),
+                            Row(mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                              // Text("Sort By: ", style: TextStyle(fontFamily: 'AstroSpace',
+                              //     fontSize: 16, color: primaryColor)
+                              // ),
+                              // SizedBox(width: 30),
                               DropdownButton<String>(
                                 dropdownColor: secondaryAccentColor,
                                 value: newestItemsFirst ? 'Newest First' : 'Oldest First',
@@ -1920,7 +1916,7 @@ class CardioWidgetState extends State<CardioWidget> {
                                     child: Text(
                                         value,
                                         style: TextStyle(fontFamily: 'AstroSpace',
-                                            fontSize: 16, color: primaryColor)
+                                            fontSize: 16, color: primaryAccentColor)
                                     ),
                                   );
                                 }).toList(),
@@ -1948,25 +1944,33 @@ class CardioWidgetState extends State<CardioWidget> {
 //////////////////////////////
 // Widget for all Dates
 //////////////////////////////
-class DatesWidget extends StatefulWidget {
-  const DatesWidget({
+class LogsConfigWidget extends StatefulWidget {
+  const LogsConfigWidget({
     super.key,
   });
 
   @override
-  DatesWidgetState createState() => DatesWidgetState();
+  LogsConfigWidgetState createState() => LogsConfigWidgetState();
 }
 
-class DatesWidgetState extends State<DatesWidget> {
+class LogsConfigWidgetState extends State<LogsConfigWidget> {
 
   List<String> exerciseMap = ['squat', 'treadmill', 'jump rope'];
   String selectedValue = 'test';
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      // SizedBox(height: 50),
-      // ElevatedButton(
+    return Column(mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(height: 5),
+          Text('Export/Import Logs',
+              style: TextStyle(fontFamily: 'AstroSpace',
+                  fontSize: 20, color: primaryColor)
+          ),
+          SizedBox(height: 100),
+
+
+          // ElevatedButton(
       //   child: Text('Insert Exercise Solo'),
       //   onPressed: () async {
       //     await DatabaseHelper.instance.insertUnique('exercises', {'name': 'Pushups', 'bodyPartId': 0, 'isCardio': 0});
