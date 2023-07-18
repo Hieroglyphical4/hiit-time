@@ -410,7 +410,7 @@ class TipsWidget extends StatefulWidget {
 
 class TipsWidgetState extends State<TipsWidget> {
   late PageController _pageController;
-  final List<String> _pages = ['Timer', 'Settings', 'Logs'];
+  final List<String> _pages = ['Timer', 'Settings', 'Logs', 'BackgroundTimer'];
 
   // Indicates what page the user is currently looking at
   int _currentPageIndex = 0;
@@ -573,6 +573,43 @@ class TipsWidgetState extends State<TipsWidget> {
                                     ]
                                 )
                             ),
+
+                            /// Background Timer Tip Page
+                            Center(
+                                child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(height: 15),
+                                      Text("Background Mode", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
+                                      Divider(color: primaryColor),
+                                      SizedBox(height: 15),
+
+                                      Text("Timer Stopping:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
+                                      SizedBox(height: 5),
+                                      Text("If the timer stops while running in the background, try changing these settings on your phone: ",
+                                          style: TextStyle(fontSize: 18, color: primaryColor)
+                                      ),
+
+                                      SizedBox(height: 15,),
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text("1) Disable Power Saving.",
+                                            style: TextStyle(fontSize: 18, color: primaryColor)
+                                        ),
+                                      ),
+
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text("2) Long Press App Icon \n     > App info \n     > Battery \n     > set HIIT Time to Unrestricted.",
+                                          style: TextStyle(fontSize: 18, color: primaryColor)
+                                        ),
+                                      ),
+                                      SizedBox(height: 25),
+                                      Spacer(),
+                                    ]
+                                )
+                            ),
+
                           ],
                         )),
                     PageIndicator(
