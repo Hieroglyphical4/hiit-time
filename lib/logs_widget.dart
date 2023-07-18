@@ -607,7 +607,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
   late String selectedExercise;
   bool subMenuOpen = false;
   bool newestItemsFirst = sortLogByNewest;
-  int currentTimeline = 0;
+  int currentTimeline = 0; // Controls how many months back we will query
 
   // This Widget is shown whenever an individual exercise is selected
   Widget buildTableForSelectedExercise() {
@@ -684,6 +684,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                             setState(() {
                               // Flip the sort order and refresh the workout list.
                               newestItemsFirst = !newestItemsFirst;
+                              sortLogByNewest = newestItemsFirst;
                               setBooleanSetting('sortLogByNewest', newestItemsFirst);
                               getWorkouts();
                             });
@@ -1266,7 +1267,7 @@ class CardioWidgetState extends State<CardioWidget> {
   late String selectedExercise;
   bool subMenuOpen = false;
   bool newestItemsFirst = sortLogByNewest;
-  int currentTimeline = 0;
+  int currentTimeline = 0; // Controls how many months back we will query
 
   // This Widget is shown whenever an individual exercise is selected
   Widget buildTableForSelectedExercise() {
@@ -1345,6 +1346,7 @@ class CardioWidgetState extends State<CardioWidget> {
                               setState(() {
                                 // Flip the sort order and refresh the workout list.
                                 newestItemsFirst = !newestItemsFirst;
+                                sortLogByNewest = newestItemsFirst;
                                 setBooleanSetting('sortLogByNewest', newestItemsFirst);
                                 getWorkouts();
                               });

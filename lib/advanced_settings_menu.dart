@@ -600,7 +600,7 @@ class TipsWidgetState extends State<TipsWidget> {
 
                                       Align(
                                         alignment: Alignment.centerLeft,
-                                        child: Text("2) Long Press App Icon \n     > App info \n     > Battery \n     > set HIIT Time to Unrestricted.",
+                                        child: Text("2) Long Press App Icon \n     > App info \n     > Battery \n     > Set HIIT Time to Unrestricted.",
                                           style: TextStyle(fontSize: 18, color: primaryColor)
                                         ),
                                       ),
