@@ -656,7 +656,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
         } else {
           /// There are Items, build table
           return Container(
-              width: 290,
+              width: 295,
               padding: EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 color: secondaryColor,
@@ -667,8 +667,8 @@ class WeightsWidgetState extends State<WeightsWidget> {
               ),
               child: Table(
                 columnWidths: const {
-                  0: FlexColumnWidth(1.4),  // Date
-                  1: FlexColumnWidth(1.6),  // Weight
+                  0: FlexColumnWidth(1.6),  // Date
+                  1: FlexColumnWidth(1.7),  // Weight
                   2: FlexColumnWidth(3),  // Reps
                   4: FlexColumnWidth(1),   // Edit
                 },
@@ -679,12 +679,27 @@ class WeightsWidgetState extends State<WeightsWidget> {
                       TableCell(child:
                       Column(children: [
                         SizedBox(height: 5),
-                        Text('Date',
-                            style: TextStyle(fontFamily: 'AstroSpace',
-                                fontSize: 15, color: textColorOverwrite
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              // Flip the sort order and refresh the workout list.
+                              newestItemsFirst = !newestItemsFirst;
+                              setBooleanSetting('sortLogByNewest', newestItemsFirst);
+                              getWorkouts();
+                            });
+                          },
+                          child: Row(children:[
+                              Icon(newestItemsFirst ? Icons.arrow_drop_down : Icons.arrow_drop_up, size: 15,
+                                  color: textColorOverwrite
                                     ? primaryColor
-                                    : secondaryAccentColor
-                            )),
+                                    : secondaryAccentColor),
+                              Text('Date',
+                                style: TextStyle(fontFamily: 'AstroSpace',
+                                    fontSize: 15, color: textColorOverwrite
+                                        ? primaryColor
+                                        : secondaryAccentColor
+                                ))
+                        ])),
                         Divider(color: textColorOverwrite
                             ? primaryColor
                             : secondaryAccentColor),
@@ -1210,49 +1225,6 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                         )
                                     ),
                                   ]),
-
-                                  /// Sort By Section
-                                  Row(mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                      // Text("Sort By: ", style: TextStyle(fontFamily: 'AstroSpace',
-                                      //     fontSize: 16, color: primaryColor)
-                                      // ),
-                                      // SizedBox(width: 30),
-                                      DropdownButton<String>(
-                                        dropdownColor: secondaryAccentColor,
-                                        value: newestItemsFirst ? 'Newest First' : 'Oldest First',
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            if (newValue == 'Newest First') {
-                                              newestItemsFirst = true;
-                                              sortLogByNewest = true;
-                                              setBooleanSetting('sortLogByNewest', true);
-                                            } else {
-                                              newestItemsFirst = false;
-                                              sortLogByNewest = false;
-                                              setBooleanSetting('sortLogByNewest', false);
-                                            }
-
-                                            if (subMenuOpen) {
-                                              getWorkouts();
-                                            }
-                                          });
-                                        },
-                                        items: <String>[
-                                          'Newest First',
-                                          'Oldest First',
-                                        ].map<DropdownMenuItem<String>>((String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(
-                                                value,
-                                                style: TextStyle(fontFamily: 'AstroSpace',
-                                                    fontSize: 14, color: primaryAccentColor)
-                                            ),
-                                          );
-                                        }).toList(),
-                                      )
-                                    ])
                                 ]),
                                 Divider(color: primaryColor),
 
@@ -1343,7 +1315,7 @@ class CardioWidgetState extends State<CardioWidget> {
         } else {
           /// There are Items, build table
           return Container(
-              width: 290,
+              width: 295,
               padding: EdgeInsets.symmetric(horizontal: 5),
               decoration: BoxDecoration(
                 color: secondaryColor,
@@ -1354,7 +1326,7 @@ class CardioWidgetState extends State<CardioWidget> {
               ),
               child: Table(
                 columnWidths: const {
-                  0: FlexColumnWidth(1.4),  // Date
+                  0: FlexColumnWidth(1.8),  // Date
                   1: FlexColumnWidth(2),  // Work
                   2: FlexColumnWidth(2),    // Rest
                   3: FlexColumnWidth(2),    // Interval
@@ -1368,12 +1340,27 @@ class CardioWidgetState extends State<CardioWidget> {
                       TableCell(child:
                       Column(children: [
                         SizedBox(height: 5),
-                        Text('Date',
-                            style: TextStyle(fontFamily: 'AstroSpace',
-                                fontSize: 15, color: textColorOverwrite
-                                    ? primaryColor
-                                    : secondaryAccentColor
-                            )),
+                        GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                // Flip the sort order and refresh the workout list.
+                                newestItemsFirst = !newestItemsFirst;
+                                setBooleanSetting('sortLogByNewest', newestItemsFirst);
+                                getWorkouts();
+                              });
+                            },
+                            child: Row(children:[
+                              Icon(newestItemsFirst ? Icons.arrow_drop_down : Icons.arrow_drop_up, size: 15,
+                                  color: textColorOverwrite
+                                      ? primaryColor
+                                      : secondaryAccentColor),
+                              Text('Date',
+                                  style: TextStyle(fontFamily: 'AstroSpace',
+                                      fontSize: 15, color: textColorOverwrite
+                                          ? primaryColor
+                                          : secondaryAccentColor
+                                  ))
+                            ])),
                         Divider(color: textColorOverwrite
                             ? primaryColor
                             : secondaryAccentColor),
@@ -1878,49 +1865,6 @@ class CardioWidgetState extends State<CardioWidget> {
                                   )
                               ),
                             ]),
-
-                            /// Sort By Section
-                            Row(mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                              // Text("Sort By: ", style: TextStyle(fontFamily: 'AstroSpace',
-                              //     fontSize: 16, color: primaryColor)
-                              // ),
-                              // SizedBox(width: 30),
-                              DropdownButton<String>(
-                                dropdownColor: secondaryAccentColor,
-                                value: newestItemsFirst ? 'Newest First' : 'Oldest First',
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    if (newValue == 'Newest First') {
-                                      newestItemsFirst = true;
-                                      sortLogByNewest = true;
-                                      setBooleanSetting('sortLogByNewest', true);
-                                    } else {
-                                      newestItemsFirst = false;
-                                      sortLogByNewest = false;
-                                      setBooleanSetting('sortLogByNewest', false);
-                                    }
-
-                                    if (subMenuOpen) {
-                                      getWorkouts();
-                                    }
-                                  });
-                                },
-                                items: <String>[
-                                  'Newest First',
-                                  'Oldest First',
-                                ].map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(
-                                        value,
-                                        style: TextStyle(fontFamily: 'AstroSpace',
-                                            fontSize: 14, color: primaryAccentColor)
-                                    ),
-                                  );
-                                }).toList(),
-                              )
-                            ])
                           ]),
                           Divider(color: primaryColor),
 
