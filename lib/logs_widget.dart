@@ -607,7 +607,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
   late String selectedExercise;
   bool subMenuOpen = false;
   bool newestItemsFirst = sortLogByNewest;
-  int currentTimeline = 0; // Controls how many months back we will query
+  int currentTimeline = logTimeline; // Controls how many months back we will query
 
   // This Widget is shown whenever an individual exercise is selected
   Widget buildTableForSelectedExercise() {
@@ -976,8 +976,12 @@ class WeightsWidgetState extends State<WeightsWidget> {
     setState(() {
       if (currentTimeline == months) {
         currentTimeline = 0;
+        logTimeline = 0;
+        setIntSetting('logTimeline', 0);
       } else {
         currentTimeline = months;
+        logTimeline = months;
+        setIntSetting('logTimeline', months);
       }
     });
 
@@ -1267,7 +1271,7 @@ class CardioWidgetState extends State<CardioWidget> {
   late String selectedExercise;
   bool subMenuOpen = false;
   bool newestItemsFirst = sortLogByNewest;
-  int currentTimeline = 0; // Controls how many months back we will query
+  int currentTimeline = logTimeline; // Controls how many months back we will query
 
   // This Widget is shown whenever an individual exercise is selected
   Widget buildTableForSelectedExercise() {
@@ -1617,8 +1621,12 @@ class CardioWidgetState extends State<CardioWidget> {
     setState(() {
       if (currentTimeline == months) {
         currentTimeline = 0;
+        logTimeline = 0;
+        setIntSetting('logTimeline', 0);
       } else {
         currentTimeline = months;
+        logTimeline = months;
+        setIntSetting('logTimeline', months);
       }
     });
 

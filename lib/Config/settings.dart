@@ -27,6 +27,7 @@ bool cancelButtonAudioEnabledDefault = true;
 bool switchButtonAudioEnabledDefault = true;
 
 bool sortLogByNewestDefault = true;
+int logTimelineDefault = 0;
 
 /// Audio Related Default Settings:
 var audioAlertWorkModeStartedDefault = assetSalliWork;
@@ -63,6 +64,7 @@ bool cancelButtonAudioCurrentlyEnabled = cancelButtonAudioEnabledDefault;
 bool switchButtonAudioCurrentlyEnabled = switchButtonAudioEnabledDefault;
 
 bool sortLogByNewest = sortLogByNewestDefault;
+int logTimeline = logTimelineDefault;
 
 double appCurrentVolume = defaultVolume;
 
@@ -140,6 +142,7 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   alertRestModeStartedCurrentlyEnabled = prefs.getBool('alertRestModeStartedEnabled') ?? alertRestModeStartedEnabledDefault;
 
   sortLogByNewest = prefs.getBool('sortLogByNewest') ?? sortLogByNewestDefault;
+  logTimeline = prefs.getInt('logTimeline') ?? logTimelineDefault;
 
   restartButtonAudioCurrentlyEnabled = prefs.getBool('restartButtonAudioEnabled') ?? restartButtonAudioEnabledDefault;
   saveButtonAudioCurrentlyEnabled = prefs.getBool('saveButtonAudioEnabled') ?? saveButtonAudioEnabledDefault;
@@ -252,6 +255,13 @@ Future<void> setBooleanSetting(String setting, bool value) async {
 Future<void> setStringSetting(String setting, String value) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString(setting, value);
+}
+
+// TODO Update all old int setters to this one
+// Reusable setter/getter for Ints
+Future<void> setIntSetting(String setting, int value) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setInt(setting, value);
 }
 
 /// App Theme related settings
