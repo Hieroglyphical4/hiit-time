@@ -653,7 +653,8 @@ class AboutThisAppWidgetState extends State<AboutThisAppWidget> {
             children: [
               SizedBox(height: 10),
               Divider(color: primaryColor),
-              Text("Thank you for downloading my first app! ", textAlign: TextAlign.center, style: TextStyle(fontSize: 20, color: textColorOverwrite ? Colors.black : Colors.white)),
+              Text("Thank you for downloading my first app! ", textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, color: textColorOverwrite ? Colors.black : Colors.white)),
               Divider(color: primaryColor),
               SizedBox(height: 15),
 
@@ -662,28 +663,27 @@ class AboutThisAppWidgetState extends State<AboutThisAppWidget> {
 
               Text("I created this app because I needed a timer that was easy to setup and interact with during workouts. "
                   "After failing to find a quality, Ad-Free option on the app store, I decided to create my own.",
-                  style: TextStyle(fontSize: 21, color: textColorOverwrite ? Colors.black : Colors.white)
+                  style: TextStyle(fontSize: 19, color: textColorOverwrite ? Colors.black : Colors.white)
               ),
               SizedBox(height: 8),
               Text("Logs were eventually added so that (other than a music app) HIIT Time is the only app needed while at the gym.",
-                  style: TextStyle(fontSize: 21, color: textColorOverwrite ? Colors.black : Colors.white)
+                  style: TextStyle(fontSize: 19, color: textColorOverwrite ? Colors.black : Colors.white)
               ),
               SizedBox(height: 8),
-              Text("I have no plans to add random ads as I feel they severely degrade the quality of apps. If you want to support my work, please consider purchasing a Theme!",
-                  style: TextStyle(fontSize: 21, color: textColorOverwrite ? Colors.black : Colors.white)
+              Text("I have no plans to add random ads as I feel they degrade the quality of apps. If you want to support my work, please consider purchasing a Theme!",
+                  style: TextStyle(fontSize: 19, color: textColorOverwrite ? Colors.black : Colors.white)
               ),
+              SizedBox(height: 8),
+
               Divider(color: primaryColor),
-
-
-
-              SizedBox(height: 10),
-              Text("Please send any comments, issues, questions or feedback to the address below.", textAlign: TextAlign.center, style: TextStyle(fontSize: 19, color: textColorOverwrite ? Colors.black : Colors.white)),
+              Text("Please send any comments, issues, questions or feedback to the address below.", textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, color: textColorOverwrite ? Colors.black : Colors.white)),
+              Divider(color: primaryColor),
               SizedBox(height: 15),
 
-              Divider(color: primaryColor),
               Text("Email:", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
               SizedBox(height: 4),
-              SelectableText("HiitTimeApp@gmail.com", style: TextStyle(fontSize: 25, color: textColorOverwrite ? Colors.black : Colors.white)),
+              SelectableText("HiitTimeApp@gmail.com", style: TextStyle(fontSize: 23, color: textColorOverwrite ? Colors.black : Colors.white)),
               SizedBox(height: 5),
               Divider(color: primaryColor),
             ]
@@ -704,7 +704,7 @@ class ThemeSettingsWidget extends StatefulWidget {
 }
 
 class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
-  final double _textFontSize = 30;
+  final double _textFontSize = 24;
   var _currentTheme = appCurrentTheme;
   late PageController _pageController;
 
@@ -1443,7 +1443,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                         Animation secondaryAnimation) {
                       return Center(
                         child: AudioChangerMenuWidget(
-                          parentWidget: '3-2-1     Countdown',
+                          parentWidget: '3-2-1           Countdown',
                           options: threeTwoOneCountdownAssetMap.values.toList(),
                         ),
                       );
@@ -1901,7 +1901,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
       case 'Timer Alarm':
         _selectedOption = timerAlarmAssetMap[audioForTimerAlarm];
         break;
-      case '3-2-1     Countdown':
+      case '3-2-1           Countdown':
         _selectedOption = threeTwoOneCountdownAssetMap[audioForAssembledCountdown];
         break;
       case '10 Second Warning':
@@ -1926,7 +1926,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         }
         return '';
 
-      case '3-2-1     Countdown':
+      case '3-2-1           Countdown':
         for (var entry in threeTwoOneCountdownAssetMap.entries) {
           if (entry.value == _selectedOption) {
             return entry.key;
@@ -1969,7 +1969,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         audioForTimerAlarm = desiredAsset;
         setStringSetting('audioTimerAlarm', desiredAsset);
         break;
-      case '3-2-1     Countdown':
+      case '3-2-1           Countdown':
         List<String> assetsSplit = desiredAsset.split(",");
         setStringSetting('audioTimerCountdownAtThree', assetsSplit[0]);
         setStringSetting('audioTimerCountdownAtTwo', assetsSplit[1]);
@@ -2006,8 +2006,8 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 350,
-        width: 325,
+        height: 360,
+        width: 310,
         color: secondaryAccentColor,
         child: Center(
           child: Column(
@@ -2016,7 +2016,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                 const SizedBox(height: 20),
                 Text(_parentWidget,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 38, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
                 const SizedBox(height: 10),
                 Divider(color: primaryColor),
                 const SizedBox(height: 10),
@@ -2052,7 +2052,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                                             var desiredAsset = getAudioAssetFromMap();
                                             setChosenAudioAsset(desiredAsset);
 
-                                            if (_parentWidget == '3-2-1     Countdown') {
+                                            if (_parentWidget == '3-2-1           Countdown') {
                                               // We need to break the desired asset down into 3 with spaces
                                               playAudioWithDelay(desiredAsset);
                                             } else {

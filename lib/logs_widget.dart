@@ -678,7 +678,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                     children: [
                       TableCell(child:
                       Column(children: [
-                        SizedBox(height: 5),
+                        SizedBox(height: 10),
                         GestureDetector(
                           onTap: () {
                             setState(() {
@@ -708,7 +708,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                       ),
                       TableCell(child:
                       Column(children: [
-                        SizedBox(height: 5),
+                        SizedBox(height: 10),
                         Text('Weight',
                             style: TextStyle(fontFamily: 'AstroSpace',
                                 fontSize: 15, color: textColorOverwrite
@@ -721,7 +721,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                       ),
                       TableCell(child:
                       Column(children: [
-                        SizedBox(height: 5),
+                        SizedBox(height: 10),
                         Text('Reps',
                             style: TextStyle(fontFamily: 'AstroSpace',
                                 fontSize: 15, color: textColorOverwrite
@@ -734,7 +734,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                       ),
                       TableCell(child:
                       Column(children: [
-                        SizedBox(height: 5),
+                        SizedBox(height: 10),
                         Text('Edit',
                             style: TextStyle(fontFamily: 'AstroSpace',
                                 fontSize: 15, color: textColorOverwrite
@@ -1344,7 +1344,7 @@ class CardioWidgetState extends State<CardioWidget> {
                     children: [
                       TableCell(child:
                       Column(children: [
-                        SizedBox(height: 5),
+                        SizedBox(height: 10),
                         GestureDetector(
                             onTap: () {
                               setState(() {
@@ -1374,7 +1374,7 @@ class CardioWidgetState extends State<CardioWidget> {
                       ),
                       TableCell(child:
                       Column(children: [
-                        SizedBox(height: 5),
+                        SizedBox(height: 10),
                         Text('Work',
                             style: TextStyle(fontFamily: 'AstroSpace',
                                 fontSize: 15, color: textColorOverwrite
@@ -1387,7 +1387,7 @@ class CardioWidgetState extends State<CardioWidget> {
                       ),
                       TableCell(child:
                       Column(children: [
-                        SizedBox(height: 5),
+                        SizedBox(height: 10),
                         Text('Rest',
                             style: TextStyle(fontFamily: 'AstroSpace',
                                 fontSize: 15, color: textColorOverwrite
@@ -1400,7 +1400,7 @@ class CardioWidgetState extends State<CardioWidget> {
                       ),
                       TableCell(child:
                       Column(children: [
-                        SizedBox(height: 5),
+                        SizedBox(height: 10),
                         Text('Sets',
                             style: TextStyle(fontFamily: 'AstroSpace',
                                 fontSize: 15, color: textColorOverwrite
@@ -1413,7 +1413,7 @@ class CardioWidgetState extends State<CardioWidget> {
                       ),
                       TableCell(child:
                       Column(children: [
-                        SizedBox(height: 5),
+                        SizedBox(height: 10),
                         Text('Edit',
                             style: TextStyle(fontFamily: 'AstroSpace',
                                 fontSize: 15, color: textColorOverwrite

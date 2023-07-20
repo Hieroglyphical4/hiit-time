@@ -214,35 +214,16 @@ void clearUserSettings() async {
   prefs.remove('audioModeSwitchAlertDisabled');
 }
 
-// Method to update Work Time
-Future<void> setWorkDuration(int value) async {
+// Reusable setter/getter for Ints
+Future<void> setIntSetting(String setting, int value) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setInt('workDuration', value);
+  prefs.setInt(setting, value);
 }
 
-// Method to update Rest Time
-Future<void> setRestDuration(int value) async {
+// Reusable setter/getter for Doubles
+Future<void> setDoubleSetting(String setting, double value) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setInt('restDuration', value);
-}
-
-// Method to update Time Modifier for Addition Button
-Future<void> setTimeModifyValueAdd(int value) async {
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setInt('timeModifyValueAdd', value);
-}
-
-// Method to update Time Modifier for Subtraction Button
-Future<void> setTimeModifyValueSub(int value) async {
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setInt('timeModifyValueSub', value);
-}
-
-// Method to update Time Modifier for Subtraction Button
-Future<void> setAppVolume(double value) async {
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setDouble('appVolume', value);
-  appCurrentVolume = value;
+  prefs.setDouble(setting, value);
 }
 
 // Reusable setter/getter for booleans
@@ -255,13 +236,6 @@ Future<void> setBooleanSetting(String setting, bool value) async {
 Future<void> setStringSetting(String setting, String value) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString(setting, value);
-}
-
-// TODO Update all old int setters to this one
-// Reusable setter/getter for Ints
-Future<void> setIntSetting(String setting, int value) async {
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setInt(setting, value);
 }
 
 /// App Theme related settings

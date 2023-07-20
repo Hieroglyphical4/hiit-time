@@ -418,7 +418,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                           ? SizedBox(height: 25)
                           : Column(children: [
                         Text(widget.header,
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1,
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
                                 color: textColorOverwrite ? Colors.black : primaryColor, decoration: TextDecoration.none)
                         ),
                         SizedBox(height: 1, child: Container(color: Colors.grey)),
