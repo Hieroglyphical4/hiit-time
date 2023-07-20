@@ -214,25 +214,25 @@ void clearUserSettings() async {
   prefs.remove('audioModeSwitchAlertDisabled');
 }
 
-// Reusable setter/getter for Ints
+// Reusable setter for Ints
 Future<void> setIntSetting(String setting, int value) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setInt(setting, value);
 }
 
-// Reusable setter/getter for Doubles
+// Reusable setter for Doubles
 Future<void> setDoubleSetting(String setting, double value) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setDouble(setting, value);
 }
 
-// Reusable setter/getter for booleans
+// Reusable setter for booleans
 Future<void> setBooleanSetting(String setting, bool value) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setBool(setting, value);
 }
 
-// Reusable setter/getter for strings
+// Reusable setter for strings
 Future<void> setStringSetting(String setting, String value) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString(setting, value);
