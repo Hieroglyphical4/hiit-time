@@ -2074,6 +2074,7 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
                   } else {
                     Map<String, dynamic> responseFormatted = response as Map<String, dynamic>;
                     exportRecordsToCsv('Weight', responseFormatted!['filename']);
+                    _showNotification(context, responseFormatted!['filename']);
 
                     setState(() {
                       exportConfirmed = true;
@@ -2269,7 +2270,7 @@ class ConfirmationWindowWidgetState extends State<ConfirmationWindowWidget> {
                               SizedBox(height: 5),
 
                               Padding(padding: EdgeInsets.symmetric(horizontal: 15.0),
-                                child: Text('Click Confirm to download a .csv copy of all ${widget.exerciseType} logs',
+                                child: Text('Click Confirm to download a .csv file of all ${widget.exerciseType} logs',
                                   style: TextStyle(
                                     // backgroundColor: primaryAccentColor,
                                       color: textColorOverwrite ? Colors.black : primaryColor,
