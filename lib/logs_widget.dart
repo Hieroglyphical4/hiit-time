@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Database/database_helper.dart';
 import 'package:hiit_time/plate_calculator.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 //////////////////////////////////////////
@@ -1909,8 +1908,7 @@ class LogsConfigWidget extends StatefulWidget {
   LogsConfigWidgetState createState() => LogsConfigWidgetState();
 }
 
-// mine
-Future<void> exportRecordsToCsv(String exerciseType) async {
+Future<void> exportRecordsToCsv(String exerciseType, String filename) async {
   List<Map<String, dynamic>> items;
   if (exerciseType == 'Cardio') {
     items = await DatabaseHelper.instance.queryCardioRecords();
@@ -1919,11 +1917,9 @@ Future<void> exportRecordsToCsv(String exerciseType) async {
   }
 
   String csvString = convertToCSV(items);
-  writeRecordsToFile(csvString, exerciseType);
-  // writeCSVToFile(csvString);
+  writeRecordsToFile(csvString, filename);
 }
 
-// mine
 String convertToCSV(List<Map<String, dynamic>> data) {
   String csvString = '';
 
@@ -1940,22 +1936,21 @@ String convertToCSV(List<Map<String, dynamic>> data) {
   return csvString;
 }
 
-
-// TESTING
 Future<String> getExternalDocumentPath() async {
-  // To check whether permission is given for this app or not.
+  // Check whether permission is given for this app or not.
   var status = await Permission.storage.status;
   if (!status.isGranted) {
-    // If not we will ask for permission first
+    // If not, ask for permission first
     await Permission.storage.request();
   }
 
   Directory _directory = Directory("");
   if (Platform.isAndroid) {
-    // Redirects it to download folder in android
+    // Redirects to download folder in android
     _directory = Directory("/storage/emulated/0/Download");
   } else {
-    _directory = await getApplicationDocumentsDirectory();
+    // removed plugin path_provider to focus on Android implementation
+    // _directory = await getApplicationDocumentsDirectory();
   }
 
   final exPath = _directory.path;
@@ -1963,31 +1958,42 @@ Future<String> getExternalDocumentPath() async {
   return exPath;
 }
 
-// TESTING
 Future<String> get _localPath async {
-  // final directory = await getApplicationDocumentsDirectory();
-  // return directory.path;
-  // To get the external path from device of download folder
+  // Get the external path from device of download folder
   final String directory = await getExternalDocumentPath();
   return directory;
 }
 
-// TESTING
 Future<File> writeRecordsToFile(String bytes,String name) async {
   final path = await _localPath;
   // Create a file for the path of
   // device and file name with extension
-  File file= File('$path/$name.csv');
+  File file = File('$path/$name.csv');
 
   // Write the data in the file you have created
   return file.writeAsString(bytes);
 }
 
+void _showNotification(BuildContext context, String message) {
+  final snackBar = SnackBar(
+    content: Container(
+      height: 33,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Logs Succesfully Exported"),
+            Text("Downloads/${message}.csv"),
+      ])
+    ),
+    duration: Duration(seconds: 6), // Set the duration for how long the SnackBar will be displayed
+  );
+
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}
 
 class LogsConfigWidgetState extends State<LogsConfigWidget> {
-
-  List<String> exerciseMap = ['squat', 'treadmill', 'jump rope'];
-  String selectedValue = 'test';
+  bool exportConfirmed = false;
+  late String filename;
 
   @override
   Widget build(BuildContext context) {
@@ -1996,7 +2002,7 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
           SizedBox(height: 5),
           Text('Export Logs:',
               style: TextStyle(fontFamily: 'AstroSpace',
-                  fontSize: 20, color: primaryColor)
+                  fontSize: 18, color: primaryColor)
           ),
           SizedBox(height: 10),
           Row(mainAxisAlignment: MainAxisAlignment.center,
@@ -2004,14 +2010,77 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
             ElevatedButton(
               child: Text('Cardio Logs'),
               onPressed: () async {
-                exportRecordsToCsv('Cardio');
+                showGeneralDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  barrierLabel: MaterialLocalizations.of(context)
+                      .modalBarrierDismissLabel,
+                  barrierColor: Colors.black45,
+                  transitionDuration: const Duration(milliseconds: 200),
+
+                  // ANY Widget can be passed here
+                  pageBuilder: (BuildContext buildContext,
+                      Animation animation,
+                      Animation secondaryAnimation) {
+                    return Center(
+                      child: ConfirmationWindowWidget(
+                          exerciseType: 'Cardio',
+                          key: UniqueKey()
+                      ),
+                    );
+                  },
+                ).then((response) {
+                  if (response == false) {
+                    // Export was canceled, do nothing
+                  } else {
+                    Map<String, dynamic> test = response as Map<String, dynamic>;
+                    exportRecordsToCsv('Cardio', test!['filename']);
+                    _showNotification(context, test!['filename']);
+
+                    setState(() {
+                      exportConfirmed = true;
+                      filename = test!['filename'];
+                    });
+                  }
+                });
               },
             ),
             SizedBox(width: 25),
             ElevatedButton(
               child: Text('Weight Logs'),
               onPressed: () async {
-                exportRecordsToCsv('Weight');
+                showGeneralDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  barrierLabel: MaterialLocalizations.of(context)
+                      .modalBarrierDismissLabel,
+                  barrierColor: Colors.black45,
+                  transitionDuration: const Duration(milliseconds: 200),
+
+                  // ANY Widget can be passed here
+                  pageBuilder: (BuildContext buildContext,
+                      Animation animation,
+                      Animation secondaryAnimation) {
+                    return Center(
+                      child: ConfirmationWindowWidget(
+                          exerciseType: 'Weight',
+                          key: UniqueKey()
+                      ),
+                    );
+                  },
+                ).then((response) {
+                  if (response == false) {
+                    // Export was canceled, do nothing
+                  } else {
+                    Map<String, dynamic> test = response as Map<String, dynamic>;
+                    exportRecordsToCsv('Weight', test!['filename']);
+
+                    setState(() {
+                      exportConfirmed = true;
+                      filename = test!['filename'];
+                    });
+                  }
+                });
               },
             ),
           ]),
@@ -2019,13 +2088,250 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
             width: 300,
             child: Divider(color: primaryColor),
           ),
-          SizedBox(height: 5),
+          SizedBox(height: 10),
 
           Text('Import Logs:',
               style: TextStyle(fontFamily: 'AstroSpace',
-                  fontSize: 20, color: primaryColor)
+                  fontSize: 18, color: primaryColor)
           ),
-          SizedBox(height: 30),
-    ]);
+          ElevatedButton(
+            child: Text('Import'),
+            onPressed: () async {
+              showGeneralDialog(
+                context: context,
+                barrierDismissible: true,
+                barrierLabel: MaterialLocalizations.of(context)
+                    .modalBarrierDismissLabel,
+                barrierColor: Colors.black45,
+                transitionDuration: const Duration(milliseconds: 200),
+
+                // ANY Widget can be passed here
+                pageBuilder: (BuildContext buildContext,
+                    Animation animation,
+                    Animation secondaryAnimation) {
+                  // TODO launch file browser
+                  return Center(child: Text('Hello!'));
+                  // return Center(
+                  //   child: ConfirmationWindowWidget(
+                  //       filename: 'Cardio',
+                  //       key: UniqueKey()
+                  //   ),
+                  // );
+                },
+              ).then((response) {
+                // TODO Something with response??
+              });
+            },
+          ),
+          SizedBox(height: 5),
+          Container(
+            width: 225,
+            child: Divider(color: primaryColor),
+          ),
+          SizedBox(height: 20),
+            ]);
+  }
+}
+
+class ConfirmationWindowWidget extends StatefulWidget {
+  String exerciseType;
+
+  ConfirmationWindowWidget({
+    required this.exerciseType,
+    super.key
+  });
+  @override
+  ConfirmationWindowWidgetState createState() => ConfirmationWindowWidgetState();
+}
+
+class ConfirmationWindowWidgetState extends State<ConfirmationWindowWidget> {
+  bool enableConfirmButton = true;
+  late String filename;
+
+  bool _hintTextShowing = true;
+  FocusNode _hintTextFocusNode = FocusNode();
+  _handleFocusChange(FocusNode focusNode) {
+    if (!focusNode.hasFocus) {
+      setState(() {
+        _hintTextShowing = true;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    filename = widget.exerciseType;
+    _hintTextFocusNode.addListener(() =>
+        _handleFocusChange(_hintTextFocusNode));
+  }
+
+  @override
+  void dispose() {
+    _hintTextFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: Material(
+            color: secondaryColor,
+            child: SingleChildScrollView(
+                child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child:SizedBox(
+                        height: 275,
+                        width: 210,
+                        child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: primaryColor,
+                                  width: 1,
+                                )
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                              SizedBox(height: 10),
+                              Text('Confirm Export',
+                                style: TextStyle(
+                                  // backgroundColor: primaryAccentColor,
+                                    color: textColorOverwrite ? Colors.black : primaryColor,
+                                    fontSize: 20),
+                              ),
+                              Divider(color: primaryColor),
+                              SizedBox(height: 5),
+
+                              /// File Name Field
+                              TextFormField(
+                                focusNode: _hintTextFocusNode,
+                                onTap: () {
+                                  _hintTextShowing = false;
+                                },
+                                style: TextStyle(
+                                    color: primaryAccentColor,
+                                    fontSize: 22),
+                                textAlign: TextAlign.center,
+                                keyboardType: TextInputType.text,
+                                onChanged: (value) {
+                                  filename = value;
+
+                                  // checkConfirmButtonState();
+
+                                  if (value != '') {
+                                    setState(() {
+                                      enableConfirmButton = true;
+                                    });
+                                  }
+                                  if (value == '') {
+                                    // Useful if the text field was added to and deleted
+                                    setState(() {
+                                      enableConfirmButton = false;
+                                    });
+                                  }
+                                },
+                                onFieldSubmitted: (value) {
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                },
+                                decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  hintText: _hintTextShowing ?
+                                    filename
+                                    : '',
+                                  hintStyle: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.deny(RegExp(r"\s")),
+                                ],
+                              ),
+                              SizedBox(height: 5),
+                              Text('Filename',
+                                style: TextStyle(
+                                // backgroundColor: primaryAccentColor,
+                                  color: textColorOverwrite ? Colors.black : primaryColor,
+                                  fontSize: 13)
+                              ),
+
+                              SizedBox(height: 10),
+
+                              Container(
+                                width: 175,
+                                child: Divider(color: primaryColor),
+                              ),
+
+                              SizedBox(height: 5),
+
+                              Padding(padding: EdgeInsets.symmetric(horizontal: 15.0),
+                                child: Text('Click Confirm to download a .csv copy of all ${widget.exerciseType} logs',
+                                  style: TextStyle(
+                                    // backgroundColor: primaryAccentColor,
+                                      color: textColorOverwrite ? Colors.black : primaryColor,
+                                      fontSize: 14)
+                                ),
+                              ),
+
+                              SizedBox(height: 5),
+
+                              Container(
+                                width: 175,
+                                child: Divider(color: primaryColor),
+                              ),
+
+                              SizedBox(height: 5),
+
+
+                              /// Cancel and Confirm Buttons
+                              Row(children: [
+                                const Spacer(),
+
+                                /// Cancel Button
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red.shade600,
+                                    padding: const EdgeInsets.all(4),
+                                  ),
+                                  child: const Text("Cancel",
+                                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop(false);
+                                  },
+                                ),
+                                const Spacer(),
+
+                                /// Confirm Button
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: enableConfirmButton ? primaryAccentColor : secondaryColor,
+                                      padding: const EdgeInsets.all(4),
+                                    ),
+                                    onPressed: enableConfirmButton
+                                        ? () {
+                                      // Other logic can also go here
+                                      Navigator.of(context).pop({
+                                        'filename': filename,
+                                      });
+                                    } : null,
+                                    child: const Text("Confirm",
+                                      style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                                    )
+                                ),
+                                const Spacer(),
+                              ]),
+
+                              SizedBox(height: 5),
+                                ])
+                        )
+                    ))
+            )
+        )
+    );
   }
 }
