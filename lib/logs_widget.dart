@@ -1,9 +1,12 @@
+import 'dart:io';
 import 'Config/settings.dart';
 import 'new_log_edit_log_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Database/database_helper.dart';
 import 'package:hiit_time/plate_calculator.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 //////////////////////////////////////////
 // Widget for all User Logs (sub-submenu)
@@ -1895,7 +1898,7 @@ class CardioWidgetState extends State<CardioWidget> {
 
 
 //////////////////////////////
-// Widget for all Dates
+// Widget for Config Stuff
 //////////////////////////////
 class LogsConfigWidget extends StatefulWidget {
   const LogsConfigWidget({
@@ -1905,6 +1908,81 @@ class LogsConfigWidget extends StatefulWidget {
   @override
   LogsConfigWidgetState createState() => LogsConfigWidgetState();
 }
+
+// mine
+Future<void> exportRecordsToCsv(String exerciseType) async {
+  List<Map<String, dynamic>> items;
+  if (exerciseType == 'Cardio') {
+    items = await DatabaseHelper.instance.queryCardioRecords();
+  } else {
+    items = await DatabaseHelper.instance.queryWeightedRecords();
+  }
+
+  String csvString = convertToCSV(items);
+  writeRecordsToFile(csvString, exerciseType);
+  // writeCSVToFile(csvString);
+}
+
+// mine
+String convertToCSV(List<Map<String, dynamic>> data) {
+  String csvString = '';
+
+  // Add the CSV header (column names)
+  List<String> columnNames = data[0].keys.toList();
+  csvString += columnNames.join(',') + '\n';
+
+  // Add the data rows
+  data.forEach((row) {
+    List<dynamic> rowData = row.values.toList();
+    csvString += rowData.join(',') + '\n';
+  });
+
+  return csvString;
+}
+
+
+// TESTING
+Future<String> getExternalDocumentPath() async {
+  // To check whether permission is given for this app or not.
+  var status = await Permission.storage.status;
+  if (!status.isGranted) {
+    // If not we will ask for permission first
+    await Permission.storage.request();
+  }
+
+  Directory _directory = Directory("");
+  if (Platform.isAndroid) {
+    // Redirects it to download folder in android
+    _directory = Directory("/storage/emulated/0/Download");
+  } else {
+    _directory = await getApplicationDocumentsDirectory();
+  }
+
+  final exPath = _directory.path;
+  await Directory(exPath).create(recursive: true);
+  return exPath;
+}
+
+// TESTING
+Future<String> get _localPath async {
+  // final directory = await getApplicationDocumentsDirectory();
+  // return directory.path;
+  // To get the external path from device of download folder
+  final String directory = await getExternalDocumentPath();
+  return directory;
+}
+
+// TESTING
+Future<File> writeRecordsToFile(String bytes,String name) async {
+  final path = await _localPath;
+  // Create a file for the path of
+  // device and file name with extension
+  File file= File('$path/$name.csv');
+
+  // Write the data in the file you have created
+  return file.writeAsString(bytes);
+}
+
 
 class LogsConfigWidgetState extends State<LogsConfigWidget> {
 
@@ -1916,67 +1994,38 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
     return Column(mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(height: 5),
-          Text('Export/Import Logs',
+          Text('Export Logs:',
               style: TextStyle(fontFamily: 'AstroSpace',
                   fontSize: 20, color: primaryColor)
           ),
-          SizedBox(height: 100),
+          SizedBox(height: 10),
+          Row(mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+            ElevatedButton(
+              child: Text('Cardio Logs'),
+              onPressed: () async {
+                exportRecordsToCsv('Cardio');
+              },
+            ),
+            SizedBox(width: 25),
+            ElevatedButton(
+              child: Text('Weight Logs'),
+              onPressed: () async {
+                exportRecordsToCsv('Weight');
+              },
+            ),
+          ]),
+          Container(
+            width: 300,
+            child: Divider(color: primaryColor),
+          ),
+          SizedBox(height: 5),
 
-
-          // ElevatedButton(
-      //   child: Text('Insert Exercise Solo'),
-      //   onPressed: () async {
-      //     await DatabaseHelper.instance.insertUnique('exercises', {'name': 'Pushups', 'bodyPartId': 0, 'isCardio': 0});
-      //   },
-      // ),
-      // SizedBox(height: 50),
-      // ElevatedButton(
-      //   child: Text('INSERT Exercise With body part'),
-      //   onPressed: () async {
-      //     await DatabaseHelper.instance.insertExerciseWithBodyPartName('Pushups', 'Chest', false);
-      //   },
-      // ),
-      // SizedBox(height: 50),
-      // ElevatedButton(
-      //   child: Text('Read Exercises'),
-      //   onPressed: () async {
-      //     final data2 = await DatabaseHelper.instance.query('exercises');
-      //     print(data2);
-      //   },
-      // ),
-      // SizedBox(height: 50),
-      // ElevatedButton(
-      //   child: Text('Read Workouts'),
-      //   onPressed: () async {
-      //     final data2 = await DatabaseHelper.instance.query('cardio_workouts');
-      //     print(data2);
-      //   },
-      // ),
-      // SizedBox(height: 50),
-      // ElevatedButton(
-      //   child: Text('Read Data'),
-      //   onPressed: () async {
-      //     var exerciseQuery = await DatabaseHelper.instance.query('exercises');
-      //     print('Exercises: ');
-      //     print(exerciseQuery);
-      //
-      //     exerciseMap = List<String>.from(exerciseQuery.map((map) => map['name'] as String));
-      //
-      //     print('map: ');
-      //     print(exerciseMap);
-      //
-          // final data3 = await DatabaseHelper.instance.query('weighted_workouts');
-          // print('weighted_workouts: ');
-          // print(data3);
-      //   },
-      // ),
-      // SizedBox(height: 50),
-      // ElevatedButton(
-      //   child: Text('Delete Data'),
-      //   onPressed: () async {
-      //     final data = await DatabaseHelper.instance.delete('exercises', 1);
-      //   },
-      // ),
+          Text('Import Logs:',
+              style: TextStyle(fontFamily: 'AstroSpace',
+                  fontSize: 20, color: primaryColor)
+          ),
+          SizedBox(height: 30),
     ]);
   }
 }

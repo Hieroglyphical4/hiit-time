@@ -259,7 +259,7 @@ class DatabaseHelper {
     return await db.delete('exercises', where: 'id = ?', whereArgs: [exerciseId]);
   }
 
-  // Used for Selects
+  // Used for Single table Selects
   Future<List<Map<String, dynamic>>> query(String table) async {
     final db = await database;
     return await db.query(table);
@@ -268,5 +268,23 @@ class DatabaseHelper {
   Future<int> delete(String table, int id) async {
     final db = await database;
     return await db.delete(table, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<List<Map<String, dynamic>>> queryCardioRecords() async {
+    final db = await database;
+    return await db.rawQuery('''
+      SELECT *
+      FROM exercises
+      JOIN cardio_workouts ON cardio_workouts.exerciseId = exercises.id
+      ''');
+  }
+
+  Future<List<Map<String, dynamic>>> queryWeightedRecords() async {
+    final db = await database;
+    return await db.rawQuery('''
+      SELECT *
+      FROM exercises
+      JOIN weighted_workouts ON weighted_workouts.exerciseId = exercises.id
+      ''');
   }
 }
