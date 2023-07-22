@@ -2033,13 +2033,13 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
                   if (response == false) {
                     // Export was canceled, do nothing
                   } else {
-                    Map<String, dynamic> test = response as Map<String, dynamic>;
-                    exportRecordsToCsv('Cardio', test!['filename']);
-                    _showNotification(context, test!['filename']);
+                    Map<String, dynamic> responseFormatted = response as Map<String, dynamic>;
+                    exportRecordsToCsv('Cardio', responseFormatted!['filename']);
+                    _showNotification(context, responseFormatted!['filename']);
 
                     setState(() {
                       exportConfirmed = true;
-                      filename = test!['filename'];
+                      filename = responseFormatted!['filename'];
                     });
                   }
                 });
@@ -2072,12 +2072,12 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
                   if (response == false) {
                     // Export was canceled, do nothing
                   } else {
-                    Map<String, dynamic> test = response as Map<String, dynamic>;
-                    exportRecordsToCsv('Weight', test!['filename']);
+                    Map<String, dynamic> responseFormatted = response as Map<String, dynamic>;
+                    exportRecordsToCsv('Weight', responseFormatted!['filename']);
 
                     setState(() {
                       exportConfirmed = true;
-                      filename = test!['filename'];
+                      filename = responseFormatted!['filename'];
                     });
                   }
                 });
@@ -2248,7 +2248,7 @@ class ConfirmationWindowWidgetState extends State<ConfirmationWindowWidget> {
                                   ),
                                 ),
                                 inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.deny(RegExp(r"\s")),
+                                  FilteringTextInputFormatter.deny(RegExp(r"\s")), // Ignore spaces
                                 ],
                               ),
                               SizedBox(height: 5),
