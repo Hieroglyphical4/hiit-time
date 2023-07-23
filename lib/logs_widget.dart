@@ -4,6 +4,7 @@ import 'new_log_edit_log_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Database/database_helper.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:hiit_time/plate_calculator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -1900,7 +1901,7 @@ class CardioWidgetState extends State<CardioWidget> {
 // Widget for Config Stuff
 //////////////////////////////
 class LogsConfigWidget extends StatefulWidget {
-  const LogsConfigWidget({
+  LogsConfigWidget({
     super.key,
   });
 
@@ -1908,92 +1909,221 @@ class LogsConfigWidget extends StatefulWidget {
   LogsConfigWidgetState createState() => LogsConfigWidgetState();
 }
 
-Future<void> exportRecordsToCsv(String exerciseType, String filename) async {
-  List<Map<String, dynamic>> items;
-  if (exerciseType == 'Cardio') {
-    items = await DatabaseHelper.instance.queryCardioRecords();
-  } else {
-    items = await DatabaseHelper.instance.queryWeightedRecords();
-  }
-
-  String csvString = convertToCSV(items);
-  writeRecordsToFile(csvString, filename);
-}
-
-String convertToCSV(List<Map<String, dynamic>> data) {
-  String csvString = '';
-
-  // Add the CSV header (column names)
-  List<String> columnNames = data[0].keys.toList();
-  csvString += columnNames.join(',') + '\n';
-
-  // Add the data rows
-  data.forEach((row) {
-    List<dynamic> rowData = row.values.toList();
-    csvString += rowData.join(',') + '\n';
-  });
-
-  return csvString;
-}
-
-Future<String> getExternalDocumentPath() async {
-  // Check whether permission is given for this app or not.
-  var status = await Permission.storage.status;
-  if (!status.isGranted) {
-    // If not, ask for permission first
-    await Permission.storage.request();
-  }
-
-  Directory _directory = Directory("");
-  if (Platform.isAndroid) {
-    // Redirects to download folder in android
-    _directory = Directory("/storage/emulated/0/Download");
-  } else {
-    // removed plugin path_provider to focus on Android implementation
-    // _directory = await getApplicationDocumentsDirectory();
-  }
-
-  final exPath = _directory.path;
-  await Directory(exPath).create(recursive: true);
-  return exPath;
-}
-
-Future<String> get _localPath async {
-  // Get the external path from device of download folder
-  final String directory = await getExternalDocumentPath();
-  return directory;
-}
-
-Future<File> writeRecordsToFile(String bytes,String name) async {
-  final path = await _localPath;
-  // Create a file for the path of
-  // device and file name with extension
-  File file = File('$path/$name.csv');
-
-  // Write the data in the file you have created
-  return file.writeAsString(bytes);
-}
-
-void _showNotification(BuildContext context, String message) {
-  final snackBar = SnackBar(
-    content: Container(
-      height: 33,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Logs Succesfully Exported"),
-            Text("Downloads/${message}.csv"),
-      ])
-    ),
-    duration: Duration(seconds: 6), // Set the duration for how long the SnackBar will be displayed
-  );
-
-  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-}
-
 class LogsConfigWidgetState extends State<LogsConfigWidget> {
-  bool exportConfirmed = false;
   late String filename;
+  int recordsInsertedCount = 0;
+
+  Future<void> exportRecordsToCsv(String exerciseType, String filename) async {
+    List<Map<String, dynamic>> items;
+    if (exerciseType == 'Cardio') {
+      items = await DatabaseHelper.instance.queryCardioRecords();
+    } else {
+      items = await DatabaseHelper.instance.queryWeightedRecords();
+    }
+
+    String csvString = convertToCSV(items);
+    writeRecordsToFile(csvString, filename);
+  }
+
+  String convertToCSV(List<Map<String, dynamic>> data) {
+    String csvString = '';
+
+    // Add the CSV header (column names)
+    List<String> columnNames = data[0].keys.toList();
+    csvString += columnNames.join(',') + '\n';
+
+    // Add the data rows
+    data.forEach((row) {
+      List<dynamic> rowData = row.values.toList();
+      csvString += rowData.join(',') + '\n';
+    });
+
+    return csvString;
+  }
+
+  Future<String> getExternalDocumentPath() async {
+    // Check whether permission is given for this app or not.
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      // If not, ask for permission first
+      await Permission.storage.request();
+    }
+
+    Directory _directory = Directory("");
+    if (Platform.isAndroid) {
+      // Redirects to download folder in android
+      _directory = Directory("/storage/emulated/0/Download");
+    } else {
+      // removed plugin path_provider to focus on Android implementation
+      // _directory = await getApplicationDocumentsDirectory();
+    }
+
+    final exPath = _directory.path;
+    await Directory(exPath).create(recursive: true);
+    return exPath;
+  }
+
+  Future<String> get _localPath async {
+    // Get the external path from device of download folder
+    final String directory = await getExternalDocumentPath();
+    return directory;
+  }
+
+  Future<File> writeRecordsToFile(String bytes,String name) async {
+    final path = await _localPath;
+    // Create a file for the path of
+    // device and file name with extension
+    File file = File('$path/$name.csv');
+
+    // Write the data in the file you have created
+    return file.writeAsString(bytes);
+  }
+
+// Helper function that will display little notification overlay at the bottom of the screen
+  void _showNotification(BuildContext context, String filename, String action, int count) {
+    final snackBar = SnackBar(
+      backgroundColor: appCurrentlyInDarkMode ? primaryColor : secondaryColor,
+      content: Container(
+          height: 33,
+          child: action == 'Export'
+              ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Logs Succesfully Exported",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                    )
+                ),
+                SizedBox(height: 5),
+                Text("Downloads/${filename}.csv",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                    )
+                ),
+              ])
+              : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("$count Log(s) Imported",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                    )
+                ),
+                SizedBox(height: 5),
+                Text("From file: ${filename}",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                    )
+                ),
+              ])
+      ),
+      duration: Duration(seconds: 6), // Set the duration for how long the SnackBar will be displayed
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+// Helpder function to handle DB inserts after the user Imports a csv file
+  Future<void> _handleDatabaseInsertsFromImport(String contents, bool keepDuplicates) async {
+    late bool cardioExercise;
+    var transformedData = [];
+
+    // Rows are separated by new lines
+    var contentInRows = contents.split('\n');
+    for (int i = 0; i < contentInRows.length - 1; i++) {
+      // Columns are separated by commas
+      transformedData.add(contentInRows[i].split(','));
+    }
+
+    if (transformedData.length == 1) {
+      // This data is either missing a header or data. Exit from here
+      exit;
+    }
+
+    if (transformedData[0][5] == 'workTime') {
+      // Import is for Cardio
+      cardioExercise = true;
+
+    } else if (transformedData[0][5] == 'weight') {
+      cardioExercise = false;
+
+    } else {
+      // ERROR
+      // TODO Launch error notification
+      exit;
+    }
+
+    recordsInsertedCount = 0;
+    for (int i = 1; i < transformedData.length ; i++) {
+      if (transformedData[i].length > 1) {
+        await attemptDBInsert(transformedData[i], cardioExercise, keepDuplicates);
+      }
+    }
+  }
+
+  insertExerciseName(String exerciseName, bool isCardio) async {
+    await DatabaseHelper.instance.insertExercise(exerciseName, isCardio);
+  }
+
+  Future<int?> getExerciseId(String exerciseName) async {
+    return await DatabaseHelper.instance.getExerciseIdByName(exerciseName);
+  }
+
+  Future<void> attemptDBInsert(var contentArray, bool cardioExercise, bool keepDuplicates) async {
+    String exerciseName = contentArray[1];
+    String date = contentArray[4];
+
+    // Ensure the provided exercise exists in the DB.
+    // insertExerciseName(exerciseName, cardioExercise);
+    var exerciseId = await getExerciseId(exerciseName);
+
+    if (exerciseId == null) {
+      await insertExerciseName(exerciseName, cardioExercise);
+    } else {
+      // Already have this exerciseName in the DB, do nothing here
+    }
+
+    Map<String, dynamic>  data;
+    if (cardioExercise) {
+      int workTime = int.parse(contentArray[5]);
+      int restTime = int.parse(contentArray[6]);
+      int interval = int.parse(contentArray[7]);
+
+      // Data for Cardio Insert
+      data = {
+        'exerciseId': '', // will be updated in database_helper
+        'date': date,
+        'workTime': workTime,
+        'restTime': restTime,
+        'intervals': interval,
+      };
+    } else {
+      // Weight Exercise
+      int weight = int.parse(contentArray[5]);
+      int rep1 = int.parse(contentArray[6]);
+      int rep2 = int.parse(contentArray[7]);
+      int rep3 = int.parse(contentArray[8]);
+      int rep4 = int.parse(contentArray[9]);
+
+      // Data for Weight Insert
+      data = {
+        'exerciseId': '', // will be updated in database_helper
+        'date': date,
+        'weight': weight,
+        'rep1': rep1,
+        'rep2': rep2,
+        'rep3': rep3,
+        'rep4': rep4,
+      };
+    }
+
+    var insertCount = await DatabaseHelper.instance.insertWorkoutForImport(cardioExercise, data, exerciseName, keepDuplicates);
+
+    setState(() {
+      recordsInsertedCount += insertCount;
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -2007,6 +2137,7 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
           SizedBox(height: 10),
           Row(mainAxisAlignment: MainAxisAlignment.center,
               children: [
+            /// EXPORT Cardio Logs
             ElevatedButton(
               child: Text('Cardio Logs'),
               onPressed: () async {
@@ -2023,8 +2154,9 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
                       Animation animation,
                       Animation secondaryAnimation) {
                     return Center(
-                      child: ConfirmationWindowWidget(
+                      child: ConfirmExportImportWidget(
                           exerciseType: 'Cardio',
+                          exportingFile: true,
                           key: UniqueKey()
                       ),
                     );
@@ -2035,10 +2167,9 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
                   } else {
                     Map<String, dynamic> responseFormatted = response as Map<String, dynamic>;
                     exportRecordsToCsv('Cardio', responseFormatted!['filename']);
-                    _showNotification(context, responseFormatted!['filename']);
+                    _showNotification(context, responseFormatted!['filename'], 'Export', 0);
 
                     setState(() {
-                      exportConfirmed = true;
                       filename = responseFormatted!['filename'];
                     });
                   }
@@ -2046,6 +2177,7 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
               },
             ),
             SizedBox(width: 25),
+            /// EXPORT Weight Logs
             ElevatedButton(
               child: Text('Weight Logs'),
               onPressed: () async {
@@ -2062,8 +2194,9 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
                       Animation animation,
                       Animation secondaryAnimation) {
                     return Center(
-                      child: ConfirmationWindowWidget(
+                      child: ConfirmExportImportWidget(
                           exerciseType: 'Weight',
+                          exportingFile: true,
                           key: UniqueKey()
                       ),
                     );
@@ -2074,10 +2207,9 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
                   } else {
                     Map<String, dynamic> responseFormatted = response as Map<String, dynamic>;
                     exportRecordsToCsv('Weight', responseFormatted!['filename']);
-                    _showNotification(context, responseFormatted!['filename']);
+                    _showNotification(context, responseFormatted!['filename'], 'Export', 0);
 
                     setState(() {
-                      exportConfirmed = true;
                       filename = responseFormatted!['filename'];
                     });
                   }
@@ -2095,6 +2227,7 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
               style: TextStyle(fontFamily: 'AstroSpace',
                   fontSize: 18, color: primaryColor)
           ),
+          /// IMPORT Logs
           ElevatedButton(
             child: Text('Import'),
             onPressed: () async {
@@ -2110,17 +2243,30 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
                 pageBuilder: (BuildContext buildContext,
                     Animation animation,
                     Animation secondaryAnimation) {
-                  // TODO launch file browser
-                  return Center(child: Text('Hello!'));
-                  // return Center(
-                  //   child: ConfirmationWindowWidget(
-                  //       filename: 'Cardio',
-                  //       key: UniqueKey()
-                  //   ),
-                  // );
+                  return Center(
+                    child: ConfirmExportImportWidget(
+                        exerciseType: 'Import',
+                        exportingFile: false,
+                        key: UniqueKey()
+                    ),
+                  );
                 },
-              ).then((response) {
-                // TODO Something with response??
+              ).then((response) async {
+                if (response == false) {
+                  // Export was canceled, do nothing
+                } else {
+                  Map<String, dynamic> responseFormatted = response as Map<String, dynamic>;
+
+                  // Handle inserting contents
+                  var fileContents = responseFormatted!['fileContents'];
+                  bool keepDups = responseFormatted!['keepDuplicates'];
+                  await _handleDatabaseInsertsFromImport(fileContents, keepDups);
+                  _showNotification(context, responseFormatted!['filename'], 'Import', recordsInsertedCount);
+
+                  setState(() {
+                    filename = responseFormatted!['filename'];
+                  });
+                }
               });
             },
           ),
@@ -2134,20 +2280,25 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
   }
 }
 
-class ConfirmationWindowWidget extends StatefulWidget {
+class ConfirmExportImportWidget extends StatefulWidget {
   String exerciseType;
+  bool exportingFile;
 
-  ConfirmationWindowWidget({
+  ConfirmExportImportWidget({
     required this.exerciseType,
+    required this.exportingFile,
     super.key
   });
   @override
-  ConfirmationWindowWidgetState createState() => ConfirmationWindowWidgetState();
+  ConfirmExportImportWidgetState createState() => ConfirmExportImportWidgetState();
 }
 
-class ConfirmationWindowWidgetState extends State<ConfirmationWindowWidget> {
+class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
   bool enableConfirmButton = true;
   late String filename;
+  String fileContents = '';
+  bool keepDuplicates = false;
+  String handleDuplicates = 'Skipping duplicates';
 
   bool _hintTextShowing = true;
   FocusNode _hintTextFocusNode = FocusNode();
@@ -2159,12 +2310,55 @@ class ConfirmationWindowWidgetState extends State<ConfirmationWindowWidget> {
     }
   }
 
+  void _changeDuplicateHandling(bool x) {
+    setState(() {
+      keepDuplicates = !keepDuplicates;
+      if (keepDuplicates) {
+        handleDuplicates = 'Inserting duplicates';
+      } else {
+        handleDuplicates = 'Skipping duplicates';
+      }
+    });
+  }
+
+  Future<void> _openCsvFile() async {
+    // We only want the most recent files so clear temp cache
+    await FilePicker.platform.clearTemporaryFiles();
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+      // allowedExtensions: ['csv', 'txt', 'text'],
+    );
+
+    if (result != null) {
+      File file = File(result.files.single.path!);
+      var fileArray = file.path.split('/');
+      String contents = await file.readAsString();
+
+      setState(() {
+        filename = fileArray[fileArray.length - 1];
+        fileContents = contents;
+        enableConfirmButton = true;
+      });
+    } else {
+      setState(() {
+        enableConfirmButton = false;
+      });
+      // User canceled the file picker
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    filename = widget.exerciseType;
     _hintTextFocusNode.addListener(() =>
         _handleFocusChange(_hintTextFocusNode));
+
+    filename = widget.exerciseType;
+    if (!widget.exportingFile) {
+      // Launch File picker for Imports:
+      _openCsvFile();
+    }
   }
 
   @override
@@ -2184,7 +2378,7 @@ class ConfirmationWindowWidgetState extends State<ConfirmationWindowWidget> {
                       bottom: MediaQuery.of(context).viewInsets.bottom,
                     ),
                     child:SizedBox(
-                        height: 275,
+                        height: widget.exportingFile ? 275 : 365,
                         width: 210,
                         child: Container(
                             decoration: BoxDecoration(
@@ -2197,70 +2391,142 @@ class ConfirmationWindowWidgetState extends State<ConfirmationWindowWidget> {
                               mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                               SizedBox(height: 10),
-                              Text('Confirm Export',
-                                style: TextStyle(
-                                  // backgroundColor: primaryAccentColor,
-                                    color: textColorOverwrite ? Colors.black : primaryColor,
-                                    fontSize: 20),
-                              ),
+
+                              widget.exportingFile
+                                  ? Text('Confirm Export',
+                                      style: TextStyle(
+                                          color: textColorOverwrite ? Colors.black : primaryColor,
+                                          fontSize: 20),
+                                    )
+                                  : Text('Confirm Import',
+                                      style: TextStyle(
+                                          color: textColorOverwrite ? Colors.black : primaryColor,
+                                          fontSize: 20),
+                                    ),
+
                               Divider(color: primaryColor),
                               SizedBox(height: 5),
 
                               /// File Name Field
-                              TextFormField(
-                                focusNode: _hintTextFocusNode,
-                                onTap: () {
-                                  _hintTextShowing = false;
-                                },
-                                style: TextStyle(
-                                    color: primaryAccentColor,
-                                    fontSize: 22),
-                                textAlign: TextAlign.center,
-                                keyboardType: TextInputType.text,
-                                onChanged: (value) {
-                                  filename = value;
+                              widget.exportingFile
+                                  ? TextFormField(
+                                      focusNode: _hintTextFocusNode,
+                                      onTap: () {
+                                        _hintTextShowing = false;
+                                      },
+                                      style: TextStyle(
+                                          color: primaryAccentColor,
+                                          fontSize: 22),
+                                      textAlign: TextAlign.center,
+                                      keyboardType: TextInputType.text,
+                                      onChanged: (value) {
+                                        filename = value;
 
-                                  // checkConfirmButtonState();
+                                        // checkConfirmButtonState();
 
-                                  if (value != '') {
-                                    setState(() {
-                                      enableConfirmButton = true;
-                                    });
-                                  }
-                                  if (value == '') {
-                                    // Useful if the text field was added to and deleted
-                                    setState(() {
-                                      enableConfirmButton = false;
-                                    });
-                                  }
-                                },
-                                onFieldSubmitted: (value) {
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                },
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  hintText: _hintTextShowing ?
-                                    filename
-                                    : '',
-                                  hintStyle: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.deny(RegExp(r"\s")), // Ignore spaces
-                                ],
-                              ),
+                                        if (value != '') {
+                                          setState(() {
+                                            enableConfirmButton = true;
+                                          });
+                                        }
+                                        if (value == '') {
+                                          // Useful if the text field was added to and deleted
+                                          setState(() {
+                                            enableConfirmButton = false;
+                                          });
+                                        }
+                                      },
+                                      onFieldSubmitted: (value) {
+                                        FocusManager.instance.primaryFocus?.unfocus();
+                                      },
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        hintText: _hintTextShowing ?
+                                        filename
+                                            : '',
+                                        hintStyle: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.deny(RegExp(r"\s")), // Ignore spaces
+                                      ],
+                                    )
+                                  : ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: enableConfirmButton ? secondaryColor : primaryAccentColor,
+                                          // textStyle: TextStyle(
+                                          //     color: labelColor ?? Colors.black87
+                                          // )
+                                      ),
+                                      onPressed: () {
+                                        // TODO Stuff happens on button press here
+                                        _openCsvFile();
+                                      },
+                                      child: Text(filename,
+                                          style: TextStyle(
+                                            color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
+                                            fontSize: 13,
+                                          )),
+                                    ),
+
                               SizedBox(height: 5),
                               Text('Filename',
                                 style: TextStyle(
                                 // backgroundColor: primaryAccentColor,
+                                    fontFamily: 'AstroSpace',
                                   color: textColorOverwrite ? Colors.black : primaryColor,
-                                  fontSize: 13)
+                                  fontSize: 10)
                               ),
 
                               SizedBox(height: 10),
+
+                              widget.exportingFile
+                                  ? Container()
+                                  :  Container(
+                                        width: 175,
+                                        child: Divider(color: primaryColor),
+                                      ),
+
+                                  /// Toggle to handle duplicates
+                              widget.exportingFile
+                                  ? Container()
+                                  : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Off',
+                                        style: TextStyle(
+                                          // backgroundColor: primaryAccentColor,
+                                            color: keepDuplicates ? Colors.grey : primaryAccentColor,
+                                            fontSize: 14)
+                                    ),
+
+                                    SizedBox(width: 10),
+                                    Column(children: [
+                                      Switch(
+                                        value: keepDuplicates,
+                                        onChanged: _changeDuplicateHandling,
+                                      ),
+                                      Text('Duplicates',
+                                          style: TextStyle(
+                                            // backgroundColor: primaryAccentColor,
+                                              fontFamily: 'AstroSpace',
+                                              color: textColorOverwrite ? Colors.black : primaryColor,
+                                              fontSize: 10)
+                                      )
+                                    ]),
+                                    SizedBox(width: 10),
+
+                                    Text('On',
+                                        style: TextStyle(
+                                          // backgroundColor: primaryAccentColor,
+                                            color: keepDuplicates ? primaryAccentColor : Colors.grey,
+                                            fontSize: 14)
+                                    ),
+                              ]),
+
 
                               Container(
                                 width: 175,
@@ -2270,12 +2536,21 @@ class ConfirmationWindowWidgetState extends State<ConfirmationWindowWidget> {
                               SizedBox(height: 5),
 
                               Padding(padding: EdgeInsets.symmetric(horizontal: 15.0),
-                                child: Text('Click Confirm to download a .csv file of all ${widget.exerciseType} logs',
-                                  style: TextStyle(
-                                    // backgroundColor: primaryAccentColor,
-                                      color: textColorOverwrite ? Colors.black : primaryColor,
-                                      fontSize: 14)
-                                ),
+                                child: widget.exportingFile
+                                  ? Text('Click Confirm to download a .csv file of all ${widget.exerciseType} logs',
+                                    textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        // backgroundColor: primaryAccentColor,
+                                          color: textColorOverwrite ? Colors.black : primaryColor,
+                                          fontSize: 14)
+                                    )
+                                  :Text('Click Confirm to Import the above .csv into Logs (${handleDuplicates}).',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      // backgroundColor: primaryAccentColor,
+                                        color: textColorOverwrite ? Colors.black : primaryColor,
+                                        fontSize: 14)
+                                )
                               ),
 
                               SizedBox(height: 5),
@@ -2318,6 +2593,8 @@ class ConfirmationWindowWidgetState extends State<ConfirmationWindowWidget> {
                                       // Other logic can also go here
                                       Navigator.of(context).pop({
                                         'filename': filename,
+                                        'fileContents': fileContents,
+                                        'keepDuplicates': keepDuplicates
                                       });
                                     } : null,
                                     child: const Text("Confirm",
