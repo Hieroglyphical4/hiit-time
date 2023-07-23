@@ -1901,7 +1901,7 @@ class CardioWidgetState extends State<CardioWidget> {
 // Widget for Config Stuff
 //////////////////////////////
 class LogsConfigWidget extends StatefulWidget {
-  LogsConfigWidget({
+  const LogsConfigWidget({
     super.key,
   });
 
@@ -1941,6 +1941,22 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
     return csvString;
   }
 
+  Future<File> writeRecordsToFile(String bytes,String name) async {
+    final path = await _localPath;
+    // Create a file for the path of
+    // device and file name with extension
+    File file = File('$path/$name.csv');
+
+    // Write the data in the file you have created
+    return file.writeAsString(bytes);
+  }
+
+  Future<String> get _localPath async {
+    // Get the external path from device of download folder
+    final String directory = await getExternalDocumentPath();
+    return directory;
+  }
+
   Future<String> getExternalDocumentPath() async {
     // Check whether permission is given for this app or not.
     var status = await Permission.storage.status;
@@ -1961,22 +1977,6 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
     final exPath = _directory.path;
     await Directory(exPath).create(recursive: true);
     return exPath;
-  }
-
-  Future<String> get _localPath async {
-    // Get the external path from device of download folder
-    final String directory = await getExternalDocumentPath();
-    return directory;
-  }
-
-  Future<File> writeRecordsToFile(String bytes,String name) async {
-    final path = await _localPath;
-    // Create a file for the path of
-    // device and file name with extension
-    File file = File('$path/$name.csv');
-
-    // Write the data in the file you have created
-    return file.writeAsString(bytes);
   }
 
 // Helper function that will display little notification overlay at the bottom of the screen
@@ -2074,13 +2074,9 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
     String date = contentArray[4];
 
     // Ensure the provided exercise exists in the DB.
-    // insertExerciseName(exerciseName, cardioExercise);
     var exerciseId = await getExerciseId(exerciseName);
-
     if (exerciseId == null) {
       await insertExerciseName(exerciseName, cardioExercise);
-    } else {
-      // Already have this exerciseName in the DB, do nothing here
     }
 
     Map<String, dynamic>  data;
@@ -2122,7 +2118,6 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
     setState(() {
       recordsInsertedCount += insertCount;
     });
-
   }
 
   @override
@@ -2341,10 +2336,10 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
         enableConfirmButton = true;
       });
     } else {
+      // User canceled the file picker
       setState(() {
         enableConfirmButton = false;
       });
-      // User canceled the file picker
     }
   }
 
@@ -2421,8 +2416,6 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
                                       keyboardType: TextInputType.text,
                                       onChanged: (value) {
                                         filename = value;
-
-                                        // checkConfirmButtonState();
 
                                         if (value != '') {
                                           setState(() {

@@ -262,9 +262,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
 
   Future<void> cancelNotificationAndTimer() async {
     await _notificationsPlugin.cancelAll();
-    if (_backgroundTimer != null) {
-      _backgroundTimer.cancel();
-    }
+    _backgroundTimer.cancel();
   }
 
 // This method is called when the phone locks or minimizes the app
