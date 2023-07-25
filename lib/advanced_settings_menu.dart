@@ -654,7 +654,7 @@ class AboutThisAppWidgetState extends State<AboutThisAppWidget> {
               SizedBox(height: 10),
               Divider(color: primaryColor),
               Text("Thank you for downloading my first app! ", textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20, color: textColorOverwrite ? Colors.black : Colors.white)),
+                  style: TextStyle(fontSize: 20, color: primaryColor)),
               Divider(color: primaryColor),
               SizedBox(height: 15),
 
@@ -663,28 +663,47 @@ class AboutThisAppWidgetState extends State<AboutThisAppWidget> {
 
               Text("I created this app because I needed a timer that was easy to setup and interact with during workouts. "
                   "After failing to find a quality, Ad-Free option on the app store, I decided to create my own.",
-                  style: TextStyle(fontSize: 19, color: textColorOverwrite ? Colors.black : Colors.white)
+                  style: TextStyle(fontSize: 19, color: primaryColor)
               ),
               SizedBox(height: 8),
               Text("Logs were eventually added so that (other than a music app) HIIT Time is the only app needed while at the gym.",
-                  style: TextStyle(fontSize: 19, color: textColorOverwrite ? Colors.black : Colors.white)
+                  style: TextStyle(fontSize: 19, color: primaryColor)
               ),
               SizedBox(height: 8),
               Text("I have no plans to add random ads as I feel they degrade the quality of apps. If you want to support my work, please consider purchasing a Theme!",
-                  style: TextStyle(fontSize: 19, color: textColorOverwrite ? Colors.black : Colors.white)
+                  style: TextStyle(fontSize: 19, color: primaryColor)
               ),
               SizedBox(height: 8),
 
               Divider(color: primaryColor),
               Text("Please send any comments, issues, questions or feedback to the address below.", textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20, color: textColorOverwrite ? Colors.black : Colors.white)),
+                  style: TextStyle(fontSize: 20, color: primaryColor)),
               Divider(color: primaryColor),
               SizedBox(height: 15),
 
               Text("Email:", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
               SizedBox(height: 4),
-              SelectableText("HiitTimeApp@gmail.com", style: TextStyle(fontSize: 23, color: textColorOverwrite ? Colors.black : Colors.white)),
+              Align(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  child: Text("HiitTimeApp@gmail.com",
+                    style: TextStyle(fontSize: 20, color: primaryColor),
+                  ),
+                  onPressed: () {
+                    Clipboard.setData(const ClipboardData(text: "HiitTimeApp@gmail.com"))
+                        .then((_) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Copied to clipboard')));
+                    });
+                  },
+                  // style: ElevatedButton.styleFrom(
+                  //   backgroundColor: secondaryAccentColor,
+                  // ),
+                ),
+              ),
+
               SizedBox(height: 5),
+
               Divider(color: primaryColor),
             ]
         )
