@@ -405,7 +405,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
   // Helper function that will display little notification overlay at the bottom of the screen
   void _showNotification(BuildContext context, String action) {
     final snackBar = SnackBar(
-      backgroundColor: appCurrentlyInDarkMode ? primaryColor : secondaryColor,
+      backgroundColor: primaryColor,
       content: Container(
           height: 33,
           child: action == 'Update'
@@ -415,7 +415,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
               children: [
                 Text("Log Updated",
                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
-                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                      color: secondaryColor,
                     )
                 ),
               ])
@@ -426,7 +426,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                     children: [
                       Text("New Log Created",
                           style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
-                            color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                            color: secondaryColor,
                           )
                       ),
                     ])
@@ -436,7 +436,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                     children: [
                       Text("Log Deleted",
                           style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
-                            color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                            color: secondaryColor,
                           )
                       ),
                     ])

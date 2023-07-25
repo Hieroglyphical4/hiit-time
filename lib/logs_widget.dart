@@ -415,7 +415,7 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
   // Helper function that will display little notification overlay at the bottom of the screen
   void _showNotification(BuildContext context, String action) {
     final snackBar = SnackBar(
-      backgroundColor: appCurrentlyInDarkMode ? primaryColor : secondaryColor,
+      backgroundColor: primaryColor,
       content: Container(
           height: 33,
           child: action == 'Update'
@@ -425,7 +425,7 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
               children: [
                 Text("Exercise Updated",
                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
-                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                      color: secondaryColor,
                     )
                 ),
               ])
@@ -435,7 +435,7 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
               children: [
                 Text("New Exercise Created",
                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
-                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                      color: secondaryColor,
                     )
                 ),
               ])
@@ -1091,7 +1091,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
   // Helper function that will display little notification overlay at the bottom of the screen
   void _showNotification(BuildContext context) {
     final snackBar = SnackBar(
-      backgroundColor: appCurrentlyInDarkMode ? primaryColor : secondaryColor,
+      backgroundColor: primaryColor,
       content: Container(
           height: 33,
           child: Column(
@@ -1099,7 +1099,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
               children: [
                 Text("Exercise Deleted",
                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
-                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                      color: secondaryColor,
                     )
                 ),
               ])
@@ -1337,7 +1337,7 @@ class CardioWidgetState extends State<CardioWidget> {
 
   void _showNotification(BuildContext context) {
     final snackBar = SnackBar(
-      backgroundColor: appCurrentlyInDarkMode ? primaryColor : secondaryColor,
+      backgroundColor: primaryColor,
       content: Container(
           height: 33,
           child: Column(
@@ -1345,7 +1345,7 @@ class CardioWidgetState extends State<CardioWidget> {
               children: [
                 Text("Exercise Deleted",
                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
-                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                      color: secondaryColor,
                     )
                 ),
               ])
@@ -2063,7 +2063,7 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
 // Helper function that will display little notification overlay at the bottom of the screen
   void _showNotification(BuildContext context, String filename, String action, int count) {
     final snackBar = SnackBar(
-      backgroundColor: appCurrentlyInDarkMode ? primaryColor : secondaryColor,
+      backgroundColor: primaryColor,
       content: Container(
           height: 33,
           child: action == 'Export'
@@ -2072,13 +2072,13 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
               children: [
                 Text("Logs Successfully Exported",
                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
-                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                      color: secondaryColor,
                     )
                 ),
                 SizedBox(height: 5),
                 Text("Downloads/${filename}.csv",
                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
-                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                      color: secondaryColor,
                     )
                 ),
               ])
@@ -2087,13 +2087,13 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
               children: [
                 Text("$count Log(s) Imported",
                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
-                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                      color: secondaryColor,
                     )
                 ),
                 SizedBox(height: 5),
                 Text("From file: ${filename}",
                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
-                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                      color: secondaryColor,
                     )
                 ),
               ])
@@ -2210,7 +2210,7 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
   // Helper function that will display little notification overlay at the bottom of the screen
   void _showMissingRecordsNotification(BuildContext context, String table) {
     final snackBar = SnackBar(
-      backgroundColor: appCurrentlyInDarkMode ? primaryColor : secondaryColor,
+      backgroundColor: primaryColor,
       content: Container(
           height: 33,
           child: Column(
