@@ -412,6 +412,40 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
     });
   }
 
+  // Helper function that will display little notification overlay at the bottom of the screen
+  void _showNotification(BuildContext context, String action) {
+    final snackBar = SnackBar(
+      backgroundColor: appCurrentlyInDarkMode ? primaryColor : secondaryColor,
+      content: Container(
+          height: 33,
+          child: action == 'Update'
+          /// Check if action is Update.
+              ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Exercise Updated",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                    )
+                ),
+              ])
+              /// Action isn't Update, assume its Create.
+              : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("New Exercise Created",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                    )
+                ),
+              ])
+      ),
+      duration: Duration(seconds: 3), // Set the duration for how long the SnackBar will be displayed
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -556,11 +590,13 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                         /// Edit Mode
                                         String exerciseName = newExerciseName.isNotEmpty ? newExerciseName : currentExerciseName;
                                         updateExerciseRecord(exerciseName);
+                                        _showNotification(context, 'Update');
                                         Navigator.of(context).pop(true);
                                         widget.closeNewLogsMenu(); // TODO Activate
                                       } else {
                                         /// New Log Mode
                                         insertNewExerciseRecord(newExerciseName, cardioExercise);
+                                        _showNotification(context, 'Create');
                                         Navigator.of(context).pop(true);
                                       }
                                     } : null,
@@ -648,6 +684,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                           onLongPress: () {
                             // Fire DATABASE Event to delete Exercise
                             deleteExercise();
+                            _showNotification(context);
                             widget.closeMenus();
                           },
                         )
@@ -1051,6 +1088,28 @@ class WeightsWidgetState extends State<WeightsWidget> {
     await DatabaseHelper.instance.deleteExercise(selectedExercise);
   }
 
+  // Helper function that will display little notification overlay at the bottom of the screen
+  void _showNotification(BuildContext context) {
+    final snackBar = SnackBar(
+      backgroundColor: appCurrentlyInDarkMode ? primaryColor : secondaryColor,
+      content: Container(
+          height: 33,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Exercise Deleted",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                    )
+                ),
+              ])
+      ),
+      duration: Duration(seconds: 3), // Set the duration for how long the SnackBar will be displayed
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -1276,6 +1335,27 @@ class CardioWidgetState extends State<CardioWidget> {
   bool newestItemsFirst = sortLogByNewest;
   int currentTimeline = logTimeline; // Controls how many months back we will query
 
+  void _showNotification(BuildContext context) {
+    final snackBar = SnackBar(
+      backgroundColor: appCurrentlyInDarkMode ? primaryColor : secondaryColor,
+      content: Container(
+          height: 33,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Exercise Deleted",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                    )
+                ),
+              ])
+      ),
+      duration: Duration(seconds: 3), // Set the duration for how long the SnackBar will be displayed
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   // This Widget is shown whenever an individual exercise is selected
   Widget buildTableForSelectedExercise() {
     for (var item in exerciseMap) {
@@ -1312,6 +1392,7 @@ class CardioWidgetState extends State<CardioWidget> {
                       onLongPress: () {
                         // Fire DATABASE Event to delete Exercise
                         deleteExercise();
+                        _showNotification(context);
                         widget.closeMenus();
                       },
                     )
@@ -1989,7 +2070,7 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
               ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Logs Succesfully Exported",
+                Text("Logs Successfully Exported",
                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
                       color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
                     )
@@ -2023,7 +2104,7 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-// Helpder function to handle DB inserts after the user Imports a csv file
+// Helper function to handle DB inserts after the user Imports a csv file
   Future<void> _handleDatabaseInsertsFromImport(String contents, bool keepDuplicates) async {
     late bool cardioExercise;
     var transformedData = [];
@@ -2120,6 +2201,40 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
     });
   }
 
+  // Used to determine if any records exist for a given table
+      // before moving forward with an export.
+  Future<bool> checkForRecord(String table) async {
+    return await DatabaseHelper.instance.recordExists(table);
+  }
+
+  // Helper function that will display little notification overlay at the bottom of the screen
+  void _showMissingRecordsNotification(BuildContext context, String table) {
+    final snackBar = SnackBar(
+      backgroundColor: appCurrentlyInDarkMode ? primaryColor : secondaryColor,
+      content: Container(
+          height: 33,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Unable to Export",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: Colors.red,
+                    )
+                ),
+                SizedBox(height: 5),
+                Text("No $table Logs found",
+                    style: const TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: Colors.red,
+                    )
+                ),
+              ])
+      ),
+      duration: Duration(seconds: 4), // Set the duration for how long the SnackBar will be displayed
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center,
@@ -2136,39 +2251,45 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
             ElevatedButton(
               child: Text('Cardio Logs'),
               onPressed: () async {
-                showGeneralDialog(
-                  context: context,
-                  barrierDismissible: true,
-                  barrierLabel: MaterialLocalizations.of(context)
-                      .modalBarrierDismissLabel,
-                  barrierColor: Colors.black45,
-                  transitionDuration: const Duration(milliseconds: 200),
+                // Check if logs exist:
+                if (await checkForRecord('cardio_workouts')) {
+                  showGeneralDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    barrierLabel: MaterialLocalizations.of(context)
+                        .modalBarrierDismissLabel,
+                    barrierColor: Colors.black45,
+                    transitionDuration: const Duration(milliseconds: 200),
 
-                  // ANY Widget can be passed here
-                  pageBuilder: (BuildContext buildContext,
-                      Animation animation,
-                      Animation secondaryAnimation) {
-                    return Center(
-                      child: ConfirmExportImportWidget(
-                          exerciseType: 'Cardio',
-                          exportingFile: true,
-                          key: UniqueKey()
-                      ),
-                    );
-                  },
-                ).then((response) {
-                  if (response == false) {
-                    // Export was canceled, do nothing
-                  } else {
-                    Map<String, dynamic> responseFormatted = response as Map<String, dynamic>;
-                    exportRecordsToCsv('Cardio', responseFormatted!['filename']);
-                    _showNotification(context, responseFormatted!['filename'], 'Export', 0);
+                    // ANY Widget can be passed here
+                    pageBuilder: (BuildContext buildContext,
+                        Animation animation,
+                        Animation secondaryAnimation) {
+                      return Center(
+                        child: ConfirmExportImportWidget(
+                            exerciseType: 'Cardio',
+                            exportingFile: true,
+                            key: UniqueKey()
+                        ),
+                      );
+                    },
+                  ).then((response) {
+                    if (response == false) {
+                      // Export was canceled, do nothing
+                    } else {
+                      Map<String, dynamic> responseFormatted = response as Map<String, dynamic>;
+                      exportRecordsToCsv('Cardio', responseFormatted!['filename']);
+                      _showNotification(context, responseFormatted!['filename'], 'Export', 0);
 
-                    setState(() {
-                      filename = responseFormatted!['filename'];
-                    });
-                  }
-                });
+                      setState(() {
+                        filename = responseFormatted!['filename'];
+                      });
+                    }
+                  });
+                } else {
+                  // We were unable to find any records on this table, show notification
+                  _showMissingRecordsNotification(context, 'Cardio');
+                }
               },
             ),
             SizedBox(width: 25),
@@ -2176,39 +2297,45 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
             ElevatedButton(
               child: Text('Weight Logs'),
               onPressed: () async {
-                showGeneralDialog(
-                  context: context,
-                  barrierDismissible: true,
-                  barrierLabel: MaterialLocalizations.of(context)
-                      .modalBarrierDismissLabel,
-                  barrierColor: Colors.black45,
-                  transitionDuration: const Duration(milliseconds: 200),
+                // Check if logs exist:
+                if (await checkForRecord('weighted_workouts')) {
+                  showGeneralDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    barrierLabel: MaterialLocalizations.of(context)
+                        .modalBarrierDismissLabel,
+                    barrierColor: Colors.black45,
+                    transitionDuration: const Duration(milliseconds: 200),
 
-                  // ANY Widget can be passed here
-                  pageBuilder: (BuildContext buildContext,
-                      Animation animation,
-                      Animation secondaryAnimation) {
-                    return Center(
-                      child: ConfirmExportImportWidget(
-                          exerciseType: 'Weight',
-                          exportingFile: true,
-                          key: UniqueKey()
-                      ),
-                    );
-                  },
-                ).then((response) {
-                  if (response == false) {
-                    // Export was canceled, do nothing
-                  } else {
-                    Map<String, dynamic> responseFormatted = response as Map<String, dynamic>;
-                    exportRecordsToCsv('Weight', responseFormatted!['filename']);
-                    _showNotification(context, responseFormatted!['filename'], 'Export', 0);
+                    // ANY Widget can be passed here
+                    pageBuilder: (BuildContext buildContext,
+                        Animation animation,
+                        Animation secondaryAnimation) {
+                      return Center(
+                        child: ConfirmExportImportWidget(
+                            exerciseType: 'Weight',
+                            exportingFile: true,
+                            key: UniqueKey()
+                        ),
+                      );
+                    },
+                  ).then((response) {
+                    if (response == false) {
+                      // Export was canceled, do nothing
+                    } else {
+                      Map<String, dynamic> responseFormatted = response as Map<String, dynamic>;
+                      exportRecordsToCsv('Weight', responseFormatted!['filename']);
+                      _showNotification(context, responseFormatted!['filename'], 'Export', 0);
 
-                    setState(() {
-                      filename = responseFormatted!['filename'];
-                    });
-                  }
-                });
+                      setState(() {
+                        filename = responseFormatted!['filename'];
+                      });
+                    }
+                  });
+                } else {
+                  // We were unable to find any records on this table, show notification
+                  _showMissingRecordsNotification(context, 'Weight');
+                }
               },
             ),
           ]),

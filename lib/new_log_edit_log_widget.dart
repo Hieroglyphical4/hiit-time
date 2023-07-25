@@ -402,6 +402,51 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
     return timeFormatted;
   }
 
+  // Helper function that will display little notification overlay at the bottom of the screen
+  void _showNotification(BuildContext context, String action) {
+    final snackBar = SnackBar(
+      backgroundColor: appCurrentlyInDarkMode ? primaryColor : secondaryColor,
+      content: Container(
+          height: 33,
+          child: action == 'Update'
+              /// Check if action is Update.
+              ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Log Updated",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                    )
+                ),
+              ])
+              /// Action isn't Update, check if its Create.
+              : action == 'Create'
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("New Log Created",
+                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                            color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                          )
+                      ),
+                    ])
+                /// Action isnt Update or Create, assume Delete.
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Log Deleted",
+                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                            color: appCurrentlyInDarkMode ? secondaryColor : primaryColor,
+                          )
+                      ),
+                    ])
+      ),
+      duration: Duration(seconds: 3), // Set the duration for how long the SnackBar will be displayed
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1144,6 +1189,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           deleteWeightedWorkout();
                                         }
 
+                                        _showNotification(context, 'Delete');
                                         widget.updateTable();
                                         Navigator.of(context).pop(true);
                                       },
@@ -1212,6 +1258,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                         updateWeightedWorkout();
                                       }
 
+                                      _showNotification(context, 'Update');
                                       HapticFeedback.mediumImpact();
                                       widget.updateTable();
                                       Navigator.of(context).pop(true);
@@ -1232,6 +1279,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                         insertWeightedWorkout();
                                       }
 
+                                      _showNotification(context, 'Create');
                                       HapticFeedback.mediumImpact();
                                       widget.updateTable();
                                     }

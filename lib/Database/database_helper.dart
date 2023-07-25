@@ -354,4 +354,13 @@ class DatabaseHelper {
       JOIN weighted_workouts ON weighted_workouts.exerciseId = exercises.id
       ''');
   }
+
+  // Quick query to see if any records exist on table
+  Future<bool> recordExists(String table) async {
+    final db = await database;
+    List<Map<String, dynamic>> queryResult = await db.query(table, limit: 1);
+
+    return queryResult.isNotEmpty;
+  }
 }
+
