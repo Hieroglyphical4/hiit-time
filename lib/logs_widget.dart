@@ -333,7 +333,10 @@ class AddExerciseEditExerciseDialog extends StatefulWidget {
 }
 
 class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDialog> {
-  // Determine if Cardio or Weighted Workout
+  // Allow widget to display without a selected type
+  bool exerciseTypeSelected = false;
+
+  // Determine if Exercise is Cardio or Weight Workout
   bool cardioExercise = false;
 
   bool enableConfirmButton = false;
@@ -358,6 +361,7 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
       editMode = false;
     } else {
       editMode = true;
+      exerciseTypeSelected = true;
       currentExerciseName = widget.initialExerciseName;
     }
   }
@@ -376,12 +380,13 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
     }
   }
 
-  void _changeCardioOrWeightWorkout(bool value) {
+  void _setExerciseType(String value) {
     setState(() {
-      if (cardioExercise) {
-        cardioExercise = false;
-      } else{
+      exerciseTypeSelected = true;
+      if (value == 'Cardio') {
         cardioExercise = true;
+      } else {
+        cardioExercise = false;
       }
     });
   }
@@ -481,80 +486,140 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                     )),
                                 Divider(color: primaryColor),
 
-                                /// Cardio Toggle
+                                /// Exercise Category Buttons: Cardio and Weight
                                 editMode
                                     ? Container()
                                     : Row(children: [
-                                  Spacer(),
-                                  Text('Cardio',
-                                      style: TextStyle(color: cardioExercise ? textColorOverwrite ? Colors.black : primaryColor
-                                          : Colors.grey, fontSize: 18)
-                                  ),
-                                  Switch(
-                                    value: !cardioExercise,
-                                    onChanged: _changeCardioOrWeightWorkout,
-                                  ),
-                                  Text('Weighted',
-                                      style: TextStyle(color: cardioExercise ? Colors.grey
-                                          : textColorOverwrite ? Colors.black : primaryColor, fontSize: 18)
-                                  ),
-                                  Spacer(),
+                                        Spacer(),
+                                        SizedBox(
+                                            height: 40,
+                                            width: 80,
+                                            child: ElevatedButton(
+                                                onPressed: () => setState(() {
+                                                  _setExerciseType('Cardio');
+                                                }),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: exerciseTypeSelected ?
+                                                    cardioExercise ? primaryAccentColor : secondaryColor
+                                                    : secondaryColor,
+                                                  padding: const EdgeInsets.all(4),
+                                                ),
+                                                child: Text('Cardio',
+                                                    style: TextStyle(color: exerciseTypeSelected ?
+                                                        cardioExercise ?
+                                                          textColorOverwrite ? Colors.black : primaryColor
+                                                          : Colors.grey
+                                                        : Colors.grey,
+                                                        fontSize: 16
+                                                    )
+                                                ),
+                                            )
+                                        ),
+
+                                        Spacer(),
+
+                                        SizedBox(
+                                            height: 40,
+                                            width: 80,
+                                            child: ElevatedButton(
+                                              onPressed: () => setState(() {
+                                                _setExerciseType('Weight');
+                                              }),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: exerciseTypeSelected ?
+                                                  cardioExercise ? secondaryColor : primaryAccentColor
+                                                  : secondaryColor,
+                                                padding: const EdgeInsets.all(4),
+                                              ),
+                                              child: Text('Weight',
+                                                  style: TextStyle(color: exerciseTypeSelected ?
+                                                    cardioExercise ?
+                                                        Colors.grey
+                                                        : textColorOverwrite ? Colors.black : primaryColor
+                                                    : Colors.grey,
+                                                      fontSize: 16
+                                                  )
+                                              ),
+                                            )
+                                        ),
+                                        Spacer(),
                                 ]),
+
+                                /////////////////////
+
 
                                 SizedBox(height: 15),
 
                                 /// Exercise Name Field
-                                TextFormField(
-                                  focusNode: _hintTextFocusNode,
-                                  onTap: () {
-                                    _hintTextShowing = false;
-                                  },
-                                  style: TextStyle(
-                                      color: primaryAccentColor,
-                                      fontSize: 22),
-                                  textAlign: TextAlign.center,
-                                  keyboardType: TextInputType.text,
-                                  onChanged: (value) {
-                                    newExerciseName = value.toLowerCase();
-                                    checkConfirmButtonState();
+                                exerciseTypeSelected
+                                    ? Column(children: [
+                                        TextFormField(
+                                          focusNode: _hintTextFocusNode,
+                                          onTap: () {
+                                            _hintTextShowing = false;
+                                          },
+                                          style: TextStyle(
+                                              color: primaryAccentColor,
+                                              fontSize: 22),
+                                          textAlign: TextAlign.center,
+                                          keyboardType: TextInputType.text,
+                                          onChanged: (value) {
+                                            newExerciseName = value.toLowerCase();
+                                            checkConfirmButtonState();
 
-                                    if (value != '') {
-                                      setState(() {
-                                        // currentExerciseStringLength = maxExerciseStringLength - value.length;
-                                      });
-                                    }
-                                    if (value == '') {
-                                      // Useful if the text field was added to and deleted
-                                      setState(() {
-                                        // currentExerciseStringLength = maxExerciseStringLength;
-                                      });
-                                    }
-                                  },
-                                  onFieldSubmitted: (value) {
-                                    FocusManager.instance.primaryFocus?.unfocus();
-                                  },
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    hintText: _hintTextShowing ?
-                                      editMode ? currentExerciseName : 'ex: squat'
-                                      : '',
-                                    hintStyle: TextStyle(
-                                      fontSize: 20,
-                                      color: editMode ? Colors.black : Colors.grey,
-                                    ),
-                                  ),
-                                  inputFormatters: <TextInputFormatter>[
-                                    LengthLimitingTextInputFormatter(maxExerciseStringLength), // 15 characters at most
-                                  ],
-                                ),
-                                SizedBox(height: 3),
-                                Text('Exercise Name',
-                                    style: TextStyle(
-                                        fontFamily: 'AstroSpace',
-                                        color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
-                                        fontSize: 12)
-                                ),
+                                            if (value != '') {
+                                              setState(() {
+                                                // currentExerciseStringLength = maxExerciseStringLength - value.length;
+                                              });
+                                            }
+                                            if (value == '') {
+                                              // Useful if the text field was added to and deleted
+                                              setState(() {
+                                                // currentExerciseStringLength = maxExerciseStringLength;
+                                              });
+                                            }
+                                          },
+                                          onFieldSubmitted: (value) {
+                                            FocusManager.instance.primaryFocus?.unfocus();
+                                          },
+                                          decoration: InputDecoration(
+                                            filled: true,
+                                            fillColor: Colors.white,
+                                            hintText: _hintTextShowing ?
+                                            editMode ? currentExerciseName : 'ex: squat'
+                                                : '',
+                                            hintStyle: TextStyle(
+                                              fontSize: 20,
+                                              color: editMode ? Colors.black : Colors.grey,
+                                            ),
+                                          ),
+                                          inputFormatters: <TextInputFormatter>[
+                                            LengthLimitingTextInputFormatter(maxExerciseStringLength), // 15 characters at most
+                                          ],
+                                        ),
+                                        SizedBox(height: 3),
+                                        Text('Exercise Name',
+                                            style: TextStyle(
+                                                fontFamily: 'AstroSpace',
+                                                color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
+                                                fontSize: 12)
+                                        ),
+                                      ])
+                                    : Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          SizedBox(height: 5),
+                                          Divider(color: primaryColor),
+                                          Text('Select an Exercise Category.',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontFamily: 'AstroSpace',
+                                                color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
+                                                fontSize: 12)
+                                          ),
+                                          Divider(color: primaryColor),
+                                          SizedBox(height: 5),
+                                  ]),
 
                                 editMode ? SizedBox(height: 30)
                                     : SizedBox(height: 10),
