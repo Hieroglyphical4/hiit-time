@@ -44,6 +44,8 @@ class PlateCalculatorState extends State<PlateCalculator> {
   void dispose() {
     _weightFocusNode.dispose();
     _repsFocusNode.dispose();
+    _weightTextEditController.dispose();
+    _repsTextEditController.dispose();
     super.dispose();
   }
 
@@ -248,7 +250,11 @@ class PlateCalculatorState extends State<PlateCalculator> {
   }
 
   String calculateOneRepMax() {
-    double answer = _weight / ( 1.0278 - 0.0278 * _reps );
+    double answer = 0;
+    if (_reps != 0) {
+      answer = _weight / ( 1.0278 - 0.0278 * _reps );
+    }
+
     return answer.toStringAsFixed(0);
   }
 
@@ -296,7 +302,8 @@ class PlateCalculatorState extends State<PlateCalculator> {
                                   ),
                                   child: ElevatedButton(
                                       onPressed: () => setState(() {
-                                        calculatedWeight = '0';
+                                        oneRepMaxMode = false;
+                                        resetCounts();
 
                                         if (inLbMode) {
                                           rows = [];
@@ -307,7 +314,6 @@ class PlateCalculatorState extends State<PlateCalculator> {
                                           initializeButtonsKg();
                                           setupPlateButtonRows();
                                         }
-                                        oneRepMaxMode = false;
                                       }),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: oneRepMaxMode ? secondaryColor : Colors.blue,

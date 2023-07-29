@@ -141,8 +141,8 @@ class LogsWidgetState extends State<LogsWidget> {
 
                 // Grey Line
                 SizedBox(height: 10),
-                SizedBox(height: 1, child: Container(color: Colors.grey)),
-                SizedBox(height: 15),
+                SizedBox(height: 1, width: 300, child: Container(color: Colors.grey)),
+                SizedBox(height: 10),
 
                 /// Main Filter Buttons
                 SizedBox(
@@ -260,7 +260,7 @@ class LogsWidgetState extends State<LogsWidget> {
                 ),
 
                 SizedBox(height: 10),
-                SizedBox(height: 1, child: Container(color: Colors.grey)),
+                SizedBox(height: 1, width: 300, child: Container(color: Colors.grey)),
                 SizedBox(height: 15),
 
                 // Determine if Cardio Widget should show:

@@ -505,7 +505,7 @@ class TipsWidgetState extends State<TipsWidget> {
                                       SizedBox(height: 15),
                                       Text("Settings", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
                                       Divider(color: primaryColor),
-                                      Spacer(),
+                                      SizedBox(height: 5),
                                       Text("Quick Navigation:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
                                       SizedBox(height: 5),
                                       Text("Access 'Advanced Settings' from the Timer by clicking the 'HIIT Time' header.",
@@ -535,7 +535,7 @@ class TipsWidgetState extends State<TipsWidget> {
                                       SizedBox(height: 15),
                                       Text("Logs", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
                                       Divider(color: primaryColor),
-                                      Spacer(),
+                                      SizedBox(height: 5),
                                       Text("Getting Started:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
                                       SizedBox(height: 5),
                                       Text("Before saving a New Log in the Logs menu, you must first add an Exercise.",
@@ -544,8 +544,7 @@ class TipsWidgetState extends State<TipsWidget> {
 
                                       Spacer(),
                                       Divider(color: primaryColor),
-                                      Spacer(),
-
+                                      SizedBox(height: 5),
                                       Text("Adding Exercises:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
                                       SizedBox(height: 5),
                                       RichText(
@@ -582,8 +581,7 @@ class TipsWidgetState extends State<TipsWidget> {
                                       SizedBox(height: 15),
                                       Text("Background Mode", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
                                       Divider(color: primaryColor),
-                                      SizedBox(height: 15),
-
+                                      SizedBox(height: 5),
                                       Text("Timer Stopping:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
                                       SizedBox(height: 5),
                                       Text("If the timer stops while running in the background, try changing these settings on your phone: ",
@@ -656,7 +654,7 @@ class AboutThisAppWidgetState extends State<AboutThisAppWidget> {
               Text("Thank you for downloading my first app! ", textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 20, color: primaryColor)),
               Divider(color: primaryColor),
-              SizedBox(height: 15),
+              SizedBox(height: 10),
 
               Text("Origin: ", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
               SizedBox(height: 4),
@@ -669,8 +667,11 @@ class AboutThisAppWidgetState extends State<AboutThisAppWidget> {
               Text("Logs were eventually added so that (other than a music app) HIIT Time is the only app needed while at the gym.",
                   style: TextStyle(fontSize: 19, color: primaryColor)
               ),
-              SizedBox(height: 8),
-              Text("I have no plans to add random ads as I feel they degrade the quality of apps. If you want to support my work, please consider purchasing a Theme!",
+              SizedBox(height: 10),
+
+              Text("Support: ", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
+              SizedBox(height: 4),
+              Text("I hope you're enjoying the ad-free experience. If you want to support my work, please consider purchasing a Theme!",
                   style: TextStyle(fontSize: 19, color: primaryColor)
               ),
               SizedBox(height: 8),
@@ -795,6 +796,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
       return Container(
           child: Center(
               child: Column(children: [
+                SizedBox(height: 10),
         SizedBox(
             height: 325,
             width: 300,
