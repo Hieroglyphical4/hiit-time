@@ -474,7 +474,6 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                             child:Column(
                               children: [
                                 /// Header
-                                // Divider(color: primaryColor),
                                 SizedBox(height: 10),
                                 Container(
                                     width: 210,
@@ -546,7 +545,6 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                 ]),
 
                                 /////////////////////
-
 
                                 SizedBox(height: 15),
 
