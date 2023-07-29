@@ -15,7 +15,12 @@ class PlateCalculator extends StatefulWidget {
 }
 
 class PlateCalculatorState extends State<PlateCalculator> {
-  final weightTextEditController = TextEditingController();
+  final _weightTextEditController = TextEditingController();
+  final _repsTextEditController = TextEditingController();
+  FocusNode _weightFocusNode = FocusNode();
+  FocusNode _repsFocusNode = FocusNode();
+  bool _weightHintTextShowing = true;
+  bool _repsHintTextShowing = true;
   String calculatedWeight = '0';
   bool inLbMode = true;
   late var buttons;
@@ -31,6 +36,15 @@ class PlateCalculatorState extends State<PlateCalculator> {
     super.initState();
     initializeButtonsLb();
     setupPlateButtonRows();
+    _weightFocusNode.addListener(() => _handleFocusChange(_weightFocusNode, 'weight'));
+    _repsFocusNode.addListener(() => _handleFocusChange(_repsFocusNode, 'reps'));
+  }
+
+  @override
+  void dispose() {
+    _weightFocusNode.dispose();
+    _repsFocusNode.dispose();
+    super.dispose();
   }
 
   // Used during initial setup and when switching modes
@@ -185,11 +199,12 @@ class PlateCalculatorState extends State<PlateCalculator> {
 
   // Clear all button counts to 0
   void resetCounts() {
-    // TODO Actually clear text fields when this is hit
     setState(() {
       _reps = 0;
       _weight = 0;
       calculatedWeight = '0';
+      _weightTextEditController.clear();
+      _repsTextEditController.clear();
 
       for (var button in buttons) {
         button.key.currentState?.resetPlateCount();
@@ -237,6 +252,15 @@ class PlateCalculatorState extends State<PlateCalculator> {
     return answer.toStringAsFixed(0);
   }
 
+  _handleFocusChange(FocusNode focusNode, String textField) {
+    if (!focusNode.hasFocus) {
+      setState(() {
+        textField == 'weight' ? _weightHintTextShowing = true : null;
+        textField == 'reps' ? _repsHintTextShowing = true : null;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -261,9 +285,15 @@ class PlateCalculatorState extends State<PlateCalculator> {
                               SizedBox(height: 10),
 
                               /// Plate Calc Mode Button
-                              SizedBox(
+                              Container(
                                   height: 50,
                                   width: 200,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: primaryColor,
+                                      width: 1.0,
+                                    ),
+                                  ),
                                   child: ElevatedButton(
                                       onPressed: () => setState(() {
                                         calculatedWeight = '0';
@@ -297,9 +327,15 @@ class PlateCalculatorState extends State<PlateCalculator> {
                               SizedBox(height: 10),
 
                               /// One Rep Max Mode Button
-                              SizedBox(
+                              Container(
                                   height: 50,
                                   width: 200,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: primaryColor,
+                                      width: 1.0,
+                                    ),
+                                  ),
                                   child: ElevatedButton(
                                       onPressed: () => setState(() {
                                         calculatedWeight = '0';
@@ -408,7 +444,8 @@ class PlateCalculatorState extends State<PlateCalculator> {
                                                   width: 1.0,
                                                 )),
                                             child: TextFormField(
-                                              // TODO Setup controller
+                                              focusNode: _weightFocusNode,
+                                              controller: _weightTextEditController,
                                               style: TextStyle(
                                                   color: secondaryColor,
                                                   fontSize: 20,
@@ -416,7 +453,11 @@ class PlateCalculatorState extends State<PlateCalculator> {
                                               ),
                                               textAlign: TextAlign.center,
                                               keyboardType: TextInputType.number,
-                                              onTap: () => Scrollable.ensureVisible(context),
+                                              onTap: () {
+                                                setState(() {
+                                                  _weightHintTextShowing = false;
+                                                });
+                                              },
                                               onChanged: (value) {
                                                 if (value != '') {
                                                   _weight = double.parse(value);
@@ -433,7 +474,7 @@ class PlateCalculatorState extends State<PlateCalculator> {
                                               decoration: InputDecoration(
                                                 filled: true,
                                                 fillColor: primaryColor,
-                                                hintText: '000',
+                                                hintText: _weightHintTextShowing ? '000' : '',
                                                 hintStyle: TextStyle(
                                                   fontSize: 20,
                                                   color: secondaryColor,
@@ -466,7 +507,8 @@ class PlateCalculatorState extends State<PlateCalculator> {
                                                   width: 1.0,
                                                 )),
                                             child: TextFormField(
-                                              // scrollPadding: EdgeInsets.only(bottom:100),
+                                              focusNode: _repsFocusNode,
+                                              controller: _repsTextEditController,
                                               style: TextStyle(
                                                   color: secondaryColor,
                                                   fontSize: 20,
@@ -474,6 +516,11 @@ class PlateCalculatorState extends State<PlateCalculator> {
                                               ),
                                               textAlign: TextAlign.center,
                                               keyboardType: TextInputType.number,
+                                              onTap: () {
+                                                setState(() {
+                                                  _repsHintTextShowing = false;
+                                                });
+                                              },
                                               onChanged: (value) {
                                                 if (value != '') {
                                                   _reps = int.parse(value);
@@ -490,7 +537,7 @@ class PlateCalculatorState extends State<PlateCalculator> {
                                               decoration: InputDecoration(
                                                 filled: true,
                                                 fillColor: primaryColor,
-                                                hintText: '0',
+                                                hintText: _repsHintTextShowing ? '0' : '',
                                                 hintStyle: TextStyle(
                                                   fontSize: 20,
                                                   color: secondaryColor,
@@ -513,17 +560,21 @@ class PlateCalculatorState extends State<PlateCalculator> {
                                     SizedBox(height: 25),
 
                                     /// Submit Button
-                                    ElevatedButton(
-                                      child: const Text("Submit",
-                                        style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          calculatedWeight = calculateOneRepMax();
-                                        });
-                                      },
+                                    SizedBox(
+                                        width: 100,
+                                        height: 50,
+                                        child: ElevatedButton(
+                                          child: const Text("Submit",
+                                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              calculatedWeight = calculateOneRepMax();
+                                            });
+                                          },
+                                        )
                                     ),
-                                    SizedBox(height: 38),
+                                    SizedBox(height: 37),
                                   ])
                                   : Column(children: rows), /// Create All the Plate Buttons
 

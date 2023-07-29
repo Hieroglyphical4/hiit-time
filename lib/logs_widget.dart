@@ -490,9 +490,15 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                     ? Container()
                                     : Row(children: [
                                         Spacer(),
-                                        SizedBox(
+                                        Container(
                                             height: 40,
                                             width: 80,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: primaryColor,
+                                                width: 1.0,
+                                              ),
+                                            ),
                                             child: ElevatedButton(
                                                 onPressed: () => setState(() {
                                                   _setExerciseType('Cardio');
@@ -517,9 +523,15 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
 
                                         Spacer(),
 
-                                        SizedBox(
+                                        Container(
                                             height: 40,
                                             width: 80,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: primaryColor,
+                                                width: 1.0,
+                                              ),
+                                            ),
                                             child: ElevatedButton(
                                               onPressed: () => setState(() {
                                                 _setExerciseType('Weight');
@@ -602,6 +614,7 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                                 color: appCurrentlyInDarkMode ? Colors.white : Colors.black,
                                                 fontSize: 12)
                                         ),
+                                        SizedBox(height: 2),
                                       ])
                                     : Column(
                                         mainAxisAlignment: MainAxisAlignment.center,
