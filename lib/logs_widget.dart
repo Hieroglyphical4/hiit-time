@@ -2425,6 +2425,12 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
               style: TextStyle(fontFamily: 'AstroSpace',
                   fontSize: 18, color: primaryColor)
           ),
+          Text('.csv files only',
+              style: TextStyle(
+                  // fontFamily: 'AstroSpace',
+                  fontSize: 15, color: primaryColor)
+          ),
+          SizedBox(height: 10),
           /// IMPORT Logs
           ElevatedButton(
             child: Text('Import'),

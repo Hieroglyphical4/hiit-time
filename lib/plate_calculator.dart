@@ -364,7 +364,7 @@ class PlateCalculatorState extends State<PlateCalculator> {
                               Row(mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     /// KG Button
-                                    oneRepMaxMode ? Container()
+                                    oneRepMaxMode ? Container(height: 45)
                                     : Container(
                                         width: 45,
                                         height: 45,
@@ -407,7 +407,7 @@ class PlateCalculatorState extends State<PlateCalculator> {
 
                                     /// LB Button
                                     SizedBox(width: 15),
-                                    oneRepMaxMode ? Container()
+                                    oneRepMaxMode ? Container(height: 45)
                                     : Container(
                                         width: 45,
                                         height: 45,
