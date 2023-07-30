@@ -946,7 +946,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              if (themesPurchasedMap['Bubblegum']!) {
+                              if (_bubblegumThemeUnlocked) {
                                 setBooleanSetting('appInDarkMode', true);
                                 setupDarkOrLightMode(true);
                                 _updateAppTheme('Bubblegum');
@@ -973,7 +973,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              if (themesPurchasedMap['Bubblegum']!) {
+                              if (_bubblegumThemeUnlocked) {
                                 setBooleanSetting('appInDarkMode', false);
                                 setupDarkOrLightMode(false);
                                 _updateAppTheme('Bubblegum');
@@ -1010,7 +1010,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                               child: RadioListTile(
                                 secondary:  Icon(Icons.lock,
                                     size: 30,
-                                    color: _bubblegumThemeUnlocked ? Colors.transparent : Colors.red
+                                    color: _bubblegumThemeUnlocked ? Colors.transparent : primaryColor
                                 ),
                                 title: Text(
                                   _possibleThemes[1],
@@ -1047,7 +1047,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              if (themesPurchasedMap['Pumpkin']!) {
+                              if (_pumpkinThemeUnlocked) {
                                 setBooleanSetting('appInDarkMode', true);
                                 setupDarkOrLightMode(true);
                                 _updateAppTheme('Pumpkin');
@@ -1074,7 +1074,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              if (themesPurchasedMap['Pumpkin']!) {
+                              if (_pumpkinThemeUnlocked) {
                                 setBooleanSetting('appInDarkMode', false);
                                 setupDarkOrLightMode(false);
                                 _updateAppTheme('Pumpkin');
@@ -1108,7 +1108,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                               child: RadioListTile(
                                 secondary:  Icon(Icons.lock,
                                     size: 30,
-                                    color: _pumpkinThemeUnlocked ? Colors.transparent : primaryAccentColor
+                                    color: _pumpkinThemeUnlocked ? Colors.transparent : primaryColor
                                 ),
                                 title: Text(
                                   _possibleThemes[2],
