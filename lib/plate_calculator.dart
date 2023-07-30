@@ -302,17 +302,19 @@ class PlateCalculatorState extends State<PlateCalculator> {
                                   ),
                                   child: ElevatedButton(
                                       onPressed: () => setState(() {
-                                        oneRepMaxMode = false;
-                                        resetCounts();
+                                        if (oneRepMaxMode) {
+                                          oneRepMaxMode = false;
+                                          resetCounts();
 
-                                        if (inLbMode) {
-                                          rows = [];
-                                          initializeButtonsLb();
-                                          setupPlateButtonRows();
-                                        } else {
-                                          rows = [];
-                                          initializeButtonsKg();
-                                          setupPlateButtonRows();
+                                          if (inLbMode) {
+                                            rows = [];
+                                            setupPlateButtonRows();
+                                            initializeButtonsLb();
+                                          } else {
+                                            rows = [];
+                                            setupPlateButtonRows();
+                                            initializeButtonsKg();
+                                          }
                                         }
                                       }),
                                       style: ElevatedButton.styleFrom(

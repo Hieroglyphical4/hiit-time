@@ -734,16 +734,25 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
   // This indicates which Image Asset should be highlighted
   String? _assetForSelectedThemeAndMode;
 
+  // Bools to track Unlocks
+  bool _bubblegumThemeUnlocked = false;
+  bool _pumpkinThemeUnlocked = false;
+
   void _updateAppTheme(String? theme) {
     if (theme != null) {
-      setState(() {
-        _currentTheme = theme;
-        appCurrentTheme = theme;
-        setStringSetting('appTheme', theme);
-        setupAppTheme(theme);
-        widget.onThemeChanged();
-        _assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
-      });
+      if (themesPurchasedMap[theme] == true) {
+        setState(() {
+          _currentTheme = theme;
+          appCurrentTheme = theme;
+          setStringSetting('appTheme', theme);
+          setupAppTheme(theme);
+          widget.onThemeChanged();
+          _assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
+        });
+      } else {
+        // TODO logic to launch store
+        _showAppStoreNotification(context);
+      }
     }
   }
 
@@ -781,12 +790,36 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
     return '';
   }
 
+  void _showAppStoreNotification(BuildContext context) {
+    final snackBar = SnackBar(
+      backgroundColor: primaryColor,
+      content: Container(
+          height: 33,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Launching App Store....",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: secondaryColor,
+                    )
+                ),
+              ])
+      ),
+
+      duration: Duration(seconds: 2), // Set the duration for how long the SnackBar will be displayed
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   @override
   void initState() {
     super.initState();
     _currentPageIndex = _determineCurrentPageIndex();
     _assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
     _pageController = PageController(initialPage: _currentPageIndex);
+    _bubblegumThemeUnlocked = themesPurchasedMap['Bubblegum']!;
+    _pumpkinThemeUnlocked = themesPurchasedMap['Pumpkin']!;
   }
 
   @override
@@ -913,9 +946,14 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              setBooleanSetting('appInDarkMode', true);
-                              setupDarkOrLightMode(true);
-                              _updateAppTheme('Bubblegum');
+                              if (themesPurchasedMap['Bubblegum']!) {
+                                setBooleanSetting('appInDarkMode', true);
+                                setupDarkOrLightMode(true);
+                                _updateAppTheme('Bubblegum');
+                              } else {
+                                // TODO logic to launch store
+                                _showAppStoreNotification(context);
+                              }
                             });
                           },
                           child: Container(
@@ -935,9 +973,14 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              setBooleanSetting('appInDarkMode', false);
-                              setupDarkOrLightMode(false);
-                              _updateAppTheme('Bubblegum');
+                              if (themesPurchasedMap['Bubblegum']!) {
+                                setBooleanSetting('appInDarkMode', false);
+                                setupDarkOrLightMode(false);
+                                _updateAppTheme('Bubblegum');
+                              } else {
+                                // TODO logic to launch store
+                                _showAppStoreNotification(context);
+                              }
                             });
                           },
                           child: Container(
@@ -959,12 +1002,16 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 
                       // Radio Tile
                       Container(
-                          width: 250,
+                          width: 260,
                           child: Material(
                               shape: BeveledRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: RadioListTile(
+                                secondary:  Icon(Icons.lock,
+                                    size: 30,
+                                    color: _bubblegumThemeUnlocked ? Colors.transparent : Colors.red
+                                ),
                                 title: Text(
                                   _possibleThemes[1],
                                   style: TextStyle(
@@ -1000,9 +1047,14 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              setBooleanSetting('appInDarkMode', true);
-                              setupDarkOrLightMode(true);
-                              _updateAppTheme('Pumpkin');
+                              if (themesPurchasedMap['Pumpkin']!) {
+                                setBooleanSetting('appInDarkMode', true);
+                                setupDarkOrLightMode(true);
+                                _updateAppTheme('Pumpkin');
+                              } else {
+                                // TODO logic to launch store
+                                _showAppStoreNotification(context);
+                              }
                             });
                           },
                           child: Container(
@@ -1022,9 +1074,14 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              setBooleanSetting('appInDarkMode', false);
-                              setupDarkOrLightMode(false);
-                              _updateAppTheme('Pumpkin');
+                              if (themesPurchasedMap['Pumpkin']!) {
+                                setBooleanSetting('appInDarkMode', false);
+                                setupDarkOrLightMode(false);
+                                _updateAppTheme('Pumpkin');
+                              } else {
+                                // TODO logic to launch store
+                                _showAppStoreNotification(context);
+                              }
                             });
                           },
                           child: Container(
@@ -1043,12 +1100,16 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 
                       const SizedBox(height: 10),
                       Container(
-                          width: 210,
+                          width: 230,
                           child: Material(
                               shape: BeveledRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: RadioListTile(
+                                secondary:  Icon(Icons.lock,
+                                    size: 30,
+                                    color: _pumpkinThemeUnlocked ? Colors.transparent : primaryAccentColor
+                                ),
                                 title: Text(
                                   _possibleThemes[2],
                                   style: TextStyle(
@@ -1266,6 +1327,41 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
 
         const SizedBox(height: 20),
         SizedBox(height: 1, child: Container(color: Colors.grey)),
+
+        // TODO Remove this after testing
+        SizedBox(height: 10),
+        ElevatedButton(
+          child: Text(themesPurchasedMap['Bubblegum']! ? 'Disable Bubblegum' : 'Enable Bubblegum',
+            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+          ),
+          onPressed: () {
+            setState(() {
+              if (themesPurchasedMap['Bubblegum']!) {
+                themesPurchasedMap['Bubblegum'] = false;
+              } else {
+                themesPurchasedMap['Bubblegum'] = true;
+              }
+            });
+          },
+        ),
+        SizedBox(height: 10),
+
+        // TODO Remove this after testing
+        ElevatedButton(
+          child: Text(themesPurchasedMap['Pumpkin']! ? 'Disable Pumpkin' : 'Enable Pumpkin',
+            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+          ),
+          onPressed: () {
+            setState(() {
+              if (themesPurchasedMap['Pumpkin']!) {
+                themesPurchasedMap['Pumpkin'] = false;
+              } else {
+                themesPurchasedMap['Pumpkin'] = true;
+              }
+            });
+          },
+        ),
+
       ],
     );
   }

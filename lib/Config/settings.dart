@@ -238,6 +238,13 @@ Future<void> setStringSetting(String setting, String value) async {
   prefs.setString(setting, value);
 }
 
+/// In-app Purchase Variables
+Map<String, bool> themesPurchasedMap = {
+  'Default': true,
+  'Bubblegum': false,
+  'Pumpkin': false,
+};
+
 /// App Theme related settings
 List<String> appPossibleThemes = ['Default', 'Bubblegum', 'Pumpkin'];
 
