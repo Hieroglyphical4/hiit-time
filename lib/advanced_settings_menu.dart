@@ -905,7 +905,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 
                       // Radio Tile
                       Container(
-                          width: 200,
+                          width: 220,
                           child: Material(
                               shape: BeveledRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -915,8 +915,8 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                   _possibleThemes[0],
                                   style: TextStyle(
                                       color: appCurrentlyInDarkMode
-                                          ? Colors.white
-                                          : Colors.black,
+                                          ? Colors.black
+                                          : Colors.white,
                                       fontSize: _textFontSize),
                                 ),
                                 tileColor: Colors.blueGrey,
