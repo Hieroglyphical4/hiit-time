@@ -1010,14 +1010,13 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                               child: RadioListTile(
                                 secondary:  Icon(Icons.lock,
                                     size: 30,
-                                    color: _bubblegumThemeUnlocked ? Colors.transparent : primaryColor
+                                    color: _bubblegumThemeUnlocked ? Colors.transparent
+                                        : appCurrentlyInDarkMode ? Colors.black : Colors.white
                                 ),
                                 title: Text(
                                   _possibleThemes[1],
                                   style: TextStyle(
-                                      color: textColorOverwrite
-                                          ? Colors.black
-                                          : Colors.white,
+                                      color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
                                       fontSize: _textFontSize),
                                 ),
                                 tileColor: appCurrentlyInDarkMode
@@ -1108,14 +1107,13 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                               child: RadioListTile(
                                 secondary:  Icon(Icons.lock,
                                     size: 30,
-                                    color: _pumpkinThemeUnlocked ? Colors.transparent : primaryColor
+                                    color: _pumpkinThemeUnlocked ? Colors.transparent
+                                        : appCurrentlyInDarkMode ? Colors.black : Colors.white
                                 ),
                                 title: Text(
                                   _possibleThemes[2],
                                   style: TextStyle(
-                                      color: textColorOverwrite
-                                          ? Colors.black
-                                          : Colors.white,
+                                      color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
                                       fontSize: _textFontSize),
                                 ),
                                 tileColor: appCurrentlyInDarkMode ?  Colors.deepOrangeAccent.shade200 : Colors.deepOrange.shade900,
