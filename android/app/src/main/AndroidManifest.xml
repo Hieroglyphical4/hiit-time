@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.hiit_time">
+    package="hiit_time">
     <uses-permission android:name="android.permission.VIBRATE"/>
     <!-- Next 2 are to keep tasks running in the background -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
