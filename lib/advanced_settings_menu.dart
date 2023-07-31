@@ -1327,38 +1327,38 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
         SizedBox(height: 1, child: Container(color: Colors.grey)),
 
         // TODO Remove this after testing
-        // SizedBox(height: 10),
-        // ElevatedButton(
-        //   child: Text(themesPurchasedMap['Bubblegum']! ? 'Disable Bubblegum' : 'Enable Bubblegum',
-        //     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
-        //   ),
-        //   onPressed: () {
-        //     setState(() {
-        //       if (themesPurchasedMap['Bubblegum']!) {
-        //         themesPurchasedMap['Bubblegum'] = false;
-        //       } else {
-        //         themesPurchasedMap['Bubblegum'] = true;
-        //       }
-        //     });
-        //   },
-        // ),
-        // SizedBox(height: 10),
-        //
-        // // TODO Remove this after testing
-        // ElevatedButton(
-        //   child: Text(themesPurchasedMap['Pumpkin']! ? 'Disable Pumpkin' : 'Enable Pumpkin',
-        //     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
-        //   ),
-        //   onPressed: () {
-        //     setState(() {
-        //       if (themesPurchasedMap['Pumpkin']!) {
-        //         themesPurchasedMap['Pumpkin'] = false;
-        //       } else {
-        //         themesPurchasedMap['Pumpkin'] = true;
-        //       }
-        //     });
-        //   },
-        // ),
+        SizedBox(height: 10),
+        ElevatedButton(
+          child: Text(themesPurchasedMap['Bubblegum']! ? 'Disable Bubblegum' : 'Enable Bubblegum',
+            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+          ),
+          onPressed: () {
+            setState(() {
+              if (themesPurchasedMap['Bubblegum']!) {
+                themesPurchasedMap['Bubblegum'] = false;
+              } else {
+                themesPurchasedMap['Bubblegum'] = true;
+              }
+            });
+          },
+        ),
+        SizedBox(height: 10),
+
+        // TODO Remove this after testing
+        ElevatedButton(
+          child: Text(themesPurchasedMap['Pumpkin']! ? 'Disable Pumpkin' : 'Enable Pumpkin',
+            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+          ),
+          onPressed: () {
+            setState(() {
+              if (themesPurchasedMap['Pumpkin']!) {
+                themesPurchasedMap['Pumpkin'] = false;
+              } else {
+                themesPurchasedMap['Pumpkin'] = true;
+              }
+            });
+          },
+        ),
 
       ],
     );
