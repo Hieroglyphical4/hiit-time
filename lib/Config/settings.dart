@@ -26,6 +26,9 @@ bool saveButtonAudioEnabledDefault = true;
 bool cancelButtonAudioEnabledDefault = true;
 bool switchButtonAudioEnabledDefault = true;
 
+bool sortLogByNewestDefault = true;
+int logTimelineDefault = 0;
+
 /// Audio Related Default Settings:
 var audioAlertWorkModeStartedDefault = assetSalliWork;
 var audioAlertRestModeStartedDefault = assetSalliRest;
@@ -59,6 +62,9 @@ bool restartButtonAudioCurrentlyEnabled = restartButtonAudioEnabledDefault;
 bool saveButtonAudioCurrentlyEnabled = saveButtonAudioEnabledDefault;
 bool cancelButtonAudioCurrentlyEnabled = cancelButtonAudioEnabledDefault;
 bool switchButtonAudioCurrentlyEnabled = switchButtonAudioEnabledDefault;
+
+bool sortLogByNewest = sortLogByNewestDefault;
+int logTimeline = logTimelineDefault;
 
 double appCurrentVolume = defaultVolume;
 
@@ -135,6 +141,9 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
   alertWorkModeStartedCurrentlyEnabled = prefs.getBool('alertWorkModeStartedEnabled') ?? alertWorkModeStartedEnabledDefault;
   alertRestModeStartedCurrentlyEnabled = prefs.getBool('alertRestModeStartedEnabled') ?? alertRestModeStartedEnabledDefault;
 
+  sortLogByNewest = prefs.getBool('sortLogByNewest') ?? sortLogByNewestDefault;
+  logTimeline = prefs.getInt('logTimeline') ?? logTimelineDefault;
+
   restartButtonAudioCurrentlyEnabled = prefs.getBool('restartButtonAudioEnabled') ?? restartButtonAudioEnabledDefault;
   saveButtonAudioCurrentlyEnabled = prefs.getBool('saveButtonAudioEnabled') ?? saveButtonAudioEnabledDefault;
   cancelButtonAudioCurrentlyEnabled = prefs.getBool('cancelButtonAudioEnabled') ?? cancelButtonAudioEnabledDefault;
@@ -205,48 +214,36 @@ void clearUserSettings() async {
   prefs.remove('audioModeSwitchAlertDisabled');
 }
 
-// Method to update Work Time
-Future<void> setWorkDuration(int value) async {
+// Reusable setter for Ints
+Future<void> setIntSetting(String setting, int value) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setInt('workDuration', value);
+  prefs.setInt(setting, value);
 }
 
-// Method to update Rest Time
-Future<void> setRestDuration(int value) async {
+// Reusable setter for Doubles
+Future<void> setDoubleSetting(String setting, double value) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setInt('restDuration', value);
+  prefs.setDouble(setting, value);
 }
 
-// Method to update Time Modifier for Addition Button
-Future<void> setTimeModifyValueAdd(int value) async {
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setInt('timeModifyValueAdd', value);
-}
-
-// Method to update Time Modifier for Subtraction Button
-Future<void> setTimeModifyValueSub(int value) async {
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setInt('timeModifyValueSub', value);
-}
-
-// Method to update Time Modifier for Subtraction Button
-Future<void> setAppVolume(double value) async {
-  final prefs = await SharedPreferences.getInstance();
-  prefs.setDouble('appVolume', value);
-  appCurrentVolume = value;
-}
-
-// Reusable setter/getter for booleans
+// Reusable setter for booleans
 Future<void> setBooleanSetting(String setting, bool value) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setBool(setting, value);
 }
 
-// Reusable setter/getter for strings
+// Reusable setter for strings
 Future<void> setStringSetting(String setting, String value) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString(setting, value);
 }
+
+/// In-app Purchase Variables
+Map<String, bool> themesPurchasedMap = {
+  'Default': true,
+  'Bubblegum': true,
+  'Pumpkin': true,
+};
 
 /// App Theme related settings
 List<String> appPossibleThemes = ['Default', 'Bubblegum', 'Pumpkin'];
@@ -299,14 +296,14 @@ void setupAppTheme(String theme) {
       primaryColorDarkMode = Colors.white;
       secondaryColorDarkMode = Colors.deepOrange.shade900;
       primaryAccentColorDarkMode = Colors.yellow.shade600;
-      secondaryAccentColorDarkMode = Colors.green.shade700;
+      secondaryAccentColorDarkMode = Colors.green;
       runningClockColorDarkMode = secondaryAccentColorDarkMode;
 
       // Light mode
       primaryColorLightMode = Colors.black;
       secondaryColorLightMode = Colors.deepOrangeAccent.shade200;
       primaryAccentColorLightMode = Colors.yellowAccent;
-      secondaryAccentColorLightMode = Colors.green.shade700;
+      secondaryAccentColorLightMode = Colors.green;
       runningClockColorLightMode = secondaryAccentColorLightMode;
       break;
   }

@@ -628,10 +628,11 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     setState(() {
                                       _appVolume = newValue;
                                       widget.audio.setVolume(_appVolume);
+                                      appCurrentVolume = newValue;
 
                                       // Save the Stored Volume for next Startup
                                       // Method lives in settings.dart
-                                      setAppVolume(_appVolume);
+                                      setDoubleSetting('appVolume', _appVolume);
                                     });
                                   },
                                 )
@@ -839,7 +840,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         }
                                         // Save the Stored Time for next Startup
                                         // Method lives in settings.dart
-                                        setRestDuration(_restTime);
+                                        setIntSetting('restDuration', _restTime);
                                       }
 
                                       // Check for Changes to Work Time
@@ -863,7 +864,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         }
                                         // Save the Stored Time for next Startup
                                         // Method lives in settings.dart
-                                        setWorkDuration(_workTime);
+                                        setIntSetting('workDuration', _workTime);
                                       }
 
                                       // Check for Changes to Subtract Modifier
@@ -885,7 +886,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         }
                                         // Save the Stored Time for next Startup
                                         // Method lives in settings.dart
-                                        setTimeModifyValueSub(_timeModSub);
+                                        setIntSetting('timeModifyValueSub', _timeModSub);
                                       }
 
                                       // Check for Changes to Addition Modifier
@@ -907,7 +908,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         }
                                         // Save the Stored Time for next Startup
                                         // Method lives in settings.dart
-                                        setTimeModifyValueAdd(_timeModAdd);
+                                        setIntSetting('timeModifyValueAdd', _timeModAdd);
                                       }
 
                                       Navigator.pop(context,

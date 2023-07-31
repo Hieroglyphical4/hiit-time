@@ -117,7 +117,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
   // Variables used when app is minimized or locked
   var appCurrentlyLive = true;  // False if Phone locked or App Minimized
   late AwesomeNotifications _notificationsPlugin;
-  late Timer _backgroundTimer;
+  Timer _backgroundTimer = Timer(Duration(seconds: 0), () {});
   late int backgroundTimerDuration = widget.duration;
   late int backgroundTimerAltDuration = widget.restDuration;
 
@@ -262,7 +262,7 @@ class _CountDownProgressIndicatorState extends State<CountDownProgressIndicator>
 
   Future<void> cancelNotificationAndTimer() async {
     await _notificationsPlugin.cancelAll();
-    _backgroundTimer.cancel(); // TODO Set boolean to determine if this is running
+    _backgroundTimer.cancel();
   }
 
 // This method is called when the phone locks or minimizes the app

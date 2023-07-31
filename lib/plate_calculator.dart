@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'Config/settings.dart';
 
-////////////////////////////////////////////////
-// Widget for all Button Audio related Settings (sub-submenu)
-////////////////////////////////////////////////
+///////////////////////////////////
+// Widget for The Plate Calculator
+///////////////////////////////////
 class PlateCalculator extends StatefulWidget {
   const PlateCalculator({
     required Key key,
@@ -15,25 +15,45 @@ class PlateCalculator extends StatefulWidget {
 }
 
 class PlateCalculatorState extends State<PlateCalculator> {
-  final weightTextEditController = TextEditingController();
-  String userRequestedWeight = '00';
-  bool calculatingFromTextField = false;
+  final _weightTextEditController = TextEditingController();
+  final _repsTextEditController = TextEditingController();
+  FocusNode _weightFocusNode = FocusNode();
+  FocusNode _repsFocusNode = FocusNode();
+  bool _weightHintTextShowing = true;
+  bool _repsHintTextShowing = true;
+  String calculatedWeight = '0';
+  bool inLbMode = true;
   late var buttons;
   List<Widget> rows = [];
-  List<GlobalKey<NumberedPlateButtonState>> buttonKeys = [];
 
+  // Adding an additional mode that can be switched to in this widget
+  bool oneRepMaxMode = false;
+  double _weight = 0;
+  int _reps = 0;
 
   @override
   void initState() {
     super.initState();
-    initializeButtons();
+    initializeButtonsLb();
     setupPlateButtonRows();
+    _weightFocusNode.addListener(() => _handleFocusChange(_weightFocusNode, 'weight'));
+    _repsFocusNode.addListener(() => _handleFocusChange(_repsFocusNode, 'reps'));
   }
 
-  void initializeButtons() {
+  @override
+  void dispose() {
+    _weightFocusNode.dispose();
+    _repsFocusNode.dispose();
+    _weightTextEditController.dispose();
+    _repsTextEditController.dispose();
+    super.dispose();
+  }
+
+  // Used during initial setup and when switching modes
+  void initializeButtonsLb() {
     buttons = [
       NumberedPlateButton(
-        key: _childWidgetKey55,
+        key: _childWidgetKey35,
         number: '35',
         count: 0,
         onPressed: changePlateCount,
@@ -45,13 +65,13 @@ class PlateCalculatorState extends State<PlateCalculator> {
         onPressed: changePlateCount,
       ),
       NumberedPlateButton(
-        key: _childWidgetKey35,
+        key: _childWidgetKey55,
         number: '55',
         count: 0,
         onPressed: changePlateCount,
       ),
       NumberedPlateButton(
-        key: _childWidgetKey25,
+        key: _childWidgetKey10,
         number: '10',
         count: 0,
         onPressed: changePlateCount,
@@ -63,54 +83,78 @@ class PlateCalculatorState extends State<PlateCalculator> {
         onPressed: changePlateCount,
       ),
       NumberedPlateButton(
-        key: _childWidgetKey10,
+        key: _childWidgetKey25,
         number: '25',
         count: 0,
         onPressed: changePlateCount
       ),
       NumberedPlateButton(
-        key: _childWidgetKey5,
+        key: _childWidgetKey1,
         number: '1',
         count: 0,
         onPressed: changePlateCount,
       ),
       NumberedPlateButton(
-        key: _childWidgetKey1,
+        key: _childWidgetKey5,
         number: '5',
         count: 0,
         onPressed: changePlateCount,
       ),
     ];
-    for (var button in buttons) {
-      buttonKeys.add(GlobalKey<NumberedPlateButtonState>());
-    }
   }
 
-  // When the user clicks a plate, increase the shown count
-  void changePlateCount(String weight, bool increase, int count) {
-    setState(() {
-      if (increase) {
-        userRequestedWeight = (int.parse(userRequestedWeight) + int.parse(weight)).toString();
-      } else {
-        // decrease weight
-        userRequestedWeight = (int.parse(userRequestedWeight) - (int.parse(weight) * count)).toString();
-      }
-    });
-  }
-
-  // Clear all button counts to 0
-  void resetCounts() {
-    setState(() {
-      userRequestedWeight = '00';
-      _childWidgetKey55.currentState?.resetPlateCount();
-      _childWidgetKey45.currentState?.resetPlateCount();
-      _childWidgetKey35.currentState?.resetPlateCount();
-      _childWidgetKey25.currentState?.resetPlateCount();
-      _childWidgetKey15.currentState?.resetPlateCount();
-      _childWidgetKey10.currentState?.resetPlateCount();
-      _childWidgetKey5.currentState?.resetPlateCount();
-      _childWidgetKey1.currentState?.resetPlateCount();
-    });
+  // Used when switching between modes
+  void initializeButtonsKg() {
+    buttons = [
+      NumberedPlateButton(
+        key: _childWidgetKey35,
+        number: '15.9',
+        count: 0,
+        onPressed: changePlateCount,
+      ),
+      NumberedPlateButton(
+        key: _childWidgetKey45,
+        number: '20.4',
+        count: 0,
+        onPressed: changePlateCount,
+      ),
+      NumberedPlateButton(
+        key: _childWidgetKey55,
+        number: '24.9',
+        count: 0,
+        onPressed: changePlateCount,
+      ),
+      NumberedPlateButton(
+        key: _childWidgetKey10,
+        number: '4.5',
+        count: 0,
+        onPressed: changePlateCount,
+      ),
+      NumberedPlateButton(
+        key: _childWidgetKey15,
+        number: '6.8',
+        count: 0,
+        onPressed: changePlateCount,
+      ),
+      NumberedPlateButton(
+          key: _childWidgetKey25,
+          number: '11.3',
+          count: 0,
+          onPressed: changePlateCount
+      ),
+      NumberedPlateButton(
+        key: _childWidgetKey1,
+        number: '0.5',
+        count: 0,
+        onPressed: changePlateCount,
+      ),
+      NumberedPlateButton(
+        key: _childWidgetKey5,
+        number: '2.3',
+        count: 0,
+        onPressed: changePlateCount,
+      ),
+    ];
   }
 
   // Dynamically create rows for each button so we can call children: rows later
@@ -141,100 +185,444 @@ class PlateCalculatorState extends State<PlateCalculator> {
     }
   }
 
+  // When the user clicks a plate, increase the shown count
+  void changePlateCount(String weight, bool increase, int count) {
+    int roundTo = inLbMode ? 0 : 1;
+
+    setState(() {
+        if (increase) {
+          calculatedWeight = (double.parse(calculatedWeight) + double.parse(weight)).toStringAsFixed(roundTo);
+        } else {
+          // decrease weight
+          calculatedWeight = (double.parse(calculatedWeight) - (double.parse(weight) * count)).toStringAsFixed(roundTo);
+        }
+    });
+  }
+
+  // Clear all button counts to 0
+  void resetCounts() {
+    setState(() {
+      _reps = 0;
+      _weight = 0;
+      calculatedWeight = '0';
+      _weightTextEditController.clear();
+      _repsTextEditController.clear();
+
+      for (var button in buttons) {
+        button.key.currentState?.resetPlateCount();
+      }
+    });
+  }
+
+  void setCalculatorToLb() {
+    setState(() {
+      if (inLbMode == false) {
+        inLbMode = true;
+        calculatedWeight = '0';
+
+        // Plate Calc Mode
+        for (var button in buttons) {
+          button.key.currentState?.convertToLb();
+          calculatedWeight =  (
+              double.parse(calculatedWeight) +
+                  button.key.currentState?.calculateCurrentValue()
+          ).toStringAsFixed(00);
+        }
+      }
+    });
+  }
+
+  void setCalculatorToKg() {
+    setState(() {
+      if (inLbMode) {
+        inLbMode = false;
+        calculatedWeight = '0';
+
+        for (var button in buttons) {
+          button.key.currentState?.convertToKg();
+          calculatedWeight = (
+              double.parse(calculatedWeight) +
+                  button.key.currentState?.calculateCurrentValue()
+          ).toStringAsFixed(1);
+        }
+      }
+    });
+  }
+
+  String calculateOneRepMax() {
+    double answer = 0;
+    if (_reps != 0) {
+      answer = _weight / ( 1.0278 - 0.0278 * _reps );
+    }
+
+    return answer.toStringAsFixed(0);
+  }
+
+  _handleFocusChange(FocusNode focusNode, String textField) {
+    if (!focusNode.hasFocus) {
+      setState(() {
+        textField == 'weight' ? _weightHintTextShowing = true : null;
+        textField == 'reps' ? _repsHintTextShowing = true : null;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: secondaryColor,
-        width: 250,
-        height: 470,
+    return Center(
         child: Material(
-          color:  secondaryColor,
-          child: Center(
-            child: Column(
-              children: [
-                SizedBox(height: 10),
-                Text('Plate Calculator',
-                    style: TextStyle(fontFamily: 'AstroSpace', color: primaryColor, fontSize: 16, height: 1.1)
-                ),
-                SizedBox(height: 10),
-                SizedBox(height: 1, child: Container(color: Colors.grey)),
-                SizedBox(height: 20),
-                ////////////////////////////////////
-                // Weight Calculation Text Field
-                ////////////////////////////////////
-                Row(mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(width: 30),
-                      Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: primaryColor,
-                        width: 2,
-                      ),
+            color:  secondaryColor,
+            child: SingleChildScrollView(
+                child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
                     ),
-                    child: SizedBox(
-                      width: 75,
-                      height: 40,
-                      child: Center(child:
-                      Text(userRequestedWeight,
-                        style: TextStyle(
-                            color: primaryColor,
-                            fontSize: 30),
-                        textAlign: TextAlign.center,
-                      )
-                      ),
-                    )
-                  ),
-                      SizedBox(width: 10),
-                      Align(alignment: Alignment.bottomCenter,
-                          child:Text('lb.',
-                          style: TextStyle(
+                    child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(
                               color: primaryColor,
-                              fontSize: 22)
-                      ))
-                ]),
-
-                SizedBox(height: 10),
-
-                /// Create All the Plate Buttons
-                Column(children: rows),
-
-                SizedBox(height: 10),
-
-                /// Clear All provided input
-                Container(
-                    width: 125,
-                    height: 40,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryAccentColor,
-                          padding: const EdgeInsets.all(4),
+                              width: 1,
+                            )
                         ),
-                      onPressed: resetCounts,
-                      child: Text('Clear',
-                          style: TextStyle(
-                            color: textColorOverwrite ? Colors.black : Colors.white,
-                            fontSize: 20.0,
-                      )),
-                )
-                ),
-              ])
-          )
+                        width: 275,
+                        height: 600,
+                        child: Column(
+                            children: [
+                              SizedBox(height: 10),
+
+                              /// Plate Calc Mode Button
+                              Container(
+                                  height: 50,
+                                  width: 200,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: primaryColor,
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                  child: ElevatedButton(
+                                      onPressed: () => setState(() {
+                                        if (oneRepMaxMode) {
+                                          oneRepMaxMode = false;
+                                          resetCounts();
+
+                                          if (inLbMode) {
+                                            rows = [];
+                                            setupPlateButtonRows();
+                                            initializeButtonsLb();
+                                          } else {
+                                            rows = [];
+                                            setupPlateButtonRows();
+                                            initializeButtonsKg();
+                                          }
+                                        }
+                                      }),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: oneRepMaxMode ? secondaryColor : Colors.blue,
+                                        padding: const EdgeInsets.all(4),
+                                      ),
+                                      child: Text('Plate Calculator',
+                                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 15, height: 1.1,
+                                              color: oneRepMaxMode ?  Colors.grey : primaryColor
+                                          ),
+                                          textAlign: TextAlign.center
+                                      )
+                                  )
+                              ),
+
+                              SizedBox(height: 10),
+                              SizedBox(height: 1, child: Container(color: Colors.grey)),
+                              SizedBox(height: 10),
+
+                              /// One Rep Max Mode Button
+                              Container(
+                                  height: 50,
+                                  width: 200,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: primaryColor,
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                  child: ElevatedButton(
+                                      onPressed: () => setState(() {
+                                        calculatedWeight = '0';
+                                        oneRepMaxMode = true;
+                                      }),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: oneRepMaxMode ?  Colors.blue : secondaryColor,
+                                        padding: const EdgeInsets.all(4),
+                                      ),
+                                      child: Text('One Rep Max',
+                                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 15, height: 1.1,
+                                              color: oneRepMaxMode ? primaryColor : Colors.grey
+                                          ),
+                                          textAlign: TextAlign.center
+                                      )
+                                  )
+                              ),
+
+                              SizedBox(height: 10),
+                              SizedBox(height: 1, child: Container(color: Colors.grey)),
+                              SizedBox(height: 20),
+
+                              ////////////////////////////////////
+                              // Calculation Result Window | Kg/LB Buttons
+                              ////////////////////////////////////
+                              Row(mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    /// KG Button
+                                    oneRepMaxMode ? Container(height: 45)
+                                    : Container(
+                                        width: 45,
+                                        height: 45,
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: inLbMode ? secondaryColor : primaryAccentColor,
+                                            padding: const EdgeInsets.all(4),
+                                          ),
+                                          onPressed: setCalculatorToKg,
+                                          child: Text('kg.',
+                                              style: TextStyle(
+                                                color: alternateColorOverwrite ? Colors.black : primaryColor,
+                                                fontSize: 20.0,
+                                              )),
+                                        )
+                                    ),
+                                    SizedBox(width: 15),
+
+                                    /// Calculated Weight Window
+                                    Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: primaryColor,
+                                            width: 2,
+                                          ),
+                                        ),
+                                        child: SizedBox(
+                                          width: 100,
+                                          height: 40,
+                                          child: Center(child:
+                                          Text(calculatedWeight,
+                                            style: TextStyle(
+                                                color: primaryColor,
+                                                fontSize: 30),
+                                            textAlign: TextAlign.center,
+                                          )
+                                          ),
+                                        )
+                                    ),
+
+                                    /// LB Button
+                                    SizedBox(width: 15),
+                                    oneRepMaxMode ? Container(height: 45)
+                                    : Container(
+                                        width: 45,
+                                        height: 45,
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: inLbMode ? primaryAccentColor : secondaryColor,
+                                            padding: const EdgeInsets.all(4),
+                                          ),
+                                          onPressed: setCalculatorToLb,
+                                          child: Text('lb.',
+                                              style: TextStyle(
+                                                color: alternateColorOverwrite ? Colors.black : primaryColor,
+                                                fontSize: 20.0,
+                                              )),
+                                        )
+                                    ),
+                                  ]),
+
+                              SizedBox(height: 10),
+
+                              /// Setup main body content
+                              oneRepMaxMode
+                                  ? Column(
+                                  children: [
+                                    SizedBox(height: 25),
+                                    /// Weight Input Field
+                                    SizedBox(
+                                        width: 75,
+                                        height: 50,
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: primaryColor,
+                                                  width: 1.0,
+                                                )),
+                                            child: TextFormField(
+                                              focusNode: _weightFocusNode,
+                                              controller: _weightTextEditController,
+                                              style: TextStyle(
+                                                  color: secondaryColor,
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold
+                                              ),
+                                              textAlign: TextAlign.center,
+                                              keyboardType: TextInputType.number,
+                                              onTap: () {
+                                                setState(() {
+                                                  _weightHintTextShowing = false;
+                                                });
+                                              },
+                                              onChanged: (value) {
+                                                if (value != '') {
+                                                  _weight = double.parse(value);
+                                                }
+                                                if (value == '') {
+                                                  // Useful if the text field was added to and deleted
+                                                  _weight = 0.0;
+                                                }
+                                              },
+                                              onFieldSubmitted: (value) {
+                                                FocusManager.instance.primaryFocus
+                                                    ?.unfocus();
+                                              },
+                                              decoration: InputDecoration(
+                                                filled: true,
+                                                fillColor: primaryColor,
+                                                hintText: _weightHintTextShowing ? '000' : '',
+                                                hintStyle: TextStyle(
+                                                  fontSize: 20,
+                                                  color: secondaryColor,
+                                                ),
+                                              ),
+                                              inputFormatters: <TextInputFormatter>[
+                                                FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                                FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
+                                                LengthLimitingTextInputFormatter(4), // 2 digits at most
+                                              ],
+                                            ))
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text("Weight",
+                                        style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, decoration: TextDecoration.none,
+                                            color: textColorOverwrite ? Colors.black : primaryColor
+                                        )
+                                    ),
+
+                                    SizedBox(height: 25),
+
+                                    /// Reps Input Field
+                                    SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: Container(
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: primaryColor,
+                                                  width: 1.0,
+                                                )),
+                                            child: TextFormField(
+                                              focusNode: _repsFocusNode,
+                                              controller: _repsTextEditController,
+                                              style: TextStyle(
+                                                  color: secondaryColor,
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold
+                                              ),
+                                              textAlign: TextAlign.center,
+                                              keyboardType: TextInputType.number,
+                                              onTap: () {
+                                                setState(() {
+                                                  _repsHintTextShowing = false;
+                                                });
+                                              },
+                                              onChanged: (value) {
+                                                if (value != '') {
+                                                  _reps = int.parse(value);
+                                                }
+                                                if (value == '') {
+                                                  // Useful if the text field was added to and deleted
+                                                  _reps = 0;
+                                                }
+                                              },
+                                              onFieldSubmitted: (value) {
+                                                FocusManager.instance.primaryFocus
+                                                    ?.unfocus();
+                                              },
+                                              decoration: InputDecoration(
+                                                filled: true,
+                                                fillColor: primaryColor,
+                                                hintText: _repsHintTextShowing ? '0' : '',
+                                                hintStyle: TextStyle(
+                                                  fontSize: 20,
+                                                  color: secondaryColor,
+                                                ),
+                                              ),
+                                              inputFormatters: <TextInputFormatter>[
+                                                FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
+                                                FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
+                                                LengthLimitingTextInputFormatter(2), // 2 digits at most
+                                              ],
+                                            ))
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text("Reps",
+                                        style: TextStyle(fontFamily: 'AstroSpace', fontSize: 12, height: 1.1, decoration: TextDecoration.none,
+                                            color: textColorOverwrite ? Colors.black : primaryColor
+                                        )
+                                    ),
+
+                                    SizedBox(height: 25),
+
+                                    /// Submit Button
+                                    SizedBox(
+                                        width: 100,
+                                        height: 50,
+                                        child: ElevatedButton(
+                                          child: const Text("Submit",
+                                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              calculatedWeight = calculateOneRepMax();
+                                            });
+                                          },
+                                        )
+                                    ),
+                                    SizedBox(height: 37),
+                                  ])
+                                  : Column(children: rows), /// Create All the Plate Buttons
+
+                              SizedBox(height: 10),
+
+                              /// Clear All provided input
+                              Container(
+                                  width: 125,
+                                  height: 40,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: secondaryAccentColor,
+                                      padding: const EdgeInsets.all(4),
+                                    ),
+                                    onPressed: resetCounts,
+                                    child: Text('Clear',
+                                        style: TextStyle(
+                                          fontFamily: 'AstroSpace',
+                                          color: textColorOverwrite ? Colors.black : Colors.white,
+                                          fontSize: 15,
+                                        )),
+                                  )
+                              ),
+                            ])
+                    ))
+            )
         )
-      );
-      // actions: [
-        // ElevatedButton(
-        //   child: Text('Close'),
-        //   onPressed: () {
-        //     Navigator.of(context).pop();
-        //   },
-        // ),
-      // ],
+    );
+    // actions: [
+    // ElevatedButton(
+    //   child: Text('Close'),
+    //   onPressed: () {
+    //     Navigator.of(context).pop();
+    //   },
+    // ),
+    // ],
   }
 }
 
-/// Keys setup for each button to enable enteraction between parent and child widgets
+/// Keys setup for each button to enable interaction between parent and child widgets
 final GlobalKey<NumberedPlateButtonState> _childWidgetKey55 = GlobalKey<NumberedPlateButtonState>();
 final GlobalKey<NumberedPlateButtonState> _childWidgetKey45 = GlobalKey<NumberedPlateButtonState>();
 final GlobalKey<NumberedPlateButtonState> _childWidgetKey35 = GlobalKey<NumberedPlateButtonState>();
@@ -245,7 +633,7 @@ final GlobalKey<NumberedPlateButtonState> _childWidgetKey5 = GlobalKey<NumberedP
 final GlobalKey<NumberedPlateButtonState> _childWidgetKey1 = GlobalKey<NumberedPlateButtonState>();
 
 class NumberedPlateButton extends StatefulWidget {
-  final String number;
+  String number;
   final Function(String, bool, int)? onPressed;
   var count;
 
@@ -275,6 +663,7 @@ class NumberedPlateButtonState extends State<NumberedPlateButton> {
     });
   }
 
+  // Everytime a plate button is pressed we will increase the count associated with that button
   void increasePlateCount() {
     setState(() {
       widget.count++;
@@ -288,6 +677,24 @@ class NumberedPlateButtonState extends State<NumberedPlateButton> {
       widget.onPressed!(widget.number, false, widget.count);
       widget.count = 0;
     });
+  }
+
+  void convertToKg() {
+    double convertedResult = int.parse(widget.number) * .453;
+    double roundedResult = (convertedResult * 100).round() / 100;
+    setState(() {
+      widget.number = roundedResult.toStringAsFixed(1);
+    });
+  }
+
+  void convertToLb() {
+    setState(() {
+      widget.number = (double.parse(widget.number) * 2.204).round().toString();
+    });
+  }
+
+  double calculateCurrentValue() {
+    return double.parse(widget.number) * widget.count;
   }
 
 

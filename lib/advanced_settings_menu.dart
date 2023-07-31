@@ -410,7 +410,7 @@ class TipsWidget extends StatefulWidget {
 
 class TipsWidgetState extends State<TipsWidget> {
   late PageController _pageController;
-  final List<String> _pages = ['Timer', 'Settings', 'Logs'];
+  final List<String> _pages = ['Timer', 'Settings', 'Logs', 'BackgroundTimer'];
 
   // Indicates what page the user is currently looking at
   int _currentPageIndex = 0;
@@ -505,7 +505,7 @@ class TipsWidgetState extends State<TipsWidget> {
                                       SizedBox(height: 15),
                                       Text("Settings", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
                                       Divider(color: primaryColor),
-                                      Spacer(),
+                                      SizedBox(height: 5),
                                       Text("Quick Navigation:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
                                       SizedBox(height: 5),
                                       Text("Access 'Advanced Settings' from the Timer by clicking the 'HIIT Time' header.",
@@ -535,7 +535,7 @@ class TipsWidgetState extends State<TipsWidget> {
                                       SizedBox(height: 15),
                                       Text("Logs", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
                                       Divider(color: primaryColor),
-                                      Spacer(),
+                                      SizedBox(height: 5),
                                       Text("Getting Started:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
                                       SizedBox(height: 5),
                                       Text("Before saving a New Log in the Logs menu, you must first add an Exercise.",
@@ -544,8 +544,7 @@ class TipsWidgetState extends State<TipsWidget> {
 
                                       Spacer(),
                                       Divider(color: primaryColor),
-                                      Spacer(),
-
+                                      SizedBox(height: 5),
                                       Text("Adding Exercises:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
                                       SizedBox(height: 5),
                                       RichText(
@@ -573,6 +572,42 @@ class TipsWidgetState extends State<TipsWidget> {
                                     ]
                                 )
                             ),
+
+                            /// Background Timer Tip Page
+                            Center(
+                                child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(height: 15),
+                                      Text("Background Mode", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
+                                      Divider(color: primaryColor),
+                                      SizedBox(height: 5),
+                                      Text("Timer Stopping:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
+                                      SizedBox(height: 5),
+                                      Text("If the timer stops while running in the background, try changing these settings on your phone: ",
+                                          style: TextStyle(fontSize: 18, color: primaryColor)
+                                      ),
+
+                                      SizedBox(height: 15,),
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text("1) Disable Power Saving.",
+                                            style: TextStyle(fontSize: 18, color: primaryColor)
+                                        ),
+                                      ),
+
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text("2) Long Press App Icon \n     > App info \n     > Battery \n     > Set HIIT Time to Unrestricted.",
+                                          style: TextStyle(fontSize: 18, color: primaryColor)
+                                        ),
+                                      ),
+                                      SizedBox(height: 25),
+                                      Spacer(),
+                                    ]
+                                )
+                            ),
+
                           ],
                         )),
                     PageIndicator(
@@ -616,38 +651,60 @@ class AboutThisAppWidgetState extends State<AboutThisAppWidget> {
             children: [
               SizedBox(height: 10),
               Divider(color: primaryColor),
-              Text("Thank you for downloading my first app! ", textAlign: TextAlign.center, style: TextStyle(fontSize: 20, color: textColorOverwrite ? Colors.black : Colors.white)),
+              Text("Thank you for downloading my first app! ", textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, color: primaryColor)),
               Divider(color: primaryColor),
-              SizedBox(height: 15),
+              SizedBox(height: 10),
 
               Text("Origin: ", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
               SizedBox(height: 4),
 
               Text("I created this app because I needed a timer that was easy to setup and interact with during workouts. "
                   "After failing to find a quality, Ad-Free option on the app store, I decided to create my own.",
-                  style: TextStyle(fontSize: 21, color: textColorOverwrite ? Colors.black : Colors.white)
+                  style: TextStyle(fontSize: 19, color: primaryColor)
               ),
               SizedBox(height: 8),
               Text("Logs were eventually added so that (other than a music app) HIIT Time is the only app needed while at the gym.",
-                  style: TextStyle(fontSize: 21, color: textColorOverwrite ? Colors.black : Colors.white)
+                  style: TextStyle(fontSize: 19, color: primaryColor)
+              ),
+              SizedBox(height: 10),
+
+              Text("Support: ", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
+              SizedBox(height: 4),
+              Text("I hope you're enjoying the ad-free experience. If you want to support my work, please consider purchasing a Theme!",
+                  style: TextStyle(fontSize: 19, color: primaryColor)
               ),
               SizedBox(height: 8),
-              Text("I have no plans to add random ads as I feel they severely degrade the quality of apps. If you want to support my work, please consider purchasing a Theme!",
-                  style: TextStyle(fontSize: 21, color: textColorOverwrite ? Colors.black : Colors.white)
-              ),
+
               Divider(color: primaryColor),
-
-
-
-              SizedBox(height: 10),
-              Text("Please send any comments, issues, questions or feedback to the address below.", textAlign: TextAlign.center, style: TextStyle(fontSize: 19, color: textColorOverwrite ? Colors.black : Colors.white)),
+              Text("Please send any comments, issues, questions or feedback to the address below.", textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, color: primaryColor)),
+              Divider(color: primaryColor),
               SizedBox(height: 15),
 
-              Divider(color: primaryColor),
               Text("Email:", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
               SizedBox(height: 4),
-              SelectableText("HiitTimeApp@gmail.com", style: TextStyle(fontSize: 25, color: textColorOverwrite ? Colors.black : Colors.white)),
+              Align(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  child: Text("HiitTimeApp@gmail.com",
+                    style: TextStyle(fontSize: 20, color: primaryColor),
+                  ),
+                  onPressed: () {
+                    Clipboard.setData(const ClipboardData(text: "HiitTimeApp@gmail.com"))
+                        .then((_) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Copied to clipboard')));
+                    });
+                  },
+                  // style: ElevatedButton.styleFrom(
+                  //   backgroundColor: secondaryAccentColor,
+                  // ),
+                ),
+              ),
+
               SizedBox(height: 5),
+
               Divider(color: primaryColor),
             ]
         )
@@ -667,7 +724,7 @@ class ThemeSettingsWidget extends StatefulWidget {
 }
 
 class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
-  final double _textFontSize = 30;
+  final double _textFontSize = 24;
   var _currentTheme = appCurrentTheme;
   late PageController _pageController;
 
@@ -677,16 +734,25 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
   // This indicates which Image Asset should be highlighted
   String? _assetForSelectedThemeAndMode;
 
+  // Bools to track Unlocks
+  bool _bubblegumThemeUnlocked = false;
+  bool _pumpkinThemeUnlocked = false;
+
   void _updateAppTheme(String? theme) {
     if (theme != null) {
-      setState(() {
-        _currentTheme = theme;
-        appCurrentTheme = theme;
-        setStringSetting('appTheme', theme);
-        setupAppTheme(theme);
-        widget.onThemeChanged();
-        _assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
-      });
+      if (themesPurchasedMap[theme] == true) {
+        setState(() {
+          _currentTheme = theme;
+          appCurrentTheme = theme;
+          setStringSetting('appTheme', theme);
+          setupAppTheme(theme);
+          widget.onThemeChanged();
+          _assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
+        });
+      } else {
+        // TODO logic to launch store
+        _showAppStoreNotification(context);
+      }
     }
   }
 
@@ -724,12 +790,36 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
     return '';
   }
 
+  void _showAppStoreNotification(BuildContext context) {
+    final snackBar = SnackBar(
+      backgroundColor: primaryColor,
+      content: Container(
+          height: 33,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Launching App Store....",
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: secondaryColor,
+                    )
+                ),
+              ])
+      ),
+
+      duration: Duration(seconds: 2), // Set the duration for how long the SnackBar will be displayed
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   @override
   void initState() {
     super.initState();
     _currentPageIndex = _determineCurrentPageIndex();
     _assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
     _pageController = PageController(initialPage: _currentPageIndex);
+    _bubblegumThemeUnlocked = themesPurchasedMap['Bubblegum']!;
+    _pumpkinThemeUnlocked = themesPurchasedMap['Pumpkin']!;
   }
 
   @override
@@ -739,6 +829,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
       return Container(
           child: Center(
               child: Column(children: [
+                SizedBox(height: 10),
         SizedBox(
             height: 325,
             width: 300,
@@ -814,7 +905,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 
                       // Radio Tile
                       Container(
-                          width: 200,
+                          width: 220,
                           child: Material(
                               shape: BeveledRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -824,8 +915,8 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                   _possibleThemes[0],
                                   style: TextStyle(
                                       color: appCurrentlyInDarkMode
-                                          ? Colors.white
-                                          : Colors.black,
+                                          ? Colors.black
+                                          : Colors.white,
                                       fontSize: _textFontSize),
                                 ),
                                 tileColor: Colors.blueGrey,
@@ -855,9 +946,14 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              setBooleanSetting('appInDarkMode', true);
-                              setupDarkOrLightMode(true);
-                              _updateAppTheme('Bubblegum');
+                              if (_bubblegumThemeUnlocked) {
+                                setBooleanSetting('appInDarkMode', true);
+                                setupDarkOrLightMode(true);
+                                _updateAppTheme('Bubblegum');
+                              } else {
+                                // TODO logic to launch store
+                                _showAppStoreNotification(context);
+                              }
                             });
                           },
                           child: Container(
@@ -877,9 +973,14 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              setBooleanSetting('appInDarkMode', false);
-                              setupDarkOrLightMode(false);
-                              _updateAppTheme('Bubblegum');
+                              if (_bubblegumThemeUnlocked) {
+                                setBooleanSetting('appInDarkMode', false);
+                                setupDarkOrLightMode(false);
+                                _updateAppTheme('Bubblegum');
+                              } else {
+                                // TODO logic to launch store
+                                _showAppStoreNotification(context);
+                              }
                             });
                           },
                           child: Container(
@@ -901,18 +1002,21 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 
                       // Radio Tile
                       Container(
-                          width: 250,
+                          width: 260,
                           child: Material(
                               shape: BeveledRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: RadioListTile(
+                                secondary:  Icon(Icons.lock,
+                                    size: 30,
+                                    color: _bubblegumThemeUnlocked ? Colors.transparent
+                                        : appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                ),
                                 title: Text(
                                   _possibleThemes[1],
                                   style: TextStyle(
-                                      color: textColorOverwrite
-                                          ? Colors.black
-                                          : Colors.white,
+                                      color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
                                       fontSize: _textFontSize),
                                 ),
                                 tileColor: appCurrentlyInDarkMode
@@ -942,9 +1046,14 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              setBooleanSetting('appInDarkMode', true);
-                              setupDarkOrLightMode(true);
-                              _updateAppTheme('Pumpkin');
+                              if (_pumpkinThemeUnlocked) {
+                                setBooleanSetting('appInDarkMode', true);
+                                setupDarkOrLightMode(true);
+                                _updateAppTheme('Pumpkin');
+                              } else {
+                                // TODO logic to launch store
+                                _showAppStoreNotification(context);
+                              }
                             });
                           },
                           child: Container(
@@ -964,9 +1073,14 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         GestureDetector(
                           onTap: () {
                             setState((){
-                              setBooleanSetting('appInDarkMode', false);
-                              setupDarkOrLightMode(false);
-                              _updateAppTheme('Pumpkin');
+                              if (_pumpkinThemeUnlocked) {
+                                setBooleanSetting('appInDarkMode', false);
+                                setupDarkOrLightMode(false);
+                                _updateAppTheme('Pumpkin');
+                              } else {
+                                // TODO logic to launch store
+                                _showAppStoreNotification(context);
+                              }
                             });
                           },
                           child: Container(
@@ -985,18 +1099,21 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 
                       const SizedBox(height: 10),
                       Container(
-                          width: 210,
+                          width: 230,
                           child: Material(
                               shape: BeveledRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: RadioListTile(
+                                secondary:  Icon(Icons.lock,
+                                    size: 30,
+                                    color: _pumpkinThemeUnlocked ? Colors.transparent
+                                        : appCurrentlyInDarkMode ? Colors.black : Colors.white
+                                ),
                                 title: Text(
                                   _possibleThemes[2],
                                   style: TextStyle(
-                                      color: textColorOverwrite
-                                          ? Colors.black
-                                          : Colors.white,
+                                      color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
                                       fontSize: _textFontSize),
                                 ),
                                 tileColor: appCurrentlyInDarkMode ?  Colors.deepOrangeAccent.shade200 : Colors.deepOrange.shade900,
@@ -1208,6 +1325,41 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
 
         const SizedBox(height: 20),
         SizedBox(height: 1, child: Container(color: Colors.grey)),
+
+        // TODO Remove this after testing
+        SizedBox(height: 10),
+        ElevatedButton(
+          child: Text(themesPurchasedMap['Bubblegum']! ? 'Disable Bubblegum' : 'Enable Bubblegum',
+            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+          ),
+          onPressed: () {
+            setState(() {
+              if (themesPurchasedMap['Bubblegum']!) {
+                themesPurchasedMap['Bubblegum'] = false;
+              } else {
+                themesPurchasedMap['Bubblegum'] = true;
+              }
+            });
+          },
+        ),
+        SizedBox(height: 10),
+
+        // TODO Remove this after testing
+        ElevatedButton(
+          child: Text(themesPurchasedMap['Pumpkin']! ? 'Disable Pumpkin' : 'Enable Pumpkin',
+            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+          ),
+          onPressed: () {
+            setState(() {
+              if (themesPurchasedMap['Pumpkin']!) {
+                themesPurchasedMap['Pumpkin'] = false;
+              } else {
+                themesPurchasedMap['Pumpkin'] = true;
+              }
+            });
+          },
+        ),
+
       ],
     );
   }
@@ -1406,7 +1558,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                         Animation secondaryAnimation) {
                       return Center(
                         child: AudioChangerMenuWidget(
-                          parentWidget: '3-2-1     Countdown',
+                          parentWidget: '3-2-1           Countdown',
                           options: threeTwoOneCountdownAssetMap.values.toList(),
                         ),
                       );
@@ -1864,7 +2016,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
       case 'Timer Alarm':
         _selectedOption = timerAlarmAssetMap[audioForTimerAlarm];
         break;
-      case '3-2-1     Countdown':
+      case '3-2-1           Countdown':
         _selectedOption = threeTwoOneCountdownAssetMap[audioForAssembledCountdown];
         break;
       case '10 Second Warning':
@@ -1889,7 +2041,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         }
         return '';
 
-      case '3-2-1     Countdown':
+      case '3-2-1           Countdown':
         for (var entry in threeTwoOneCountdownAssetMap.entries) {
           if (entry.value == _selectedOption) {
             return entry.key;
@@ -1932,7 +2084,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         audioForTimerAlarm = desiredAsset;
         setStringSetting('audioTimerAlarm', desiredAsset);
         break;
-      case '3-2-1     Countdown':
+      case '3-2-1           Countdown':
         List<String> assetsSplit = desiredAsset.split(",");
         setStringSetting('audioTimerCountdownAtThree', assetsSplit[0]);
         setStringSetting('audioTimerCountdownAtTwo', assetsSplit[1]);
@@ -1969,8 +2121,8 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 350,
-        width: 325,
+        height: 360,
+        width: 310,
         color: secondaryAccentColor,
         child: Center(
           child: Column(
@@ -1979,7 +2131,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                 const SizedBox(height: 20),
                 Text(_parentWidget,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 38, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
                 const SizedBox(height: 10),
                 Divider(color: primaryColor),
                 const SizedBox(height: 10),
@@ -2015,7 +2167,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                                             var desiredAsset = getAudioAssetFromMap();
                                             setChosenAudioAsset(desiredAsset);
 
-                                            if (_parentWidget == '3-2-1     Countdown') {
+                                            if (_parentWidget == '3-2-1           Countdown') {
                                               // We need to break the desired asset down into 3 with spaces
                                               playAudioWithDelay(desiredAsset);
                                             } else {

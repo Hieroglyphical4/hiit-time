@@ -7,7 +7,7 @@ import Foundation
 
 import audioplayers_darwin
 import awesome_notifications
-import path_provider_macos
+import path_provider_foundation
 import shared_preferences_foundation
 import sqflite
 import wakelock_macos

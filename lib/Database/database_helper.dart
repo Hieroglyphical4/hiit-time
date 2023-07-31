@@ -102,13 +102,80 @@ class DatabaseHelper {
   ///   Requires previous exercises entry
   Future<int> insertWorkout(String table, Map<String, dynamic> data, String exerciseName) async {
     final db = await database;
-    int? exerciseId = await _getExerciseIdByName(exerciseName);
+    int? exerciseId = await getExerciseIdByName(exerciseName);
     data['exerciseId'] = exerciseId;
-
     return await db.insert(table, data);
   }
 
-  Future<int?> _getExerciseIdByName(String name) async {
+  /// Create new Workout Record
+  ///   Requires previous exercises entry
+  Future<int> insertWorkoutForImport(bool isCardio, Map<String, dynamic> data, String exerciseName,  bool keepDuplicates) async {
+    final db = await database;
+    int? exerciseId = await getExerciseIdByName(exerciseName);
+    data['exerciseId'] = exerciseId;
+
+    if (isCardio) {
+      if (keepDuplicates) {
+        // We dont need to check for duplicates. Insert data:
+        await insertWorkout('cardio_workouts', data, exerciseName);
+        return 1;
+      } else {
+        // We need to check for duplicates before inserting data:
+        var recordExists = Sqflite.firstIntValue(await db.rawQuery('''
+          SELECT COUNT(*)
+          FROM cardio_workouts
+          WHERE exerciseId = ? AND date = ? AND workTime = ? AND restTime = ? AND intervals = ? 
+        ''', [
+          data['exerciseId'],
+          data['date'],
+          data['workTime'],
+          data['restTime'],
+          data['intervals'],
+        ]));
+
+        if (recordExists! > 0) {
+          return 0;
+        } else {
+          await insertWorkout('cardio_workouts', data, exerciseName);
+          return 1;
+        }
+      }
+
+    } else {
+      // Weight Workouts
+      if (keepDuplicates) {
+        // We dont need to check for duplicates. Insert data:
+        await insertWorkout('weighted_workouts', data, exerciseName);
+        return 1;
+      } else {
+        // We need to check for duplicates before inserting data:
+        var recordExists = Sqflite.firstIntValue(await db.rawQuery('''
+          SELECT COUNT(*)
+          FROM weighted_workouts
+          WHERE exerciseId = ? AND date = ? AND weight = ? AND rep1 = ? AND rep2 = ? AND rep3 = ? AND rep4 = ?
+        ''', [
+          data['exerciseId'],
+          data['date'],
+          data['weight'],
+          data['rep1'],
+          data['rep2'],
+          data['rep3'],
+          data['rep4'],
+        ]));
+
+        if (recordExists! > 0) {
+          return 0;
+        } else {
+          await insertWorkout('weighted_workouts', data, exerciseName);
+          return 1;
+        }
+      }
+    }
+    return 0;
+  }
+
+
+  Future<int?> getExerciseIdByName(String name) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('exercises', where: 'lower(name) = ?', whereArgs: [name.toLowerCase()]);
 
@@ -154,26 +221,46 @@ class DatabaseHelper {
     return maps.map((map) => {'name': map['name'], 'selected': false}).toList();
   }
 
-  Future<List<Map<String, dynamic>>> getMapOfWorkoutsUsingExerciseName(String exerciseName, bool isCardio) async {
+  Future<List<Map<String, dynamic>>> getMapOfWorkoutsUsingExerciseName(String exerciseName, bool isCardio, String sortOrder, [String? latestDate]) async {
     final db = await database;
-    int? exerciseId = await _getExerciseIdByName(exerciseName);
+    int? exerciseId = await getExerciseIdByName(exerciseName);
     List<Map<String, dynamic>> maps;
 
-    if (isCardio) {
-      maps = await db.query(
-          'cardio_workouts',
-          where: 'exerciseId = ?',
-          whereArgs: [exerciseId],
-          orderBy: 'date DESC'
-      );
+    if (latestDate == null) {
+      if (isCardio) {
+        maps = await db.query(
+            'cardio_workouts',
+            where: 'exerciseId = ?',
+            whereArgs: [exerciseId],
+            orderBy: sortOrder
+        );
+      } else {
+        maps = await db.query(
+            'weighted_workouts',
+            where: 'exerciseId = ?',
+            whereArgs: [exerciseId],
+            orderBy: sortOrder
+        );
+      }
     } else {
-      maps = await db.query(
-          'weighted_workouts',
-          where: 'exerciseId = ?',
-          whereArgs: [exerciseId],
-          orderBy: 'date DESC'
-      );
+      // Filter by date
+      if (isCardio) {
+        maps = await db.query(
+            'cardio_workouts',
+            where: 'exerciseId = ? AND date > ?',
+            whereArgs: [exerciseId, latestDate],
+            orderBy: sortOrder
+        );
+      } else {
+        maps = await db.query(
+            'weighted_workouts',
+            where: 'exerciseId = ? AND date > ?',
+            whereArgs: [exerciseId, latestDate],
+            orderBy: sortOrder
+        );
+      }
     }
+
 
     return maps;
   }
@@ -214,7 +301,7 @@ class DatabaseHelper {
 
   Future<int> updateWorkout(Map<String, dynamic> data, String exerciseName, int id, String table) async {
     final db = await database;
-    int? exerciseId = await _getExerciseIdByName(exerciseName);
+    int? exerciseId = await getExerciseIdByName(exerciseName);
     data['exerciseId'] = exerciseId;
 
     return await db.update(table, data, where: 'id = ?', whereArgs: [id]);
@@ -222,7 +309,7 @@ class DatabaseHelper {
 
   Future<int> updateExercise(String exerciseName, String initialExerciseName) async {
     final db = await database;
-    int? exerciseId = await _getExerciseIdByName(initialExerciseName);
+    int? exerciseId = await getExerciseIdByName(initialExerciseName);
 
     Map<String, dynamic> data = {
       'name': exerciseName,
@@ -234,12 +321,12 @@ class DatabaseHelper {
   // Delete a Give Exercise from the Database
   Future<int> deleteExercise(String exerciseName) async {
     final db = await database;
-    int? exerciseId = await _getExerciseIdByName(exerciseName);
+    int? exerciseId = await getExerciseIdByName(exerciseName);
 
     return await db.delete('exercises', where: 'id = ?', whereArgs: [exerciseId]);
   }
 
-  // Used for Selects
+  // Used for Single table Selects
   Future<List<Map<String, dynamic>>> query(String table) async {
     final db = await database;
     return await db.query(table);
@@ -249,4 +336,31 @@ class DatabaseHelper {
     final db = await database;
     return await db.delete(table, where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<List<Map<String, dynamic>>> queryCardioRecords() async {
+    final db = await database;
+    return await db.rawQuery('''
+      SELECT *
+      FROM exercises
+      JOIN cardio_workouts ON cardio_workouts.exerciseId = exercises.id
+      ''');
+  }
+
+  Future<List<Map<String, dynamic>>> queryWeightedRecords() async {
+    final db = await database;
+    return await db.rawQuery('''
+      SELECT *
+      FROM exercises
+      JOIN weighted_workouts ON weighted_workouts.exerciseId = exercises.id
+      ''');
+  }
+
+  // Quick query to see if any records exist on table
+  Future<bool> recordExists(String table) async {
+    final db = await database;
+    List<Map<String, dynamic>> queryResult = await db.query(table, limit: 1);
+
+    return queryResult.isNotEmpty;
+  }
 }
+
