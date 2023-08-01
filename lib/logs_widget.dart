@@ -35,7 +35,7 @@ class LogsWidgetState extends State<LogsWidget> {
     // TODO Display popup message of submission
 
     setState(() {
-      _displayNewLogsWidget = false;
+      // _displayNewLogsWidget = false;
       // _mainFilterWeights = false;
       // _mainFilterCardio = false;
       // _mainConfigMenu = false;
@@ -47,12 +47,14 @@ class LogsWidgetState extends State<LogsWidget> {
 
   // Exercises didnt seem to update the same as workouts in the tables
   //    Closing menus when those are updated... for now
-  void closeMenusAfterExerciseSubmission() {
+  void closeMenusAfterExerciseSubmission(String origin) {
     setState(() {
-      _displayNewLogsWidget = false;
-      _mainFilterWeights = false;
-      _mainFilterCardio = false;
-      _mainConfigMenu = false;
+      if (origin == 'newLog') {
+        _mainFilterWeights = false;
+        _mainFilterCardio = false;
+      } else {
+        _displayNewLogsWidget = false;
+      }
     });
   }
 
@@ -132,7 +134,7 @@ class LogsWidgetState extends State<LogsWidget> {
                 _displayNewLogsWidget
                     ? NewLogEditLogWidget(
                         updateTable: updateTablesAfterSubmission,
-                        closeNewLogsMenu: closeMenusAfterExerciseSubmission,
+                        closeNewLogsMenu: () => closeMenusAfterExerciseSubmission("newLog"),
                         header: 'New Log',
                         id: null,
                         exerciseType: null,
@@ -265,7 +267,10 @@ class LogsWidgetState extends State<LogsWidget> {
 
                 // Determine if Cardio Widget should show:
                 _mainFilterCardio
-                    ? CardioWidget(key: _keyCardio, updateTables: updateTablesAfterSubmission, closeMenus: closeMenusAfterExerciseSubmission)
+                    ? CardioWidget(key: _keyCardio,
+                    updateTables: updateTablesAfterSubmission,
+                    closeMenus: () => closeMenusAfterExerciseSubmission("cardio"),
+                )
                     : Container(),
 
                 // Determine if Date Widget should show:
@@ -275,7 +280,10 @@ class LogsWidgetState extends State<LogsWidget> {
 
                 // Determine if Weights Widget should show:
                 _mainFilterWeights
-                    ? WeightsWidget(key: _keyWeights, updateTables: updateTablesAfterSubmission, closeMenus: closeMenusAfterExerciseSubmission)
+                    ? WeightsWidget(key: _keyWeights,
+                        updateTables: updateTablesAfterSubmission,
+                        closeMenus: () => closeMenusAfterExerciseSubmission("weights"),
+                    )
                     : Container(),
 
                 /// Prompt user to select a Category
@@ -393,10 +401,12 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
 
   Future<void> insertNewExerciseRecord(String exercise, bool isCardio) async {
     await DatabaseHelper.instance.insertExercise(exercise, isCardio);
+    _showNotification(context, 'Create');
   }
 
   Future<void> updateExerciseRecord(String exercise) async {
     await DatabaseHelper.instance.updateExercise(exercise, widget.initialExerciseName);
+    _showNotification(context, 'Update');
   }
 
   checkConfirmButtonState() {
@@ -661,19 +671,18 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                       padding: const EdgeInsets.all(4),
                                     ),
                                     onPressed: enableConfirmButton
-                                        ? () {
+                                        ? () async {
                                       if (editMode) {
                                         /// Edit Mode
                                         String exerciseName = newExerciseName.isNotEmpty ? newExerciseName : currentExerciseName;
-                                        updateExerciseRecord(exerciseName);
-                                        _showNotification(context, 'Update');
+                                        await updateExerciseRecord(exerciseName);
                                         Navigator.of(context).pop(true);
                                         widget.closeNewLogsMenu(); // TODO Activate
                                       } else {
                                         /// New Log Mode
-                                        insertNewExerciseRecord(newExerciseName, cardioExercise);
-                                        _showNotification(context, 'Create');
+                                        await insertNewExerciseRecord(newExerciseName, cardioExercise);
                                         Navigator.of(context).pop(true);
+                                        widget.closeNewLogsMenu(); // TODO Activate
                                       }
                                     } : null,
                                     child: const Text("Confirm",
@@ -757,10 +766,10 @@ class WeightsWidgetState extends State<WeightsWidget> {
                             )
                           ]),
                           onPressed: () {},
-                          onLongPress: () {
+                          onLongPress: () async {
                             // Fire DATABASE Event to delete Exercise
-                            deleteExercise();
-                            _showNotification(context);
+                            await deleteExercise();
+                            await getExercises();
                             widget.closeMenus();
                           },
                         )
@@ -1046,6 +1055,8 @@ class WeightsWidgetState extends State<WeightsWidget> {
 
                                     },
                                   ).then((restartRequired) {
+                                    getExercises();
+
                                     if (restartRequired == true) {
                                       // TODO Determine if updates needs to be refreshed
                                     }
@@ -1162,6 +1173,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
 
   Future<void> deleteExercise() async {
     await DatabaseHelper.instance.deleteExercise(selectedExercise);
+    _showNotification(context);
   }
 
   // Helper function that will display little notification overlay at the bottom of the screen
@@ -1273,8 +1285,9 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                         );
                                       },
                                     ).then((restartRequired) {
+                                      getExercises();
+
                                       if (restartRequired == true) {
-                                        // TODO Determine if updates needs to be refreshed
                                       }
                                     });
                                   }
@@ -1465,10 +1478,10 @@ class CardioWidgetState extends State<CardioWidget> {
                             )
                           ]),
                       onPressed: () {},
-                      onLongPress: () {
+                      onLongPress: () async {
                         // Fire DATABASE Event to delete Exercise
-                        deleteExercise();
-                        _showNotification(context);
+                        await deleteExercise();
+                        await getExercises();
                         widget.closeMenus();
                       },
                     )
@@ -1715,6 +1728,8 @@ class CardioWidgetState extends State<CardioWidget> {
 
                                     },
                                   ).then((restartRequired) {
+                                    getExercises();
+
                                     if (restartRequired == true) {
                                       // TODO Determine if updates needs to be refreshed
                                     }
@@ -1851,6 +1866,7 @@ class CardioWidgetState extends State<CardioWidget> {
 
   Future<void> deleteExercise() async {
     await DatabaseHelper.instance.deleteExercise(selectedExercise);
+    _showNotification(context);
   }
 
   @override
@@ -1941,8 +1957,9 @@ class CardioWidgetState extends State<CardioWidget> {
                                           );
                                         },
                                       ).then((restartRequired) {
+                                        getExercises();
+
                                         if (restartRequired == true) {
-                                          // TODO Determine if updates needs to be refreshed
                                         }
                                       });
                                     }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'logs_widget.dart';
 import 'Config/settings.dart';
 import 'package:flutter/material.dart';
@@ -94,7 +96,6 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
       });
     }
   }
-
 
   // Create a function that shows the date picker dialog
   Future<void> _selectDate(BuildContext context) async {
@@ -669,15 +670,11 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             initialExerciseName: '',
                                           );
                                         },
-                                      ).then((restartRequired) {
+                                      ).then((restartRequired) async {
+                                        getExercises();
+
                                         if (restartRequired == true) {
                                           // Refresh exercise dropdown menu
-                                          if (_editMode) {
-                                            Navigator.of(context).pop(true);
-                                            widget.closeNewLogsMenu();
-                                          } else {
-                                            widget.closeNewLogsMenu();
-                                          }
                                         }
                                       });
                                     },
