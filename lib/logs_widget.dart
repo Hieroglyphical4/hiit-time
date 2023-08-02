@@ -28,17 +28,17 @@ class LogsWidgetState extends State<LogsWidget> {
 
   final GlobalKey<WeightsWidgetState> _keyWeights = GlobalKey<WeightsWidgetState>();
   final GlobalKey<CardioWidgetState> _keyCardio = GlobalKey<CardioWidgetState>();
+  final GlobalKey<NewLogEditLogWidgetState> _keynewLog = GlobalKey<NewLogEditLogWidgetState>();
 
   // In order to get the inner tables to update dynamically from various places,
   //    we need this method accessible on the parent
-  void updateTablesAfterSubmission() {
-    // TODO Display popup message of submission
-
+  void updateTablesAfterSubmission(String origin) {
     setState(() {
-      // _displayNewLogsWidget = false;
-      // _mainFilterWeights = false;
-      // _mainFilterCardio = false;
-      // _mainConfigMenu = false;
+      if (origin != 'newLog') {
+        // After a submission, the newLog widget should close so we can avoid
+          // refreshing its submenu
+        _keynewLog.currentState?.getExercises();
+      }
 
       _keyWeights.currentState?.getExercises();
       _keyCardio.currentState?.getExercises();
@@ -49,12 +49,9 @@ class LogsWidgetState extends State<LogsWidget> {
   //    Closing menus when those are updated... for now
   void closeMenusAfterExerciseSubmission(String origin) {
     setState(() {
-      if (origin == 'newLog') {
-        _mainFilterWeights = false;
-        _mainFilterCardio = false;
-      } else {
-        _displayNewLogsWidget = false;
-      }
+      _keyWeights.currentState?.getExercises();
+      _keyCardio.currentState?.getExercises();
+      _displayNewLogsWidget = false;
     });
   }
 
@@ -132,8 +129,8 @@ class LogsWidgetState extends State<LogsWidget> {
                 ),
 
                 _displayNewLogsWidget
-                    ? NewLogEditLogWidget(
-                        updateTable: updateTablesAfterSubmission,
+                    ? NewLogEditLogWidget(key: _keynewLog,
+                        updateTable: () => updateTablesAfterSubmission('newLog'),
                         closeNewLogsMenu: () => closeMenusAfterExerciseSubmission("newLog"),
                         header: 'New Log',
                         id: null,
@@ -268,8 +265,8 @@ class LogsWidgetState extends State<LogsWidget> {
                 // Determine if Cardio Widget should show:
                 _mainFilterCardio
                     ? CardioWidget(key: _keyCardio,
-                    updateTables: updateTablesAfterSubmission,
-                    closeMenus: () => closeMenusAfterExerciseSubmission("cardio"),
+                        updateTables: () => updateTablesAfterSubmission('cardio'),
+                        closeMenus: () => closeMenusAfterExerciseSubmission('cardio'),
                 )
                     : Container(),
 
@@ -281,8 +278,8 @@ class LogsWidgetState extends State<LogsWidget> {
                 // Determine if Weights Widget should show:
                 _mainFilterWeights
                     ? WeightsWidget(key: _keyWeights,
-                        updateTables: updateTablesAfterSubmission,
-                        closeMenus: () => closeMenusAfterExerciseSubmission("weights"),
+                        updateTables: () => updateTablesAfterSubmission('weights'),
+                        closeMenus: () => closeMenusAfterExerciseSubmission('weights'),
                     )
                     : Container(),
 
@@ -325,12 +322,12 @@ class LogsWidgetState extends State<LogsWidget> {
 // Widget for Add & Edit Exercise Dialog
 ////////////////////////////////////////////
 class AddExerciseEditExerciseDialog extends StatefulWidget {
-  final Function() closeNewLogsMenu;
+  final Function() updateNewLogsMenu;
   String header;
   final String initialExerciseName;
 
   AddExerciseEditExerciseDialog({
-      required this.closeNewLogsMenu,
+      required this.updateNewLogsMenu,
       required this.header,
       required this.initialExerciseName,
       super.key,
@@ -677,12 +674,12 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                         String exerciseName = newExerciseName.isNotEmpty ? newExerciseName : currentExerciseName;
                                         await updateExerciseRecord(exerciseName);
                                         Navigator.of(context).pop(true);
-                                        widget.closeNewLogsMenu(); // TODO Activate
+                                        widget.updateNewLogsMenu();
                                       } else {
                                         /// New Log Mode
                                         await insertNewExerciseRecord(newExerciseName, cardioExercise);
                                         Navigator.of(context).pop(true);
-                                        widget.closeNewLogsMenu(); // TODO Activate
+                                        widget.updateNewLogsMenu();
                                       }
                                     } : null,
                                     child: const Text("Confirm",
@@ -769,8 +766,10 @@ class WeightsWidgetState extends State<WeightsWidget> {
                           onLongPress: () async {
                             // Fire DATABASE Event to delete Exercise
                             await deleteExercise();
-                            await getExercises();
-                            widget.closeMenus();
+                            widget.updateTables();
+                            setState(() {
+                              subMenuOpen = false;
+                            });
                           },
                         )
                   )
@@ -1055,10 +1054,11 @@ class WeightsWidgetState extends State<WeightsWidget> {
 
                                     },
                                   ).then((restartRequired) {
+                                    widget.updateTables();
                                     getExercises();
 
                                     if (restartRequired == true) {
-                                      // TODO Determine if updates needs to be refreshed
+                                      //
                                     }
                                   });
 
@@ -1279,7 +1279,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                           Animation animation,
                                           Animation secondaryAnimation) {
                                         return AddExerciseEditExerciseDialog(
-                                          closeNewLogsMenu: widget.closeMenus,
+                                          updateNewLogsMenu: widget.updateTables,
                                           header: 'Edit Exercise',
                                           initialExerciseName: exerciseMap[i]['name'],
                                         );
@@ -1288,6 +1288,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                       getExercises();
 
                                       if (restartRequired == true) {
+                                        //
                                       }
                                     });
                                   }
@@ -1481,8 +1482,10 @@ class CardioWidgetState extends State<CardioWidget> {
                       onLongPress: () async {
                         // Fire DATABASE Event to delete Exercise
                         await deleteExercise();
-                        await getExercises();
-                        widget.closeMenus();
+                        widget.updateTables();
+                        setState(() {
+                          subMenuOpen = false;
+                        });
                       },
                     )
                 )
@@ -1728,10 +1731,11 @@ class CardioWidgetState extends State<CardioWidget> {
 
                                     },
                                   ).then((restartRequired) {
+                                    widget.updateTables();
                                     getExercises();
 
                                     if (restartRequired == true) {
-                                      // TODO Determine if updates needs to be refreshed
+                                      //
                                     }
                                   });
 
@@ -1951,7 +1955,7 @@ class CardioWidgetState extends State<CardioWidget> {
                                             Animation animation,
                                             Animation secondaryAnimation) {
                                           return AddExerciseEditExerciseDialog(
-                                            closeNewLogsMenu: widget.closeMenus,
+                                            updateNewLogsMenu: widget.updateTables,
                                             header: 'Edit Exercise',
                                             initialExerciseName: exerciseMap[i]['name'],
                                           );
@@ -1960,6 +1964,7 @@ class CardioWidgetState extends State<CardioWidget> {
                                         getExercises();
 
                                         if (restartRequired == true) {
+                                          //
                                         }
                                       });
                                     }

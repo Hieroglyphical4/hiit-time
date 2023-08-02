@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'logs_widget.dart';
 import 'Config/settings.dart';
 import 'package:flutter/material.dart';
@@ -665,7 +664,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             Animation animation,
                                             Animation secondaryAnimation) {
                                           return AddExerciseEditExerciseDialog(
-                                            closeNewLogsMenu: widget.closeNewLogsMenu, // TODO Update this
+                                            updateNewLogsMenu: widget.updateTable,
                                             header: 'Add Exercise',
                                             initialExerciseName: '',
                                           );
@@ -1177,17 +1176,17 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                   /// Delete Button
                                   //////////////////
                                   GestureDetector(
-                                      onLongPress: () {
+                                      onLongPress: () async {
                                         HapticFeedback.mediumImpact();
 
                                         if (widget.exerciseType=='Cardio') {
-                                          deleteCardioWorkout();
+                                          await deleteCardioWorkout();
                                         } else {
-                                          deleteWeightedWorkout();
+                                          await deleteWeightedWorkout();
                                         }
 
-                                        _showNotification(context, 'Delete');
                                         widget.updateTable();
+                                        _showNotification(context, 'Delete');
                                         Navigator.of(context).pop(true);
                                       },
                                       child: IconButton(
@@ -1279,6 +1278,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                       _showNotification(context, 'Create');
                                       HapticFeedback.mediumImpact();
                                       widget.updateTable();
+                                      widget.closeNewLogsMenu();
                                     }
                                         : null, // If all settings haven't updated, Disable Save Button
                                   ),
