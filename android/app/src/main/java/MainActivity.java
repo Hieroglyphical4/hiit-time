@@ -1,4 +1,4 @@
-package hiit_time;
+package myapplication.hiit.time;
 
 import io.flutter.embedding.android.FlutterActivity;
 
