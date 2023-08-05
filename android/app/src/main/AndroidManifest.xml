@@ -3,7 +3,6 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <!-- Next 2 are to keep tasks running in the background -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <!-- Add the WRITE_EXTERNAL_STORAGE permission For exporting logs-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
