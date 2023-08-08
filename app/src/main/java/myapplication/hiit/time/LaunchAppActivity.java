@@ -1,6 +1,10 @@
 package myapplication.hiit.time;
 
-import android.app.Activity;
+import androidx.activity.ComponentActivity;
 
-public class LaunchAppActivity extends Activity {
+public class LaunchAppActivity extends ComponentActivity {
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_welcome_page);
+//    }
 }
