@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:flutter/material.dart';
 
 /// General Setting Default Values:
 int defaultWorkDuration = 45;
@@ -244,6 +245,9 @@ Map<String, bool> themesPurchasedMap = {
   'Bubblegum': false,
   'Pumpkin': false,
 };
+var availableProducts = [];
+const Set<String> productIds = <String>{"bubblegum_theme", "pumpkin_theme"};
+late InAppPurchase inAppPurchase; // This is the Billing Client
 
 /// App Theme related settings
 List<String> appPossibleThemes = ['Default', 'Bubblegum', 'Pumpkin'];

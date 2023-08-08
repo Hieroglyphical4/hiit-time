@@ -29,6 +29,16 @@ android {
     compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
+    defaultConfig {
+        applicationId "myapplication.hiit.time"
+        // You can update the following values to match your application needs.
+        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
+        minSdkVersion 21
+        targetSdkVersion flutter.targetSdkVersion
+        versionCode 34
+        versionName "1.2.8"
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -40,16 +50,6 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/java'
-    }
-
-    defaultConfig {
-        applicationId "myapplication.hiit.time"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
-        minSdkVersion 21
-        targetSdkVersion flutter.targetSdkVersion
-        versionCode 32
-        versionName "1.2.7"
     }
 
     signingConfigs {

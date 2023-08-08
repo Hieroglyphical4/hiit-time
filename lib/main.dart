@@ -4,6 +4,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:hiit_time/Config/notification_controller.dart';
 import 'package:hiit_time/countdown_progress_indicator.dart';
 import 'package:hiit_time/advanced_settings_menu.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:hiit_time/Config/settings.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:hiit_time/settings_menu.dart';
@@ -98,6 +99,9 @@ Future<void> onStart(ServiceInstance service) async {
   });
 }
 
+// In-App purchase Setup
+late StreamSubscription<dynamic> _streamSubscription;
+
 class MyApp extends StatefulWidget {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   var audioPlayer;
@@ -145,9 +149,79 @@ class _MyAppState extends State<MyApp> {
   var _workTime = defaultWorkDuration;
   var _restTime = defaultRestDuration;
 
+  // Used for In-App purchases
+  _listenToPurchase(List<PurchaseDetails> purchaseDetailsList, BuildContext context) {
+    purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
+
+      if (purchaseDetails.status == PurchaseStatus.pending)  {
+        // Item is pending
+        // TODO Add pending UI?
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Purchase Pending...')));
+      } else if (purchaseDetails.status == PurchaseStatus.error) {
+        // Item encountered an error
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error Encountered')));
+      } else if (purchaseDetails.status == PurchaseStatus.purchased || purchaseDetails.status == PurchaseStatus.restored) {
+        // Item was purchased
+        // TODO add verification
+        // bool valid = await _verifyPurchase(purchaseDetails);
+        // if (valid) {
+        //   _deliverProduct(purchaseDetails);
+        // } else {
+        //   _handleInvalidPurchase(purchaseDetails);
+        // }
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Item was purchased!')));
+      }
+      // TODO Research what this next if block does
+      if (purchaseDetails.pendingCompletePurchase) {
+        await InAppPurchase.instance.completePurchase(purchaseDetails);
+      }
+    });
+  }
+
+  // Used for In-App purchases
+  _initStore() async {
+    var storeAvailable = await inAppPurchase.isAvailable();
+
+    if (!storeAvailable) {
+      // Store Not available.
+      // TODO Handle the error.
+    }
+
+    final ProductDetailsResponse productDetailsResponse = await inAppPurchase.queryProductDetails(productIds);
+
+    if (productDetailsResponse.notFoundIDs.isNotEmpty) {
+      // No products found from store
+      // TODO Handle the error.
+    }
+
+    if (productDetailsResponse.error == null) {
+      // No errors found setup products from store
+      setState(() {
+        // This variable is set in settings.dart
+        availableProducts = productDetailsResponse.productDetails;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+
+    //////////////////////////////
+    // Begin In-App Purchase Block
+    inAppPurchase = InAppPurchase.instance; // This is the Billing Client
+    final Stream purchaseUpdated = inAppPurchase.purchaseStream;
+    _streamSubscription = purchaseUpdated.listen((purchaseList) {
+      _listenToPurchase(purchaseList, context);
+    }, onDone: (){
+      _streamSubscription.cancel();
+    }, onError: (error){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Something went wrong')));
+    });
+    _initStore();
+    // End In-App Int Block
+    ///////////////////////////
+
     _audioPlayer = widget.audioPlayer;
     _notificationsPlugin = widget.notifications;
     _duration = widget.workDuration ?? defaultWorkDuration;
@@ -168,7 +242,7 @@ class _MyAppState extends State<MyApp> {
     AwesomeNotifications().cancelAll();
     super.dispose();
   }
-
+  
   // Update values to be displayed in settings menu using previous stored settings
   Future<void> updateSettingsFromMemory() async {
     final settings = await getSavedUserSettings();

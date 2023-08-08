@@ -1,3 +1,4 @@
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:hiit_time/plate_calculator.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -750,8 +751,22 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
           _assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
         });
       } else {
-        // TODO logic to launch store
-        _showAppStoreNotification(context);
+        String productId = '';
+        switch (theme) {
+          case 'Bubblegum' : {
+            productId = 'bubblegum_theme';
+          }
+          break;
+          case 'Pumpkin' : {
+            productId = 'pumpkin_theme';
+          }
+          break;
+        }
+        if (productId.isNotEmpty) {
+          _launchStoreStuff(productId);
+        } else {
+          _showAppPurchaseNotification(context, "Something went wrong.");
+        }
       }
     }
   }
@@ -790,6 +805,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
     return '';
   }
 
+  // Used for In-App purchases
   void _showAppStoreNotification(BuildContext context) {
     final snackBar = SnackBar(
       backgroundColor: primaryColor,
@@ -798,7 +814,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Launching App Store....",
+                Text("Unable to Launch the App Store",
                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
                       color: secondaryColor,
                     )
@@ -810,6 +826,78 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  // Used for In-App purchases
+  void _showAppPurchaseNotification(BuildContext context, String content) {
+    final snackBar = SnackBar(
+      backgroundColor: primaryColor,
+      content: Container(
+          height: 33,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(content,
+                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
+                      color: secondaryColor,
+                    )
+                ),
+              ])
+      ),
+
+      duration: Duration(seconds: 2), // Set the duration for how long the SnackBar will be displayed
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  // Used for In-App purchases
+  _launchStoreStuff(String productId) async {
+    var storeAvailable = await inAppPurchase.isAvailable();
+
+    if (storeAvailable) {
+      if (availableProducts.length == 0) {
+        _showAppPurchaseNotification(context, "Products were not set yet....");
+        // Products did not load on initial launch, try again.
+        final ProductDetailsResponse productDetailsResponse = await inAppPurchase.queryProductDetails(productIds);
+        if (productDetailsResponse.notFoundIDs.isNotEmpty) {
+          // TODO Handle the error.
+          _showAppPurchaseNotification(context, "Products are empty...");
+          return;
+        }
+        if (productDetailsResponse.error == null) {
+          // No errors found setup products from store
+          setState(() {
+            // This variable is set in settings.dart
+            availableProducts = productDetailsResponse.productDetails;
+          });
+        }
+        // TODO Remove after testing
+        //   List<ProductDetails> products = productDetailsResponse.productDetails;
+        // _showAppPurchaseNotification(context, "Product Count: ${products.length}");
+      }
+
+      // TODO lets test what we have in the product details list:
+      // var testProduct = availableProducts[theme];
+      // _showAppPurchaseNotification(context, "Products are empty...");
+      _buyInAppProduct(productId);
+
+    } else {
+      // Store is Not available
+      _showAppPurchaseNotification(context, "Store not currently available");
+    }
+  }
+
+  // Used for In-App purchases
+  _buyInAppProduct(String productId) async {
+    final PurchaseParam purchaseParam = PurchaseParam(productDetails: availableProducts.firstWhere((element) => element.id == productId));
+    bool isSuccess = await inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+
+    if (isSuccess) {
+      // Handle successful purchase
+    } else {
+      // Handle failed purchase
+    }
   }
 
   @override
@@ -951,8 +1039,8 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                 setupDarkOrLightMode(true);
                                 _updateAppTheme('Bubblegum');
                               } else {
-                                // TODO logic to launch store
-                                _showAppStoreNotification(context);
+                                // Logic to launch store for In app Purchase
+                                _launchStoreStuff('bubblegum_theme');
                               }
                             });
                           },
@@ -978,8 +1066,8 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                 setupDarkOrLightMode(false);
                                 _updateAppTheme('Bubblegum');
                               } else {
-                                // TODO logic to launch store
-                                _showAppStoreNotification(context);
+                                // Logic to launch store for In app Purchase
+                                _launchStoreStuff('bubblegum_theme');
                               }
                             });
                           },
@@ -1051,8 +1139,8 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                 setupDarkOrLightMode(true);
                                 _updateAppTheme('Pumpkin');
                               } else {
-                                // TODO logic to launch store
-                                _showAppStoreNotification(context);
+                                // Logic to launch store for In app Purchase
+                                _launchStoreStuff('pumpkin_theme');
                               }
                             });
                           },
@@ -1078,8 +1166,8 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                 setupDarkOrLightMode(false);
                                 _updateAppTheme('Pumpkin');
                               } else {
-                                // TODO logic to launch store
-                                _showAppStoreNotification(context);
+                                // Logic to launch store for In app Purchase
+                                _launchStoreStuff('pumpkin_theme');
                               }
                             });
                           },
