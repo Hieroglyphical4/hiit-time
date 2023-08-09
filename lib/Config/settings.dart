@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 /// General Setting Default Values:
 int defaultWorkDuration = 45;
@@ -218,36 +219,113 @@ void clearUserSettings() async {
 // Reusable setter for Ints
 Future<void> setIntSetting(String setting, int value) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setInt(setting, value);
+  await prefs.setInt(setting, value);
 }
 
 // Reusable setter for Doubles
 Future<void> setDoubleSetting(String setting, double value) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setDouble(setting, value);
+  await prefs.setDouble(setting, value);
 }
 
 // Reusable setter for booleans
 Future<void> setBooleanSetting(String setting, bool value) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setBool(setting, value);
+  await prefs.setBool(setting, value);
 }
 
 // Reusable setter for strings
 Future<void> setStringSetting(String setting, String value) async {
   final prefs = await SharedPreferences.getInstance();
-  prefs.setString(setting, value);
+  await prefs.setString(setting, value);
+}
+
+Future<void> setMapStringSetting(Map<String, bool> dataMap, String value) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  // Convert the map to a JSON-encoded string
+  String dataString = jsonEncode(dataMap);
+
+  // Save the JSON-encoded string to shared preferences
+  await prefs.setString(value, dataString);
+}
+
+void enableTheme(String productId) {
+  String theme = getThemeFromProductId(productId);
+  themesPurchasedMap[theme] = true;
+  setMapStringSetting(themesPurchasedMap, 'themesPurchasedMap');
+}
+
+// Remove all user saved settings
+void clearThemesFromSavedPrefs() async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove('themesPurchasedMap');
+}
+
+String getProductIdFromTheme(String theme) {
+  String productId = '';
+  switch (theme) {
+    case 'Bubblegum' : {
+      productId = 'bubblegum_theme';
+    }
+    break;
+    case 'Pumpkin' : {
+      productId = 'pumpkin_theme';
+    }
+    break;
+  }
+
+  return productId;
+}
+
+String getThemeFromProductId(String productId) {
+  String theme = '';
+  switch (productId) {
+    case 'bubblegum_theme' : {
+      theme = 'Bubblegum';
+    }
+    break;
+    case 'pumpkin_theme' : {
+      theme = 'Pumpkin';
+    }
+    break;
+  }
+
+  return theme;
 }
 
 /// In-app Purchase Variables
-Map<String, bool> themesPurchasedMap = {
+Map<String, bool> themesPurchasedMapDefault = {
   'Default': true,
   'Bubblegum': false,
   'Pumpkin': false,
 };
+Map<String, bool> themesPurchasedMap = themesPurchasedMapDefault;
 var availableProducts = [];
 const Set<String> productIds = <String>{"bubblegum_theme", "pumpkin_theme"};
 late InAppPurchase inAppPurchase; // This is the Billing Client
+
+Future<void> setupInAppPurchasesFromSharedPreferences() async {
+  final prefs = await SharedPreferences.getInstance();
+  String dataString = prefs.getString('themesPurchasedMap') ?? '';
+
+  if (dataString != null && !dataString.isEmpty) {
+    // We got something update our themesPurchasedMap
+    Map<String, dynamic> decodedMap = jsonDecode(dataString);
+
+    // Convert dynamic values to boolean and create a new map
+    Map<String, bool> dataMap = {};
+    decodedMap.forEach((key, value) {
+      if (value is bool) {
+        dataMap[key] = value;
+      }
+    });
+    themesPurchasedMap = dataMap;
+  } else {
+    // Nothing was saved in user's preferences, refer to default
+    themesPurchasedMap = themesPurchasedMapDefault;
+  }
+}
 
 /// App Theme related settings
 List<String> appPossibleThemes = ['Default', 'Bubblegum', 'Pumpkin'];
@@ -371,13 +449,6 @@ Map<String, String> timerAlarmAssetMap = {
   assetAlarmPiano: 'Piano Alarm',
   assetAlarmBeepBeep: 'Beep Beep Alarm',
   assetAlarmStandard: 'Standard Alarm',
-  // 'test': 'Standard Alarm',
-  // 'test2': 'Standard Alarm',
-  // 'test3': 'Standard Alarm',
-  // 'test4': 'Standard Alarm',
-  // 'test5': 'Standard Alarm',
-  // 'test6': 'Standard Alarm',
-  // 'test7': 'Standard Alarm'
 };
 
 Map<String, String> threeTwoOneCountdownAssetMap = {

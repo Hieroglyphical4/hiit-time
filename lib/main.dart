@@ -149,9 +149,16 @@ class _MyAppState extends State<MyApp> {
   var _workTime = defaultWorkDuration;
   var _restTime = defaultRestDuration;
 
+  // Used to communicate to the Themes widget (thru AdvancedSettings) to update the UI after a Purchase
+  // final advancedSettingsKey = GlobalKey<AdvancedSettingsMenuState>();
+
   // Used for In-App purchases
   _listenToPurchase(List<PurchaseDetails> purchaseDetailsList, BuildContext context) {
     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('New PurchaseID Heard: ${purchaseDetails.productID}')));
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Transaction Date: ${purchaseDetails.transactionDate}')));
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Local Verif: ${purchaseDetails.verificationData.localVerificationData}')));
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Server Verif: ${purchaseDetails.verificationData.serverVerificationData}')));
 
       if (purchaseDetails.status == PurchaseStatus.pending)  {
         // Item is pending
@@ -160,6 +167,8 @@ class _MyAppState extends State<MyApp> {
       } else if (purchaseDetails.status == PurchaseStatus.error) {
         // Item encountered an error
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error Encountered')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(purchaseDetails.error!.message)));
+
       } else if (purchaseDetails.status == PurchaseStatus.purchased || purchaseDetails.status == PurchaseStatus.restored) {
         // Item was purchased
         // TODO add verification
@@ -170,10 +179,17 @@ class _MyAppState extends State<MyApp> {
         //   _handleInvalidPurchase(purchaseDetails);
         // }
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Item was purchased!')));
+        enableTheme(purchaseDetails.productID);
       }
-      // TODO Research what this next if block does
+
+      // Complete Purchase
       if (purchaseDetails.pendingCompletePurchase) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Inside Pending Complete Purchase')));
         await InAppPurchase.instance.completePurchase(purchaseDetails);
+
+        // Trigger method in Advanced Settings to update UI
+        // TODO Figure this out...
+        // advancedSettingsKey.currentState?.updateUIAfterPurchase();
       }
     });
   }
@@ -182,24 +198,28 @@ class _MyAppState extends State<MyApp> {
   _initStore() async {
     var storeAvailable = await inAppPurchase.isAvailable();
 
-    if (!storeAvailable) {
-      // Store Not available.
-      // TODO Handle the error.
-    }
+    if (storeAvailable) {
+      final ProductDetailsResponse productDetailsResponse = await inAppPurchase.queryProductDetails(productIds);
 
-    final ProductDetailsResponse productDetailsResponse = await inAppPurchase.queryProductDetails(productIds);
+      if (productDetailsResponse.notFoundIDs.isNotEmpty) {
+        // No products found from store.
+        // todo Remove Purchases? Test this!
+        clearThemesFromSavedPrefs();
+      }
 
-    if (productDetailsResponse.notFoundIDs.isNotEmpty) {
-      // No products found from store
-      // TODO Handle the error.
-    }
-
-    if (productDetailsResponse.error == null) {
-      // No errors found setup products from store
-      setState(() {
-        // This variable is set in settings.dart
-        availableProducts = productDetailsResponse.productDetails;
-      });
+      if (productDetailsResponse.error == null) {
+        // No errors found, restore previous purchases
+        inAppPurchase.restorePurchases();
+        setState(() {
+          // Setup products from store
+          // This variable is set in settings.dart
+          availableProducts = productDetailsResponse.productDetails;
+        });
+      }
+    } else {
+      // No store available to verify purchases.
+      // Set them using the user's storedPreferences for now:
+      setupInAppPurchasesFromSharedPreferences();
     }
   }
 
@@ -207,8 +227,10 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    //////////////////////////////
+    ////////////////////////////////
     // Begin In-App Purchase Block
+    ////////////////////////////////
+    // setupInAppPurchasesFromSharedPreferences();
     inAppPurchase = InAppPurchase.instance; // This is the Billing Client
     final Stream purchaseUpdated = inAppPurchase.purchaseStream;
     _streamSubscription = purchaseUpdated.listen((purchaseList) {
@@ -219,6 +241,7 @@ class _MyAppState extends State<MyApp> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Something went wrong')));
     });
     _initStore();
+    ///////////////////////////
     // End In-App Int Block
     ///////////////////////////
 
@@ -240,6 +263,7 @@ class _MyAppState extends State<MyApp> {
     audioPlayer.dispose();
     _notificationsPlugin.cancelAll(); // TODO Prolly unnecessary /w the next line
     AwesomeNotifications().cancelAll();
+    _streamSubscription.cancel();
     super.dispose();
   }
   
@@ -423,7 +447,9 @@ class _MyAppState extends State<MyApp> {
                                 Animation animation,
                                 Animation secondaryAnimation) {
                               return Center(
+                                // child: AdvancedSettingsMenu(key: advancedSettingsKey),
                                 child: AdvancedSettingsMenu(key: UniqueKey()),
+
                               );
                             },
                           ).then((restartRequired) {
@@ -646,6 +672,7 @@ class _MyAppState extends State<MyApp> {
                                   timeModAdd: _timerModifierValueAdd,
                                   timeModSub: _timerModifierValueSub,
                                   appVolume: _appVolume,
+                                  // advancedSettingsKey: advancedSettingsKey
                                 ),
                               );
                             },
