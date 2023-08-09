@@ -11,7 +11,7 @@ class SettingsMenu extends StatefulWidget {
   final int? timeModAdd;
   final int? timeModSub;
   final double? appVolume;
-  // final GlobalKey<AdvancedSettingsMenuState> advancedSettingsKey;
+  final GlobalKey<AdvancedSettingsMenuState> advancedSettingsKey;
 
   const SettingsMenu({
     Key? key,
@@ -21,7 +21,7 @@ class SettingsMenu extends StatefulWidget {
     this.timeModAdd,
     this.timeModSub,
     this.appVolume,
-    // required this.advancedSettingsKey,
+    required this.advancedSettingsKey,
   }) : super(key: key);
 
   @override
@@ -291,8 +291,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       Animation secondaryAnimation) {
                                     return Center(
                                       child: AdvancedSettingsMenu(
-                                        key: UniqueKey()
-                                        // key: widget.advancedSettingsKey
+                                        key: widget.advancedSettingsKey
                                       ),
                                     );
                                   },

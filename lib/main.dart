@@ -150,7 +150,7 @@ class _MyAppState extends State<MyApp> {
   var _restTime = defaultRestDuration;
 
   // Used to communicate to the Themes widget (thru AdvancedSettings) to update the UI after a Purchase
-  // final advancedSettingsKey = GlobalKey<AdvancedSettingsMenuState>();
+  final advancedSettingsKey = GlobalKey<AdvancedSettingsMenuState>();
 
   // Used for In-App purchases
   _listenToPurchase(List<PurchaseDetails> purchaseDetailsList, BuildContext context) {
@@ -166,30 +166,23 @@ class _MyAppState extends State<MyApp> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Purchase Pending...')));
       } else if (purchaseDetails.status == PurchaseStatus.error) {
         // Item encountered an error
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error Encountered')));
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(purchaseDetails.error!.message)));
-
-      } else if (purchaseDetails.status == PurchaseStatus.purchased || purchaseDetails.status == PurchaseStatus.restored) {
-        // Item was purchased
-        // TODO add verification
-        // bool valid = await _verifyPurchase(purchaseDetails);
-        // if (valid) {
-        //   _deliverProduct(purchaseDetails);
-        // } else {
-        //   _handleInvalidPurchase(purchaseDetails);
-        // }
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Item was purchased!')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error Encountered: ${purchaseDetails.error!.message}")));
+      } else if (purchaseDetails.status == PurchaseStatus.restored) {
+        // User purchased product previous, ensure they have it enabled
         enableTheme(purchaseDetails.productID);
+      } else if (purchaseDetails.status == PurchaseStatus.purchased) {
+        // User just purchased an item
+        // TODO Is Additional verification needed before enabling?
+        enableTheme(purchaseDetails.productID);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Thank you for your Purchase!!!')));
       }
 
       // Complete Purchase
       if (purchaseDetails.pendingCompletePurchase) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Inside Pending Complete Purchase')));
         await InAppPurchase.instance.completePurchase(purchaseDetails);
 
         // Trigger method in Advanced Settings to update UI
-        // TODO Figure this out...
-        // advancedSettingsKey.currentState?.updateUIAfterPurchase();
+        advancedSettingsKey.currentState?.updateUIAfterPurchase();
       }
     });
   }
@@ -447,9 +440,7 @@ class _MyAppState extends State<MyApp> {
                                 Animation animation,
                                 Animation secondaryAnimation) {
                               return Center(
-                                // child: AdvancedSettingsMenu(key: advancedSettingsKey),
-                                child: AdvancedSettingsMenu(key: UniqueKey()),
-
+                                child: AdvancedSettingsMenu(key: advancedSettingsKey)
                               );
                             },
                           ).then((restartRequired) {
@@ -672,7 +663,7 @@ class _MyAppState extends State<MyApp> {
                                   timeModAdd: _timerModifierValueAdd,
                                   timeModSub: _timerModifierValueSub,
                                   appVolume: _appVolume,
-                                  // advancedSettingsKey: advancedSettingsKey
+                                  advancedSettingsKey: advancedSettingsKey
                                 ),
                               );
                             },

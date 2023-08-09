@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:hiit_time/plate_calculator.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -20,7 +18,7 @@ class AdvancedSettingsMenu extends StatefulWidget {
 
 class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
   final _formKey = GlobalKey<FormState>();
-  // final _themeWidgetKey = GlobalKey<ThemeSettingsWidgetState>();
+  final _themeWidgetKey = GlobalKey<ThemeSettingsWidgetState>();
   bool _displayAudioSettings = false;
   bool _displayThemesSettings = false;
   bool _displayLogs = false;
@@ -74,8 +72,7 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
   void updateUIAfterPurchase() {
     // This method will be called from the InAppPurchase listener in main.dart
         // after a purchase is made to update the UI to reflect it.
-    // TODO Add notification here for testing
-    // _themeWidgetKey.currentState?.updateThemeUIAfterPurchaseCompleted();
+    _themeWidgetKey.currentState?.updateThemeUIAfterPurchaseCompleted();
   }
 
   void _showAppPurchaseNotification(BuildContext context, String content) {
@@ -132,26 +129,24 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                 : Colors.white
             ),
             onPressed: () {
-              // TODO Revert these changes after testing
-              _showAppPurchaseNotification(context, "themesPurchasedMap: ${json.encode(themesPurchasedMap)}");
               /// Launch Plate Calculator
-              // showGeneralDialog(
-              //   context: context,
-              //   barrierDismissible: true,
-              //   barrierLabel: MaterialLocalizations.of(context)
-              //       .modalBarrierDismissLabel,
-              //   barrierColor: Colors.black45,
-              //   transitionDuration: const Duration(milliseconds: 200),
-              //
-              //   // ANY Widget can be passed here
-              //   pageBuilder: (BuildContext buildContext,
-              //       Animation animation,
-              //       Animation secondaryAnimation) {
-              //     return Center(
-              //       child: PlateCalculator(key: UniqueKey()),
-              //     );
-              //   },
-              // );
+              showGeneralDialog(
+                context: context,
+                barrierDismissible: true,
+                barrierLabel: MaterialLocalizations.of(context)
+                    .modalBarrierDismissLabel,
+                barrierColor: Colors.black45,
+                transitionDuration: const Duration(milliseconds: 200),
+
+                // ANY Widget can be passed here
+                pageBuilder: (BuildContext buildContext,
+                    Animation animation,
+                    Animation secondaryAnimation) {
+                  return Center(
+                    child: PlateCalculator(key: UniqueKey()),
+                  );
+                },
+              );
             },
           ),
         ],
@@ -247,13 +242,8 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 
                 // Determine if Themes Widget should show:
                 _displayThemesSettings
-                  // ? ThemeSettingsWidget(key: _themeWidgetKey, onThemeChanged: onThemeChanged)
-                    ? ThemeSettingsWidget(key: UniqueKey(), onThemeChanged: onThemeChanged)
+                  ? ThemeSettingsWidget(key: _themeWidgetKey, onThemeChanged: onThemeChanged)
                     : Container(),
-
-                // _displayThemesSettings
-                //     ? const SizedBox(height: 25)
-                //     : SizedBox(height: 125),
 
                 SizedBox(height: 20),
 
@@ -844,29 +834,6 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
   }
 
   // Used for In-App purchases
-  void _showAppStoreNotification(BuildContext context) {
-    final snackBar = SnackBar(
-      backgroundColor: primaryColor,
-      content: Container(
-          height: 33,
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Unable to Launch the App Store",
-                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
-                      color: secondaryColor,
-                    )
-                ),
-              ])
-      ),
-
-      duration: Duration(seconds: 2), // Set the duration for how long the SnackBar will be displayed
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  // Used for In-App purchases
   void _showAppPurchaseNotification(BuildContext context, String content) {
     final snackBar = SnackBar(
       backgroundColor: primaryColor,
@@ -1065,8 +1032,6 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         // Bubblegum Dark
                         GestureDetector(
                           onTap: () {
-                            _showAppPurchaseNotification(context, "Bubblegum unlocked: $_bubblegumThemeUnlocked");
-
                             setState((){
                               if (_bubblegumThemeUnlocked) {
                                 setBooleanSetting('appInDarkMode', true);
@@ -1447,41 +1412,6 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
 
         const SizedBox(height: 20),
         SizedBox(height: 1, child: Container(color: Colors.grey)),
-
-        // TODO Remove this after testing
-        SizedBox(height: 10),
-        ElevatedButton(
-          child: Text(themesPurchasedMap['Bubblegum']! ? 'Disable Bubblegum' : 'Enable Bubblegum',
-            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
-          ),
-          onPressed: () {
-            setState(() {
-              if (themesPurchasedMap['Bubblegum']!) {
-                themesPurchasedMap['Bubblegum'] = false;
-              } else {
-                themesPurchasedMap['Bubblegum'] = true;
-              }
-            });
-          },
-        ),
-        SizedBox(height: 10),
-
-        // TODO Remove this after testing
-        ElevatedButton(
-          child: Text(themesPurchasedMap['Pumpkin']! ? 'Disable Pumpkin' : 'Enable Pumpkin',
-            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
-          ),
-          onPressed: () {
-            setState(() {
-              if (themesPurchasedMap['Pumpkin']!) {
-                themesPurchasedMap['Pumpkin'] = false;
-              } else {
-                themesPurchasedMap['Pumpkin'] = true;
-              }
-            });
-          },
-        ),
-
       ],
     );
   }
