@@ -1394,7 +1394,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
             : Container(),
 
         const SizedBox(height: 10),
-        SizedBox(height: 1, child: Container(color: Colors.grey)),
+        SizedBox(height: 1, width: 285, child: Container(color: Colors.grey)),
         const SizedBox(height: 10),
 
         ////////////////////////////
@@ -1547,7 +1547,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
           /////////////////////////////
           Row(
             children: [
-              const Spacer(flex: 3),
+              const Spacer(flex: 4),
               Text('Timer Alarm',
                   style: TextStyle(
                       color: timerAlarmCurrentlyEnabled
@@ -1602,12 +1602,12 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                 value: timerAlarmCurrentlyEnabled,
                 onChanged: _onTimerAlarmChanged,
               ),
-              const Spacer(flex: 2),
+              const Spacer(flex: 3),
             ],
           ),
 
           const SizedBox(height: 10),
-          SizedBox(height: 1, child: Container(color: Colors.grey)),
+          SizedBox(height: 1, width: 325, child: Container(color: Colors.grey)),
           const SizedBox(height: 10),
 
           /////////////////////////////
@@ -1615,7 +1615,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
           /////////////////////////////
           Row(
             children: [
-              const Spacer(flex: 3),
+              const Spacer(flex: 4),
               Text('3-2-1 Countdown',
                   style: TextStyle(
                       color: threeTwoOneCountdownCurrentlyEnabled
@@ -1670,12 +1670,12 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                 value: threeTwoOneCountdownCurrentlyEnabled,
                 onChanged: _on321CountdownChanged,
               ),
-              const Spacer(flex: 2),
+              const Spacer(flex: 3),
             ],
           ),
 
           const SizedBox(height: 10),
-          SizedBox(height: 1, child: Container(color: Colors.grey)),
+          SizedBox(height: 1, width: 325,  child: Container(color: Colors.grey)),
           const SizedBox(height: 10),
 
           /////////////////////////////
@@ -1683,7 +1683,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
           /////////////////////////////
           Row(
             children: [
-              const Spacer(flex: 3),
+              const Spacer(flex: 4),
               Text('10 Second Warning',
                   style: TextStyle(
                       color: tenSecondWarningCurrentlyEnabled
@@ -1737,19 +1737,19 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                 value: tenSecondWarningCurrentlyEnabled,
                 onChanged: _onTenSecondWarningChanged,
               ),
-              const Spacer(flex: 2),
+              const Spacer(flex: 3),
             ],
           ),
 
           const SizedBox(height: 10),
-          SizedBox(height: 1, child: Container(color: Colors.grey)),
+          SizedBox(height: 1, width: 325, child: Container(color: Colors.grey)),
           const SizedBox(height: 10),
           ///////////////////////////////
           // Mode Switch Alert: Work Audio Settings
           //////////////////////////////
           Row(
             children: [
-              const Spacer(flex: 3),
+              const Spacer(flex: 4),
               Text('Alert for Work Mode',
                   style: TextStyle(
                       color: alertWorkModeStartedCurrentlyEnabled
@@ -1804,12 +1804,12 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                 value: alertWorkModeStartedCurrentlyEnabled,
                 onChanged: _onWorkModeAlertSwitchChanged,
               ),
-              const Spacer(flex: 2),
+              const Spacer(flex: 3),
             ],
           ),
 
           const SizedBox(height: 10),
-          SizedBox(height: 1, child: Container(color: Colors.grey)),
+          SizedBox(height: 1, width: 325, child: Container(color: Colors.grey)),
           const SizedBox(height: 10),
 
           ///////////////////////////////
@@ -1817,7 +1817,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
           //////////////////////////////
           Row(
             children: [
-              const Spacer(flex: 3),
+              const Spacer(flex: 4),
               Text('Alert for Rest Mode',
                   style: TextStyle(
                       color: alertRestModeStartedCurrentlyEnabled
@@ -1872,7 +1872,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                 value: alertRestModeStartedCurrentlyEnabled,
                 onChanged: _onRestModeAlertSwitchChanged,
               ),
-              const Spacer(flex: 2),
+              const Spacer(flex: 3),
             ],
           ),
 
@@ -1954,7 +1954,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
           ////////////////////////
           Row(
             children: [
-              const Spacer(flex: 1),
+              const Spacer(flex: 4),
               Text('Restart Button Audio',
                   style: TextStyle(
                       color: restartButtonAudioCurrentlyEnabled
@@ -1969,12 +1969,12 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                 value: restartButtonAudioCurrentlyEnabled,
                 onChanged: _onRestartButtonAudioChanged,
               ),
-              const Spacer(flex: 1),
+              const Spacer(flex: 3),
             ],
           ),
 
           const SizedBox(height: 10),
-          SizedBox(height: 1, child: Container(color: Colors.grey)),
+          SizedBox(height: 1, width: 285, child: Container(color: Colors.grey)),
           const SizedBox(height: 10),
 
           ///////////////////////
@@ -1982,7 +1982,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
           ///////////////////////
           Row(
             children: [
-              const Spacer(flex: 1),
+              const Spacer(flex: 4),
               Text('Save Button Audio',
                   style: TextStyle(
                       color: saveButtonAudioCurrentlyEnabled
@@ -1999,13 +1999,13 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                 value: saveButtonAudioCurrentlyEnabled,
                 onChanged: _onSaveButtonAudioChanged,
               ),
-              const Spacer(flex: 1),
+              const Spacer(flex: 3),
 
             ],
           ),
 
           const SizedBox(height: 10),
-          SizedBox(height: 1, child: Container(color: Colors.grey)),
+          SizedBox(height: 1, width: 285, child: Container(color: Colors.grey)),
           const SizedBox(height: 10),
 
           /////////////////////////
@@ -2013,7 +2013,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
           /////////////////////////
           Row(
             children: [
-              const Spacer(flex: 1),
+              const Spacer(flex: 4),
               Text('Cancel Button Audio',
                   style: TextStyle(
                       color: cancelButtonAudioCurrentlyEnabled
@@ -2028,12 +2028,12 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                 value: cancelButtonAudioCurrentlyEnabled,
                 onChanged: _onCancelButtonAudioChanged,
               ),
-              const Spacer(flex: 1),
+              const Spacer(flex: 3),
             ],
           ),
 
           const SizedBox(height: 10),
-          SizedBox(height: 1, child: Container(color: Colors.grey)),
+          SizedBox(height: 1, width: 285, child: Container(color: Colors.grey)),
           const SizedBox(height: 10),
 
           /////////////////////////
@@ -2041,7 +2041,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
           /////////////////////////
           Row(
             children: [
-              const Spacer(flex: 1),
+              const Spacer(flex: 4),
               Text('Switch Button Audio',
                   style: TextStyle(
                       color: switchButtonAudioCurrentlyEnabled
@@ -2056,7 +2056,7 @@ class ButtonAudioSettingsWidgetState extends State<ButtonAudioSettingsWidget> {
                 value: switchButtonAudioCurrentlyEnabled,
                 onChanged: _onSwitchButtonAudioChanged,
               ),
-              const Spacer(flex: 1),
+              const Spacer(flex: 3),
             ],
           ),
         ]

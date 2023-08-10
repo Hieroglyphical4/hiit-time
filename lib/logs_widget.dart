@@ -2341,18 +2341,18 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
           SizedBox(height: 5),
 
           Container(
-              width: 250,
-              padding: EdgeInsets.all(8.0),
+              width: 225,
+              padding: EdgeInsets.all(5.0),
                 decoration: BoxDecoration(
                     border: Border.all(
                         width: 2,
                         color: primaryColor
                     )
                 ),
-                child: Text("This app does not collect user data. Use this menu to create and use backups of your logs.",
+                child: Text("This app does not collect user data. Use this menu to create and restore local backups of your logs.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                    fontSize: 17, color: primaryColor, fontWeight: FontWeight.bold))
+                    fontSize: 17, color: primaryColor))
           ),
 
           SizedBox(height: 15),
