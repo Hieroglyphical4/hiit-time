@@ -222,7 +222,12 @@ class _SettingsMenuState extends State<SettingsMenu> {
   final subTimetextEditController = TextEditingController();
   final addTimeTextEditController = TextEditingController();
 
+  @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: secondaryColor,
+        statusBarIconBrightness: appCurrentlyInDarkMode ? Brightness.light : Brightness.dark
+    ));
     return Scaffold(
       backgroundColor: secondaryColor,
       resizeToAvoidBottomInset: true,

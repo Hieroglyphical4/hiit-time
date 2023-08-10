@@ -77,389 +77,410 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: secondaryColor,
+        statusBarIconBrightness: appCurrentlyInDarkMode ? Brightness.light : Brightness.dark
+    ));
     return Scaffold(
       backgroundColor: secondaryColor,
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        backgroundColor: primaryAccentColor,
-        centerTitle: true,
-        title: Text('Advanced Settings', style: TextStyle(
-            color: textColorOverwrite
-                ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                : alternateColorOverwrite ? Colors.black
-                : Colors.white
-        ),
-        ),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: textColorOverwrite
-            ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                : alternateColorOverwrite ? Colors.black
-                : Colors.white),
-          onPressed: () {
-          Navigator.pop(context);
-          },
-          ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.calculate_outlined, color: textColorOverwrite
-                ? appCurrentlyInDarkMode ? Colors.black : Colors.white
-                : alternateColorOverwrite ? Colors.black
-                : Colors.white
-            ),
-            onPressed: () {
-              /// Launch Plate Calculator
-              showGeneralDialog(
-                context: context,
-                barrierDismissible: true,
-                barrierLabel: MaterialLocalizations.of(context)
-                    .modalBarrierDismissLabel,
-                barrierColor: Colors.black45,
-                transitionDuration: const Duration(milliseconds: 200),
-
-                // ANY Widget can be passed here
-                pageBuilder: (BuildContext buildContext,
-                    Animation animation,
-                    Animation secondaryAnimation) {
-                  return Center(
-                    child: PlateCalculator(key: UniqueKey()),
-                  );
-                },
-              );
-            },
-          ),
-        ],
-      ),
       body: Center(
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              // direction: Axis.vertical,
-              children: [
-                // Body of Settings!
+        child: Column(children: [
+          SizedBox(height: 25),
+          Container(
+              color: primaryAccentColor,
+              child: SizedBox(
+                  height: 50,
+                  width: double.infinity,
+                  child: Row(children: [
+                    Spacer(flex: 1),
+                    IconButton(
+                      icon: Icon(Icons.arrow_back, size: 30, color: textColorOverwrite
+                          ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                          : alternateColorOverwrite ? Colors.black
+                          : Colors.white),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
 
-                SizedBox(height: 20),
+                    Spacer(flex: 4),
 
-                ///////////////////////////
-                // Audio Settings Button
-                ///////////////////////////
-                SizedBox(
-                  height: 60,
-                  width: 300,
-                  child: ElevatedButton(
-                      onPressed: () => setState(() {
-                        if (_displayAudioSettings) {
-                          _displayAudioSettings = false;
-                        } else {
-                          _displayAudioSettings = true;
-                          _displayThemesSettings = false;
-                          _displayLogs = false;
-                          _displayAboutThisApp = false;
-                          _displayTips = false;
-                        }
-                      }),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: secondaryAccentColor,
-                        padding: const EdgeInsets.all(4),
+                    Text('Advanced Settings',
+                        style: TextStyle(
+                          fontSize: 24,
+                         fontWeight: FontWeight.w500,
+                         color: textColorOverwrite
+                             ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                             : alternateColorOverwrite ? Colors.black
+                             : Colors.white)
+                    ),
+
+                    Spacer(flex: 4),
+
+                    IconButton(
+                      icon: Icon(Icons.calculate_outlined, size: 30, color: textColorOverwrite
+                          ? appCurrentlyInDarkMode ? Colors.black : Colors.white
+                          : alternateColorOverwrite ? Colors.black
+                          : Colors.white
                       ),
-                      child: Row(children: [
-                        SizedBox(width: 10),
-                        Icon(Icons.music_note, color: _displayAudioSettings
-                            ? primaryAccentColor
-                            : getCorrectColorForComplicatedContext()),
-                        SizedBox(width: 20),
-                        Text(_displayAudioSettings
-                            ? 'Audio Settings'
-                            : 'Audio Settings    >',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
-                                color: getCorrectColorForComplicatedContext()
-                            ),
-                            textAlign: TextAlign.center
-                        ),
-                        Text(_displayAudioSettings
-                            ? '    -'
-                            : '',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
-                                color: primaryAccentColor, fontWeight: FontWeight.bold
-                            ),
-                        )
-                      ])
-                  )
-                ),
+                      onPressed: () {
+                        /// Launch Plate Calculator
+                        showGeneralDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          barrierLabel: MaterialLocalizations.of(context)
+                              .modalBarrierDismissLabel,
+                          barrierColor: Colors.black45,
+                          transitionDuration: const Duration(milliseconds: 200),
 
-                // Determine if Audio Settings Widget should show:
-                _displayAudioSettings
-                  ? AudioSettingsWidget(key: UniqueKey())
-                  : Container(),
+                          // ANY Widget can be passed here
+                          pageBuilder: (BuildContext buildContext,
+                              Animation animation,
+                              Animation secondaryAnimation) {
+                            return Center(
+                              child: PlateCalculator(key: UniqueKey()),
+                            );
+                          },
+                        );
+                      },
+                    ),
 
-                const SizedBox(height: 20),
-
-                ///////////////////////////
-                // Theme Settings Button
-                ///////////////////////////
-                SizedBox(
-                    height: 60,
-                    width: 300,
-                    child: ElevatedButton(
-                        onPressed: () => setState(() {
-                          if (_displayThemesSettings) {
-                            _displayThemesSettings = false;
-                          } else {
-                            _displayThemesSettings = true;
-                            _displayAudioSettings = false;
-                            _displayLogs = false;
-                            _displayAboutThisApp = false;
-                            _displayTips = false;
-                          }
-                        }),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryAccentColor,
-                          padding: const EdgeInsets.all(4),
-                        ),
-                        child: Row(children: [
-                            SizedBox(width: 10),
-                        Icon(Icons.format_paint, color: _displayThemesSettings
-                            ? primaryAccentColor
-                            : getCorrectColorForComplicatedContext()),
-                        SizedBox(width: 20),
-                        Text(_displayThemesSettings
-                            ? '         Themes'
-                            : 'Themes                  >',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
-                                color: textColorOverwrite
-                                    ? Colors.black
-                                    : alternateColorOverwrite ? Colors.black
-                                    : appCurrentlyInDarkMode ? Colors.white : Colors.black
-                            ),
-                            textAlign: TextAlign.center),
-                        Text(_displayThemesSettings
-                            ? '         -'
-                            : '',
-                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
-                              color: primaryAccentColor, fontWeight: FontWeight.bold
-                          ),
-                        )
-
-                    ])
-                    )
-                ),
-
-                // Determine if Themes Widget should show:
-                _displayThemesSettings
-                  ? ThemeSettingsWidget(key: _themeWidgetKey, onThemeChanged: onThemeChanged)
-                    : Container(),
-
-                SizedBox(height: 20),
-
-                ///////////////////////////
-                // Logs Button
-                ///////////////////////////
-                SizedBox(
-                    height: 60,
-                    width: 300,
-                    child: ElevatedButton(
-                        onPressed: () => setState(() {
-                          if (_displayLogs) {
-                            _displayLogs = false;
-                          } else {
-                            _displayLogs = true;
-                            _displayAboutThisApp = false;
-                            _displayTips = false;
-                            _displayAudioSettings = false;
-                            _displayThemesSettings = false;
-                          }
-                        }),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryAccentColor,
-                          padding: const EdgeInsets.all(4),
-                        ),
-                        child: Row(children: [
-                            SizedBox(width: 10),
-                        Icon(Icons.note_alt_rounded, color: _displayLogs
-                            ? primaryAccentColor
-                            : getCorrectColorForComplicatedContext()),
-                        SizedBox(width: 20),
-                        Text(_displayLogs
-                            ? '           Logs'
-                            : 'Logs                        >',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
-                                color: textColorOverwrite
-                                    ? Colors.black
-                                    : alternateColorOverwrite ? Colors.black
-                                    : appCurrentlyInDarkMode ? Colors.white : Colors.black
-                            ),
-                            textAlign: TextAlign.center),
-                          Text(_displayLogs
-                              ? '             -'
-                              : '',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
-                                color: primaryAccentColor, fontWeight: FontWeight.bold
-                            ),
-                          )
-                        ])
-                    )
-                ),
-
-                // Determine if Logs Widget should show:
-                _displayLogs
-                    ? LogsWidget(key: UniqueKey())
-                    : Container(),
-
-                SizedBox(height: 20),
-
-                ///////////////////////////
-                // Tips Button
-                ///////////////////////////
-                SizedBox(
-                    height: 60,
-                    width: 300,
-                    child: ElevatedButton(
-                        onPressed: () => setState(() {
-                          if (_displayTips) {
-                            _displayTips = false;
-                          } else {
-                            _displayTips = true;
-                            _displayLogs = false;
-                            _displayAboutThisApp = false;
-                            _displayAudioSettings = false;
-                            _displayThemesSettings = false;
-                          }
-                        }),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryAccentColor,
-                          padding: const EdgeInsets.all(4),
-                        ),
-                        child: Row(children: [
-                            SizedBox(width: 10),
-                        Icon(Icons.tips_and_updates, color: _displayTips
-                            ? primaryAccentColor
-                            : getCorrectColorForComplicatedContext()),
-                        SizedBox(width: 20),
-                        Text(_displayTips
-                            ? '           Tips'
-                            : 'Tips                         >',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
-                                color: textColorOverwrite
-                                    ? Colors.black
-                                    : alternateColorOverwrite ? Colors.black
-                                    : appCurrentlyInDarkMode ? Colors.white : Colors.black
-                            ),
-                            textAlign: TextAlign.center),
-                          Text(_displayTips
-                              ? '              -'
-                              : '',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
-                                color: primaryAccentColor, fontWeight: FontWeight.bold
-                            ),
-                          )
-                        ])
-                    )
-                ),
-
-                // Determine if Tip Widget should show:
-                _displayTips
-                    ? TipsWidget(key: UniqueKey())
-                    : Container(),
-
-                SizedBox(height: 20),
-
-                ///////////////////////////
-                // About This App Button
-                ///////////////////////////
-                SizedBox(
-                    height: 60,
-                    width: 300,
-                    child: ElevatedButton(
-                        onPressed: () => setState(() {
-                          if (_displayAboutThisApp) {
-                            _displayAboutThisApp = false;
-                          } else {
-                            _displayAboutThisApp = true;
-                            _displayLogs = false;
-                            _displayTips = false;
-                            _displayAudioSettings = false;
-                            _displayThemesSettings = false;
-                          }
-                        }),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: secondaryAccentColor,
-                          padding: const EdgeInsets.all(4),
-                        ),
-                        child: Row(children: [
-                            SizedBox(width: 10),
-                        Icon(Icons.question_mark, color: _displayAboutThisApp
-                            ? primaryAccentColor
-                            : getCorrectColorForComplicatedContext()),
-                        SizedBox(width: 20),
-                        Text(_displayAboutThisApp
-                            ? 'About This App'
-                            : 'About This App   >',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
-                                color: textColorOverwrite
-                                    ? Colors.black
-                                    : alternateColorOverwrite ? Colors.black
-                                    : appCurrentlyInDarkMode ? Colors.white : Colors.black
-                            ),
-                            textAlign: TextAlign.center),
-                          Text(_displayAboutThisApp
-                              ? '   -'
-                              : '',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
-                                color: primaryAccentColor, fontWeight: FontWeight.bold
-                            ),
-                          )
-                    ])
-                    )
-                ),
-
-                // Determine if About This App Widget should show:
-                _displayAboutThisApp
-                    ? AboutThisAppWidget(key: UniqueKey())
-                    : Container(),
-
-                // Spacer between Extras Button and Restore Defaults
-                (!_displayAudioSettings && !_displayThemesSettings)
-                    ? const SizedBox(height: 25)
-                    : Container(),
-                const SizedBox(height: 50),
-
-                ///////////////////////////
-                // Restore Defaults Button
-                ///////////////////////////
-                SizedBox(
-                    height: 50,
-                    width: 350,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          _confirmRestoreDefaults().then((confirmed) {
-                            if (confirmed) {
-                              // Call Settings.dart method to remove all stored variables
-                              clearUserSettings();
-
-                              // Close this menu and return true to tell the settings menu
-                              // to also close and restart the timer, leaving the user
-                              // at the main/timer screen with default settings
-                              Navigator.pop(context, true);
-                            }
-                          });
-                        },
-
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red.shade600,
-                          // shape: Rectangle(),
-                          padding: const EdgeInsets.all(4),
-                        ),
-                        child: const Text('Restore Defaults',
-                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1),
-                            textAlign: TextAlign.center)
-                    )
-                ),
-
-                const SizedBox(height: 110),
-              ],
-            ),
+                    Spacer(flex: 1),
+                  ])
+              )
           ),
-        ),
+          Expanded(child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  // direction: Axis.vertical,
+                  children: [
+                    // Body of Settings!
+
+                    SizedBox(height: 20),
+
+                    ///////////////////////////
+                    // Audio Settings Button
+                    ///////////////////////////
+                    SizedBox(
+                      height: 60,
+                      width: 300,
+                      child: ElevatedButton(
+                          onPressed: () => setState(() {
+                            if (_displayAudioSettings) {
+                              _displayAudioSettings = false;
+                            } else {
+                              _displayAudioSettings = true;
+                              _displayThemesSettings = false;
+                              _displayLogs = false;
+                              _displayAboutThisApp = false;
+                              _displayTips = false;
+                            }
+                          }),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: secondaryAccentColor,
+                            padding: const EdgeInsets.all(4),
+                          ),
+                          child: Row(children: [
+                            SizedBox(width: 10),
+                            Icon(Icons.music_note, color: _displayAudioSettings
+                                ? primaryAccentColor
+                                : getCorrectColorForComplicatedContext()),
+                            SizedBox(width: 20),
+                            Text(_displayAudioSettings
+                                ? 'Audio Settings'
+                                : 'Audio Settings    >',
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                    color: getCorrectColorForComplicatedContext()
+                                ),
+                                textAlign: TextAlign.center
+                            ),
+                            Text(_displayAudioSettings
+                                ? '    -'
+                                : '',
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                    color: primaryAccentColor, fontWeight: FontWeight.bold
+                                ),
+                            )
+                          ])
+                      )
+                    ),
+
+                    // Determine if Audio Settings Widget should show:
+                    _displayAudioSettings
+                      ? AudioSettingsWidget(key: UniqueKey())
+                      : Container(),
+
+                    const SizedBox(height: 20),
+
+                    ///////////////////////////
+                    // Theme Settings Button
+                    ///////////////////////////
+                    SizedBox(
+                        height: 60,
+                        width: 300,
+                        child: ElevatedButton(
+                            onPressed: () => setState(() {
+                              if (_displayThemesSettings) {
+                                _displayThemesSettings = false;
+                              } else {
+                                _displayThemesSettings = true;
+                                _displayAudioSettings = false;
+                                _displayLogs = false;
+                                _displayAboutThisApp = false;
+                                _displayTips = false;
+                              }
+                            }),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: secondaryAccentColor,
+                              padding: const EdgeInsets.all(4),
+                            ),
+                            child: Row(children: [
+                                SizedBox(width: 10),
+                            Icon(Icons.format_paint, color: _displayThemesSettings
+                                ? primaryAccentColor
+                                : getCorrectColorForComplicatedContext()),
+                            SizedBox(width: 20),
+                            Text(_displayThemesSettings
+                                ? '         Themes'
+                                : 'Themes                  >',
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                    color: textColorOverwrite
+                                        ? Colors.black
+                                        : alternateColorOverwrite ? Colors.black
+                                        : appCurrentlyInDarkMode ? Colors.white : Colors.black
+                                ),
+                                textAlign: TextAlign.center),
+                            Text(_displayThemesSettings
+                                ? '         -'
+                                : '',
+                              style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                  color: primaryAccentColor, fontWeight: FontWeight.bold
+                              ),
+                            )
+
+                        ])
+                        )
+                    ),
+
+                    // Determine if Themes Widget should show:
+                    _displayThemesSettings
+                      ? ThemeSettingsWidget(key: _themeWidgetKey, onThemeChanged: onThemeChanged)
+                        : Container(),
+
+                    SizedBox(height: 20),
+
+                    ///////////////////////////
+                    // Logs Button
+                    ///////////////////////////
+                    SizedBox(
+                        height: 60,
+                        width: 300,
+                        child: ElevatedButton(
+                            onPressed: () => setState(() {
+                              if (_displayLogs) {
+                                _displayLogs = false;
+                              } else {
+                                _displayLogs = true;
+                                _displayAboutThisApp = false;
+                                _displayTips = false;
+                                _displayAudioSettings = false;
+                                _displayThemesSettings = false;
+                              }
+                            }),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: secondaryAccentColor,
+                              padding: const EdgeInsets.all(4),
+                            ),
+                            child: Row(children: [
+                                SizedBox(width: 10),
+                            Icon(Icons.note_alt_rounded, color: _displayLogs
+                                ? primaryAccentColor
+                                : getCorrectColorForComplicatedContext()),
+                            SizedBox(width: 20),
+                            Text(_displayLogs
+                                ? '           Logs'
+                                : 'Logs                        >',
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                    color: textColorOverwrite
+                                        ? Colors.black
+                                        : alternateColorOverwrite ? Colors.black
+                                        : appCurrentlyInDarkMode ? Colors.white : Colors.black
+                                ),
+                                textAlign: TextAlign.center),
+                              Text(_displayLogs
+                                  ? '             -'
+                                  : '',
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                    color: primaryAccentColor, fontWeight: FontWeight.bold
+                                ),
+                              )
+                            ])
+                        )
+                    ),
+
+                    // Determine if Logs Widget should show:
+                    _displayLogs
+                        ? LogsWidget(key: UniqueKey())
+                        : Container(),
+
+                    SizedBox(height: 20),
+
+                    ///////////////////////////
+                    // Tips Button
+                    ///////////////////////////
+                    SizedBox(
+                        height: 60,
+                        width: 300,
+                        child: ElevatedButton(
+                            onPressed: () => setState(() {
+                              if (_displayTips) {
+                                _displayTips = false;
+                              } else {
+                                _displayTips = true;
+                                _displayLogs = false;
+                                _displayAboutThisApp = false;
+                                _displayAudioSettings = false;
+                                _displayThemesSettings = false;
+                              }
+                            }),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: secondaryAccentColor,
+                              padding: const EdgeInsets.all(4),
+                            ),
+                            child: Row(children: [
+                                SizedBox(width: 10),
+                            Icon(Icons.tips_and_updates, color: _displayTips
+                                ? primaryAccentColor
+                                : getCorrectColorForComplicatedContext()),
+                            SizedBox(width: 20),
+                            Text(_displayTips
+                                ? '           Tips'
+                                : 'Tips                         >',
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                    color: textColorOverwrite
+                                        ? Colors.black
+                                        : alternateColorOverwrite ? Colors.black
+                                        : appCurrentlyInDarkMode ? Colors.white : Colors.black
+                                ),
+                                textAlign: TextAlign.center),
+                              Text(_displayTips
+                                  ? '              -'
+                                  : '',
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                    color: primaryAccentColor, fontWeight: FontWeight.bold
+                                ),
+                              )
+                            ])
+                        )
+                    ),
+
+                    // Determine if Tip Widget should show:
+                    _displayTips
+                        ? TipsWidget(key: UniqueKey())
+                        : Container(),
+
+                    SizedBox(height: 20),
+
+                    ///////////////////////////
+                    // About This App Button
+                    ///////////////////////////
+                    SizedBox(
+                        height: 60,
+                        width: 300,
+                        child: ElevatedButton(
+                            onPressed: () => setState(() {
+                              if (_displayAboutThisApp) {
+                                _displayAboutThisApp = false;
+                              } else {
+                                _displayAboutThisApp = true;
+                                _displayLogs = false;
+                                _displayTips = false;
+                                _displayAudioSettings = false;
+                                _displayThemesSettings = false;
+                              }
+                            }),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: secondaryAccentColor,
+                              padding: const EdgeInsets.all(4),
+                            ),
+                            child: Row(children: [
+                                SizedBox(width: 10),
+                            Icon(Icons.question_mark, color: _displayAboutThisApp
+                                ? primaryAccentColor
+                                : getCorrectColorForComplicatedContext()),
+                            SizedBox(width: 20),
+                            Text(_displayAboutThisApp
+                                ? 'About This App'
+                                : 'About This App   >',
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                    color: textColorOverwrite
+                                        ? Colors.black
+                                        : alternateColorOverwrite ? Colors.black
+                                        : appCurrentlyInDarkMode ? Colors.white : Colors.black
+                                ),
+                                textAlign: TextAlign.center),
+                              Text(_displayAboutThisApp
+                                  ? '   -'
+                                  : '',
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                    color: primaryAccentColor, fontWeight: FontWeight.bold
+                                ),
+                              )
+                        ])
+                        )
+                    ),
+
+                    // Determine if About This App Widget should show:
+                    _displayAboutThisApp
+                        ? AboutThisAppWidget(key: UniqueKey())
+                        : Container(),
+
+                    // Spacer between Extras Button and Restore Defaults
+                    (!_displayAudioSettings && !_displayThemesSettings)
+                        ? const SizedBox(height: 25)
+                        : Container(),
+                    const SizedBox(height: 50),
+
+                    ///////////////////////////
+                    // Restore Defaults Button
+                    ///////////////////////////
+                    SizedBox(
+                        height: 50,
+                        width: 350,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              _confirmRestoreDefaults().then((confirmed) {
+                                if (confirmed) {
+                                  // Call Settings.dart method to remove all stored variables
+                                  clearUserSettings();
+
+                                  // Close this menu and return true to tell the settings menu
+                                  // to also close and restart the timer, leaving the user
+                                  // at the main/timer screen with default settings
+                                  Navigator.pop(context, true);
+                                }
+                              });
+                            },
+
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red.shade600,
+                              // shape: Rectangle(),
+                              padding: const EdgeInsets.all(4),
+                            ),
+                            child: const Text('Restore Defaults',
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1),
+                                textAlign: TextAlign.center)
+                        )
+                    ),
+
+                    const SizedBox(height: 110),
+                  ],
+                ),
+              ),
+        ))
+        ]),
       ),
     );
   }
