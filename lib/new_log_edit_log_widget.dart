@@ -486,7 +486,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                           height: 50,
                           width: 210,
                           child: Material(
-                            color: primaryColor,
+                            color: Colors.white,
                             child: Center(
                               child: DropdownButton<String>(
                                 menuMaxHeight: 420,
@@ -498,7 +498,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                       Icon(
                                         Icons.arrow_drop_down,
                                         size: 25,
-                                        color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                        color: Colors.black,
                                       ),
                                       _editMode
                                           ? Text(
@@ -508,7 +508,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           fontSize: 16,
                                           color: (_providedExercise == _currentExercise)
                                               ? primaryAccentColor
-                                              : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                              : Colors.black,
                                         ),
                                         textAlign: TextAlign.center,
                                       )
@@ -519,7 +519,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           fontSize: 16,
                                           color: (_providedExercise != _currentExercise)
                                               ? primaryAccentColor
-                                              : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                              : Colors.black,
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
@@ -641,11 +641,11 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                           height: 50,
                           width: 50,
                           child: Material(
-                              color: primaryColor,
+                              color: Colors.white,
                               child: Center(
                                   child: IconButton(
                                     iconSize: 35,
-                                    color: secondaryColor,
+                                    color: Colors.black,
                                     icon: const Icon(Icons.add_circle_outline),
                                     onPressed: () {
                                       HapticFeedback.mediumImpact();
@@ -703,7 +703,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                     height: 45,
                                     width: 100,
                                     child: Material(
-                                        color: primaryColor,
+                                        color: Colors.white,
                                         child: TextFormField(
                                           readOnly: true, // set readOnly to true to disable editing of the text field
                                           controller: TextEditingController(
@@ -712,7 +712,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           style: TextStyle(
                                               color: (_providedDate != _currentDate)
                                                   ? primaryAccentColor
-                                                  : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                                  : Colors.black,
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold
                                           ),
@@ -728,7 +728,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             hintText: _editMode ? _currentDate.toString().split(' ')[0] : 'mm/dd/yyyy',
                                             hintStyle: TextStyle(
                                                 fontSize: 16,
-                                                color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                                color: Colors.black,
                                                 fontWeight: FontWeight.bold
                                             ),
                                           ),
@@ -752,7 +752,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                   height: 45,
                                   width: 100,
                                   child: Material(
-                                    color: primaryColor,
+                                    color: Colors.white,
                                     child: Padding(
                                         padding: EdgeInsets.only(top: 20),
                                         child: TextFormField(
@@ -761,7 +761,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           style: TextStyle(
                                               color: (_providedPrimaryValue != _currentPrimaryValue)
                                                   ? primaryAccentColor
-                                                  : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                                  : Colors.black,
                                               fontSize: 25),
                                           textAlign: TextAlign.center,
                                           keyboardType: TextInputType.number,
@@ -809,7 +809,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             hintText: evaluateHintText('000', _primaryValueHintTextShowing, _currentPrimaryValue!),
                                             hintStyle: TextStyle(
                                               fontSize: 25,
-                                              color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                              color: Colors.black,
                                             ),
                                           ),
                                           inputFormatters: <TextInputFormatter>[
@@ -842,7 +842,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                           /// //////////////////
                           Column(children: [
                             Material(
-                                color: primaryColor,
+                                color: Colors.white,
                                 child: Center(
                                     child: SizedBox(
                                       height: 45,
@@ -855,7 +855,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             style: TextStyle(
                                                 color: (_providedSecondaryValue != _currentSecondaryValue)
                                                     ? primaryAccentColor
-                                                    : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                                    : Colors.black,
                                                 fontSize: 25),
                                             textAlign: TextAlign.center,
                                             keyboardType: TextInputType.number,
@@ -902,9 +902,9 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             },
                                             decoration: InputDecoration(
                                               hintText: evaluateHintText('00', _secondaryValueHintTextShowing, _currentSecondaryValue),
-                                              hintStyle: TextStyle(
+                                              hintStyle: const TextStyle(
                                                 fontSize: 25,
-                                                color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                                color: Colors.black,
                                               ),
                                             ),
                                             inputFormatters: widget.exerciseType=='Cardio'
@@ -936,7 +936,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                           (_providedSecondaryValue > 0 || _currentSecondaryValue > 0 || widget.exerciseType=='Cardio')
                               ? Column(children: [
                             Material(
-                                color: primaryColor,
+                                color: Colors.white,
                                 child: Center(
                                     child: SizedBox(
                                       height: 45,
@@ -948,7 +948,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             style: TextStyle(
                                                 color: (_providedThirdFieldValue != _currentThirdFieldValue)
                                                     ? primaryAccentColor
-                                                    : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                                    : Colors.black,
                                                 fontSize: 25),
                                             textAlign: TextAlign.center,
                                             keyboardType: TextInputType.number,
@@ -982,7 +982,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                                   : '',
                                               hintStyle: TextStyle(
                                                 fontSize: 25,
-                                                color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                                color: Colors.black,
                                               ),
                                             ),
                                             inputFormatters: <TextInputFormatter>[
@@ -1015,7 +1015,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                           (widget.exerciseType!='Cardio' && (_providedThirdFieldValue > 0 || _currentThirdFieldValue > 0))
                               ? Column(children: [
                             Material(
-                                color: primaryColor,
+                                color: Colors.white,
                                 child: Center(
                                     child: SizedBox(
                                       height: 45,
@@ -1027,7 +1027,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             style: TextStyle(
                                                 color: (_providedFourthFieldValue != _currentFourthFieldValue)
                                                     ? primaryAccentColor
-                                                    : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                                    : Colors.black,
                                                 fontSize: 25),
                                             textAlign: TextAlign.center,
                                             keyboardType: TextInputType.number,
@@ -1061,7 +1061,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                                   : '',
                                               hintStyle: TextStyle(
                                                 fontSize: 25,
-                                                color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                                color: Colors.black,
                                               ),
                                             ),
                                             inputFormatters: <TextInputFormatter>[
@@ -1087,7 +1087,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                           (widget.exerciseType!='Cardio' && (_providedFourthFieldValue > 0 || _currentFourthFieldValue > 0))
                               ? Column(children: [
                             Material(
-                                color: primaryColor,
+                                color: Colors.white,
                                 child: Center(
                                     child: SizedBox(
                                       height: 45,
@@ -1099,7 +1099,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             style: TextStyle(
                                                 color: (_providedFifthFieldValue != _currentFifthFieldValue)
                                                     ? primaryAccentColor
-                                                    : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                                    : Colors.black,
                                                 fontSize: 25),
                                             textAlign: TextAlign.center,
                                             keyboardType: TextInputType.number,
@@ -1133,7 +1133,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                                   : '',
                                               hintStyle: TextStyle(
                                                 fontSize: 25,
-                                                color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                                color: Colors.black,
                                               ),
                                             ),
                                             inputFormatters: <TextInputFormatter>[

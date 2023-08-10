@@ -75,28 +75,6 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
     _themeWidgetKey.currentState?.updateThemeUIAfterPurchaseCompleted();
   }
 
-  void _showAppPurchaseNotification(BuildContext context, String content) {
-    final snackBar = SnackBar(
-      backgroundColor: primaryColor,
-      content: Container(
-          height: 33,
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(content,
-                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 13,
-                      color: secondaryColor,
-                    )
-                ),
-              ])
-      ),
-
-      duration: Duration(seconds: 2), // Set the duration for how long the SnackBar will be displayed
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -167,7 +145,7 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                 ///////////////////////////
                 SizedBox(
                   height: 60,
-                  width: 350,
+                  width: 300,
                   child: ElevatedButton(
                       onPressed: () => setState(() {
                         if (_displayAudioSettings) {
@@ -184,17 +162,28 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         backgroundColor: secondaryAccentColor,
                         padding: const EdgeInsets.all(4),
                       ),
-                      child: Text(_displayAudioSettings
-                          ? '-   Audio Settings   -'
-                          : 'Audio Settings       >',
-                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
-                              color: textColorOverwrite
-                                  ? Colors.black
-                                  : alternateColorOverwrite ? Colors.black
-                                  : appCurrentlyInDarkMode ? Colors.white : Colors.black
-                          ),
-                          textAlign: TextAlign.center
-                      )
+                      child: Row(children: [
+                        SizedBox(width: 10),
+                        Icon(Icons.music_note, color: _displayAudioSettings
+                            ? primaryAccentColor
+                            : getCorrectColorForComplicatedContext()),
+                        SizedBox(width: 20),
+                        Text(_displayAudioSettings
+                            ? 'Audio Settings'
+                            : 'Audio Settings    >',
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                color: getCorrectColorForComplicatedContext()
+                            ),
+                            textAlign: TextAlign.center
+                        ),
+                        Text(_displayAudioSettings
+                            ? '    -'
+                            : '',
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                color: primaryAccentColor, fontWeight: FontWeight.bold
+                            ),
+                        )
+                      ])
                   )
                 ),
 
@@ -210,7 +199,7 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                 ///////////////////////////
                 SizedBox(
                     height: 60,
-                    width: 350,
+                    width: 300,
                     child: ElevatedButton(
                         onPressed: () => setState(() {
                           if (_displayThemesSettings) {
@@ -227,16 +216,31 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           backgroundColor: secondaryAccentColor,
                           padding: const EdgeInsets.all(4),
                         ),
-                        child: Text(_displayThemesSettings
-                            ? '-         Themes         -'
-                            : 'Themes                      >',
+                        child: Row(children: [
+                            SizedBox(width: 10),
+                        Icon(Icons.format_paint, color: _displayThemesSettings
+                            ? primaryAccentColor
+                            : getCorrectColorForComplicatedContext()),
+                        SizedBox(width: 20),
+                        Text(_displayThemesSettings
+                            ? '         Themes'
+                            : 'Themes                  >',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
                                 color: textColorOverwrite
                                     ? Colors.black
                                     : alternateColorOverwrite ? Colors.black
                                     : appCurrentlyInDarkMode ? Colors.white : Colors.black
                             ),
-                            textAlign: TextAlign.center)
+                            textAlign: TextAlign.center),
+                        Text(_displayThemesSettings
+                            ? '         -'
+                            : '',
+                          style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                              color: primaryAccentColor, fontWeight: FontWeight.bold
+                          ),
+                        )
+
+                    ])
                     )
                 ),
 
@@ -252,7 +256,7 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                 ///////////////////////////
                 SizedBox(
                     height: 60,
-                    width: 350,
+                    width: 300,
                     child: ElevatedButton(
                         onPressed: () => setState(() {
                           if (_displayLogs) {
@@ -269,17 +273,30 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           backgroundColor: secondaryAccentColor,
                           padding: const EdgeInsets.all(4),
                         ),
-                        child: Text(_displayLogs
-                            ? '-             Logs             -'
-                            : 'Logs                             >',
+                        child: Row(children: [
+                            SizedBox(width: 10),
+                        Icon(Icons.note_alt_rounded, color: _displayLogs
+                            ? primaryAccentColor
+                            : getCorrectColorForComplicatedContext()),
+                        SizedBox(width: 20),
+                        Text(_displayLogs
+                            ? '           Logs'
+                            : 'Logs                        >',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
                                 color: textColorOverwrite
                                     ? Colors.black
                                     : alternateColorOverwrite ? Colors.black
                                     : appCurrentlyInDarkMode ? Colors.white : Colors.black
                             ),
-                            textAlign: TextAlign.center
-                        )
+                            textAlign: TextAlign.center),
+                          Text(_displayLogs
+                              ? '             -'
+                              : '',
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                color: primaryAccentColor, fontWeight: FontWeight.bold
+                            ),
+                          )
+                        ])
                     )
                 ),
 
@@ -295,7 +312,7 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                 ///////////////////////////
                 SizedBox(
                     height: 60,
-                    width: 350,
+                    width: 300,
                     child: ElevatedButton(
                         onPressed: () => setState(() {
                           if (_displayTips) {
@@ -312,17 +329,30 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           backgroundColor: secondaryAccentColor,
                           padding: const EdgeInsets.all(4),
                         ),
-                        child: Text(_displayTips
-                            ? '-             Tips             -'
-                            : 'Tips                             >',
+                        child: Row(children: [
+                            SizedBox(width: 10),
+                        Icon(Icons.tips_and_updates, color: _displayTips
+                            ? primaryAccentColor
+                            : getCorrectColorForComplicatedContext()),
+                        SizedBox(width: 20),
+                        Text(_displayTips
+                            ? '           Tips'
+                            : 'Tips                         >',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
                                 color: textColorOverwrite
                                     ? Colors.black
                                     : alternateColorOverwrite ? Colors.black
                                     : appCurrentlyInDarkMode ? Colors.white : Colors.black
                             ),
-                            textAlign: TextAlign.center
-                        )
+                            textAlign: TextAlign.center),
+                          Text(_displayTips
+                              ? '              -'
+                              : '',
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                color: primaryAccentColor, fontWeight: FontWeight.bold
+                            ),
+                          )
+                        ])
                     )
                 ),
 
@@ -338,7 +368,7 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                 ///////////////////////////
                 SizedBox(
                     height: 60,
-                    width: 350,
+                    width: 300,
                     child: ElevatedButton(
                         onPressed: () => setState(() {
                           if (_displayAboutThisApp) {
@@ -355,17 +385,30 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           backgroundColor: secondaryAccentColor,
                           padding: const EdgeInsets.all(4),
                         ),
-                        child: Text(_displayAboutThisApp
-                            ? '-   About This App   -'
-                            : 'About This App         >',
+                        child: Row(children: [
+                            SizedBox(width: 10),
+                        Icon(Icons.question_mark, color: _displayAboutThisApp
+                            ? primaryAccentColor
+                            : getCorrectColorForComplicatedContext()),
+                        SizedBox(width: 20),
+                        Text(_displayAboutThisApp
+                            ? 'About This App'
+                            : 'About This App   >',
                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
                                 color: textColorOverwrite
                                     ? Colors.black
                                     : alternateColorOverwrite ? Colors.black
                                     : appCurrentlyInDarkMode ? Colors.white : Colors.black
                             ),
-                            textAlign: TextAlign.center
-                        )
+                            textAlign: TextAlign.center),
+                          Text(_displayAboutThisApp
+                              ? '   -'
+                              : '',
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1,
+                                color: primaryAccentColor, fontWeight: FontWeight.bold
+                            ),
+                          )
+                    ])
                     )
                 ),
 
@@ -780,8 +823,6 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
           _assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
         });
       } else {
-        _showAppPurchaseNotification(context, '_updateAppTheme Launching app store');
-
         String productId = getProductIdFromTheme(theme);
         if (productId.isNotEmpty) {
           _launchStoreStuff(productId);
@@ -1303,7 +1344,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
         /////////////////////////
         SizedBox(
           height: 45,
-          width: 300,
+          width: 225,
           child: ElevatedButton(
               onPressed: () => setState(() {
                 if (_displayTimerAudioSettings) {
@@ -1322,22 +1363,22 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
 
                   _displayTimerAudioSettings
                     ? Row(children: [
-                        Text('-',style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor)),
-                        SizedBox(width: 70)
+                        Text('-',style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: getCorrectColorForComplicatedContext())),
+                        SizedBox(width: 30)
                   ])
                     : Container(),
 
-                  Icon(Icons.watch_later_outlined, color: primaryColor),
-                  SizedBox(width: 20),
-                  Text('Timer', style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1, color: primaryColor)),
+                  Icon(Icons.watch_later_outlined, color: getCorrectColorForComplicatedContext()),
+                  SizedBox(width: 10),
+                  Text('Timer', style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1, color: getCorrectColorForComplicatedContext())),
 
                   _displayTimerAudioSettings
                       ? Spacer(flex: 2)
                       : Spacer(flex: 5),
 
                   _displayTimerAudioSettings
-                      ? Text('-', style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor))
-                      : Text('>', style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor)),
+                      ? Text('-', style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: getCorrectColorForComplicatedContext()))
+                      : Text('>', style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: getCorrectColorForComplicatedContext())),
 
                   _displayTimerAudioSettings
                     ? Spacer(flex: 1)
@@ -1361,7 +1402,7 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
         ////////////////////////////
         SizedBox(
           height: 45,
-          width: 300,
+          width: 225,
           child: ElevatedButton(
               onPressed: () => setState(() {
                 if (_displayButtonAudioSettings) {
@@ -1380,22 +1421,22 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
 
                   _displayButtonAudioSettings
                           ? Row(children: [
-                              Text('-',style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor)),
-                              SizedBox(width: 55),
+                              Text('-',style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: getCorrectColorForComplicatedContext())),
+                              SizedBox(width: 20),
                           ])
                           : Container(),
 
-                  Icon(Icons.touch_app_outlined, color: primaryColor),
-                  SizedBox(width: 20),
-                  Text('Buttons',style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1, color: primaryColor)),
+                  Icon(Icons.touch_app_outlined, color: getCorrectColorForComplicatedContext()),
+                  SizedBox(width: 10),
+                  Text('Buttons',style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18, height: 1.1, color: getCorrectColorForComplicatedContext())),
 
                   _displayButtonAudioSettings
-                      ? Spacer(flex: 2)
+                      ? Spacer(flex: 3)
                       : Spacer(flex: 5),
 
                   _displayButtonAudioSettings
-                      ? Text('-', style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor))
-                      : Text('>', style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: primaryColor)),
+                      ? Text('-', style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: getCorrectColorForComplicatedContext()))
+                      : Text('>', style: TextStyle(fontFamily: 'AstroSpace', fontSize: 20, height: 1.1, color: getCorrectColorForComplicatedContext())),
 
                   _displayButtonAudioSettings
                       ? Spacer(flex: 1)

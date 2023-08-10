@@ -297,8 +297,8 @@ String getThemeFromProductId(String productId) {
 /// In-app Purchase Variables
 Map<String, bool> themesPurchasedMapDefault = {
   'Default': true,
-  'Bubblegum': false,
-  'Pumpkin': false,
+  'Bubblegum': true, // TODO Revert after TESTING!
+  'Pumpkin': true,  // TODO REVERT after TESTING!
 };
 Map<String, bool> themesPurchasedMap = themesPurchasedMapDefault;
 var availableProducts = [];
@@ -407,6 +407,14 @@ void setupDarkOrLightMode(bool appInDarkMode) {
       secondaryAccentColor = secondaryAccentColorLightMode;
       runningClockColor = runningClockColorLightMode;
     }
+}
+
+/// Depending on theme, it can sometimes be difficult to see text
+Color getCorrectColorForComplicatedContext() {
+  return textColorOverwrite
+      ? Colors.black
+      : alternateColorOverwrite ? Colors.black
+      : appCurrentlyInDarkMode ? Colors.white : Colors.black;
 }
 
 /// Audio Assets:
