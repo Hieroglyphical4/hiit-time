@@ -46,6 +46,7 @@ void main() async {
           double returnedAppVolume = double.parse(snapshot.data!['appVolume']);
 
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             home: MyApp(
               audioPlayer: audioPlayer,
               notifications: awesomeNotifications,

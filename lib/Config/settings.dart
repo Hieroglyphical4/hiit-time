@@ -298,7 +298,7 @@ String getThemeFromProductId(String productId) {
 Map<String, bool> themesPurchasedMapDefault = {
   'Default': true,
   'Bubblegum': false,
-  'Pumpkin': false,
+  'Pumpkin': false, // TODO Disable after testing
 };
 Map<String, bool> themesPurchasedMap = themesPurchasedMapDefault;
 var availableProducts = [];
@@ -364,9 +364,11 @@ void setupAppTheme(String theme) {
 
       // Light mode
       primaryColorLightMode = Colors.black;
-      secondaryColorLightMode = Colors.pink.shade200;
-      primaryAccentColorLightMode = Colors.teal;
-      secondaryAccentColorLightMode = Colors.yellow;
+      // secondaryColorLightMode = Colors.pink.shade200;
+      // primaryAccentColorLightMode = Colors.teal;
+      secondaryColorLightMode = Colors.pink.shade100;
+      primaryAccentColorLightMode = Colors.teal.shade300;
+      secondaryAccentColorLightMode = Colors.yellow.shade400;
       runningClockColorLightMode = secondaryAccentColorLightMode;
       break;
 
