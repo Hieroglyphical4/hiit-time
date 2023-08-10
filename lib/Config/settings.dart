@@ -298,7 +298,7 @@ String getThemeFromProductId(String productId) {
 Map<String, bool> themesPurchasedMapDefault = {
   'Default': true,
   'Bubblegum': false,
-  'Pumpkin': false, // TODO Disable after testing
+  'Pumpkin': false,
 };
 Map<String, bool> themesPurchasedMap = themesPurchasedMapDefault;
 var availableProducts = [];

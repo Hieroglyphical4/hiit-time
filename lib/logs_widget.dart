@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'Config/settings.dart';
+import 'package:intl/intl.dart';
 import 'new_log_edit_log_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -2338,6 +2339,24 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
     return Column(mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(height: 5),
+
+          Container(
+              width: 250,
+              padding: EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        width: 2,
+                        color: primaryColor
+                    )
+                ),
+                child: Text("This app does not collect user data. Use this menu to create and use backups of your logs.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                    fontSize: 17, color: primaryColor, fontWeight: FontWeight.bold))
+          ),
+
+          SizedBox(height: 15),
+
           Text('Export Logs:',
               style: TextStyle(fontFamily: 'AstroSpace',
                   fontSize: 18, color: primaryColor)
@@ -2447,11 +2466,6 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
               style: TextStyle(fontFamily: 'AstroSpace',
                   fontSize: 18, color: primaryColor)
           ),
-          Text('.csv files only',
-              style: TextStyle(
-                  // fontFamily: 'AstroSpace',
-                  fontSize: 15, color: primaryColor)
-          ),
           SizedBox(height: 10),
           /// IMPORT Logs
           ElevatedButton(
@@ -2526,16 +2540,6 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
   bool keepDuplicates = false;
   String handleDuplicates = 'Skipping duplicates';
 
-  bool _hintTextShowing = true;
-  FocusNode _hintTextFocusNode = FocusNode();
-  _handleFocusChange(FocusNode focusNode) {
-    if (!focusNode.hasFocus) {
-      setState(() {
-        _hintTextShowing = true;
-      });
-    }
-  }
-
   void _changeDuplicateHandling(bool x) {
     setState(() {
       keepDuplicates = !keepDuplicates;
@@ -2577,10 +2581,11 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
   @override
   void initState() {
     super.initState();
-    _hintTextFocusNode.addListener(() =>
-        _handleFocusChange(_hintTextFocusNode));
 
-    filename = widget.exerciseType;
+    DateTime currentDate = DateTime.now();
+    String today = DateFormat('MM-dd-yy').format(currentDate);
+
+    filename = "${widget.exerciseType}($today)";
     if (!widget.exportingFile) {
       // Launch File picker for Imports:
       _openCsvFile();
@@ -2589,7 +2594,6 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
 
   @override
   void dispose() {
-    _hintTextFocusNode.dispose();
     super.dispose();
   }
 
@@ -2635,49 +2639,12 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
 
                               /// File Name Field
                               widget.exportingFile
-                                  ? TextFormField(
-                                      focusNode: _hintTextFocusNode,
-                                      onTap: () {
-                                        _hintTextShowing = false;
-                                      },
-                                      style: TextStyle(
-                                          color: primaryAccentColor,
-                                          fontSize: 22),
-                                      textAlign: TextAlign.center,
-                                      keyboardType: TextInputType.text,
-                                      onChanged: (value) {
-                                        filename = value;
-
-                                        if (value != '') {
-                                          setState(() {
-                                            enableConfirmButton = true;
-                                          });
-                                        }
-                                        if (value == '') {
-                                          // Useful if the text field was added to and deleted
-                                          setState(() {
-                                            enableConfirmButton = false;
-                                          });
-                                        }
-                                      },
-                                      onFieldSubmitted: (value) {
-                                        FocusManager.instance.primaryFocus?.unfocus();
-                                      },
-                                      decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: Colors.white,
-                                        hintText: _hintTextShowing ?
-                                        filename
-                                            : '',
-                                        hintStyle: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.deny(RegExp(r"\s")), // Ignore spaces
-                                      ],
-                                    )
+                                  ? Text(filename,
+                                        style: TextStyle(
+                                              fontSize: 20,
+                                              color: primaryColor,
+                                            ),
+                              )
                                   : ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                           backgroundColor: enableConfirmButton ? secondaryColor : primaryAccentColor,
@@ -2686,7 +2653,6 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
                                           // )
                                       ),
                                       onPressed: () {
-                                        // TODO Stuff happens on button press here
                                         _openCsvFile();
                                       },
                                       child: Text(filename,
@@ -2696,7 +2662,7 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
                                           )),
                                     ),
 
-                              SizedBox(height: 5),
+                              SizedBox(height: 10),
                               Text('Filename',
                                 style: TextStyle(
                                 // backgroundColor: primaryAccentColor,
