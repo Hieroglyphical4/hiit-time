@@ -90,7 +90,7 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
           Container(
               color: primaryAccentColor,
               child: SizedBox(
-                  height: 50,
+                  height: 55,
                   width: double.infinity,
                   child: Row(children: [
                     Spacer(flex: 1),
@@ -108,7 +108,7 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
 
                     Text('Advanced Settings',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 20,
                          fontWeight: FontWeight.w500,
                          color: textColorOverwrite
                              ? appCurrentlyInDarkMode ? Colors.black : Colors.white
