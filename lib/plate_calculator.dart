@@ -187,6 +187,8 @@ class PlateCalculatorState extends State<PlateCalculator> {
 
   // When the user clicks a plate, increase the shown count
   void changePlateCount(String weight, bool increase, int count) {
+    HapticFeedback.lightImpact();
+
     int roundTo = inLbMode ? 0 : 1;
 
     setState(() {
@@ -201,6 +203,8 @@ class PlateCalculatorState extends State<PlateCalculator> {
 
   // Clear all button counts to 0
   void resetCounts() {
+    HapticFeedback.lightImpact();
+
     setState(() {
       _reps = 0;
       _weight = 0;
@@ -302,6 +306,8 @@ class PlateCalculatorState extends State<PlateCalculator> {
                                   ),
                                   child: ElevatedButton(
                                       onPressed: () => setState(() {
+                                        HapticFeedback.lightImpact();
+
                                         if (oneRepMaxMode) {
                                           oneRepMaxMode = false;
                                           resetCounts();
@@ -346,6 +352,8 @@ class PlateCalculatorState extends State<PlateCalculator> {
                                   ),
                                   child: ElevatedButton(
                                       onPressed: () => setState(() {
+                                        HapticFeedback.lightImpact();
+
                                         calculatedWeight = '0';
                                         oneRepMaxMode = true;
                                       }),
@@ -576,6 +584,8 @@ class PlateCalculatorState extends State<PlateCalculator> {
                                             style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
                                           ),
                                           onPressed: () {
+                                            HapticFeedback.lightImpact();
+
                                             setState(() {
                                               calculatedWeight = calculateOneRepMax();
                                             });

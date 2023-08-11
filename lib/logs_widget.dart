@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'Config/settings.dart';
+import 'package:intl/intl.dart';
 import 'new_log_edit_log_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,17 +29,17 @@ class LogsWidgetState extends State<LogsWidget> {
 
   final GlobalKey<WeightsWidgetState> _keyWeights = GlobalKey<WeightsWidgetState>();
   final GlobalKey<CardioWidgetState> _keyCardio = GlobalKey<CardioWidgetState>();
+  final GlobalKey<NewLogEditLogWidgetState> _keynewLog = GlobalKey<NewLogEditLogWidgetState>();
 
   // In order to get the inner tables to update dynamically from various places,
   //    we need this method accessible on the parent
-  void updateTablesAfterSubmission() {
-    // TODO Display popup message of submission
-
+  void updateTablesAfterSubmission(String origin) {
     setState(() {
-      _displayNewLogsWidget = false;
-      // _mainFilterWeights = false;
-      // _mainFilterCardio = false;
-      // _mainConfigMenu = false;
+      if (origin != 'newLog') {
+        // After a submission, the newLog widget should close so we can avoid
+          // refreshing its submenu
+        _keynewLog.currentState?.getExercises();
+      }
 
       _keyWeights.currentState?.getExercises();
       _keyCardio.currentState?.getExercises();
@@ -47,12 +48,11 @@ class LogsWidgetState extends State<LogsWidget> {
 
   // Exercises didnt seem to update the same as workouts in the tables
   //    Closing menus when those are updated... for now
-  void closeMenusAfterExerciseSubmission() {
+  void closeMenusAfterExerciseSubmission(String origin) {
     setState(() {
+      _keyWeights.currentState?.getExercises();
+      _keyCardio.currentState?.getExercises();
       _displayNewLogsWidget = false;
-      _mainFilterWeights = false;
-      _mainFilterCardio = false;
-      _mainConfigMenu = false;
     });
   }
 
@@ -92,6 +92,8 @@ class LogsWidgetState extends State<LogsWidget> {
                             padding: const EdgeInsets.all(4),
                           ),
                           onPressed: () {
+                            HapticFeedback.lightImpact();
+
                             setState(() {
                               if (_displayNewLogsWidget) {
                                 _displayNewLogsWidget = false;
@@ -130,9 +132,9 @@ class LogsWidgetState extends State<LogsWidget> {
                 ),
 
                 _displayNewLogsWidget
-                    ? NewLogEditLogWidget(
-                        updateTable: updateTablesAfterSubmission,
-                        closeNewLogsMenu: closeMenusAfterExerciseSubmission,
+                    ? NewLogEditLogWidget(key: _keynewLog,
+                        updateTable: () => updateTablesAfterSubmission('newLog'),
+                        closeNewLogsMenu: () => closeMenusAfterExerciseSubmission("newLog"),
                         header: 'New Log',
                         id: null,
                         exerciseType: null,
@@ -166,6 +168,8 @@ class LogsWidgetState extends State<LogsWidget> {
                               )),
                           child: ElevatedButton(
                             onPressed: () => setState(() {
+                              HapticFeedback.lightImpact();
+
                               _mainFilterCardio = !_mainFilterCardio;
                               _mainFilterWeights = false;
                               _mainConfigMenu = false;
@@ -203,6 +207,8 @@ class LogsWidgetState extends State<LogsWidget> {
                               )),
                           child: ElevatedButton(
                             onPressed: () => setState(() {
+                              HapticFeedback.lightImpact();
+
                               _mainConfigMenu = !_mainConfigMenu;
                               _mainFilterWeights = false;
                               _mainFilterCardio = false;
@@ -233,6 +239,8 @@ class LogsWidgetState extends State<LogsWidget> {
                               )),
                           child: ElevatedButton(
                             onPressed: () => setState(() {
+                              HapticFeedback.lightImpact();
+
                               _mainFilterWeights = !_mainFilterWeights;
                               _mainFilterCardio = false;
                               _mainConfigMenu = false;
@@ -265,7 +273,10 @@ class LogsWidgetState extends State<LogsWidget> {
 
                 // Determine if Cardio Widget should show:
                 _mainFilterCardio
-                    ? CardioWidget(key: _keyCardio, updateTables: updateTablesAfterSubmission, closeMenus: closeMenusAfterExerciseSubmission)
+                    ? CardioWidget(key: _keyCardio,
+                        updateTables: () => updateTablesAfterSubmission('cardio'),
+                        closeMenus: () => closeMenusAfterExerciseSubmission('cardio'),
+                )
                     : Container(),
 
                 // Determine if Date Widget should show:
@@ -275,7 +286,10 @@ class LogsWidgetState extends State<LogsWidget> {
 
                 // Determine if Weights Widget should show:
                 _mainFilterWeights
-                    ? WeightsWidget(key: _keyWeights, updateTables: updateTablesAfterSubmission, closeMenus: closeMenusAfterExerciseSubmission)
+                    ? WeightsWidget(key: _keyWeights,
+                        updateTables: () => updateTablesAfterSubmission('weights'),
+                        closeMenus: () => closeMenusAfterExerciseSubmission('weights'),
+                    )
                     : Container(),
 
                 /// Prompt user to select a Category
@@ -317,12 +331,12 @@ class LogsWidgetState extends State<LogsWidget> {
 // Widget for Add & Edit Exercise Dialog
 ////////////////////////////////////////////
 class AddExerciseEditExerciseDialog extends StatefulWidget {
-  final Function() closeNewLogsMenu;
+  final Function() updateNewLogsMenu;
   String header;
   final String initialExerciseName;
 
   AddExerciseEditExerciseDialog({
-      required this.closeNewLogsMenu,
+      required this.updateNewLogsMenu,
       required this.header,
       required this.initialExerciseName,
       super.key,
@@ -393,10 +407,12 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
 
   Future<void> insertNewExerciseRecord(String exercise, bool isCardio) async {
     await DatabaseHelper.instance.insertExercise(exercise, isCardio);
+    _showNotification(context, 'Create');
   }
 
   Future<void> updateExerciseRecord(String exercise) async {
     await DatabaseHelper.instance.updateExercise(exercise, widget.initialExerciseName);
+    _showNotification(context, 'Update');
   }
 
   checkConfirmButtonState() {
@@ -501,6 +517,8 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                             ),
                                             child: ElevatedButton(
                                                 onPressed: () => setState(() {
+                                                  HapticFeedback.lightImpact();
+
                                                   _setExerciseType('Cardio');
                                                 }),
                                                 style: ElevatedButton.styleFrom(
@@ -534,6 +552,8 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                             ),
                                             child: ElevatedButton(
                                               onPressed: () => setState(() {
+                                                HapticFeedback.lightImpact();
+
                                                 _setExerciseType('Weight');
                                               }),
                                               style: ElevatedButton.styleFrom(
@@ -649,6 +669,8 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                       style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
                                     ),
                                     onPressed: () {
+                                      HapticFeedback.lightImpact();
+
                                       Navigator.of(context).pop(false);
                                     },
                                   ),
@@ -661,19 +683,20 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                       padding: const EdgeInsets.all(4),
                                     ),
                                     onPressed: enableConfirmButton
-                                        ? () {
+                                        ? () async {
+                                      HapticFeedback.lightImpact();
+
                                       if (editMode) {
                                         /// Edit Mode
                                         String exerciseName = newExerciseName.isNotEmpty ? newExerciseName : currentExerciseName;
-                                        updateExerciseRecord(exerciseName);
-                                        _showNotification(context, 'Update');
+                                        await updateExerciseRecord(exerciseName);
                                         Navigator.of(context).pop(true);
-                                        widget.closeNewLogsMenu(); // TODO Activate
+                                        widget.updateNewLogsMenu();
                                       } else {
                                         /// New Log Mode
-                                        insertNewExerciseRecord(newExerciseName, cardioExercise);
-                                        _showNotification(context, 'Create');
+                                        await insertNewExerciseRecord(newExerciseName, cardioExercise);
                                         Navigator.of(context).pop(true);
+                                        widget.updateNewLogsMenu();
                                       }
                                     } : null,
                                     child: const Text("Confirm",
@@ -757,11 +780,15 @@ class WeightsWidgetState extends State<WeightsWidget> {
                             )
                           ]),
                           onPressed: () {},
-                          onLongPress: () {
+                          onLongPress: () async {
+                            HapticFeedback.lightImpact();
+
                             // Fire DATABASE Event to delete Exercise
-                            deleteExercise();
-                            _showNotification(context);
-                            widget.closeMenus();
+                            await deleteExercise();
+                            widget.updateTables();
+                            setState(() {
+                              subMenuOpen = false;
+                            });
                           },
                         )
                   )
@@ -965,7 +992,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                         TableCell(
                             child: GestureDetector(
                                 onTap: () {
-                                  HapticFeedback.mediumImpact();
+                                  HapticFeedback.lightImpact();
 
                                   // Launch Edit Workout Menu
                                   showGeneralDialog(
@@ -1000,6 +1027,8 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                                   : alternateColorOverwrite ? Colors.black
                                                   : Colors.white),
                                               onPressed: () {
+                                                HapticFeedback.lightImpact();
+
                                                 Navigator.pop(context);
                                               },
                                             ),
@@ -1011,6 +1040,8 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                                     : Colors.white
                                                 ),
                                                 onPressed: () {
+                                                  HapticFeedback.lightImpact();
+
                                                   // Launch Plate Calculator
                                                   showGeneralDialog(
                                                     context: context,
@@ -1046,8 +1077,11 @@ class WeightsWidgetState extends State<WeightsWidget> {
 
                                     },
                                   ).then((restartRequired) {
+                                    widget.updateTables();
+                                    getExercises();
+
                                     if (restartRequired == true) {
-                                      // TODO Determine if updates needs to be refreshed
+                                      //
                                     }
                                   });
 
@@ -1162,6 +1196,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
 
   Future<void> deleteExercise() async {
     await DatabaseHelper.instance.deleteExercise(selectedExercise);
+    _showNotification(context);
   }
 
   // Helper function that will display little notification overlay at the bottom of the screen
@@ -1220,6 +1255,8 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                 )),
                             child: ElevatedButton(
                               onPressed: () => setState(() {
+                                HapticFeedback.lightImpact();
+
                                 // Only allow one Exercise Submenu active at a time:
                                 for (int i = 0; i < exerciseMap.length; i++) {
                                   if (i == index) {
@@ -1249,10 +1286,10 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                 ? IconButton(
                               splashRadius: 20,
                               onPressed: () => setState(() {
+                                HapticFeedback.lightImpact();
+
                                 for (int i = 0; i < exerciseMap.length; i++) {
                                   if (i == index) {
-                                    HapticFeedback.mediumImpact();
-
                                     // Launch Edit Exercise Menu
                                     showGeneralDialog(
                                       context: context,
@@ -1267,14 +1304,16 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                           Animation animation,
                                           Animation secondaryAnimation) {
                                         return AddExerciseEditExerciseDialog(
-                                          closeNewLogsMenu: widget.closeMenus,
+                                          updateNewLogsMenu: widget.updateTables,
                                           header: 'Edit Exercise',
                                           initialExerciseName: exerciseMap[i]['name'],
                                         );
                                       },
                                     ).then((restartRequired) {
+                                      getExercises();
+
                                       if (restartRequired == true) {
-                                        // TODO Determine if updates needs to be refreshed
+                                        //
                                       }
                                     });
                                   }
@@ -1465,11 +1504,15 @@ class CardioWidgetState extends State<CardioWidget> {
                             )
                           ]),
                       onPressed: () {},
-                      onLongPress: () {
+                      onLongPress: () async {
+                        HapticFeedback.lightImpact();
+
                         // Fire DATABASE Event to delete Exercise
-                        deleteExercise();
-                        _showNotification(context);
-                        widget.closeMenus();
+                        await deleteExercise();
+                        widget.updateTables();
+                        setState(() {
+                          subMenuOpen = false;
+                        });
                       },
                     )
                 )
@@ -1634,7 +1677,7 @@ class CardioWidgetState extends State<CardioWidget> {
                         TableCell(
                             child: GestureDetector(
                                 onTap: () {
-                                  HapticFeedback.mediumImpact();
+                                  HapticFeedback.lightImpact();
 
                                   // Launch Edit Workout Menu
                                   showGeneralDialog(
@@ -1669,6 +1712,8 @@ class CardioWidgetState extends State<CardioWidget> {
                                                   : alternateColorOverwrite ? Colors.black
                                                   : Colors.white),
                                               onPressed: () {
+                                                HapticFeedback.lightImpact();
+
                                                 Navigator.pop(context);
                                               },
                                             ),
@@ -1680,6 +1725,8 @@ class CardioWidgetState extends State<CardioWidget> {
                                                     : Colors.white
                                                 ),
                                                 onPressed: () {
+                                                  HapticFeedback.lightImpact();
+
                                                   // Launch Plate Calculator
                                                   showGeneralDialog(
                                                     context: context,
@@ -1715,8 +1762,11 @@ class CardioWidgetState extends State<CardioWidget> {
 
                                     },
                                   ).then((restartRequired) {
+                                    widget.updateTables();
+                                    getExercises();
+
                                     if (restartRequired == true) {
-                                      // TODO Determine if updates needs to be refreshed
+                                      //
                                     }
                                   });
 
@@ -1851,6 +1901,7 @@ class CardioWidgetState extends State<CardioWidget> {
 
   Future<void> deleteExercise() async {
     await DatabaseHelper.instance.deleteExercise(selectedExercise);
+    _showNotification(context);
   }
 
   @override
@@ -1887,6 +1938,8 @@ class CardioWidgetState extends State<CardioWidget> {
                                     )),
                                 child: ElevatedButton(
                                   onPressed: () => setState(() {
+                                    HapticFeedback.lightImpact();
+
                                     // Only allow one Exercise Submenu active at a time:
                                     for (int i = 0; i < exerciseMap.length; i++) {
                                       if (i == index) {
@@ -1917,10 +1970,10 @@ class CardioWidgetState extends State<CardioWidget> {
                                   ? IconButton(
                                 splashRadius: 20,
                                 onPressed: () => setState(() {
+                                  HapticFeedback.lightImpact();
+
                                   for (int i = 0; i < exerciseMap.length; i++) {
                                     if (i == index) {
-                                      HapticFeedback.mediumImpact();
-
                                       // Launch Edit Exercise Menu
                                       showGeneralDialog(
                                         context: context,
@@ -1935,14 +1988,16 @@ class CardioWidgetState extends State<CardioWidget> {
                                             Animation animation,
                                             Animation secondaryAnimation) {
                                           return AddExerciseEditExerciseDialog(
-                                            closeNewLogsMenu: widget.closeMenus,
+                                            updateNewLogsMenu: widget.updateTables,
                                             header: 'Edit Exercise',
                                             initialExerciseName: exerciseMap[i]['name'],
                                           );
                                         },
                                       ).then((restartRequired) {
+                                        getExercises();
+
                                         if (restartRequired == true) {
-                                          // TODO Determine if updates needs to be refreshed
+                                          //
                                         }
                                       });
                                     }
@@ -2316,6 +2371,24 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
     return Column(mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(height: 5),
+
+          Container(
+              width: 225,
+              padding: EdgeInsets.all(5.0),
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        width: 2,
+                        color: primaryColor
+                    )
+                ),
+                child: Text("This app does not collect user data. Use this menu to create and restore local backups of your logs.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                    fontSize: 17, color: primaryColor))
+          ),
+
+          SizedBox(height: 15),
+
           Text('Export Logs:',
               style: TextStyle(fontFamily: 'AstroSpace',
                   fontSize: 18, color: primaryColor)
@@ -2327,6 +2400,8 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
             ElevatedButton(
               child: Text('Cardio Logs'),
               onPressed: () async {
+                HapticFeedback.lightImpact();
+
                 // Check if logs exist:
                 if (await checkForRecord('cardio_workouts')) {
                   showGeneralDialog(
@@ -2373,6 +2448,8 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
             ElevatedButton(
               child: Text('Weight Logs'),
               onPressed: () async {
+                HapticFeedback.lightImpact();
+
                 // Check if logs exist:
                 if (await checkForRecord('weighted_workouts')) {
                   showGeneralDialog(
@@ -2425,16 +2502,13 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
               style: TextStyle(fontFamily: 'AstroSpace',
                   fontSize: 18, color: primaryColor)
           ),
-          Text('.csv files only',
-              style: TextStyle(
-                  // fontFamily: 'AstroSpace',
-                  fontSize: 15, color: primaryColor)
-          ),
           SizedBox(height: 10),
           /// IMPORT Logs
           ElevatedButton(
             child: Text('Import'),
             onPressed: () async {
+              HapticFeedback.lightImpact();
+
               showGeneralDialog(
                 context: context,
                 barrierDismissible: true,
@@ -2504,16 +2578,6 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
   bool keepDuplicates = false;
   String handleDuplicates = 'Skipping duplicates';
 
-  bool _hintTextShowing = true;
-  FocusNode _hintTextFocusNode = FocusNode();
-  _handleFocusChange(FocusNode focusNode) {
-    if (!focusNode.hasFocus) {
-      setState(() {
-        _hintTextShowing = true;
-      });
-    }
-  }
-
   void _changeDuplicateHandling(bool x) {
     setState(() {
       keepDuplicates = !keepDuplicates;
@@ -2555,10 +2619,11 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
   @override
   void initState() {
     super.initState();
-    _hintTextFocusNode.addListener(() =>
-        _handleFocusChange(_hintTextFocusNode));
 
-    filename = widget.exerciseType;
+    DateTime currentDate = DateTime.now();
+    String today = DateFormat('MM-dd-yy').format(currentDate);
+
+    filename = "${widget.exerciseType}($today)";
     if (!widget.exportingFile) {
       // Launch File picker for Imports:
       _openCsvFile();
@@ -2567,7 +2632,6 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
 
   @override
   void dispose() {
-    _hintTextFocusNode.dispose();
     super.dispose();
   }
 
@@ -2613,49 +2677,12 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
 
                               /// File Name Field
                               widget.exportingFile
-                                  ? TextFormField(
-                                      focusNode: _hintTextFocusNode,
-                                      onTap: () {
-                                        _hintTextShowing = false;
-                                      },
-                                      style: TextStyle(
-                                          color: primaryAccentColor,
-                                          fontSize: 22),
-                                      textAlign: TextAlign.center,
-                                      keyboardType: TextInputType.text,
-                                      onChanged: (value) {
-                                        filename = value;
-
-                                        if (value != '') {
-                                          setState(() {
-                                            enableConfirmButton = true;
-                                          });
-                                        }
-                                        if (value == '') {
-                                          // Useful if the text field was added to and deleted
-                                          setState(() {
-                                            enableConfirmButton = false;
-                                          });
-                                        }
-                                      },
-                                      onFieldSubmitted: (value) {
-                                        FocusManager.instance.primaryFocus?.unfocus();
-                                      },
-                                      decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: Colors.white,
-                                        hintText: _hintTextShowing ?
-                                        filename
-                                            : '',
-                                        hintStyle: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.deny(RegExp(r"\s")), // Ignore spaces
-                                      ],
-                                    )
+                                  ? Text(filename,
+                                        style: TextStyle(
+                                              fontSize: 20,
+                                              color: primaryColor,
+                                            ),
+                              )
                                   : ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                           backgroundColor: enableConfirmButton ? secondaryColor : primaryAccentColor,
@@ -2664,7 +2691,8 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
                                           // )
                                       ),
                                       onPressed: () {
-                                        // TODO Stuff happens on button press here
+                                        HapticFeedback.lightImpact();
+
                                         _openCsvFile();
                                       },
                                       child: Text(filename,
@@ -2674,7 +2702,7 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
                                           )),
                                     ),
 
-                              SizedBox(height: 5),
+                              SizedBox(height: 10),
                               Text('Filename',
                                 style: TextStyle(
                                 // backgroundColor: primaryAccentColor,
@@ -2779,6 +2807,8 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
                                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
                                   ),
                                   onPressed: () {
+                                    HapticFeedback.lightImpact();
+
                                     Navigator.of(context).pop(false);
                                   },
                                 ),
@@ -2792,6 +2822,8 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
                                     ),
                                     onPressed: enableConfirmButton
                                         ? () {
+                                      HapticFeedback.lightImpact();
+
                                       // Other logic can also go here
                                       Navigator.of(context).pop({
                                         'filename': filename,

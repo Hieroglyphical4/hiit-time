@@ -4,22 +4,6 @@ import 'package:flutter/services.dart';
 import 'advanced_settings_menu.dart';
 import 'Config/settings.dart';
 
-// class _TextInputFormatter extends TextInputFormatter {
-//   @override
-//   TextEditingValue formatEditUpdate(
-//       TextEditingValue oldValue, TextEditingValue newValue) {
-//     // Code here
-//
-//     return newValue;
-//   }
-// }
-
-main() async {
-  return const MaterialApp(
-      home: SettingsMenu()
-  );
-}
-
 class SettingsMenu extends StatefulWidget {
   final audio;
   final int? workTime;
@@ -27,6 +11,7 @@ class SettingsMenu extends StatefulWidget {
   final int? timeModAdd;
   final int? timeModSub;
   final double? appVolume;
+  final GlobalKey<AdvancedSettingsMenuState> advancedSettingsKey;
 
   const SettingsMenu({
     Key? key,
@@ -36,6 +21,7 @@ class SettingsMenu extends StatefulWidget {
     this.timeModAdd,
     this.timeModSub,
     this.appVolume,
+    required this.advancedSettingsKey,
   }) : super(key: key);
 
   @override
@@ -236,7 +222,12 @@ class _SettingsMenuState extends State<SettingsMenu> {
   final subTimetextEditController = TextEditingController();
   final addTimeTextEditController = TextEditingController();
 
+  @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: secondaryColor,
+        statusBarIconBrightness: appCurrentlyInDarkMode ? Brightness.light : Brightness.dark
+    ));
     return Scaffold(
       backgroundColor: secondaryColor,
       resizeToAvoidBottomInset: true,
@@ -305,7 +296,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       Animation secondaryAnimation) {
                                     return Center(
                                       child: AdvancedSettingsMenu(
-                                        key: UniqueKey()
+                                        key: widget.advancedSettingsKey
                                       ),
                                     );
                                   },

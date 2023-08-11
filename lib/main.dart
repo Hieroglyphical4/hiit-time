@@ -4,6 +4,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:hiit_time/Config/notification_controller.dart';
 import 'package:hiit_time/countdown_progress_indicator.dart';
 import 'package:hiit_time/advanced_settings_menu.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:hiit_time/Config/settings.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:hiit_time/settings_menu.dart';
@@ -45,6 +46,7 @@ void main() async {
           double returnedAppVolume = double.parse(snapshot.data!['appVolume']);
 
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             home: MyApp(
               audioPlayer: audioPlayer,
               notifications: awesomeNotifications,
@@ -98,6 +100,9 @@ Future<void> onStart(ServiceInstance service) async {
   });
 }
 
+// In-App purchase Setup
+late StreamSubscription<dynamic> _streamSubscription;
+
 class MyApp extends StatefulWidget {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   var audioPlayer;
@@ -145,9 +150,95 @@ class _MyAppState extends State<MyApp> {
   var _workTime = defaultWorkDuration;
   var _restTime = defaultRestDuration;
 
+  // Used to communicate to the Themes widget (thru AdvancedSettings) to update the UI after a Purchase
+  final advancedSettingsKey = GlobalKey<AdvancedSettingsMenuState>();
+
+  // Used for In-App purchases
+  _listenToPurchase(List<PurchaseDetails> purchaseDetailsList, BuildContext context) {
+    purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('New PurchaseID Heard: ${purchaseDetails.productID}')));
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Transaction Date: ${purchaseDetails.transactionDate}')));
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Local Verif: ${purchaseDetails.verificationData.localVerificationData}')));
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Server Verif: ${purchaseDetails.verificationData.serverVerificationData}')));
+
+      if (purchaseDetails.status == PurchaseStatus.pending)  {
+        // Item is pending
+        // TODO Add pending UI?
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Purchase Pending...')));
+      } else if (purchaseDetails.status == PurchaseStatus.error) {
+        // Item encountered an error
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error Encountered: ${purchaseDetails.error!.message}")));
+      } else if (purchaseDetails.status == PurchaseStatus.restored) {
+        // User purchased product previous, ensure they have it enabled
+        enableTheme(purchaseDetails.productID);
+      } else if (purchaseDetails.status == PurchaseStatus.purchased) {
+        // User just purchased an item
+        // TODO Is Additional verification needed before enabling?
+        enableTheme(purchaseDetails.productID);
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Thank you for your Purchase!!!')));
+      }
+
+      // Complete Purchase
+      if (purchaseDetails.pendingCompletePurchase) {
+        await InAppPurchase.instance.completePurchase(purchaseDetails);
+
+        // Trigger method in Advanced Settings to update UI
+        advancedSettingsKey.currentState?.updateUIAfterPurchase();
+      }
+    });
+  }
+
+  // Used for In-App purchases
+  _initStore() async {
+    var storeAvailable = await inAppPurchase.isAvailable();
+
+    if (storeAvailable) {
+      final ProductDetailsResponse productDetailsResponse = await inAppPurchase.queryProductDetails(productIds);
+
+      if (productDetailsResponse.notFoundIDs.isNotEmpty) {
+        // No products found from store.
+        // todo Remove Purchases? Test this!
+        clearThemesFromSavedPrefs();
+      }
+
+      if (productDetailsResponse.error == null) {
+        // No errors found, restore previous purchases
+        inAppPurchase.restorePurchases();
+        setState(() {
+          // Setup products from store
+          // This variable is set in settings.dart
+          availableProducts = productDetailsResponse.productDetails;
+        });
+      }
+    } else {
+      // No store available to verify purchases.
+      // Set them using the user's storedPreferences for now:
+      setupInAppPurchasesFromSharedPreferences();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+
+    ////////////////////////////////
+    // Begin In-App Purchase Block
+    ////////////////////////////////
+    // setupInAppPurchasesFromSharedPreferences();
+    inAppPurchase = InAppPurchase.instance; // This is the Billing Client
+    final Stream purchaseUpdated = inAppPurchase.purchaseStream;
+    _streamSubscription = purchaseUpdated.listen((purchaseList) {
+      _listenToPurchase(purchaseList, context);
+    }, onDone: (){
+      _streamSubscription.cancel();
+    }, onError: (error){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Something went wrong')));
+    });
+    _initStore();
+    ///////////////////////////
+    // End In-App Int Block
+    ///////////////////////////
+
     _audioPlayer = widget.audioPlayer;
     _notificationsPlugin = widget.notifications;
     _duration = widget.workDuration ?? defaultWorkDuration;
@@ -166,9 +257,10 @@ class _MyAppState extends State<MyApp> {
     audioPlayer.dispose();
     _notificationsPlugin.cancelAll(); // TODO Prolly unnecessary /w the next line
     AwesomeNotifications().cancelAll();
+    _streamSubscription.cancel();
     super.dispose();
   }
-
+  
   // Update values to be displayed in settings menu using previous stored settings
   Future<void> updateSettingsFromMemory() async {
     final settings = await getSavedUserSettings();
@@ -290,7 +382,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: secondaryColor,
+        statusBarIconBrightness: appCurrentlyInDarkMode ? Brightness.light : Brightness.dark
+    ));
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       navigatorKey: MyApp.navigatorKey,
       color: Colors.transparent,
       home: Scaffold(
@@ -348,7 +445,7 @@ class _MyAppState extends State<MyApp> {
                                 Animation animation,
                                 Animation secondaryAnimation) {
                               return Center(
-                                child: AdvancedSettingsMenu(key: UniqueKey()),
+                                child: AdvancedSettingsMenu(key: advancedSettingsKey)
                               );
                             },
                           ).then((restartRequired) {
@@ -571,6 +668,7 @@ class _MyAppState extends State<MyApp> {
                                   timeModAdd: _timerModifierValueAdd,
                                   timeModSub: _timerModifierValueSub,
                                   appVolume: _appVolume,
+                                  advancedSettingsKey: advancedSettingsKey
                                 ),
                               );
                             },
