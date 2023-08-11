@@ -92,6 +92,8 @@ class LogsWidgetState extends State<LogsWidget> {
                             padding: const EdgeInsets.all(4),
                           ),
                           onPressed: () {
+                            HapticFeedback.lightImpact();
+
                             setState(() {
                               if (_displayNewLogsWidget) {
                                 _displayNewLogsWidget = false;
@@ -166,6 +168,8 @@ class LogsWidgetState extends State<LogsWidget> {
                               )),
                           child: ElevatedButton(
                             onPressed: () => setState(() {
+                              HapticFeedback.lightImpact();
+
                               _mainFilterCardio = !_mainFilterCardio;
                               _mainFilterWeights = false;
                               _mainConfigMenu = false;
@@ -203,6 +207,8 @@ class LogsWidgetState extends State<LogsWidget> {
                               )),
                           child: ElevatedButton(
                             onPressed: () => setState(() {
+                              HapticFeedback.lightImpact();
+
                               _mainConfigMenu = !_mainConfigMenu;
                               _mainFilterWeights = false;
                               _mainFilterCardio = false;
@@ -233,6 +239,8 @@ class LogsWidgetState extends State<LogsWidget> {
                               )),
                           child: ElevatedButton(
                             onPressed: () => setState(() {
+                              HapticFeedback.lightImpact();
+
                               _mainFilterWeights = !_mainFilterWeights;
                               _mainFilterCardio = false;
                               _mainConfigMenu = false;
@@ -509,6 +517,8 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                             ),
                                             child: ElevatedButton(
                                                 onPressed: () => setState(() {
+                                                  HapticFeedback.lightImpact();
+
                                                   _setExerciseType('Cardio');
                                                 }),
                                                 style: ElevatedButton.styleFrom(
@@ -542,6 +552,8 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                             ),
                                             child: ElevatedButton(
                                               onPressed: () => setState(() {
+                                                HapticFeedback.lightImpact();
+
                                                 _setExerciseType('Weight');
                                               }),
                                               style: ElevatedButton.styleFrom(
@@ -657,6 +669,8 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                       style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
                                     ),
                                     onPressed: () {
+                                      HapticFeedback.lightImpact();
+
                                       Navigator.of(context).pop(false);
                                     },
                                   ),
@@ -670,6 +684,8 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                     ),
                                     onPressed: enableConfirmButton
                                         ? () async {
+                                      HapticFeedback.lightImpact();
+
                                       if (editMode) {
                                         /// Edit Mode
                                         String exerciseName = newExerciseName.isNotEmpty ? newExerciseName : currentExerciseName;
@@ -765,6 +781,8 @@ class WeightsWidgetState extends State<WeightsWidget> {
                           ]),
                           onPressed: () {},
                           onLongPress: () async {
+                            HapticFeedback.lightImpact();
+
                             // Fire DATABASE Event to delete Exercise
                             await deleteExercise();
                             widget.updateTables();
@@ -974,7 +992,7 @@ class WeightsWidgetState extends State<WeightsWidget> {
                         TableCell(
                             child: GestureDetector(
                                 onTap: () {
-                                  HapticFeedback.mediumImpact();
+                                  HapticFeedback.lightImpact();
 
                                   // Launch Edit Workout Menu
                                   showGeneralDialog(
@@ -1009,6 +1027,8 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                                   : alternateColorOverwrite ? Colors.black
                                                   : Colors.white),
                                               onPressed: () {
+                                                HapticFeedback.lightImpact();
+
                                                 Navigator.pop(context);
                                               },
                                             ),
@@ -1020,6 +1040,8 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                                     : Colors.white
                                                 ),
                                                 onPressed: () {
+                                                  HapticFeedback.lightImpact();
+
                                                   // Launch Plate Calculator
                                                   showGeneralDialog(
                                                     context: context,
@@ -1233,6 +1255,8 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                 )),
                             child: ElevatedButton(
                               onPressed: () => setState(() {
+                                HapticFeedback.lightImpact();
+
                                 // Only allow one Exercise Submenu active at a time:
                                 for (int i = 0; i < exerciseMap.length; i++) {
                                   if (i == index) {
@@ -1262,10 +1286,10 @@ class WeightsWidgetState extends State<WeightsWidget> {
                                 ? IconButton(
                               splashRadius: 20,
                               onPressed: () => setState(() {
+                                HapticFeedback.lightImpact();
+
                                 for (int i = 0; i < exerciseMap.length; i++) {
                                   if (i == index) {
-                                    HapticFeedback.mediumImpact();
-
                                     // Launch Edit Exercise Menu
                                     showGeneralDialog(
                                       context: context,
@@ -1481,6 +1505,8 @@ class CardioWidgetState extends State<CardioWidget> {
                           ]),
                       onPressed: () {},
                       onLongPress: () async {
+                        HapticFeedback.lightImpact();
+
                         // Fire DATABASE Event to delete Exercise
                         await deleteExercise();
                         widget.updateTables();
@@ -1651,7 +1677,7 @@ class CardioWidgetState extends State<CardioWidget> {
                         TableCell(
                             child: GestureDetector(
                                 onTap: () {
-                                  HapticFeedback.mediumImpact();
+                                  HapticFeedback.lightImpact();
 
                                   // Launch Edit Workout Menu
                                   showGeneralDialog(
@@ -1686,6 +1712,8 @@ class CardioWidgetState extends State<CardioWidget> {
                                                   : alternateColorOverwrite ? Colors.black
                                                   : Colors.white),
                                               onPressed: () {
+                                                HapticFeedback.lightImpact();
+
                                                 Navigator.pop(context);
                                               },
                                             ),
@@ -1697,6 +1725,8 @@ class CardioWidgetState extends State<CardioWidget> {
                                                     : Colors.white
                                                 ),
                                                 onPressed: () {
+                                                  HapticFeedback.lightImpact();
+
                                                   // Launch Plate Calculator
                                                   showGeneralDialog(
                                                     context: context,
@@ -1908,6 +1938,8 @@ class CardioWidgetState extends State<CardioWidget> {
                                     )),
                                 child: ElevatedButton(
                                   onPressed: () => setState(() {
+                                    HapticFeedback.lightImpact();
+
                                     // Only allow one Exercise Submenu active at a time:
                                     for (int i = 0; i < exerciseMap.length; i++) {
                                       if (i == index) {
@@ -1938,10 +1970,10 @@ class CardioWidgetState extends State<CardioWidget> {
                                   ? IconButton(
                                 splashRadius: 20,
                                 onPressed: () => setState(() {
+                                  HapticFeedback.lightImpact();
+
                                   for (int i = 0; i < exerciseMap.length; i++) {
                                     if (i == index) {
-                                      HapticFeedback.mediumImpact();
-
                                       // Launch Edit Exercise Menu
                                       showGeneralDialog(
                                         context: context,
@@ -2368,6 +2400,8 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
             ElevatedButton(
               child: Text('Cardio Logs'),
               onPressed: () async {
+                HapticFeedback.lightImpact();
+
                 // Check if logs exist:
                 if (await checkForRecord('cardio_workouts')) {
                   showGeneralDialog(
@@ -2414,6 +2448,8 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
             ElevatedButton(
               child: Text('Weight Logs'),
               onPressed: () async {
+                HapticFeedback.lightImpact();
+
                 // Check if logs exist:
                 if (await checkForRecord('weighted_workouts')) {
                   showGeneralDialog(
@@ -2471,6 +2507,8 @@ class LogsConfigWidgetState extends State<LogsConfigWidget> {
           ElevatedButton(
             child: Text('Import'),
             onPressed: () async {
+              HapticFeedback.lightImpact();
+
               showGeneralDialog(
                 context: context,
                 barrierDismissible: true,
@@ -2653,6 +2691,8 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
                                           // )
                                       ),
                                       onPressed: () {
+                                        HapticFeedback.lightImpact();
+
                                         _openCsvFile();
                                       },
                                       child: Text(filename,
@@ -2767,6 +2807,8 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
                                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
                                   ),
                                   onPressed: () {
+                                    HapticFeedback.lightImpact();
+
                                     Navigator.of(context).pop(false);
                                   },
                                 ),
@@ -2780,6 +2822,8 @@ class ConfirmExportImportWidgetState extends State<ConfirmExportImportWidget> {
                                     ),
                                     onPressed: enableConfirmButton
                                         ? () {
+                                      HapticFeedback.lightImpact();
+
                                       // Other logic can also go here
                                       Navigator.of(context).pop({
                                         'filename': filename,

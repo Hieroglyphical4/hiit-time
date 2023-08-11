@@ -1,4 +1,5 @@
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:hiit_time/plate_calculator.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,8 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                 style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
               ),
               onPressed: () {
+                HapticFeedback.mediumImpact();
+
                 Navigator.of(context).pop(false);
               },
             ),
@@ -50,6 +53,8 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                 style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
               ),
               onPressed: () {
+                HapticFeedback.mediumImpact();
+
                 Navigator.of(context).pop(true);
               },
             ),
@@ -100,6 +105,8 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           : alternateColorOverwrite ? Colors.black
                           : Colors.white),
                       onPressed: () {
+                        HapticFeedback.lightImpact();
+
                         Navigator.pop(context);
                       },
                     ),
@@ -125,6 +132,8 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                           : Colors.white
                       ),
                       onPressed: () {
+                        HapticFeedback.lightImpact();
+
                         /// Launch Plate Calculator
                         showGeneralDialog(
                           context: context,
@@ -150,6 +159,8 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                   ])
               )
           ),
+
+          /// Begin Advanced Settings Menu Buttons
           Expanded(child: SingleChildScrollView(
               child: Form(
                 key: _formKey,
@@ -168,6 +179,8 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                       width: 300,
                       child: ElevatedButton(
                           onPressed: () => setState(() {
+                            HapticFeedback.lightImpact();
+
                             if (_displayAudioSettings) {
                               _displayAudioSettings = false;
                             } else {
@@ -222,6 +235,8 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         width: 300,
                         child: ElevatedButton(
                             onPressed: () => setState(() {
+                              HapticFeedback.lightImpact();
+
                               if (_displayThemesSettings) {
                                 _displayThemesSettings = false;
                               } else {
@@ -279,6 +294,8 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         width: 300,
                         child: ElevatedButton(
                             onPressed: () => setState(() {
+                              HapticFeedback.lightImpact();
+
                               if (_displayLogs) {
                                 _displayLogs = false;
                               } else {
@@ -335,6 +352,8 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         width: 300,
                         child: ElevatedButton(
                             onPressed: () => setState(() {
+                              HapticFeedback.lightImpact();
+
                               if (_displayTips) {
                                 _displayTips = false;
                               } else {
@@ -391,6 +410,8 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         width: 300,
                         child: ElevatedButton(
                             onPressed: () => setState(() {
+                              HapticFeedback.lightImpact();
+
                               if (_displayAboutThisApp) {
                                 _displayAboutThisApp = false;
                               } else {
@@ -451,6 +472,8 @@ class AdvancedSettingsMenuState extends State<AdvancedSettingsMenu> {
                         width: 350,
                         child: ElevatedButton(
                             onPressed: () {
+                              HapticFeedback.mediumImpact();
+
                               _confirmRestoreDefaults().then((confirmed) {
                                 if (confirmed) {
                                   // Call Settings.dart method to remove all stored variables
@@ -539,34 +562,38 @@ class TipsWidgetState extends State<TipsWidget> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SizedBox(height: 15),
-                                  Text("Timer", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
+                                  Text("Timer", style: TextStyle(fontSize: 25, color: textColorOverwrite ? Colors.black : Colors.white)),
                                   Divider(color: primaryColor),
-                                  Spacer(),
+                                  SizedBox(height: 10),
                                   Text("Timer vs Interval Mode:",
-                                      style: TextStyle(fontSize: 22, color: primaryAccentColor)
+                                      style: TextStyle(fontSize: 19, color: primaryAccentColor, fontWeight: FontWeight.bold)
                                   ),
-                                  SizedBox(height: 12),
-                                  RichText(
+                                  SizedBox(height: 10),
+
+                                  Align(
+                                      alignment: AlignmentDirectional.topStart,
+                                      child: RichText(
                                     text: TextSpan(
-                                      text: 'Timer Mode: ',
-                                      style: TextStyle(fontSize: 19, color: primaryAccentColor), // Change color here
+                                      text: 'Timer Mode:',
+                                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic, color: primaryColor), // Change color here
                                       children: <TextSpan>[
                                         TextSpan(
-                                          text: "Only uses 'Work Time' and ends at 0.",
-                                          style: TextStyle(fontSize: 18, color: primaryColor),
+                                          text: "\nOnly uses 'Work Time' and ends at 0.",
+                                          style: TextStyle(fontSize: 17, color: primaryColor, fontStyle: FontStyle.normal,  fontWeight: FontWeight.normal),
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  )),
+
                                   SizedBox(height: 8),
                                   RichText(
                                     text: TextSpan(
-                                      text: 'Interval Mode: ',
-                                      style: TextStyle(fontSize: 19, color: primaryAccentColor), // Change color here
+                                      text: 'Interval Mode:',
+                                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic, color: primaryColor), // Change color here
                                       children: <TextSpan>[
                                         TextSpan(
-                                          text: "Uses both 'Work Time' and 'Rest Time' to continuously loop.",
-                                          style: TextStyle(fontSize: 18, color: primaryColor),
+                                          text: "\nUses both 'Work Time' and 'Rest Time' to continuously loop.",
+                                          style: TextStyle(fontSize: 17, color: primaryColor, fontStyle: FontStyle.normal,  fontWeight: FontWeight.normal),
                                         ),
                                       ],
                                     ),
@@ -574,11 +601,12 @@ class TipsWidgetState extends State<TipsWidget> {
 
                                   SizedBox(height: 5),
                                   Divider(color: primaryColor),
+                                  SizedBox(height: 10),
 
-                                  Text("Time to Setup:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
+                                  Text("Time to Setup:", style: TextStyle(fontSize: 19, color: primaryAccentColor, fontWeight: FontWeight.bold)),
                                   SizedBox(height: 5),
                                   Text("Use the +Time button after setting up your phone for extra time to get in position.",
-                                      style: TextStyle(fontSize: 18, color: primaryColor)
+                                      style: TextStyle(fontSize: 17, color: primaryColor)
                                   ),
 
                                   SizedBox(height: 25),
@@ -593,23 +621,23 @@ class TipsWidgetState extends State<TipsWidget> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       SizedBox(height: 15),
-                                      Text("Settings", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
+                                      Text("Settings", style: TextStyle(fontSize: 25, color: textColorOverwrite ? Colors.black : Colors.white)),
                                       Divider(color: primaryColor),
-                                      SizedBox(height: 5),
-                                      Text("Quick Navigation:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
-                                      SizedBox(height: 5),
+                                      SizedBox(height: 10),
+                                      Text("Quick Navigation:", style: TextStyle(fontSize: 19, color: primaryAccentColor, fontWeight: FontWeight.bold)),
+                                      SizedBox(height: 10),
                                       Text("Access 'Advanced Settings' from the Timer by clicking the 'HIIT Time' header.",
-                                          style: TextStyle(fontSize: 18, color: primaryColor)
+                                          style: TextStyle(fontSize: 17, color: primaryColor)
                                       ),
 
-                                      SizedBox(height: 8),
+                                      SizedBox(height: 10),
                                       Divider(color: primaryColor),
-                                      SizedBox(height: 8),
+                                      SizedBox(height: 10),
 
-                                      Text("Unending Timer:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
+                                      Text("Unending Timer:", style: TextStyle(fontSize: 19, color: primaryAccentColor, fontWeight: FontWeight.bold)),
                                       SizedBox(height: 5),
-                                      Text("Create a single looping Timer in Interval Mode by setting the Rest Time to 0.",
-                                          style: TextStyle(fontSize: 18, color: primaryColor)
+                                      Text("Create a single looping Timer in Interval Mode by setting the 'Rest Time' to 0.",
+                                          style: TextStyle(fontSize: 17, color: primaryColor)
                                       ),
                                       SizedBox(height: 25),
                                       Spacer(),
@@ -623,23 +651,23 @@ class TipsWidgetState extends State<TipsWidget> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       SizedBox(height: 15),
-                                      Text("Logs", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
+                                      Text("Logs", style: TextStyle(fontSize: 25, color: textColorOverwrite ? Colors.black : Colors.white)),
                                       Divider(color: primaryColor),
-                                      SizedBox(height: 5),
-                                      Text("Getting Started:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
-                                      SizedBox(height: 5),
+                                      SizedBox(height: 10),
+                                      Text("Getting Started:", style: TextStyle(fontSize: 19, color: primaryAccentColor, fontWeight: FontWeight.bold)),
+                                      SizedBox(height: 10),
                                       Text("Before saving a New Log in the Logs menu, you must first add an Exercise.",
-                                          style: TextStyle(fontSize: 18, color: primaryColor)
+                                          style: TextStyle(fontSize: 17, color: primaryColor)
                                       ),
 
-                                      Spacer(),
+                                      SizedBox(height: 10),
                                       Divider(color: primaryColor),
-                                      SizedBox(height: 5),
-                                      Text("Adding Exercises:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
-                                      SizedBox(height: 5),
+                                      SizedBox(height: 10),
+                                      Text("Adding Exercises:", style: TextStyle(fontSize: 19, color: primaryAccentColor, fontWeight: FontWeight.bold)),
+                                      SizedBox(height: 10),
                                       RichText(
                                         text: TextSpan(
-                                          style: TextStyle(fontSize: 18, color: primaryColor),
+                                          style: TextStyle(fontSize: 17, color: primaryColor),
                                           children: [
                                             TextSpan(
                                               text: "To add a New Exercise, navigate to the Logs menu, open the New Log widget and click the ",
@@ -648,7 +676,7 @@ class TipsWidgetState extends State<TipsWidget> {
                                               child: Icon(
                                                 Icons.add_circle_outline,
                                                 color: primaryAccentColor,
-                                                size: 22,
+                                                size: 19,
                                               ),
                                             ),
                                             TextSpan(
@@ -669,27 +697,27 @@ class TipsWidgetState extends State<TipsWidget> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       SizedBox(height: 15),
-                                      Text("Background Mode", style: TextStyle(fontSize: 30, color: textColorOverwrite ? Colors.black : Colors.white)),
+                                      Text("Background Mode", style: TextStyle(fontSize: 25, color: textColorOverwrite ? Colors.black : Colors.white)),
                                       Divider(color: primaryColor),
-                                      SizedBox(height: 5),
-                                      Text("Timer Stopping:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
-                                      SizedBox(height: 5),
-                                      Text("If the timer stops while running in the background, try changing these settings on your phone: ",
-                                          style: TextStyle(fontSize: 18, color: primaryColor)
+                                      SizedBox(height: 10),
+                                      Text("Timer Stopping:", style: TextStyle(fontSize: 19, color: primaryAccentColor, fontWeight: FontWeight.bold)),
+                                      SizedBox(height: 10),
+                                      Text("If the timer stops while running in the background, apply these settings on your phone: ",
+                                          style: TextStyle(fontSize: 17, color: primaryColor)
                                       ),
 
                                       SizedBox(height: 15,),
                                       Align(
                                         alignment: Alignment.centerLeft,
                                         child: Text("1) Disable Power Saving.",
-                                            style: TextStyle(fontSize: 18, color: primaryColor)
+                                            style: TextStyle(fontSize: 17, color: primaryColor)
                                         ),
                                       ),
 
                                       Align(
                                         alignment: Alignment.centerLeft,
-                                        child: Text("2) Long Press App Icon \n     > App info \n     > Battery \n     > Set HIIT Time to Unrestricted.",
-                                          style: TextStyle(fontSize: 18, color: primaryColor)
+                                        child: Text("2) Set App Battery Permissions: \n     > Long Press App Icon \n     > App info \n     > Battery \n     > Set HIIT Time to Unrestricted.",
+                                          style: TextStyle(fontSize: 17, color: primaryColor)
                                         ),
                                       ),
                                       SizedBox(height: 25),
@@ -731,56 +759,99 @@ class AboutThisAppWidget extends StatefulWidget {
   AboutThisAppWidgetState createState() => AboutThisAppWidgetState();
 }
 
+final InAppReview inAppReview = InAppReview.instance;
+
 class AboutThisAppWidgetState extends State<AboutThisAppWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
         width: 300,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SizedBox(height: 10),
               Divider(color: primaryColor),
-              Text("Thank you for downloading my first app! ", textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20, color: primaryColor)),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                Text("Thank you for downloading ", textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 19, color: primaryColor, fontStyle: FontStyle.italic)),
+                Text("my first app! ", textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 19, color: primaryColor, fontStyle: FontStyle.italic))
+              ]),
               Divider(color: primaryColor),
               SizedBox(height: 10),
 
-              Text("Origin: ", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
+              Text("Origin: ", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
               SizedBox(height: 4),
 
               Text("I created this app because I needed a timer that was easy to setup and interact with during workouts. "
                   "After failing to find a quality, Ad-Free option on the app store, I decided to create my own.",
-                  style: TextStyle(fontSize: 19, color: primaryColor)
+                  style: TextStyle(fontSize: 18, color: primaryColor)
               ),
               SizedBox(height: 8),
               Text("Logs were eventually added so that (other than a music app) HIIT Time is the only app needed while at the gym.",
-                  style: TextStyle(fontSize: 19, color: primaryColor)
+                  style: TextStyle(fontSize: 18, color: primaryColor)
               ),
               SizedBox(height: 10),
 
-              Text("Support: ", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
+              Text("Support: ", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
               SizedBox(height: 4),
-              Text("I hope you're enjoying the ad-free experience. If you want to support my work, please consider purchasing a Theme!",
-                  style: TextStyle(fontSize: 19, color: primaryColor)
+              Text("I hope you're enjoying the Ad-Free experience. If you want to support my work, please consider purchasing a Theme!",
+                  style: TextStyle(fontSize: 18, color: primaryColor)
               ),
-              SizedBox(height: 8),
+              SizedBox(height: 15),
+
+              Align(
+                alignment: Alignment.center,
+                  child: SizedBox(
+                      width: 175,
+                      height: 60,
+                      child: ElevatedButton(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                          const Text("Leave a Review",
+                            style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.star, color: Colors.yellow),
+                                Icon(Icons.star, color: Colors.yellow),
+                                Icon(Icons.star, color: Colors.yellow),
+                                Icon(Icons.star, color: Colors.yellow),
+                                Icon(Icons.star, color: Colors.yellow)
+                          ])
+                        ]
+                ),
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+
+                  // Launch App Store
+                  inAppReview.openStoreListing();
+                },
+              ))),
+
+              SizedBox(height: 10),
 
               Divider(color: primaryColor),
               Text("Please send any comments, issues, questions or feedback to the address below.", textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20, color: primaryColor)),
+                  style: TextStyle(fontSize: 19, color: primaryColor)),
               Divider(color: primaryColor),
               SizedBox(height: 15),
 
-              Text("Email:", style: TextStyle(fontSize: 25, color: primaryAccentColor)),
+              Text("Email:", style: TextStyle(fontSize: 22, color: primaryAccentColor)),
               SizedBox(height: 4),
               Align(
                 alignment: Alignment.center,
                 child: ElevatedButton(
                   child: Text("HiitTimeApp@gmail.com",
-                    style: TextStyle(fontSize: 20, color: primaryColor),
+                    style: TextStyle(fontSize: 19, color: primaryColor),
                   ),
                   onPressed: () {
+                    HapticFeedback.lightImpact();
+
                     Clipboard.setData(const ClipboardData(text: "HiitTimeApp@gmail.com"))
                         .then((_) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -924,12 +995,11 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 
     if (storeAvailable) {
       if (availableProducts.length == 0) {
-        _showAppPurchaseNotification(context, "Products were not set yet....");
         // Products did not load on initial launch, try again.
         final ProductDetailsResponse productDetailsResponse = await inAppPurchase.queryProductDetails(productIds);
         if (productDetailsResponse.notFoundIDs.isNotEmpty) {
           // TODO Handle the error.
-          _showAppPurchaseNotification(context, "Products are empty...");
+          _showAppPurchaseNotification(context, "No products found.");
           return;
         }
         if (productDetailsResponse.error == null) {
@@ -1089,7 +1159,6 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-
                       Row(children: [
                         // Bubblegum Dark
                         GestureDetector(
@@ -1368,6 +1437,8 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
           width: 225,
           child: ElevatedButton(
               onPressed: () => setState(() {
+                HapticFeedback.lightImpact();
+
                 if (_displayTimerAudioSettings) {
                   _displayTimerAudioSettings = false;
                 } else {
@@ -1426,6 +1497,8 @@ class AudioSettingsWidgetState extends State<AudioSettingsWidget> {
           width: 225,
           child: ElevatedButton(
               onPressed: () => setState(() {
+                HapticFeedback.lightImpact();
+
                 if (_displayButtonAudioSettings) {
                   _displayButtonAudioSettings = false;
                 } else {
@@ -1587,7 +1660,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                     : Colors.grey,
                 icon: const Icon(Icons.audio_file_outlined),
                 onPressed: () {
-                  HapticFeedback.mediumImpact();
+                  HapticFeedback.lightImpact();
 
                   // Launch Audio Changer menu
                   showGeneralDialog(
@@ -1655,7 +1728,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                     : Colors.grey,
                 icon: const Icon(Icons.audio_file_outlined),
                 onPressed: () {
-                  HapticFeedback.mediumImpact();
+                  HapticFeedback.lightImpact();
 
                   // Launch Audio Changer menu
                   showGeneralDialog(
@@ -1672,7 +1745,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                         Animation secondaryAnimation) {
                       return Center(
                         child: AudioChangerMenuWidget(
-                          parentWidget: '3-2-1           Countdown',
+                          parentWidget: '3-2-1 Countdown',
                           options: threeTwoOneCountdownAssetMap.values.toList(),
                         ),
                       );
@@ -1723,7 +1796,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                     : Colors.grey,
                 icon: const Icon(Icons.audio_file_outlined),
                 onPressed: () {
-                  HapticFeedback.mediumImpact();
+                  HapticFeedback.lightImpact();
 
                   // Launch Audio Changer menu
                   showGeneralDialog(
@@ -1789,7 +1862,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                     : Colors.grey,
                 icon: const Icon(Icons.audio_file_outlined),
                 onPressed: () {
-                  HapticFeedback.mediumImpact();
+                  HapticFeedback.lightImpact();
 
                   // Launch Audio Changer menu
                   showGeneralDialog(
@@ -1857,7 +1930,7 @@ class TimerAudioSettingsWidgetState extends State<TimerAudioSettingsWidget> {
                     : Colors.grey,
                 icon: const Icon(Icons.audio_file_outlined),
                 onPressed: () {
-                  HapticFeedback.mediumImpact();
+                  HapticFeedback.lightImpact();
 
                   // Launch Audio Changer menu
                   showGeneralDialog(
@@ -2130,7 +2203,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
       case 'Timer Alarm':
         _selectedOption = timerAlarmAssetMap[audioForTimerAlarm];
         break;
-      case '3-2-1           Countdown':
+      case '3-2-1 Countdown':
         _selectedOption = threeTwoOneCountdownAssetMap[audioForAssembledCountdown];
         break;
       case '10 Second Warning':
@@ -2155,7 +2228,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         }
         return '';
 
-      case '3-2-1           Countdown':
+      case '3-2-1 Countdown':
         for (var entry in threeTwoOneCountdownAssetMap.entries) {
           if (entry.value == _selectedOption) {
             return entry.key;
@@ -2198,7 +2271,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
         audioForTimerAlarm = desiredAsset;
         setStringSetting('audioTimerAlarm', desiredAsset);
         break;
-      case '3-2-1           Countdown':
+      case '3-2-1 Countdown':
         List<String> assetsSplit = desiredAsset.split(",");
         setStringSetting('audioTimerCountdownAtThree', assetsSplit[0]);
         setStringSetting('audioTimerCountdownAtTwo', assetsSplit[1]);
@@ -2232,12 +2305,31 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
     _audioPlayer.play(AssetSource(assetsSplit[2]));
   }
 
+  void previewAndSetSound(String chosenAsset) {
+    setState(() {
+      _selectedOption = chosenAsset;
+      var desiredAsset = getAudioAssetFromMap();
+      setChosenAudioAsset(desiredAsset);
+
+      if (_parentWidget == '3-2-1 Countdown') {
+        // We need to break the desired asset down into 3 with spaces
+        playAudioWithDelay(desiredAsset);
+      } else {
+        // There is only one asset to play:
+        _audioPlayer.play(AssetSource(desiredAsset));
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
         height: 360,
-        width: 310,
-        color: secondaryAccentColor,
+        width: 285,
+        decoration: BoxDecoration(
+          color: secondaryAccentColor,
+          borderRadius: BorderRadius.circular(15), // Adjust the radius as needed
+        ),
         child: Center(
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -2245,7 +2337,11 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                 const SizedBox(height: 20),
                 Text(_parentWidget,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontFamily: 'AstroSpace', fontSize: 25, height: 1.1, color: primaryColor, decoration: TextDecoration.none)),
+                    style: TextStyle(fontFamily: 'AstroSpace',
+                        fontSize: 20,
+                        color: getCorrectColorForComplicatedContext(),
+                        decoration: TextDecoration.none)
+                ),
                 const SizedBox(height: 10),
                 Divider(color: primaryColor),
                 const SizedBox(height: 10),
@@ -2254,6 +2350,7 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                 // Dynamically create rows
                 ///////////////////////////
                 Expanded(
+                  // ClipRRect
                     child: SizedBox(
                         width: 250,
                         child: ListView.builder(
@@ -2264,31 +2361,16 @@ class AudioChangerMenuWidgetState extends State<AudioChangerMenuWidget> {
                               child: GestureDetector(
                                   // This is activated when the user clicks on the text field
                                   onTap: () {
-                                    setState(() {
-
-                                    });
+                                    previewAndSetSound(_options[index]);
                                   },
                                   child: ListTile(
-                                      tileColor: primaryColor,
-                                      title: Text(_options[index], style: TextStyle(color: secondaryAccentColor, fontSize: 18)),
+                                      tileColor: Colors.white,
+                                      title: Text(_options[index], style: TextStyle(color: Colors.black, fontSize: 16)),
                                       leading: Radio<String>(
                                         value: _options[index],
                                         groupValue: _selectedOption,
                                         onChanged: (String? value) {
-                                          // This is activated when the user clicks on a new Radio Button
-                                          setState(() {
-                                            _selectedOption = value;
-                                            var desiredAsset = getAudioAssetFromMap();
-                                            setChosenAudioAsset(desiredAsset);
-
-                                            if (_parentWidget == '3-2-1           Countdown') {
-                                              // We need to break the desired asset down into 3 with spaces
-                                              playAudioWithDelay(desiredAsset);
-                                            } else {
-                                              // There is only one asset to play:
-                                              _audioPlayer.play(AssetSource(desiredAsset));
-                                            }
-                                          });
+                                          previewAndSetSound(value!);
                                         },
                                       ),
                                     )

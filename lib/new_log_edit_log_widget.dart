@@ -1247,6 +1247,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                       //   widget.audio.setReleaseMode(ReleaseMode.stop);
                                       // }
 
+                                      HapticFeedback.mediumImpact();
 
                                       if (widget.exerciseType=='Cardio') {
                                         updateCardioWorkout();
@@ -1268,6 +1269,8 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                       //   widget.audio.play(AssetSource(audioForSaveButton));
                                       //   widget.audio.setReleaseMode(ReleaseMode.stop);
                                       // }
+
+                                      HapticFeedback.mediumImpact();
 
                                       if (widget.exerciseType=='Cardio') {
                                         insertCardioWorkout();

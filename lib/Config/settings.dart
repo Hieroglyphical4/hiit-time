@@ -364,8 +364,6 @@ void setupAppTheme(String theme) {
 
       // Light mode
       primaryColorLightMode = Colors.black;
-      // secondaryColorLightMode = Colors.pink.shade200;
-      // primaryAccentColorLightMode = Colors.teal;
       secondaryColorLightMode = Colors.pink.shade100;
       primaryAccentColorLightMode = Colors.teal.shade300;
       secondaryAccentColorLightMode = Colors.yellow.shade400;
