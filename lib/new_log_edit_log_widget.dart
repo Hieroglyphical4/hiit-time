@@ -64,7 +64,6 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
 
   // counts how many fields the user has supplied to determine if save button should show
   bool _exerciseProvided = false;
-  bool _dateProvided = false;
   bool _primaryValueProvided = false;
   bool _secondaryValueProvided = false;
   bool _thirdFieldValueProvided = false;
@@ -118,10 +117,6 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
           "${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}:${currentTime.second.toString().padLeft(2, '0')}";
 
       setState(() {
-        if (_providedDate == null) {
-          _dateProvided = true;
-        }
-
         _providedDate = "${picked.month.toString().padLeft(2,'0')}/${picked.day.toString().padLeft(2,'0')}/${picked.year.toString()} $timestamp";
       });
     }
@@ -135,6 +130,13 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
     if (widget.header == 'New Log') {
       // New Log Setup Stuff
       _editMode = false;
+
+      // Set the default date to today:
+      final DateTime _today = DateTime.now();
+      final String timestamp =
+          "${_today.hour.toString().padLeft(2, '0')}:${_today.minute.toString().padLeft(2, '0')}:${_today.second.toString().padLeft(2, '0')}";
+      _providedDate = "${_today.month.toString().padLeft(2,'0')}/${_today.day.toString().padLeft(2,'0')}/${_today.year.toString()} $timestamp";
+
     } else {
       // Edit Mode Setup Stuff
       _editMode = true;
@@ -1237,7 +1239,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                     disabledColor: Colors.grey,
                                     icon: const Icon(Icons.check_circle),
                                     onPressed: _editMode
-                                        ? (_exerciseProvided || _dateProvided || _primaryValueProvided ||
+                                        ? (_exerciseProvided || _primaryValueProvided ||
                                         _secondaryValueProvided || _thirdFieldValueProvided || _fourthFieldValueProvided || _fifthFieldValueProvided) ? () {
                                       /// Edit Mode
                                       // widget.audio.setVolume(_appVolume);
@@ -1261,7 +1263,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                       Navigator.of(context).pop(true);
                                     }
                                         : null
-                                        : (_exerciseProvided && _dateProvided && _primaryValueProvided && _secondaryValueProvided) ? () {
+                                        : (_exerciseProvided && _primaryValueProvided && _secondaryValueProvided) ? () {
                                       /// New Log Mode
                                       // widget.audio.setVolume(_appVolume);
                                       // widget.audio.setReleaseMode(ReleaseMode.stop);
@@ -1292,11 +1294,11 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                     style: TextStyle(
                                       fontFamily: 'AstroSpace',
                                       color: _editMode
-                                          ? (_exerciseProvided || _dateProvided || _primaryValueProvided ||
+                                          ? (_exerciseProvided || _primaryValueProvided ||
                                           _secondaryValueProvided || _thirdFieldValueProvided || _fourthFieldValueProvided || _fifthFieldValueProvided)
                                           ? primaryAccentColor
                                           : Colors.grey
-                                          : (_exerciseProvided && _dateProvided && _primaryValueProvided && _secondaryValueProvided)
+                                          : (_exerciseProvided  && _primaryValueProvided && _secondaryValueProvided)
                                           ? primaryAccentColor
                                           : Colors.grey,
                                       fontSize: 20,

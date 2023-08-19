@@ -180,6 +180,29 @@ class _SettingsMenuState extends State<SettingsMenu> {
     });
   }
 
+  void _setTimerMode(String value) {
+    setState(() {
+      if (appCurrentlyInTimerMode && value == 'Interval') {
+        widget.audio.setReleaseMode(ReleaseMode.stop);
+        if (!appCurrentlyMuted && switchButtonAudioCurrentlyEnabled) {
+          widget.audio.play(AssetSource(audioForSwitchButtonEnabled));
+        }
+
+        // Call Settings.dart Setter
+        setBooleanSetting('appInTimerMode', false);
+        appCurrentlyInTimerMode = false;
+      } else if (!appCurrentlyInTimerMode && value == 'Timer') {
+        widget.audio.setReleaseMode(ReleaseMode.stop);
+        if (!appCurrentlyMuted && switchButtonAudioCurrentlyEnabled) {
+          widget.audio.play(AssetSource(audioForSwitchButtonDisabled));
+        }
+        // Call Settings.dart Setter
+        setBooleanSetting('appInTimerMode', true);
+        appCurrentlyInTimerMode = true;
+      }
+    });
+  }
+
   void _onMuteModeChanged () {
     setState(() {
       if (appCurrentlyMuted) {
@@ -527,27 +550,39 @@ class _SettingsMenuState extends State<SettingsMenu> {
                         children: [
                           Spacer(flex: 5),
 
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: secondaryColor,
+                              padding: const EdgeInsets.all(4),
+                              elevation: 0,
+                            ),
+                            child: Column(children: [
+                              Text(
+                                'Timer',
+                                style: TextStyle(
+                                  color:
+                                  appCurrentlyInTimerMode ? primaryColor : Colors.grey,
+                                  fontSize: 18,
+                                  fontFamily: 'AstroSpace',
+                                ),
+                              ),
+                              Text(
+                                'Mode',
+                                style: TextStyle(
+                                  color:
+                                  appCurrentlyInTimerMode ? primaryColor : Colors.grey,
+                                  fontSize: 18,
+                                  fontFamily: 'AstroSpace',
+                                ),
+                              ),
+                            ]),
+                            onPressed: () {
+                              HapticFeedback.lightImpact();
+                              _setTimerMode('Timer');
+                            },
+                          ),
                           // Timer Mode Text Column
-                          Column(children: [
-                            Text(
-                              'Timer',
-                              style: TextStyle(
-                                color:
-                                appCurrentlyInTimerMode ? primaryColor : Colors.grey,
-                                fontSize: 18,
-                                fontFamily: 'AstroSpace',
-                              ),
-                            ),
-                            Text(
-                              'Mode',
-                              style: TextStyle(
-                                color:
-                                appCurrentlyInTimerMode ? primaryColor : Colors.grey,
-                                fontSize: 18,
-                                fontFamily: 'AstroSpace',
-                              ),
-                            ),
-                          ]),
+
 
                           Spacer(flex: 1),
 
@@ -561,31 +596,46 @@ class _SettingsMenuState extends State<SettingsMenu> {
 
                           Spacer(flex: 1),
 
-                          // Interval Mode Text Column
-                          Column(
-                            children: [
-                              Text(
-                                'Interval',
-                                style: TextStyle(
-                                  color: appCurrentlyInTimerMode
-                                      ? Colors.grey
-                                      : primaryAccentColor,
-                                  fontSize: 18,
-                                  fontFamily: 'AstroSpace',
-                                ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: secondaryColor,
+                              padding: const EdgeInsets.all(4),
+                              elevation: 0,
+                            ),
+                            child: Column(children: [
+                              // Interval Mode Text Column
+                              Column(
+                                children: [
+                                  Text(
+                                    'Interval',
+                                    style: TextStyle(
+                                      color: appCurrentlyInTimerMode
+                                          ? Colors.grey
+                                          : primaryAccentColor,
+                                      fontSize: 18,
+                                      fontFamily: 'AstroSpace',
+                                    ),
+                                  ),
+                                  Text(
+                                    'Mode',
+                                    style: TextStyle(
+                                      color: appCurrentlyInTimerMode
+                                          ? Colors.grey
+                                          : primaryAccentColor,
+                                      fontSize: 18,
+                                      fontFamily: 'AstroSpace',
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                'Mode',
-                                style: TextStyle(
-                                  color: appCurrentlyInTimerMode
-                                      ? Colors.grey
-                                      : primaryAccentColor,
-                                  fontSize: 18,
-                                  fontFamily: 'AstroSpace',
-                                ),
-                              ),
-                            ],
+                            ]),
+                            onPressed: () {
+                              HapticFeedback.lightImpact();
+                              _setTimerMode('Interval');
+                            },
                           ),
+
+
 
                           Spacer(flex: 3),
                         ],
