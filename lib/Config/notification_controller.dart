@@ -37,6 +37,9 @@ class NotificationController {
         ],
         debug: false);
 
+    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    if (!isAllowed) isAllowed = await AwesomeNotifications().requestPermissionToSendNotifications();
+
     // Get initial notification action is optional
     initialAction = await notifications
         .getInitialNotificationAction(removeFromActionEvents: false);
