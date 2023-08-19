@@ -64,6 +64,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
 
   // counts how many fields the user has supplied to determine if save button should show
   bool _exerciseProvided = false;
+  bool _dateProvided = false;
   bool _primaryValueProvided = false;
   bool _secondaryValueProvided = false;
   bool _thirdFieldValueProvided = false;
@@ -117,6 +118,10 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
           "${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}:${currentTime.second.toString().padLeft(2, '0')}";
 
       setState(() {
+        if (_providedDate == null) {
+          _dateProvided = true;
+        }
+
         _providedDate = "${picked.month.toString().padLeft(2,'0')}/${picked.day.toString().padLeft(2,'0')}/${picked.year.toString()} $timestamp";
       });
     }
@@ -1239,7 +1244,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                     disabledColor: Colors.grey,
                                     icon: const Icon(Icons.check_circle),
                                     onPressed: _editMode
-                                        ? (_exerciseProvided || _primaryValueProvided ||
+                                        ? (_exerciseProvided || _dateProvided || _primaryValueProvided ||
                                         _secondaryValueProvided || _thirdFieldValueProvided || _fourthFieldValueProvided || _fifthFieldValueProvided) ? () {
                                       /// Edit Mode
                                       // widget.audio.setVolume(_appVolume);
@@ -1294,7 +1299,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                     style: TextStyle(
                                       fontFamily: 'AstroSpace',
                                       color: _editMode
-                                          ? (_exerciseProvided || _primaryValueProvided ||
+                                          ? (_exerciseProvided || _dateProvided || _primaryValueProvided ||
                                           _secondaryValueProvided || _thirdFieldValueProvided || _fourthFieldValueProvided || _fifthFieldValueProvided)
                                           ? primaryAccentColor
                                           : Colors.grey
