@@ -448,7 +448,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                             ////////////////////////////////
                             // Spacer between Rest and Work
                             ////////////////////////////////
-                            const SizedBox(height: 40),
+                            const SizedBox(height: 25),
 
                             ///////////////////////
                             // Work input Field  //
@@ -641,6 +641,8 @@ class _SettingsMenuState extends State<SettingsMenu> {
                         ],
                       ),
 
+                      SizedBox(height: 10),
+
                       /////////////////
                       // Volume Slider
                       /////////////////
@@ -691,6 +693,8 @@ class _SettingsMenuState extends State<SettingsMenu> {
                           ),
                         ],
                       ),
+
+                      SizedBox(height: 15),
 
                       ////////////////////
                       // Bottom Settings
@@ -830,17 +834,13 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   ),
                                 ]),
 
-                            // SizedBox(width: 25),
                             Spacer(flex: 1),
 
-
                             //////////////////////////////
-                            // save and close buttons
+                            // Save and close buttons
                             //////////////////////////////
                             Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const SizedBox(height: 20),
                                   ////////////////
                                   // Save Button
                                   ////////////////
@@ -970,7 +970,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     ),
                                   ),
 
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 20),
 
                                   // Cancel Button
                                   IconButton(
@@ -1003,6 +1003,8 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   fontSize: 15,
                                 ),
                               ),
+
+                                  SizedBox(height: 10)
                             ]),
 
                             // SizedBox(width: 25),
