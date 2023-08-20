@@ -285,7 +285,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     style: TextStyle(
                                         color: primaryAccentColor,
                                         fontFamily: 'AstroSpace',
-                                        fontSize: 40,
+                                        fontSize: 35,
                                         height: 1.1),
                                     textAlign: TextAlign.center),
                               )
@@ -438,7 +438,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     color: appCurrentlyInTimerMode
                                         ? Colors.grey
                                         : primaryColor,
-                                    fontSize: 18,
+                                    fontSize: 15,
                                     fontFamily: 'AstroSpace',
                                   ),
                                 ),
@@ -529,7 +529,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                               'Work Time',
                               style: TextStyle(
                                 color: primaryColor,
-                                fontSize: 18,
+                                fontSize: 15,
                                 fontFamily: 'AstroSpace',
                               ),
                             ),
@@ -562,7 +562,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                 style: TextStyle(
                                   color:
                                   appCurrentlyInTimerMode ? primaryColor : Colors.grey,
-                                  fontSize: 18,
+                                  fontSize: 17,
                                   fontFamily: 'AstroSpace',
                                 ),
                               ),
@@ -571,7 +571,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                 style: TextStyle(
                                   color:
                                   appCurrentlyInTimerMode ? primaryColor : Colors.grey,
-                                  fontSize: 18,
+                                  fontSize: 17,
                                   fontFamily: 'AstroSpace',
                                 ),
                               ),
@@ -612,7 +612,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       color: appCurrentlyInTimerMode
                                           ? Colors.grey
                                           : primaryAccentColor,
-                                      fontSize: 18,
+                                      fontSize: 17,
                                       fontFamily: 'AstroSpace',
                                     ),
                                   ),
@@ -622,7 +622,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       color: appCurrentlyInTimerMode
                                           ? Colors.grey
                                           : primaryAccentColor,
-                                      fontSize: 18,
+                                      fontSize: 17,
                                       fontFamily: 'AstroSpace',
                                     ),
                                   ),
@@ -685,7 +685,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                               color: appCurrentlyMuted
                                 ? Colors.grey
                                 : primaryColor,
-                              fontSize: 18,
+                              fontSize: 15,
                               fontFamily: 'AstroSpace',
                             ),
                           ),
@@ -788,7 +788,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     style: TextStyle(
                                       fontFamily: 'AstroSpace',
                                       color: primaryColor,
-                                      fontSize: 18,
+                                      fontSize: 15,
                                     ),
                                   ),
 
@@ -966,7 +966,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       color: _settingsChanged
                                           ? primaryAccentColor
                                           : Colors.grey,
-                                      fontSize: 20,
+                                      fontSize: 17,
                                     ),
                                   ),
 
@@ -1000,7 +1000,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                   color: _settingsChanged
                                       ? Colors.red.shade400
                                       : primaryColor,
-                                  fontSize: 20,
+                                  fontSize: 15,
                                 ),
                               ),
                             ]),
@@ -1097,7 +1097,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                     style: TextStyle(
                                       fontFamily: 'AstroSpace',
                                       color: primaryColor,
-                                      fontSize: 18,
+                                      fontSize: 15,
                                     ),
                                   ),
 
