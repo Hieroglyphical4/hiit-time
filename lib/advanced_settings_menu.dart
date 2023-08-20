@@ -709,14 +709,21 @@ class TipsWidgetState extends State<TipsWidget> {
                                       SizedBox(height: 15,),
                                       Align(
                                         alignment: Alignment.centerLeft,
-                                        child: Text("1) Disable Power Saving.",
+                                        child: Text("1) Enable Notifications from HIIT Time.",
                                             style: TextStyle(fontSize: 17, color: primaryColor)
                                         ),
                                       ),
 
                                       Align(
                                         alignment: Alignment.centerLeft,
-                                        child: Text("2) Set App Battery Permissions: \n     a) Long Press App Icon \n     b) App info \n     c) Battery \n     d) Set HIIT Time to Unrestricted.",
+                                        child: Text("2) Disable Power Saving.",
+                                            style: TextStyle(fontSize: 17, color: primaryColor)
+                                        ),
+                                      ),
+
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text("3) Set App Battery Permissions: \n     a) Long Press App Icon \n     b) App info \n     c) Battery \n     d) Set HIIT Time to Unrestricted.",
                                           style: TextStyle(fontSize: 17, color: primaryColor)
                                         ),
                                       ),
