@@ -26,7 +26,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
   var _currentPageIndex;
 
   // This indicates which Image Asset should be highlighted
-  String? _assetForSelectedThemeAndMode;
+  String? assetForSelectedThemeAndMode;
 
   // Bools to track Unlocks
   bool _bubblegumThemeUnlocked = false;
@@ -36,10 +36,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
   late int _totalThemeCount;
   late int _unlockedThemeCount;
   bool _filterShowsAllThemes = true;
-
-  void updateAppTheme() {
-
-  }
+  late List<Widget> pages;
 
   void _updateAppTheme(String? theme) {
     if (theme != null) {
@@ -50,7 +47,8 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
           setStringSetting('appTheme', theme);
           setupAppTheme(theme);
           widget.onThemeChanged();
-          _assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
+          assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
+          _filterShowsAllThemes ? initializeThemePages() : setThemePagesToUnlockedOnly();
         });
       } else {
         String productId = getProductIdFromTheme(theme);
@@ -65,14 +63,32 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 
   final List<String> _possibleThemes = appPossibleThemes;
   int _determineCurrentPageIndex() {
-    switch (appCurrentTheme){
-      case 'Default':
-        return 0;
-      case 'Bubblegum':
-        return 1;
-      case 'Pumpkin':
-        return 2;
+    if (_filterShowsAllThemes) {
+      switch (appCurrentTheme){
+        case 'Default':
+          return 0;
+        case 'Bubblegum':
+          return 1;
+        case 'Pumpkin':
+          return 2;
+      }
+    } else {
+      // The user is filtering themes
+      // TODO Determine what themes the user has
+      switch (appCurrentTheme){
+        case 'Default':
+          return 0;
+        case 'Bubblegum':
+          return 1;
+        case 'Pumpkin':
+          if (_bubblegumThemeUnlocked) {
+            return 2;
+          } else {
+            return 1;
+          }
+      }
     }
+
     return 0;
   }
 
@@ -173,13 +189,338 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
   void initState() {
     super.initState();
     _currentPageIndex = _determineCurrentPageIndex();
-    _assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
+    assetForSelectedThemeAndMode = _determineAssetForCurrentTheme();
     _pageController = PageController(initialPage: _currentPageIndex);
     _bubblegumThemeUnlocked = themesPurchasedMap['Bubblegum']!;
     _pumpkinThemeUnlocked = themesPurchasedMap['Pumpkin']!;
     _totalThemeCount = themesPurchasedMapDefault.length;
     _unlockedThemeCount = 1 + (_bubblegumThemeUnlocked ? 1 : 0) + (_pumpkinThemeUnlocked ? 1 : 0);
+    initializeThemePages();
   }
+
+  void initializeThemePages() {
+    setState(() {
+      pages = [
+        getDefaultThemePage(),
+        getBubblegumThemePage(),
+        getPumpkinThemePage(),
+      ];
+    });
+  }
+
+  // Used to remove the filter on what Themes are shown
+  void setThemePagesToAll() {
+    initializeThemePages();
+    setState(() {
+      _currentPageIndex = _determineCurrentPageIndex();
+    });
+
+    _pageController.animateToPage(
+      _currentPageIndex,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  // Used to add a filter to the Themes widget, only showing unlocked/purchased Themes
+  void setThemePagesToUnlockedOnly() {
+    setState(() {
+      pages = [
+        getDefaultThemePage(),
+      ];
+      _bubblegumThemeUnlocked ? pages.add(getBubblegumThemePage()) : null;
+      _pumpkinThemeUnlocked ? pages.add(getPumpkinThemePage()) : null;
+      _currentPageIndex = _determineCurrentPageIndex();
+
+      _pageController.animateToPage(
+        _currentPageIndex,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  Widget getDefaultThemePage() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Default Dark
+              GestureDetector(
+                onTap: () {
+                  setState((){
+                    setBooleanSetting('appInDarkMode', true);
+                    setupDarkOrLightMode(true);
+                    _updateAppTheme('Default');
+                  });
+                },
+                child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            width: 4,
+                            color: assetForSelectedThemeAndMode == 'assets/images/DefaultDark.png'
+                                ? Colors.blue
+                                : Colors.transparent
+                        )
+                    ),
+                    child: Image.asset('assets/images/DefaultDark.png', width: 140, height: 240)
+                ),
+              ),
+
+              // Default Light
+              GestureDetector(
+                onTap: () {
+                  setState((){
+                    setBooleanSetting('appInDarkMode', false);
+                    setupDarkOrLightMode(false);
+                    _updateAppTheme('Default');
+                  });
+                },
+                child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            width: 4,
+                            color: assetForSelectedThemeAndMode == 'assets/images/DefaultLight.png'
+                                ? Colors.blue
+                                : Colors.transparent
+                        )
+                    ),
+                    child: Image.asset('assets/images/DefaultLight.png', width: 140, height: 240)
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          // Radio Tile
+          Container(
+              width: 220,
+              child: Material(
+                  shape: BeveledRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: RadioListTile(
+                    title: Text(
+                      _possibleThemes[0],
+                      style: TextStyle(
+                          color: appCurrentlyInDarkMode
+                              ? Colors.black
+                              : Colors.white,
+                          fontSize: _textFontSize),
+                    ),
+                    tileColor: Colors.blueGrey,
+                    shape: BeveledRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    value: _possibleThemes[0],
+                    groupValue: _currentTheme,
+                    onChanged: _updateAppTheme,
+                  )
+              )
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget getBubblegumThemePage() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(children: [
+            // Bubblegum Dark
+            GestureDetector(
+              onTap: () {
+                setState((){
+                  if (_bubblegumThemeUnlocked) {
+                    setBooleanSetting('appInDarkMode', true);
+                    setupDarkOrLightMode(true);
+                    _updateAppTheme('Bubblegum');
+                  } else {
+                    // Logic to launch store for In app Purchase
+                    _launchStoreStuff('bubblegum_theme');
+                  }
+                });
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        width: 4,
+                        color: assetForSelectedThemeAndMode == 'assets/images/BubbleGumDark.png'
+                            ? Colors.blue
+                            : Colors.transparent
+                    )
+                ),
+                child: Image.asset('assets/images/BubbleGumDark.png', width: 140, height: 240),
+              ),
+            ),
+
+            // Bubblegum Light
+            GestureDetector(
+              onTap: () {
+                setState((){
+                  if (_bubblegumThemeUnlocked) {
+                    setBooleanSetting('appInDarkMode', false);
+                    setupDarkOrLightMode(false);
+                    _updateAppTheme('Bubblegum');
+                  } else {
+                    // Logic to launch store for In app Purchase
+                    _launchStoreStuff('bubblegum_theme');
+                  }
+                });
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        width: 4,
+                        color: assetForSelectedThemeAndMode == 'assets/images/BubbleGumLight.png'
+                            ? Colors.blue
+                            : Colors.transparent
+                    )
+                ),
+                child: Image.asset('assets/images/BubbleGumLight.png', width: 140, height: 240),
+              ),
+            ),
+
+          ]),
+
+          const SizedBox(height: 10),
+
+          // Radio Tile
+          Container(
+              width: 260,
+              child: Material(
+                  shape: BeveledRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: RadioListTile(
+                    secondary:  Icon(Icons.lock,
+                        size: 30,
+                        color: _bubblegumThemeUnlocked ? Colors.transparent
+                            : appCurrentlyInDarkMode ? Colors.black : Colors.white
+                    ),
+                    title: Text(
+                      _possibleThemes[1],
+                      style: TextStyle(
+                          color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                          fontSize: _textFontSize),
+                    ),
+                    tileColor: appCurrentlyInDarkMode
+                        ? Colors.pink.shade200
+                        : Colors.pink.shade600,
+                    shape: BeveledRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    value: _possibleThemes[1],
+                    groupValue: _currentTheme,
+                    onChanged: _updateAppTheme,
+                  ))),
+        ],
+      ),
+    );
+  }
+
+  Widget getPumpkinThemePage() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+
+          Row(children: [
+            // Pumpkin Dark
+            GestureDetector(
+              onTap: () {
+                setState((){
+                  if (_pumpkinThemeUnlocked) {
+                    setBooleanSetting('appInDarkMode', true);
+                    setupDarkOrLightMode(true);
+                    _updateAppTheme('Pumpkin');
+                  } else {
+                    // Logic to launch store for In app Purchase
+                    _launchStoreStuff('pumpkin_theme');
+                  }
+                });
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        width: 4,
+                        color: assetForSelectedThemeAndMode == 'assets/images/PumpkinDark.png'
+                            ? Colors.blue
+                            : Colors.transparent
+                    )
+                ),
+                child: Image.asset('assets/images/PumpkinDark.png', width: 140, height: 240),
+              ),
+            ),
+
+            // Pumpkin Light
+            GestureDetector(
+              onTap: () {
+                setState((){
+                  if (_pumpkinThemeUnlocked) {
+                    setBooleanSetting('appInDarkMode', false);
+                    setupDarkOrLightMode(false);
+                    _updateAppTheme('Pumpkin');
+                  } else {
+                    // Logic to launch store for In app Purchase
+                    _launchStoreStuff('pumpkin_theme');
+                  }
+                });
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        width: 4,
+                        color: assetForSelectedThemeAndMode == 'assets/images/PumpkinLight.png'
+                            ? Colors.blue
+                            : Colors.transparent
+                    )
+                ),
+                child: Image.asset('assets/images/PumpkinLight.png', width: 140, height: 240),
+              ),
+            ),
+          ]),
+
+          const SizedBox(height: 10),
+          Container(
+              width: 230,
+              child: Material(
+                  shape: BeveledRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: RadioListTile(
+                    secondary:  Icon(Icons.lock,
+                        size: 30,
+                        color: _pumpkinThemeUnlocked ? Colors.transparent
+                            : appCurrentlyInDarkMode ? Colors.black : Colors.white
+                    ),
+                    title: Text(
+                      _possibleThemes[2],
+                      style: TextStyle(
+                          color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                          fontSize: _textFontSize),
+                    ),
+                    tileColor: appCurrentlyInDarkMode ?  Colors.deepOrangeAccent.shade200 : Colors.deepOrange.shade900,
+                    shape: BeveledRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    value: _possibleThemes[2],
+                    groupValue: _currentTheme,
+                    onChanged: _updateAppTheme,
+                  )
+              )
+          ),
+        ],
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -199,11 +540,12 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                   padding: const EdgeInsets.all(4),
                                 ),
                                 child: Text("All ($_totalThemeCount)",
-                                  style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                                  style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, color: getCorrectColorForComplicatedContext()),
                                 ),
                                 onPressed: () {
                                   setState(() {
                                     _filterShowsAllThemes = true;
+                                    setThemePagesToAll();
                                   });
                                 },
                               ),
@@ -216,11 +558,12 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                 padding: const EdgeInsets.all(4),
                               ),
                               child: Text("Unlocked ($_unlockedThemeCount)",
-                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, height: 1.1),
+                                style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, color: getCorrectColorForComplicatedContext()),
                               ),
                               onPressed: () {
                                 setState(() {
                                   _filterShowsAllThemes = false;
+                                  setThemePagesToUnlockedOnly();
                                 });
                               },
                             ),
@@ -232,303 +575,21 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                         /////////////////////////////////////////////////////
                         /// These are the individual pages that show themes
                         /////////////////////////////////////////////////////
-                        child: PageView(
+                        child: PageView.builder(
                           controller: _pageController,
+                          itemCount: pages.length,
                           onPageChanged: (index) {
                             setState(() {
                               _currentPageIndex = index;
                             });
                           },
-                          // Each of these Children represent a Page
-                          children: [
-                            ////////////////////////
-                            /// Default Theme Page
-                            ////////////////////////
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      // Default Dark
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState((){
-                                            setBooleanSetting('appInDarkMode', true);
-                                            setupDarkOrLightMode(true);
-                                            _updateAppTheme('Default');
-                                          });
-                                        },
-                                        child: Container(
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    width: 4,
-                                                    color: _assetForSelectedThemeAndMode == 'assets/images/DefaultDark.png'
-                                                        ? Colors.blue
-                                                        : Colors.transparent
-                                                )
-                                            ),
-                                            child: Image.asset('assets/images/DefaultDark.png', width: 140, height: 240)
-                                        ),
-                                      ),
-
-                                      // Default Light
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState((){
-                                            setBooleanSetting('appInDarkMode', false);
-                                            setupDarkOrLightMode(false);
-                                            _updateAppTheme('Default');
-                                          });
-                                        },
-                                        child: Container(
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    width: 4,
-                                                    color: _assetForSelectedThemeAndMode == 'assets/images/DefaultLight.png'
-                                                        ? Colors.blue
-                                                        : Colors.transparent
-                                                )
-                                            ),
-                                            child: Image.asset('assets/images/DefaultLight.png', width: 140, height: 240)
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
-                                  const SizedBox(height: 10),
-
-                                  // Radio Tile
-                                  Container(
-                                      width: 220,
-                                      child: Material(
-                                          shape: BeveledRectangleBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: RadioListTile(
-                                            title: Text(
-                                              _possibleThemes[0],
-                                              style: TextStyle(
-                                                  color: appCurrentlyInDarkMode
-                                                      ? Colors.black
-                                                      : Colors.white,
-                                                  fontSize: _textFontSize),
-                                            ),
-                                            tileColor: Colors.blueGrey,
-                                            shape: BeveledRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                            value: _possibleThemes[0],
-                                            groupValue: _currentTheme,
-                                            onChanged: _updateAppTheme,
-                                          )
-                                      )
-                                  )
-                                ],
-                              ),
-                            ),
-
-                            ///////////////////////////
-                            /// Bubblegum Theme Page
-                            ///////////////////////////
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Row(children: [
-                                    // Bubblegum Dark
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState((){
-                                          if (_bubblegumThemeUnlocked) {
-                                            setBooleanSetting('appInDarkMode', true);
-                                            setupDarkOrLightMode(true);
-                                            _updateAppTheme('Bubblegum');
-                                          } else {
-                                            // Logic to launch store for In app Purchase
-                                            _launchStoreStuff('bubblegum_theme');
-                                          }
-                                        });
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                width: 4,
-                                                color: _assetForSelectedThemeAndMode == 'assets/images/BubbleGumDark.png'
-                                                    ? Colors.blue
-                                                    : Colors.transparent
-                                            )
-                                        ),
-                                        child: Image.asset('assets/images/BubbleGumDark.png', width: 140, height: 240),
-                                      ),
-                                    ),
-
-                                    // Bubblegum Light
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState((){
-                                          if (_bubblegumThemeUnlocked) {
-                                            setBooleanSetting('appInDarkMode', false);
-                                            setupDarkOrLightMode(false);
-                                            _updateAppTheme('Bubblegum');
-                                          } else {
-                                            // Logic to launch store for In app Purchase
-                                            _launchStoreStuff('bubblegum_theme');
-                                          }
-                                        });
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                width: 4,
-                                                color: _assetForSelectedThemeAndMode == 'assets/images/BubbleGumLight.png'
-                                                    ? Colors.blue
-                                                    : Colors.transparent
-                                            )
-                                        ),
-                                        child: Image.asset('assets/images/BubbleGumLight.png', width: 140, height: 240),
-                                      ),
-                                    ),
-
-                                  ]),
-
-                                  const SizedBox(height: 10),
-
-                                  // Radio Tile
-                                  Container(
-                                      width: 260,
-                                      child: Material(
-                                          shape: BeveledRectangleBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: RadioListTile(
-                                            secondary:  Icon(Icons.lock,
-                                                size: 30,
-                                                color: _bubblegumThemeUnlocked ? Colors.transparent
-                                                    : appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                            ),
-                                            title: Text(
-                                              _possibleThemes[1],
-                                              style: TextStyle(
-                                                  color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
-                                                  fontSize: _textFontSize),
-                                            ),
-                                            tileColor: appCurrentlyInDarkMode
-                                                ? Colors.pink.shade200
-                                                : Colors.pink.shade600,
-                                            shape: BeveledRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                            value: _possibleThemes[1],
-                                            groupValue: _currentTheme,
-                                            onChanged: _updateAppTheme,
-                                          ))),
-                                ],
-                              ),
-                            ),
-
-                            ////////////////////////
-                            /// Pumpkin Theme Page
-                            ////////////////////////
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-
-                                  Row(children: [
-                                    // Pumpkin Dark
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState((){
-                                          if (_pumpkinThemeUnlocked) {
-                                            setBooleanSetting('appInDarkMode', true);
-                                            setupDarkOrLightMode(true);
-                                            _updateAppTheme('Pumpkin');
-                                          } else {
-                                            // Logic to launch store for In app Purchase
-                                            _launchStoreStuff('pumpkin_theme');
-                                          }
-                                        });
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                width: 4,
-                                                color: _assetForSelectedThemeAndMode == 'assets/images/PumpkinDark.png'
-                                                    ? Colors.blue
-                                                    : Colors.transparent
-                                            )
-                                        ),
-                                        child: Image.asset('assets/images/PumpkinDark.png', width: 140, height: 240),
-                                      ),
-                                    ),
-
-                                    // Pumpkin Light
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState((){
-                                          if (_pumpkinThemeUnlocked) {
-                                            setBooleanSetting('appInDarkMode', false);
-                                            setupDarkOrLightMode(false);
-                                            _updateAppTheme('Pumpkin');
-                                          } else {
-                                            // Logic to launch store for In app Purchase
-                                            _launchStoreStuff('pumpkin_theme');
-                                          }
-                                        });
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                width: 4,
-                                                color: _assetForSelectedThemeAndMode == 'assets/images/PumpkinLight.png'
-                                                    ? Colors.blue
-                                                    : Colors.transparent
-                                            )
-                                        ),
-                                        child: Image.asset('assets/images/PumpkinLight.png', width: 140, height: 240),
-                                      ),
-                                    ),
-                                  ]),
-
-                                  const SizedBox(height: 10),
-                                  Container(
-                                      width: 230,
-                                      child: Material(
-                                          shape: BeveledRectangleBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: RadioListTile(
-                                            secondary:  Icon(Icons.lock,
-                                                size: 30,
-                                                color: _pumpkinThemeUnlocked ? Colors.transparent
-                                                    : appCurrentlyInDarkMode ? Colors.black : Colors.white
-                                            ),
-                                            title: Text(
-                                              _possibleThemes[2],
-                                              style: TextStyle(
-                                                  color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
-                                                  fontSize: _textFontSize),
-                                            ),
-                                            tileColor: appCurrentlyInDarkMode ?  Colors.deepOrangeAccent.shade200 : Colors.deepOrange.shade900,
-                                            shape: BeveledRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                            value: _possibleThemes[2],
-                                            groupValue: _currentTheme,
-                                            onChanged: _updateAppTheme,
-                                          )
-                                      )
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                          itemBuilder: (BuildContext context, int index) {
+                            return pages[index];
+                          },
                         )),
                     PageIndicator(
                       currentPageIndex: _currentPageIndex,
-                      pages: _possibleThemes,
+                      pages: pages.length,
                       onPageSelected: (int pageIndex) {
                         _pageController.animateToPage(
                           pageIndex,
@@ -543,11 +604,6 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   ])));
         });
   }
-
-  // Theme Pages:
-  List<Widget> pages = [
-    // TODO Determine if our pages can be setup here...
-  ];
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -555,7 +611,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 ///////////////////////////////////////////////////////////////////
 class PageIndicator extends StatelessWidget {
   final int currentPageIndex;
-  final List<String> pages;
+  final int pages;
   final ValueChanged<int> onPageSelected;
 
   PageIndicator({
@@ -569,7 +625,7 @@ class PageIndicator extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        for (int i = 0; i < pages.length; i++)
+        for (int i = 0; i < pages; i++)
           GestureDetector(
             onTap: () => onPageSelected(i),
             child: Padding(

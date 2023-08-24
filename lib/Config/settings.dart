@@ -297,7 +297,7 @@ String getThemeFromProductId(String productId) {
 /// In-app Purchase Variables
 Map<String, bool> themesPurchasedMapDefault = {
   'Default': true,
-  'Bubblegum': false,
+  'Bubblegum': true,
   'Pumpkin': false,
 };
 Map<String, bool> themesPurchasedMap = themesPurchasedMapDefault;
