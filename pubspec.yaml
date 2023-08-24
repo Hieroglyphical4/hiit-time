@@ -107,8 +107,8 @@ flutter:
     - assets/images/BubbleGumLight.png
     - assets/images/PumpkinDark.png
     - assets/images/PumpkinLight.png
-    - assets/images/appstore.png
-    - assets/images/playstore.png
+    - assets/images/BlueJayDark.png
+    - assets/images/BlueJayLight.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

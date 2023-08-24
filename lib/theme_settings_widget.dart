@@ -62,7 +62,6 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
     }
   }
 
-  final List<String> _possibleThemes = appPossibleThemes;
   int _determineCurrentPageIndex() {
     if (_filterShowsAllThemes) {
       switch (appCurrentTheme){
@@ -105,6 +104,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
       _unlockedThemeCount = 1 + (_blueJayThemeUnlocked ? 1 : 0)
           + (_bubblegumThemeUnlocked ? 1 : 0)
           + (_pumpkinThemeUnlocked ? 1 : 0);
+      _filterShowsAllThemes ? initializeThemePages() : setThemePagesToUnlockedOnly();
     });
   }
 
@@ -117,9 +117,9 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
         return 'assets/images/DefaultLight.png';
       case 'BlueJay':
         if (appCurrentlyInDarkMode) {
-          return 'assets/images/appstore.png'; // TODO Update to real asset
+          return 'assets/images/BlueJayDark.png';
         }
-        return 'assets/images/playstore.png'; // TODO Update to real asset
+        return 'assets/images/BlueJayLight.png';
       case 'Bubblegum':
         if (appCurrentlyInDarkMode) {
           return 'assets/images/BubbleGumDark.png';
@@ -273,7 +273,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   setState((){
                     setBooleanSetting('appInDarkMode', true);
                     setupDarkOrLightMode(true);
-                    _updateAppTheme(_possibleThemes[0]);
+                    _updateAppTheme('Default');
                   });
                 },
                 child: Container(
@@ -295,7 +295,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   setState((){
                     setBooleanSetting('appInDarkMode', false);
                     setupDarkOrLightMode(false);
-                    _updateAppTheme(_possibleThemes[0]);
+                    _updateAppTheme('Default');
                   });
                 },
                 child: Container(
@@ -324,7 +324,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   ),
                   child: RadioListTile(
                     title: Text(
-                      _possibleThemes[0],
+                      'Default',
                       style: TextStyle(
                           color: appCurrentlyInDarkMode
                               ? Colors.black
@@ -335,7 +335,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                     shape: BeveledRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    value: _possibleThemes[0],
+                    value: 'Default',
                     groupValue: _currentTheme,
                     onChanged: _updateAppTheme,
                   )
@@ -359,7 +359,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   if (_blueJayThemeUnlocked) {
                     setBooleanSetting('appInDarkMode', true);
                     setupDarkOrLightMode(true);
-                    _updateAppTheme(_possibleThemes[1]);
+                    _updateAppTheme('BlueJay');
                   } else {
                     // Logic to launch store for In app Purchase
                     _launchStoreStuff('bluejay_theme');
@@ -370,12 +370,12 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                 decoration: BoxDecoration(
                     border: Border.all(
                         width: 4,
-                        color: assetForSelectedThemeAndMode == 'assets/images/appstore.png'
+                        color: assetForSelectedThemeAndMode == 'assets/images/BlueJayDark.png'
                             ? Colors.blue
                             : Colors.transparent
                     )
                 ),
-                child: Image.asset('assets/images/appstore.png', width: 140, height: 240),
+                child: Image.asset('assets/images/BlueJayDark.png', width: 140, height: 240),
               ),
             ),
 
@@ -386,7 +386,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   if (_blueJayThemeUnlocked) {
                     setBooleanSetting('appInDarkMode', false);
                     setupDarkOrLightMode(false);
-                    _updateAppTheme(_possibleThemes[1]);
+                    _updateAppTheme('BlueJay');
                   } else {
                     // Logic to launch store for In app Purchase
                     _launchStoreStuff('bluejay_theme');
@@ -397,12 +397,12 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                 decoration: BoxDecoration(
                     border: Border.all(
                         width: 4,
-                        color: assetForSelectedThemeAndMode == 'assets/images/playstore.png'
+                        color: assetForSelectedThemeAndMode == 'assets/images/BlueJayLight.png'
                             ? Colors.blue
                             : Colors.transparent
                     )
                 ),
-                child: Image.asset('assets/images/playstore.png', width: 140, height: 240),
+                child: Image.asset('assets/images/BlueJayLight.png', width: 140, height: 240),
               ),
             ),
 
@@ -412,7 +412,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
 
           // Radio Tile
           Container(
-              width: 260,
+              width: 220,
               child: Material(
                   shape: BeveledRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -424,7 +424,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                             : appCurrentlyInDarkMode ? Colors.black : Colors.white
                     ),
                     title: Text(
-                      _possibleThemes[1],
+                      'BlueJay',
                       style: TextStyle(
                           color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
                           fontSize: _textFontSize),
@@ -435,7 +435,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                     shape: BeveledRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    value: _possibleThemes[1],
+                    value: 'BlueJay',
                     groupValue: _currentTheme,
                     onChanged: _updateAppTheme,
                   ))),
@@ -457,7 +457,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   if (_bubblegumThemeUnlocked) {
                     setBooleanSetting('appInDarkMode', true);
                     setupDarkOrLightMode(true);
-                    _updateAppTheme(_possibleThemes[2]);
+                    _updateAppTheme('Bubblegum');
                   } else {
                     // Logic to launch store for In app Purchase
                     _launchStoreStuff('bubblegum_theme');
@@ -484,7 +484,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   if (_bubblegumThemeUnlocked) {
                     setBooleanSetting('appInDarkMode', false);
                     setupDarkOrLightMode(false);
-                    _updateAppTheme(_possibleThemes[2]);
+                    _updateAppTheme('Bubblegum');
                   } else {
                     // Logic to launch store for In app Purchase
                     _launchStoreStuff('bubblegum_theme');
@@ -522,7 +522,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                             : appCurrentlyInDarkMode ? Colors.black : Colors.white
                     ),
                     title: Text(
-                      _possibleThemes[2],
+                      'Bubblegum',
                       style: TextStyle(
                           color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
                           fontSize: _textFontSize),
@@ -533,7 +533,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                     shape: BeveledRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    value: _possibleThemes[2],
+                    value: 'Bubblegum',
                     groupValue: _currentTheme,
                     onChanged: _updateAppTheme,
                   ))),
@@ -556,7 +556,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   if (_pumpkinThemeUnlocked) {
                     setBooleanSetting('appInDarkMode', true);
                     setupDarkOrLightMode(true);
-                    _updateAppTheme(_possibleThemes[3]);
+                    _updateAppTheme('Pumpkin');
                   } else {
                     // Logic to launch store for In app Purchase
                     _launchStoreStuff('pumpkin_theme');
@@ -583,7 +583,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                   if (_pumpkinThemeUnlocked) {
                     setBooleanSetting('appInDarkMode', false);
                     setupDarkOrLightMode(false);
-                    _updateAppTheme(_possibleThemes[3]);
+                    _updateAppTheme('Pumpkin');
                   } else {
                     // Logic to launch store for In app Purchase
                     _launchStoreStuff('pumpkin_theme');
@@ -618,7 +618,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                             : appCurrentlyInDarkMode ? Colors.black : Colors.white
                     ),
                     title: Text(
-                      _possibleThemes[3],
+                      'Pumpkin',
                       style: TextStyle(
                           color: appCurrentlyInDarkMode ? Colors.black : Colors.white,
                           fontSize: _textFontSize),
@@ -627,7 +627,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                     shape: BeveledRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    value: _possibleThemes[3],
+                    value: 'Pumpkin',
                     groupValue: _currentTheme,
                     onChanged: _updateAppTheme,
                   )

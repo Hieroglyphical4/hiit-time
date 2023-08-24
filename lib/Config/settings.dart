@@ -170,8 +170,6 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
 
   // Call Methods to assign App Colors
   appCurrentTheme = prefs.getString('appTheme') ?? defaultTheme;
-  // setThemeDefault();
-
   setupAppTheme(appCurrentTheme);
   setupDarkOrLightMode(prefs.getBool('appInDarkMode') ?? appInDarkModeDefault);
 
@@ -325,8 +323,6 @@ Future<void> setupInAppPurchasesFromSharedPreferences() async {
 }
 
 /// App Theme related settings
-List<String> appPossibleThemes = ['Default', 'BlueJay', 'Bubblegum', 'Pumpkin'];
-
 void setThemeDefault(){
   textColorOverwrite = false;
   alternateColorOverwrite = false;
