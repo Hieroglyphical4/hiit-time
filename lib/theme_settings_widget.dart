@@ -33,8 +33,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
   bool _bubblegumThemeUnlocked = false;
   bool _pumpkinThemeUnlocked = false;
 
-  // Bools used to Filtering Functions
-  late int _totalThemeCount;
+  // Vars used for Filtering Functions
   late int _unlockedThemeCount;
   bool _filterShowsAllThemes = true;
   late List<Widget> pages;
@@ -208,7 +207,6 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
     _blueJayThemeUnlocked = themesPurchasedMap['BlueJay']!;
     _bubblegumThemeUnlocked = themesPurchasedMap['Bubblegum']!;
     _pumpkinThemeUnlocked = themesPurchasedMap['Pumpkin']!;
-    _totalThemeCount = themesPurchasedMapDefault.length;
     _unlockedThemeCount = 1 + (_blueJayThemeUnlocked ? 1 : 0)
         + (_bubblegumThemeUnlocked ? 1 : 0)
         + (_pumpkinThemeUnlocked ? 1 : 0);
@@ -362,7 +360,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                     _updateAppTheme('BlueJay');
                   } else {
                     // Logic to launch store for In app Purchase
-                    _launchStoreStuff('bluejay_theme');
+                    _launchStoreStuff('bluejay_theme2');
                   }
                 });
               },
@@ -389,7 +387,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                     _updateAppTheme('BlueJay');
                   } else {
                     // Logic to launch store for In app Purchase
-                    _launchStoreStuff('bluejay_theme');
+                    _launchStoreStuff('bluejay_theme2');
                   }
                 });
               },
@@ -638,7 +636,6 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -656,7 +653,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
                                   backgroundColor: _filterShowsAllThemes ? primaryAccentColor : secondaryColor,
                                   padding: const EdgeInsets.all(4),
                                 ),
-                                child: Text("All ($_totalThemeCount)",
+                                child: Text("All (4)",
                                   style: TextStyle(fontFamily: 'AstroSpace', fontSize: 14, color: getCorrectColorForComplicatedContext()),
                                 ),
                                 onPressed: () {

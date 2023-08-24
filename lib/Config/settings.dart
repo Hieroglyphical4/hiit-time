@@ -265,7 +265,7 @@ void clearThemesFromSavedPrefs() async {
 String getProductIdFromTheme(String theme) {
   String productId = '';
   if (theme == 'BlueJay') {
-    productId = 'bluejay_theme';
+    productId = 'bluejay_theme2';
   } else if (theme == 'Bubblegum') {
     productId = 'bubblegum_theme';
   } else if (theme == 'Pumpkin') {
@@ -277,7 +277,7 @@ String getProductIdFromTheme(String theme) {
 
 String getThemeFromProductId(String productId) {
   String theme = '';
-  if (productId == 'bluejay_theme') {
+  if (productId == 'bluejay_theme2') {
     theme = 'BlueJay';
   } else if (productId == 'bubblegum_theme') {
     theme = 'Bubblegum';
@@ -289,15 +289,15 @@ String getThemeFromProductId(String productId) {
 }
 
 /// In-app Purchase Variables
-Map<String, bool> themesPurchasedMapDefault = {
+final Map<String, bool> themesPurchasedMapDefault = {
   'Default': true,
   'BlueJay': false,
   'Bubblegum': false,
-  'Pumpkin': false,
+  'Pumpkin': false
 };
 Map<String, bool> themesPurchasedMap = themesPurchasedMapDefault;
 var availableProducts = [];
-const Set<String> productIds = <String>{"bluejay_theme", "bubblegum_theme", "pumpkin_theme"};
+const Set<String> productIds = <String>{"bluejay_theme2", "bubblegum_theme", "pumpkin_theme"};
 late InAppPurchase inAppPurchase; // This is the Billing Client
 
 Future<void> setupInAppPurchasesFromSharedPreferences() async {
