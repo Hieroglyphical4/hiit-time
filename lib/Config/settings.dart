@@ -170,6 +170,8 @@ Future<Map<String, dynamic>> getSavedUserSettings() async {
 
   // Call Methods to assign App Colors
   appCurrentTheme = prefs.getString('appTheme') ?? defaultTheme;
+  // setThemeDefault();
+
   setupAppTheme(appCurrentTheme);
   setupDarkOrLightMode(prefs.getBool('appInDarkMode') ?? appInDarkModeDefault);
 
@@ -256,7 +258,7 @@ void enableTheme(String productId) {
   setMapStringSetting(themesPurchasedMap, 'themesPurchasedMap');
 }
 
-// Remove all user saved settings
+// Remove Themes from user saved settings
 void clearThemesFromSavedPrefs() async {
   final prefs = await SharedPreferences.getInstance();
   prefs.remove('themesPurchasedMap');
@@ -264,15 +266,12 @@ void clearThemesFromSavedPrefs() async {
 
 String getProductIdFromTheme(String theme) {
   String productId = '';
-  switch (theme) {
-    case 'Bubblegum' : {
-      productId = 'bubblegum_theme';
-    }
-    break;
-    case 'Pumpkin' : {
-      productId = 'pumpkin_theme';
-    }
-    break;
+  if (theme == 'BlueJay') {
+    productId = 'bluejay_theme';
+  } else if (theme == 'Bubblegum') {
+    productId = 'bubblegum_theme';
+  } else if (theme == 'Pumpkin') {
+    productId = 'pumpkin_theme';
   }
 
   return productId;
@@ -280,15 +279,12 @@ String getProductIdFromTheme(String theme) {
 
 String getThemeFromProductId(String productId) {
   String theme = '';
-  switch (productId) {
-    case 'bubblegum_theme' : {
-      theme = 'Bubblegum';
-    }
-    break;
-    case 'pumpkin_theme' : {
-      theme = 'Pumpkin';
-    }
-    break;
+  if (productId == 'bluejay_theme') {
+    theme = 'BlueJay';
+  } else if (productId == 'bubblegum_theme') {
+    theme = 'Bubblegum';
+  } else if (productId == 'pumpkin_theme') {
+    theme = 'Pumpkin';
   }
 
   return theme;
@@ -297,12 +293,13 @@ String getThemeFromProductId(String productId) {
 /// In-app Purchase Variables
 Map<String, bool> themesPurchasedMapDefault = {
   'Default': true,
+  'BlueJay': false,
   'Bubblegum': false,
   'Pumpkin': false,
 };
 Map<String, bool> themesPurchasedMap = themesPurchasedMapDefault;
 var availableProducts = [];
-const Set<String> productIds = <String>{"bubblegum_theme", "pumpkin_theme"};
+const Set<String> productIds = <String>{"bluejay_theme", "bubblegum_theme", "pumpkin_theme"};
 late InAppPurchase inAppPurchase; // This is the Billing Client
 
 Future<void> setupInAppPurchasesFromSharedPreferences() async {
@@ -328,66 +325,93 @@ Future<void> setupInAppPurchasesFromSharedPreferences() async {
 }
 
 /// App Theme related settings
-List<String> appPossibleThemes = ['Default', 'Bubblegum', 'Pumpkin'];
+List<String> appPossibleThemes = ['Default', 'BlueJay', 'Bubblegum', 'Pumpkin'];
+
+void setThemeDefault(){
+  textColorOverwrite = false;
+  alternateColorOverwrite = false;
+
+  // Dark mode
+  primaryColorDarkMode = Colors.white;
+  secondaryColorDarkMode = Colors.grey.shade900; // Almost black
+  primaryAccentColorDarkMode = Colors.blue.shade400;
+  secondaryAccentColorDarkMode = Colors.blueGrey;
+  runningClockColorDarkMode = Colors.lightGreenAccent.shade700;
+
+  // Light mode
+  primaryColorLightMode = Colors.black;
+  secondaryColorLightMode = Colors.white;
+  primaryAccentColorLightMode = Colors.blue.shade400;
+  secondaryAccentColorLightMode = Colors.blueGrey;
+  runningClockColorLightMode = Colors.lightGreenAccent.shade700;
+}
+
+void setThemeBlueJay() {
+  textColorOverwrite = true;
+  alternateColorOverwrite = false;
+
+  // Dark mode
+  primaryColorDarkMode = Colors.white;
+  secondaryColorDarkMode = Colors.blue.shade800;
+  primaryAccentColorDarkMode = Colors.tealAccent;
+  secondaryAccentColorDarkMode = Colors.pinkAccent;
+  runningClockColorDarkMode = secondaryAccentColorDarkMode;
+
+  // Light mode
+  primaryColorLightMode = Colors.black;
+  secondaryColorLightMode = Colors.blue.shade200;
+  primaryAccentColorLightMode = Colors.teal;
+  secondaryAccentColorLightMode = Colors.pink.shade200;
+  runningClockColorLightMode = secondaryAccentColorLightMode;
+}
+
+void setThemeBubblegum() {
+  textColorOverwrite = true;
+  alternateColorOverwrite = false;
+
+  // Dark mode
+  primaryColorDarkMode = Colors.white;
+  secondaryColorDarkMode = Colors.pink.shade600;
+  primaryAccentColorDarkMode = Colors.tealAccent;
+  secondaryAccentColorDarkMode = Colors.yellow;
+  runningClockColorDarkMode = secondaryAccentColorDarkMode;
+
+  // Light mode
+  primaryColorLightMode = Colors.black;
+  secondaryColorLightMode = Colors.pink.shade100;
+  primaryAccentColorLightMode = Colors.teal.shade300;
+  secondaryAccentColorLightMode = Colors.yellow.shade400;
+  runningClockColorLightMode = secondaryAccentColorLightMode;
+}
+
+void setThemePumpkin() {
+  textColorOverwrite = false;
+  alternateColorOverwrite = true;
+
+  // Dark mode
+  primaryColorDarkMode = Colors.white;
+  secondaryColorDarkMode = Colors.deepOrange.shade900;
+  primaryAccentColorDarkMode = Colors.yellow.shade600;
+  secondaryAccentColorDarkMode = Colors.green;
+  runningClockColorDarkMode = secondaryAccentColorDarkMode;
+
+  // Light mode
+  primaryColorLightMode = Colors.black;
+  secondaryColorLightMode = Colors.deepOrangeAccent.shade200;
+  primaryAccentColorLightMode = Colors.yellowAccent;
+  secondaryAccentColorLightMode = Colors.green;
+  runningClockColorLightMode = secondaryAccentColorLightMode;
+}
 
 void setupAppTheme(String theme) {
-  switch (theme) {
-    case "Default":
-      textColorOverwrite = false;
-      alternateColorOverwrite = false;
-
-      // Dark mode
-      primaryColorDarkMode = Colors.white;
-      secondaryColorDarkMode = Colors.grey.shade900; // Almost black
-      primaryAccentColorDarkMode = Colors.blue.shade400;
-      secondaryAccentColorDarkMode = Colors.blueGrey;
-      runningClockColorDarkMode = Colors.lightGreenAccent.shade700;
-
-      // Light mode
-      primaryColorLightMode = Colors.black;
-      secondaryColorLightMode = Colors.white;
-      primaryAccentColorLightMode = Colors.blue.shade400;
-      secondaryAccentColorLightMode = Colors.blueGrey;
-      runningClockColorLightMode = Colors.lightGreenAccent.shade700;
-      break;
-
-    case "Bubblegum":
-      textColorOverwrite = true;
-      alternateColorOverwrite = false;
-
-      // Dark mode
-      primaryColorDarkMode = Colors.white;
-      secondaryColorDarkMode = Colors.pink.shade600;
-      primaryAccentColorDarkMode = Colors.tealAccent;
-      secondaryAccentColorDarkMode = Colors.yellow;
-      runningClockColorDarkMode = secondaryAccentColorDarkMode;
-
-      // Light mode
-      primaryColorLightMode = Colors.black;
-      secondaryColorLightMode = Colors.pink.shade100;
-      primaryAccentColorLightMode = Colors.teal.shade300;
-      secondaryAccentColorLightMode = Colors.yellow.shade400;
-      runningClockColorLightMode = secondaryAccentColorLightMode;
-      break;
-
-    case "Pumpkin":
-      textColorOverwrite = false;
-      alternateColorOverwrite = true;
-
-      // Dark mode
-      primaryColorDarkMode = Colors.white;
-      secondaryColorDarkMode = Colors.deepOrange.shade900;
-      primaryAccentColorDarkMode = Colors.yellow.shade600;
-      secondaryAccentColorDarkMode = Colors.green;
-      runningClockColorDarkMode = secondaryAccentColorDarkMode;
-
-      // Light mode
-      primaryColorLightMode = Colors.black;
-      secondaryColorLightMode = Colors.deepOrangeAccent.shade200;
-      primaryAccentColorLightMode = Colors.yellowAccent;
-      secondaryAccentColorLightMode = Colors.green;
-      runningClockColorLightMode = secondaryAccentColorLightMode;
-      break;
+  if (theme == 'Default') {
+    setThemeDefault();
+  } else if (theme == 'BlueJay') {
+    setThemeBlueJay();
+  } else if (theme == 'Bubblegum') {
+    setThemeBubblegum();
+  } else if (theme == 'Pumpkin') {
+    setThemePumpkin();
   }
 }
 
