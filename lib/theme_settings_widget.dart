@@ -74,7 +74,7 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
       }
     } else {
       // The user is filtering themes
-      // TODO Determine what themes the user has
+      // TODO Need more extendable way to determine index counts
       switch (appCurrentTheme){
         case 'Default':
           return 0;
@@ -92,10 +92,12 @@ class ThemeSettingsWidgetState extends State<ThemeSettingsWidget> {
     return 0;
   }
 
+  // This is called from the listener in main.dart
   void updateThemeUIAfterPurchaseCompleted(){
     setState(() {
       _bubblegumThemeUnlocked = themesPurchasedMap['Bubblegum']!;
       _pumpkinThemeUnlocked = themesPurchasedMap['Pumpkin']!;
+      _unlockedThemeCount = 1 + (_bubblegumThemeUnlocked ? 1 : 0) + (_pumpkinThemeUnlocked ? 1 : 0);
     });
   }
 
