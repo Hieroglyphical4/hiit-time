@@ -117,11 +117,11 @@ class LogsWidgetState extends State<LogsWidget> {
                                 )
                               ])
                                   : Row(children: [
-                                Icon(Icons.add_circle_outline, color: textColorOverwrite ? Colors.black : primaryColor),
+                                Icon(Icons.add_circle_outline, color: getCorrectColorForComplicatedContext()),
                                 SizedBox(width: 5),
                                 Text(' New Log',
                                     style: TextStyle(fontFamily: 'AstroSpace', fontSize: 18,
-                                        color: textColorOverwrite ? Colors.black : primaryColor
+                                        color: getCorrectColorForComplicatedContext()
                                     )
                                 )
                               ])
@@ -589,7 +589,7 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                             _hintTextShowing = false;
                                           },
                                           style: TextStyle(
-                                              color: primaryAccentColor,
+                                              color: Colors.blue.shade400,
                                               fontSize: 22),
                                           textAlign: TextAlign.center,
                                           keyboardType: TextInputType.text,
