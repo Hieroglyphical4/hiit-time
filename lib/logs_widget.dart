@@ -589,7 +589,7 @@ class AddExerciseEditExerciseDialogState extends State<AddExerciseEditExerciseDi
                                             _hintTextShowing = false;
                                           },
                                           style: TextStyle(
-                                              color: primaryAccentColor,
+                                              color: Colors.blue.shade400,
                                               fontSize: 22),
                                           textAlign: TextAlign.center,
                                           keyboardType: TextInputType.text,

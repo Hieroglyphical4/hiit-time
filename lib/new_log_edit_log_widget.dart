@@ -631,7 +631,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                               fontWeight: FontWeight.w600,
                                               color: (_providedExercise != _currentExercise)
                                                   ? Colors.blue.shade400
-                                                  : appCurrentlyInDarkMode ? Colors.black : Colors.white,
+                                                  : Colors.black,
                                             ),
                                           ),
                                         ),
