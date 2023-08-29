@@ -291,9 +291,9 @@ String getThemeFromProductId(String productId) {
 /// In-app Purchase Variables
 final Map<String, bool> themesPurchasedMapDefault = {
   'Default': true,
-  'BlueJay': false,
-  'Bubblegum': false,
-  'Pumpkin': false
+  'BlueJay': true,
+  'Bubblegum': true,
+  'Pumpkin': true
 };
 Map<String, bool> themesPurchasedMap = themesPurchasedMapDefault;
 var availableProducts = [];
@@ -344,20 +344,20 @@ void setThemeDefault(){
 
 void setThemeBlueJay() {
   textColorOverwrite = true;
-  alternateColorOverwrite = false;
+  alternateColorOverwrite = true;
 
   // Dark mode
   primaryColorDarkMode = Colors.white;
   secondaryColorDarkMode = Colors.blue.shade800;
   primaryAccentColorDarkMode = Colors.tealAccent;
-  secondaryAccentColorDarkMode = Colors.pinkAccent;
+  secondaryAccentColorDarkMode = Colors.pinkAccent.shade100;
   runningClockColorDarkMode = secondaryAccentColorDarkMode;
 
   // Light mode
   primaryColorLightMode = Colors.black;
-  secondaryColorLightMode = Colors.blue.shade200;
-  primaryAccentColorLightMode = Colors.teal;
-  secondaryAccentColorLightMode = Colors.pink.shade200;
+  secondaryColorLightMode = Colors.blueAccent.shade100;
+  primaryAccentColorLightMode = Colors.blue.shade600;
+  secondaryAccentColorLightMode = Colors.pinkAccent.shade100;
   runningClockColorLightMode = secondaryAccentColorLightMode;
 }
 
