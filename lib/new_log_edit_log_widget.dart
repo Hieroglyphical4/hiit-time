@@ -496,6 +496,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                             color: Colors.white,
                             child: Center(
                               child: DropdownButton<String>(
+                                isExpanded: true,
                                 menuMaxHeight: 420,
                                 hint: Padding(
                                   padding: EdgeInsets.fromLTRB(0.0, 9.0, 0.0, 0.0),
@@ -508,32 +509,33 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                         color: Colors.black,
                                       ),
                                       _editMode
-                                          ? Text(
-                                        _currentExerciseText,
-                                        style: TextStyle(
-                                          fontFamily: 'AstroSpace',
-                                          fontSize: 16,
-                                          color: (_providedExercise == _currentExercise)
-                                              ? primaryAccentColor
-                                              : Colors.black,
-                                        ),
-                                        textAlign: TextAlign.center,
+                                          ? Expanded(
+                                          child: Text(
+                                            _currentExerciseText,
+                                            style: TextStyle(
+                                              fontFamily: 'AstroSpace',
+                                              fontSize: 16,
+                                              color: (_providedExercise == _currentExercise)
+                                                  ? Colors.blue.shade400
+                                                  : Colors.black,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          )
                                       )
-                                          : Text(
-                                        " Exercise",
-                                        style: TextStyle(
-                                          fontFamily: 'AstroSpace',
-                                          fontSize: 16,
-                                          color: (_providedExercise != _currentExercise)
-                                              ? primaryAccentColor
-                                              : Colors.black,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
+                                          : const Text(
+                                            " Exercise",
+                                            style: TextStyle(
+                                              fontFamily: 'AstroSpace',
+                                              fontSize: 16,
+                                              color: Colors.black,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
                                     ],
                                   ),
                                 ),
                                 value: _selectedExercise,
+                                // value: _selectedExerciseFormatted,
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     if (_selectedExercise == null) {
@@ -551,21 +553,21 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                       DropdownMenuItem<String>(
                                         enabled: false,
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
+                                            SizedBox(height: 10),
                                             Container(
-                                              padding: EdgeInsets.only(top: 6),
                                               child: Text(
                                                 'Cardio:',
                                                 style: TextStyle(
                                                   fontFamily: 'AstroSpace',
-                                                  fontSize: 18,
-                                                  color: primaryAccentColor,
+                                                  fontSize: 17,
+                                                  color: secondaryColor,
                                                   fontWeight: FontWeight.w600,
                                                 ),
                                               ),
                                             ),
-                                            Divider(color: primaryColor),
+                                            Divider(color: secondaryColor),
                                           ],
                                         ),
                                       )
@@ -574,21 +576,21 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                       DropdownMenuItem<String>(
                                         enabled: false,
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
+                                            SizedBox(height: 10),
                                             Container(
-                                              padding: EdgeInsets.only(top: 6),
                                               child: Text(
                                                 'Weights:',
                                                 style: TextStyle(
                                                   fontFamily: 'AstroSpace',
-                                                  fontSize: 18,
-                                                  color: primaryAccentColor,
+                                                  fontSize: 17,
+                                                  color: secondaryColor,
                                                   fontWeight: FontWeight.w600,
                                                 ),
                                               ),
                                             ),
-                                            Divider(color: primaryColor),
+                                            Divider(color: secondaryColor),
                                           ],
                                         ),
                                       )
@@ -597,6 +599,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                         value: value,
                                         child: Text(
                                           value,
+                                          overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             fontFamily: 'AstroSpace',
                                             fontSize: 16,
@@ -627,7 +630,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600,
                                               color: (_providedExercise != _currentExercise)
-                                                  ? primaryAccentColor
+                                                  ? Colors.blue.shade400
                                                   : appCurrentlyInDarkMode ? Colors.black : Colors.white,
                                             ),
                                           ),
@@ -718,7 +721,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           ),
                                           style: TextStyle(
                                               color: (_providedDate != _currentDate)
-                                                  ? primaryAccentColor
+                                                  ? Colors.blue.shade400
                                                   : Colors.black,
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold
@@ -767,7 +770,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           controller: primaryValueTextEditController,
                                           style: TextStyle(
                                               color: (_providedPrimaryValue != _currentPrimaryValue)
-                                                  ? primaryAccentColor
+                                                  ? Colors.blue.shade400
                                                   : Colors.black,
                                               fontSize: 25),
                                           textAlign: TextAlign.center,
@@ -861,7 +864,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             controller: secondaryValueTextEditController,
                                             style: TextStyle(
                                                 color: (_providedSecondaryValue != _currentSecondaryValue)
-                                                    ? primaryAccentColor
+                                                    ? Colors.blue.shade400
                                                     : Colors.black,
                                                 fontSize: 25),
                                             textAlign: TextAlign.center,
@@ -917,7 +920,6 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             inputFormatters: widget.exerciseType=='Cardio'
                                               ? <TextInputFormatter>[
                                                 FilteringTextInputFormatter.digitsOnly, // Only numbers can be entered
-                                                FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
                                                 LengthLimitingTextInputFormatter(4), // 4 digits at most
                                                 ]
                                               : <TextInputFormatter>[
@@ -954,7 +956,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             focusNode: _thirdFieldFocusNode,
                                             style: TextStyle(
                                                 color: (_providedThirdFieldValue != _currentThirdFieldValue)
-                                                    ? primaryAccentColor
+                                                    ? Colors.blue.shade400
                                                     : Colors.black,
                                                 fontSize: 25),
                                             textAlign: TextAlign.center,
@@ -1033,7 +1035,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             focusNode: _fourthFieldFocusNode,
                                             style: TextStyle(
                                                 color: (_providedFourthFieldValue != _currentFourthFieldValue)
-                                                    ? primaryAccentColor
+                                                    ? Colors.blue.shade400
                                                     : Colors.black,
                                                 fontSize: 25),
                                             textAlign: TextAlign.center,
@@ -1105,7 +1107,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             focusNode: _fifthFieldFocusNode,
                                             style: TextStyle(
                                                 color: (_providedFifthFieldValue != _currentFifthFieldValue)
-                                                    ? primaryAccentColor
+                                                    ? Colors.blue.shade400
                                                     : Colors.black,
                                                 fontSize: 25),
                                             textAlign: TextAlign.center,
@@ -1268,28 +1270,50 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                       Navigator.of(context).pop(true);
                                     }
                                         : null
-                                        : (_exerciseProvided && _primaryValueProvided && _secondaryValueProvided) ? () {
-                                      /// New Log Mode
-                                      // widget.audio.setVolume(_appVolume);
-                                      // widget.audio.setReleaseMode(ReleaseMode.stop);
-                                      // if (!appCurrentlyMuted && saveButtonAudioCurrentlyEnabled) {
-                                      //   widget.audio.play(AssetSource(audioForSaveButton));
-                                      //   widget.audio.setReleaseMode(ReleaseMode.stop);
-                                      // }
+                                        : (widget.exerciseType=='Cardio') ?
+                                            (_exerciseProvided && _primaryValueProvided) ? ()
+                                            {
+                                                /// New Log AND Cardio Mode only requires 2 fields to enable the save button
+                                                // widget.audio.setVolume(_appVolume);
+                                                // widget.audio.setReleaseMode(ReleaseMode.stop);
+                                                // if (!appCurrentlyMuted && saveButtonAudioCurrentlyEnabled) {
+                                                //   widget.audio.play(AssetSource(audioForSaveButton));
+                                                //   widget.audio.setReleaseMode(ReleaseMode.stop);
+                                                // }
 
-                                      HapticFeedback.mediumImpact();
+                                              HapticFeedback.mediumImpact();
 
-                                      if (widget.exerciseType=='Cardio') {
-                                        insertCardioWorkout();
-                                      } else {
-                                        insertWeightedWorkout();
-                                      }
+                                              insertCardioWorkout();
 
-                                      _showNotification(context, 'Create');
-                                      HapticFeedback.mediumImpact();
-                                      widget.updateTable();
-                                      widget.closeNewLogsMenu();
-                                    }
+                                              _showNotification(context, 'Create');
+                                              widget.updateTable();
+                                              widget.closeNewLogsMenu();
+                                            }
+                                            : null
+                                            : (_exerciseProvided && _primaryValueProvided && _secondaryValueProvided) ? () {
+                                              /// New Log AND Weighted Mode
+                                              // widget.audio.setVolume(_appVolume);
+                                              // widget.audio.setReleaseMode(ReleaseMode.stop);
+                                              // if (!appCurrentlyMuted && saveButtonAudioCurrentlyEnabled) {
+                                              //   widget.audio.play(AssetSource(audioForSaveButton));
+                                              //   widget.audio.setReleaseMode(ReleaseMode.stop);
+                                              // }
+
+                                              HapticFeedback.mediumImpact();
+
+                                              // if (widget.exerciseType=='Cardio') {
+                                              //   insertCardioWorkout();
+                                              // } else {
+                                              //   insertWeightedWorkout();
+                                              // }
+
+                                              insertWeightedWorkout();
+
+                                              _showNotification(context, 'Create');
+                                              HapticFeedback.mediumImpact();
+                                              widget.updateTable();
+                                              widget.closeNewLogsMenu();
+                                            }
                                         : null, // If all settings haven't updated, Disable Save Button
                                   ),
 

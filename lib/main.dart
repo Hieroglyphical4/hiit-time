@@ -21,6 +21,11 @@ final audioPlayer = AudioPlayer();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Prevents weird orientation rotation?
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
+
   // Service Used to keep timer running in background
   initializeService();
 
