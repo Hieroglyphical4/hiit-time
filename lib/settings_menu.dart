@@ -1,3 +1,4 @@
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -54,6 +55,9 @@ class _SettingsMenuState extends State<SettingsMenu> {
   FocusNode _subTimeFocusNode = FocusNode();
   FocusNode _addTimeFocusNode = FocusNode();
 
+  // Used to determine if the user closed their Keyboard without submitting
+  final KeyboardVisibilityController _keyboardController = KeyboardVisibilityController();
+
   @override
   void initState() {
     super.initState();
@@ -67,6 +71,17 @@ class _SettingsMenuState extends State<SettingsMenu> {
     _workTimeFocusNode.addListener(() => _handleFocusChange(_workTimeFocusNode, 'workTime'));
     _subTimeFocusNode.addListener(() => _handleFocusChange(_subTimeFocusNode, 'subTime'));
     _addTimeFocusNode.addListener(() => _handleFocusChange(_addTimeFocusNode, 'addTime'));
+
+    // Add a listener to detect keyboard visibility changes
+    _keyboardController.onChange.listen((bool visible) {
+      if (!visible) {
+        // The keyboard was dismissed
+        _restTimeFocusNode.unfocus();
+        _workTimeFocusNode.unfocus();
+        _subTimeFocusNode.unfocus();
+        _addTimeFocusNode.unfocus();
+      }
+    });
   }
 
   @override
@@ -254,7 +269,15 @@ class _SettingsMenuState extends State<SettingsMenu> {
     return Scaffold(
       backgroundColor: secondaryColor,
       resizeToAvoidBottomInset: true,
-      body: Center(
+      body: GestureDetector(
+        onTap: () {
+          // Unfocus the TextField when tapping outside of it
+          _restTimeFocusNode.unfocus();
+          _workTimeFocusNode.unfocus();
+          _subTimeFocusNode.unfocus();
+          _addTimeFocusNode.unfocus();
+        },
+          child: Center(
         child: Align(
           child: SingleChildScrollView(
             child: Form(
@@ -749,8 +772,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                         _desiredSubTimeMod = value;
                                       },
                                       onFieldSubmitted: (value) {
-                                        FocusManager.instance.primaryFocus
-                                            ?.unfocus();
+                                        FocusManager.instance.primaryFocus?.unfocus();
                                       },
                                       decoration: InputDecoration(
                                         hintText: _subTimeHintTextShowing
@@ -776,11 +798,8 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       inputFormatters: <TextInputFormatter>[
                                         FilteringTextInputFormatter.digitsOnly,
                                         // Only numbers can be entered
-                                        FilteringTextInputFormatter.deny(
-                                            RegExp('^0+')),
-                                        // Filter leading 0s
-                                        LengthLimitingTextInputFormatter(4),
-                                        // 4 digits at most
+                                        FilteringTextInputFormatter.deny(RegExp('^0+')), // Filter leading 0s
+                                        LengthLimitingTextInputFormatter(4), // 4 digits at most
                                         // _TextInputFormatter(), // WIP: Formatting in the form of a custom function
                                       ],
                                     )),
@@ -1160,7 +1179,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
             ),
           ),
         ),
-      ),
+      )),
     );
   }
 }
