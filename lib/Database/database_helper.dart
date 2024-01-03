@@ -226,43 +226,62 @@ class DatabaseHelper {
     int? exerciseId = await getExerciseIdByName(exerciseName);
     List<Map<String, dynamic>> maps;
 
-    if (latestDate == null) {
-      if (isCardio) {
-        maps = await db.query(
-            'cardio_workouts',
-            where: 'exerciseId = ?',
-            whereArgs: [exerciseId],
-            orderBy: sortOrder
-        );
-      } else {
-        maps = await db.query(
-            'weighted_workouts',
-            where: 'exerciseId = ?',
-            whereArgs: [exerciseId],
-            orderBy: sortOrder
-        );
-      }
+    if (isCardio) {
+      maps = await db.query(
+          'cardio_workouts',
+          where: 'exerciseId = ?',
+          whereArgs: [exerciseId],
+      );
     } else {
-      // Filter by date
-      if (isCardio) {
-        maps = await db.query(
-            'cardio_workouts',
-            where: 'exerciseId = ? AND date > ?',
-            whereArgs: [exerciseId, latestDate],
-            orderBy: sortOrder
-        );
-      } else {
-        maps = await db.query(
-            'weighted_workouts',
-            where: 'exerciseId = ? AND date > ?',
-            whereArgs: [exerciseId, latestDate],
-            orderBy: sortOrder
-        );
-      }
+      maps = await db.query(
+          'weighted_workouts',
+          where: 'exerciseId = ?',
+          whereArgs: [exerciseId],
+      );
     }
 
+    /// Handle sorting of the data using a new mutable list
+    List<Map<String, dynamic>> resultList = List<Map<String, dynamic>>.from(maps);
 
-    return maps;
+    if (sortOrder == 'date DESC') {
+      /// Return Newest First
+      resultList.sort((a, b) {
+        DateTime dateTimeA = parseCustomDateTime(a['date']);
+        DateTime dateTimeB = parseCustomDateTime(b['date']);
+
+        return dateTimeB.compareTo(dateTimeA);
+      });
+    } else {
+      /// Return Oldest First
+      resultList.sort((a, b) {
+        DateTime dateTimeA = parseCustomDateTime(a['date']);
+        DateTime dateTimeB = parseCustomDateTime(b['date']);
+
+        return dateTimeA.compareTo(dateTimeB);
+      });
+    }
+
+    if (latestDate != null) {
+      DateTime dateTimeLatestDate = parseCustomDateTime(latestDate);
+      resultList.removeWhere((map) => parseCustomDateTime(map['date']).isBefore(dateTimeLatestDate));
+    }
+
+    return resultList;
+  }
+  // Custom function to parse the date string in "MM/DD/YYYY HH:mm:ss" format
+  DateTime parseCustomDateTime(String dateString) {
+    List<String> dateParts = dateString.split(' ');
+    List<String> dateComponents = dateParts[0].split('/');
+    List<String> timeComponents = dateParts[1].split(':');
+
+    int year = int.parse(dateComponents[2]);
+    int month = int.parse(dateComponents[0]);
+    int day = int.parse(dateComponents[1]);
+    int hour = int.parse(timeComponents[0]);
+    int minute = int.parse(timeComponents[1]);
+    int second = int.parse(timeComponents[2]);
+
+    return DateTime(year, month, day, hour, minute, second);
   }
 
   // Used for Selects on Weighted Workouts Table

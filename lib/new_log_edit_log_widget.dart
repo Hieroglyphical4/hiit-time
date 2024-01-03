@@ -1273,7 +1273,9 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                         : (widget.exerciseType=='Cardio') ?
                                             (_exerciseProvided && _primaryValueProvided) ? ()
                                             {
-                                                /// New Log AND Cardio Mode only requires 2 fields to enable the save button
+                                                /// New Log AND Cardio Mode
+                                                  /// only requires 2 fields to enable the save button
+
                                                 // widget.audio.setVolume(_appVolume);
                                                 // widget.audio.setReleaseMode(ReleaseMode.stop);
                                                 // if (!appCurrentlyMuted && saveButtonAudioCurrentlyEnabled) {
@@ -1292,6 +1294,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             : null
                                             : (_exerciseProvided && _primaryValueProvided && _secondaryValueProvided) ? () {
                                               /// New Log AND Weighted Mode
+
                                               // widget.audio.setVolume(_appVolume);
                                               // widget.audio.setReleaseMode(ReleaseMode.stop);
                                               // if (!appCurrentlyMuted && saveButtonAudioCurrentlyEnabled) {
@@ -1300,12 +1303,6 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                               // }
 
                                               HapticFeedback.mediumImpact();
-
-                                              // if (widget.exerciseType=='Cardio') {
-                                              //   insertCardioWorkout();
-                                              // } else {
-                                              //   insertWeightedWorkout();
-                                              // }
 
                                               insertWeightedWorkout();
 
