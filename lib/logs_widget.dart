@@ -60,7 +60,7 @@ class LogsWidgetState extends State<LogsWidget> {
 
   void displayMenu(menu) {
     if (menu == 'cardio') {
-      // _mainFilterCardio = false; // close incase open
+      _mainFilterCardio = false; // close incase open
       _mainFilterWeights = false;
       _mainConfigMenu = false;
 
