@@ -10,7 +10,7 @@ import 'package:flutter/cupertino.dart';
 // Widget for New & Edit Log
 ///////////////////////////////////
 class NewLogEditLogWidget extends StatefulWidget {
-  final Function() updateTable;
+  final Function(String, dynamic) updateTable;
   final Function() closeNewLogsMenu;
   String header; // Either New Log or Edit Log
   final id; // Id of Workout Record
@@ -674,7 +674,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                             Animation animation,
                                             Animation secondaryAnimation) {
                                           return AddExerciseEditExerciseDialog(
-                                            updateNewLogsMenu: widget.updateTable,
+                                            updateNewLogsMenu: (test) => widget.updateTable('addExer', false),
                                             header: 'Add Exercise',
                                             initialExerciseName: '',
                                           );
@@ -1194,7 +1194,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                           await deleteWeightedWorkout();
                                         }
 
-                                        widget.updateTable();
+                                        widget.updateTable('editLog', _providedExercise);
                                         _showNotification(context, 'Delete');
                                         Navigator.of(context).pop(true);
                                       },
@@ -1266,7 +1266,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
 
                                       _showNotification(context, 'Update');
                                       HapticFeedback.mediumImpact();
-                                      widget.updateTable();
+                                      widget.updateTable('newLog', false);
                                       Navigator.of(context).pop(true);
                                     }
                                         : null
@@ -1288,7 +1288,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
                                               insertCardioWorkout();
 
                                               _showNotification(context, 'Create');
-                                              widget.updateTable();
+                                              widget.updateTable('cardio', _providedExercise);
                                               widget.closeNewLogsMenu();
                                             }
                                             : null
@@ -1308,7 +1308,7 @@ class NewLogEditLogWidgetState extends State<NewLogEditLogWidget> {
 
                                               _showNotification(context, 'Create');
                                               HapticFeedback.mediumImpact();
-                                              widget.updateTable();
+                                              widget.updateTable('weights', _providedExercise);
                                               widget.closeNewLogsMenu();
                                             }
                                         : null, // If all settings haven't updated, Disable Save Button
